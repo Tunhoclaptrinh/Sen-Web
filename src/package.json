@@ -1,0 +1,50 @@
+{
+  "name": "culturevault-web",
+  "version": "1.0.0",
+  "description": "CultureVault Web Application - Heritage Management System",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\"",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "@reduxjs/toolkit": "^2.0.1",
+    "react-redux": "^9.0.4",
+    "antd": "^5.12.0",
+    "@ant-design/icons": "^5.2.6",
+    "axios": "^1.6.2",
+    "dayjs": "^1.11.10",
+    "lodash": "^4.17.21",
+    "prop-types": "^15.8.1",
+    "react-helmet-async": "^2.0.4",
+    "recharts": "^2.10.3",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "immer": "^10.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "prettier": "^3.1.1",
+    "vitest": "^1.0.4",
+    "@types/leaflet": "^1.9.8"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
