@@ -5,6 +5,7 @@ import artifactReducer from './slices/artifactSlice';
 import uiReducer from './slices/uiSlice';
 import categoryReducer from './slices/categorySlice';
 import reviewReducer from './slices/reviewSlice';
+import collectionReducer from './slices/collectionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     ui: uiReducer,
     category: categoryReducer,
     review: reviewReducer,
+    collection: collectionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
