@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const collectionAPI = {
   getAll: () => apiClient.get('/collections'),
   getById: (id) => apiClient.get(`/collections/${id}`),

@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const favoriteAPI = {
   getAll: () => apiClient.get('/favorites'),
   getByType: (type) => apiClient.get(`/favorites/${type}`),

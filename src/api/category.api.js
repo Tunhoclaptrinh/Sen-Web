@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const categoryAPI = {
   getAll: (params = {}) => apiClient.get('/categories', { params }),
   getById: (id) => apiClient.get(`/categories/${id}`),

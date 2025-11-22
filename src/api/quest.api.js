@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const questAPI = {
   getAll: (params = {}) => apiClient.get('/quests', { params }),
   getAvailable: () => apiClient.get('/quests/available'),

@@ -1,141 +1,149 @@
-import React from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Layout, Menu, Button, Avatar, Dropdown, Space } from "antd";
+import { Layout, Menu, Dropdown, Button, Badge, Input, Spin } from "antd";
 import {
+  BellOutlined,
   UserOutlined,
   LogoutOutlined,
-  HomeOutlined,
-  AppstoreOutlined,
+  SearchOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@store/slices/authSlice";
-import { getAvatarUrl } from "@utils/helpers";
+import { useState } from "react";
+import styles from "./MainLayout.module.css";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content, Footer, Sider } = Layout;
 
 const MainLayout = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const [collapsed, setCollapsed] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
 
-  // Menu cho User Dropdown
-  const userMenu = {
-    items: [
-      {
-        key: "profile",
-        label: <Link to="/profile">Hồ sơ cá nhân</Link>,
-        icon: <UserOutlined />,
-      },
-      {
-        key: "collections",
-        label: <Link to="/collections">Bộ sưu tập của tôi</Link>,
-        icon: <AppstoreOutlined />,
-      },
-      { type: "divider" },
-      {
-        key: "logout",
-        label: "Đăng xuất",
-        icon: <LogoutOutlined />,
-        onClick: handleLogout,
-        danger: true,
-      },
-    ],
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      navigate(`/heritage-sites?q=${encodeURIComponent(searchValue)}`);
+    }
   };
 
-  // Menu chính
-  const navItems = [
+  const userMenuItems = [
     {
-      key: "home",
-      label: <Link to="/">Trang chủ</Link>,
-      icon: <HomeOutlined />,
+      key: "profile",
+      icon: <UserOutlined />,
+      label: <Link to="/profile">Hồ Sơ</Link>,
     },
-    { key: "heritage", label: <Link to="/heritage-sites">Di tích</Link> },
-    { key: "artifact", label: <Link to="/artifacts">Hiện vật</Link> },
+    {
+      key: "collections",
+      label: <Link to="/collections">Bộ Sưu Tập</Link>,
+    },
+    { type: "divider" },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Đăng Xuất",
+      onClick: handleLogout,
+    },
+  ];
+
+  const navMenuItems = [
+    { key: "home", label: <Link to="/">Trang Chủ</Link> },
+    { key: "heritage", label: <Link to="/heritage-sites">Di Sản</Link> },
+    { key: "artifacts", label: <Link to="/artifacts">Hiện Vật</Link> },
   ];
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout
+      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+    >
       <Header
+        className={styles.header}
         style={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
-          background: "#fff",
-          boxShadow: "0 2px 8px #f0f1f2",
+          alignItems: "center",
           padding: "0 24px",
+          background: "#fff",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          position: "sticky",
+          top: 0,
+          zIndex: 999,
         }}
       >
         <div
-          className="logo"
-          style={{
-            fontSize: "20px",
-            fontWeight: "bold",
-            color: "#d4a574",
-            marginRight: "40px",
-          }}
+          className={styles.logo}
+          style={{ fontSize: "20px", fontWeight: "bold", color: "#d4a574" }}
         >
-          <Link to="/" style={{ color: "inherit" }}>
-            CultureVault
-          </Link>
+          🏛️ CultureVault
         </div>
 
         <Menu
           mode="horizontal"
-          items={navItems}
-          style={{ flex: 1, borderBottom: "none" }}
+          items={navMenuItems}
+          style={{ flex: 1, border: "none", marginLeft: 24 }}
         />
 
-        <div className="auth-actions">
-          {isAuthenticated && user ? (
-            <Dropdown menu={userMenu} placement="bottomRight">
-              <Space style={{ cursor: "pointer" }}>
-                <span style={{ fontWeight: 500 }}>{user.name}</span>
-                <Avatar
-                  src={user.avatar || getAvatarUrl(user.name)}
-                  icon={<UserOutlined />}
-                />
-              </Space>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <Input
+            placeholder="Tìm kiếm di sản..."
+            prefix={<SearchOutlined />}
+            style={{ width: 200, borderRadius: 4 }}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onPressEnter={handleSearch}
+          />
+
+          <Badge count={0} offset={[-8, 8]}>
+            <BellOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
+          </Badge>
+
+          {isAuthenticated ? (
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Button type="text" icon={<UserOutlined />}>
+                {user?.name || "User"}
+              </Button>
             </Dropdown>
           ) : (
-            <Space>
+            <>
               <Link to="/login">
-                <Button type="text">Đăng nhập</Button>
+                <Button type="primary">Đăng Nhập</Button>
               </Link>
               <Link to="/register">
-                <Button type="primary">Đăng ký</Button>
+                <Button>Đăng Ký</Button>
               </Link>
-            </Space>
+            </>
           )}
         </div>
       </Header>
 
-      <Content
-        style={{
-          padding: "24px",
-          maxWidth: 1200,
-          margin: "0 auto",
-          width: "100%",
-        }}
-      >
-        <div
+      <Layout style={{ flex: 1 }}>
+        <Content
           style={{
-            background: "#fff",
-            minHeight: 280,
-            padding: 24,
-            borderRadius: 8,
+            padding: "24px",
+            maxWidth: "1400px",
+            margin: "0 auto",
+            width: "100%",
           }}
         >
           <Outlet />
-        </div>
-      </Content>
+        </Content>
+      </Layout>
 
-      <Footer style={{ textAlign: "center", background: "#f0f2f5" }}>
-        CultureVault ©{new Date().getFullYear()} - Nền tảng Di sản số
+      <Footer
+        style={{
+          textAlign: "center",
+          color: "#8c8c8c",
+          borderTop: "1px solid #e8e8e8",
+          marginTop: "auto",
+        }}
+      >
+        <p>&copy; 2024 CultureVault. Bảo tồn di sản văn hóa số.</p>
       </Footer>
     </Layout>
   );

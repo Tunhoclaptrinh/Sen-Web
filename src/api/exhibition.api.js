@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const exhibitionAPI = {
   getAll: (params = {}) => apiClient.get('/exhibitions', { params }),
   getActive: (params = {}) => apiClient.get('/exhibitions/active', { params }),

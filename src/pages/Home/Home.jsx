@@ -1,93 +1,156 @@
-import React from "react";
-import { Typography, Button, Row, Col, Card, Statistic } from "antd";
 import {
-  RocketOutlined,
-  BankOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+  Button,
+  Row,
+  Col,
+  Card,
+  Typography,
+  Space,
+  Statistic,
+  Spin,
+  message,
+} from "antd";
+import { HeartOutlined, EyeOutlined, TeamOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHeritageSites } from "@store/slices/heritageSlice";
+import styles from "./Home.module.css";
 
 const { Title, Paragraph } = Typography;
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const {
+    items: sites,
+    loading,
+    error,
+  } = useSelector((state) => state.heritage);
+
+  useEffect(() => {
+    dispatch(fetchHeritageSites({ _limit: 6 }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
+
   return (
-    <div>
+    <div className={styles.home}>
       {/* Hero Section */}
       <div
         style={{
+          background: "linear-gradient(135deg, #d4a574 0%, #8b6f47 100%)",
+          color: "white",
+          padding: "60px 24px",
           textAlign: "center",
-          padding: "60px 0",
-          background: "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)",
-          borderRadius: "8px",
-          marginBottom: "40px",
+          borderRadius: 12,
+          marginBottom: 32,
         }}
       >
-        <Title level={1} style={{ color: "#d4a574" }}>
-          Khám Phá Di Sản Văn Hóa Việt Nam
+        <Title level={2} style={{ color: "white", marginBottom: 16 }}>
+          🏛️ Chào mừng đến CultureVault
         </Title>
-        <Paragraph
-          style={{ fontSize: "18px", maxWidth: "700px", margin: "0 auto 30px" }}
-        >
-          CultureVault là nền tảng số hóa giúp bạn tìm hiểu, lưu trữ và chia sẻ
-          những giá trị văn hóa lịch sử độc đáo. Kết nối quá khứ với hiện tại
-          ngay hôm nay.
+        <Paragraph style={{ color: "rgba(255,255,255,0.9)", fontSize: 16 }}>
+          Khám phá, bảo tồn và chia sẻ di sản văn hóa số của Việt Nam
         </Paragraph>
-        <Link to="/heritage-sites">
-          <Button
-            type="primary"
-            size="large"
-            icon={<SearchOutlined />}
-            style={{ height: "50px", padding: "0 40px" }}
-          >
-            Bắt đầu khám phá
-          </Button>
-        </Link>
+        <Space>
+          <Link to="/heritage-sites">
+            <Button
+              type="primary"
+              size="large"
+              style={{ background: "white", color: "#d4a574" }}
+            >
+              Khám Phá Di Sản
+            </Button>
+          </Link>
+          <Link to="/artifacts">
+            <Button
+              type="default"
+              size="large"
+              style={{ borderColor: "white", color: "white" }}
+            >
+              Xem Hiện Vật
+            </Button>
+          </Link>
+        </Space>
       </div>
 
-      {/* Features / Stats */}
-      <Row gutter={16} style={{ textAlign: "center" }}>
-        <Col span={8}>
-          <Card bordered={false}>
-            <Statistic
-              title="Di tích được số hóa"
-              value={128}
-              prefix={<BankOutlined style={{ color: "#d4a574" }} />}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false}>
-            <Statistic
-              title="Hiện vật trưng bày"
-              value={3500}
-              prefix={<RocketOutlined style={{ color: "#1890ff" }} />}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false}>
-            <Statistic title="Người dùng tham gia" value={950} suffix="+" />
-          </Card>
-        </Col>
-      </Row>
+      {/* Stats Section */}
+      <div style={{ marginBottom: 48 }}>
+        <Row gutter={[24, 24]}>
+          <Col xs={24} sm={8}>
+            <Card style={{ textAlign: "center" }}>
+              <Statistic
+                title="Di Sản Nổi Bật"
+                value={sites.length}
+                prefix={<EyeOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card style={{ textAlign: "center" }}>
+              <Statistic
+                title="Hiện Vật"
+                value={1250}
+                prefix={<HeartOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card style={{ textAlign: "center" }}>
+              <Statistic
+                title="Thành Viên"
+                value={5400}
+                prefix={<TeamOutlined />}
+              />
+            </Card>
+          </Col>
+        </Row>
+      </div>
 
-      {/* Quick Links Section */}
-      <div style={{ marginTop: "40px" }}>
-        <Title level={3}>Danh mục nổi bật</Title>
-        <Row gutter={[16, 16]}>
-          {["Kiến trúc cổ", "Mỹ thuật", "Tư liệu lịch sử", "Gốm sứ"].map(
-            (item, index) => (
-              <Col xs={24} sm={12} md={6} key={index}>
-                <Card hoverable style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "30px", marginBottom: "10px" }}>
-                    🏺
+      {/* Featured Heritage Sites */}
+      <div>
+        <Title level={3} style={{ marginBottom: 24 }}>
+          📍 Di Sản Nổi Bật
+        </Title>
+        <Spin spinning={loading}>
+          <Row gutter={[24, 24]}>
+            {sites.map((site) => (
+              <Col key={site.id} xs={24} sm={12} md={8}>
+                <Card
+                  hoverable
+                  style={{ height: "100%" }}
+                  cover={
+                    <img
+                      alt={site.name}
+                      src={site.image}
+                      style={{ height: 200, objectFit: "cover" }}
+                    />
+                  }
+                >
+                  <Title level={5}>{site.name}</Title>
+                  <Paragraph ellipsis={{ rows: 2 }}>
+                    {site.description}
+                  </Paragraph>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span>⭐ {site.rating || "N/A"}</span>
+                    <Link to={`/heritage-sites/${site.id}`}>
+                      <Button type="link">Chi Tiết →</Button>
+                    </Link>
                   </div>
-                  <div style={{ fontWeight: "bold" }}>{item}</div>
                 </Card>
               </Col>
-            ),
-          )}
-        </Row>
+            ))}
+          </Row>
+        </Spin>
       </div>
     </div>
   );

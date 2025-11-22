@@ -1,76 +1,101 @@
-import React from "react";
-import { Form, Input, Button, Checkbox, message } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  message,
+  Space,
+  Divider,
+  Typography,
+} from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import { login } from "@store/slices/authSlice";
+import styles from "./Auth.module.css";
+
+const { Title, Text } = Typography;
 
 const Login = () => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
 
-  const onFinish = async (values) => {
-    try {
-      const resultAction = await dispatch(login(values));
-      if (login.fulfilled.match(resultAction)) {
+  const onFinish = (values) => {
+    dispatch(login(values))
+      .unwrap()
+      .then(() => {
         message.success("Đăng nhập thành công!");
-      } else {
-        // Lỗi đã được xử lý trong slice hoặc global interceptor,
-        // nhưng hiển thị thêm ở đây nếu cần
-        if (resultAction.payload) message.error(resultAction.payload);
-      }
-    } catch (err) {
-      message.error("Có lỗi xảy ra khi đăng nhập");
-    }
+        navigate("/");
+      })
+      .catch((error) => {
+        message.error(error.message || "Đăng nhập thất bại");
+      });
   };
 
   return (
-    <div>
-      <h2 style={{ textAlign: "center", marginBottom: 24 }}>Đăng Nhập</h2>
-      <Form
-        name="login"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        layout="vertical"
-        size="large"
-      >
+    <Card
+      style={{
+        width: 400,
+        borderRadius: 12,
+        boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+      }}
+      title={
+        <Title level={3} style={{ margin: 0 }}>
+          Đăng Nhập
+        </Title>
+      }
+    >
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name="email"
+          label="Email"
           rules={[
-            { required: true, message: "Vui lòng nhập Email!" },
-            { type: "email", message: "Email không hợp lệ!" },
+            { required: true, message: "Vui lòng nhập email" },
+            { type: "email", message: "Email không hợp lệ" },
           ]}
         >
-          <Input prefix={<UserOutlined />} placeholder="Email" />
+          <Input prefix={<UserOutlined />} placeholder="Email" size="large" />
         </Form.Item>
 
         <Form.Item
           name="password"
-          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+          label="Mật Khẩu"
+          rules={[
+            { required: true, message: "Vui lòng nhập mật khẩu" },
+            { min: 6, message: "Mật khẩu phải ít nhất 6 ký tự" },
+          ]}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="Mật khẩu"
+            size="large"
+          />
         </Form.Item>
 
         <Form.Item>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
-            <Checkbox>Ghi nhớ đăng nhập</Checkbox>
-          </Form.Item>
-          <a style={{ float: "right" }} href="#">
-            Quên mật khẩu?
-          </a>
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block>
-            Đăng nhập
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            block
+            size="large"
+            style={{ marginTop: 8 }}
+          >
+            Đăng Nhập
           </Button>
         </Form.Item>
-
-        <div style={{ textAlign: "center" }}>
-          Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
-        </div>
       </Form>
-    </div>
+
+      <Divider>Hoặc</Divider>
+
+      <Space direction="vertical" style={{ width: "100%" }}>
+        <Text>
+          Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
+        </Text>
+      </Space>
+    </Card>
   );
 };
 

@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const reviewAPI = {
   getAll: (params = {}) => apiClient.get('/reviews', { params }),
   getByType: (type, params = {}) => apiClient.get(`/reviews/type/${type}`, { params }),

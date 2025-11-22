@@ -1,3 +1,5 @@
+import apiClient from './config';
+
 export const userAPI = {
   getAll: (params = {}) => apiClient.get('/users', { params }),
   getById: (id) => apiClient.get(`/users/${id}`),
