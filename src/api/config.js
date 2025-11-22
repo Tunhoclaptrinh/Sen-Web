@@ -23,13 +23,13 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Add timestamp to prevent caching
-    if (config.method === 'get') {
-      config.params = {
-        ...config.params,
-        _t: new Date().getTime(),
-      };
-    }
+    // // Add timestamp to prevent caching
+    // if (config.method === 'get') {
+    //   config.params = {
+    //     ...config.params,
+    //     _t: new Date().getTime(),
+    //   };
+    // }
 
     return config;
   },

@@ -1,26 +1,25 @@
-import { Layout, Menu, Dropdown, Button, Badge, Input, Spin } from "antd";
+import { Layout, Menu, Dropdown, Button, Badge, Input, Drawer } from "antd";
 import {
   BellOutlined,
   UserOutlined,
   LogoutOutlined,
   SearchOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@store/slices/authSlice";
+import { logout } from "../../store/slices/authSlice";
 import { useState } from "react";
 import styles from "./MainLayout.module.css";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Footer } = Layout;
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const [collapsed, setCollapsed] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -30,6 +29,7 @@ const MainLayout = () => {
   const handleSearch = () => {
     if (searchValue.trim()) {
       navigate(`/heritage-sites?q=${encodeURIComponent(searchValue)}`);
+      setMobileMenuOpen(false);
     }
   };
 
@@ -62,6 +62,7 @@ const MainLayout = () => {
     <Layout
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
+      {/* Header */}
       <Header
         className={styles.header}
         style={{
@@ -70,62 +71,106 @@ const MainLayout = () => {
           alignItems: "center",
           padding: "0 24px",
           background: "#fff",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
           position: "sticky",
           top: 0,
           zIndex: 999,
+          height: 70,
         }}
       >
-        <div
-          className={styles.logo}
-          style={{ fontSize: "20px", fontWeight: "bold", color: "#d4a574" }}
-        >
-          🏛️ CultureVault
-        </div>
+        {/* Logo */}
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <div
+            style={{ fontSize: "22px", fontWeight: "bold", color: "#d4a574" }}
+          >
+            🏛️ CultureVault
+          </div>
+        </Link>
 
+        {/* Desktop Menu */}
         <Menu
           mode="horizontal"
           items={navMenuItems}
-          style={{ flex: 1, border: "none", marginLeft: 24 }}
+          style={{
+            flex: 1,
+            border: "none",
+            marginLeft: 40,
+          }}
+          className={styles.desktopMenu}
         />
 
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <Input
-            placeholder="Tìm kiếm di sản..."
-            prefix={<SearchOutlined />}
-            style={{ width: 200, borderRadius: 4 }}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onPressEnter={handleSearch}
-          />
+        {/* Desktop Search */}
+        <Input
+          placeholder="Tìm kiếm..."
+          prefix={<SearchOutlined />}
+          style={{ width: 200, marginRight: 16 }}
+          className={styles.desktopSearch}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onPressEnter={handleSearch}
+        />
 
-          <Badge count={0} offset={[-8, 8]}>
+        {/* Actions */}
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <Badge count={0}>
             <BellOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
           </Badge>
 
           {isAuthenticated ? (
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <Button type="text" icon={<UserOutlined />}>
-                {user?.name || "User"}
-              </Button>
+              <Button type="text">{user?.name}</Button>
             </Dropdown>
           ) : (
             <>
               <Link to="/login">
-                <Button type="primary">Đăng Nhập</Button>
+                <Button type="primary" size="small">
+                  Đăng Nhập
+                </Button>
               </Link>
               <Link to="/register">
-                <Button>Đăng Ký</Button>
+                <Button size="small">Đăng Ký</Button>
               </Link>
             </>
           )}
+
+          {/* Mobile Menu Button */}
+          <Button
+            type="text"
+            icon={<MenuOutlined />}
+            onClick={() => setMobileMenuOpen(true)}
+            className={styles.mobileMenuBtn}
+          />
         </div>
       </Header>
 
+      {/* Mobile Menu */}
+      <Drawer
+        title="Menu"
+        placement="left"
+        onClose={() => setMobileMenuOpen(false)}
+        open={mobileMenuOpen}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <Input
+            placeholder="Tìm kiếm..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onPressEnter={handleSearch}
+          />
+          <Menu
+            mode="vertical"
+            items={navMenuItems}
+            style={{ border: "none" }}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        </div>
+      </Drawer>
+
+      {/* Content */}
       <Layout style={{ flex: 1 }}>
         <Content
           style={{
-            padding: "24px",
+            padding: "40px 24px",
             maxWidth: "1400px",
             margin: "0 auto",
             width: "100%",
@@ -135,15 +180,17 @@ const MainLayout = () => {
         </Content>
       </Layout>
 
+      {/* Footer */}
       <Footer
         style={{
-          textAlign: "center",
-          color: "#8c8c8c",
+          background: "#fafafa",
           borderTop: "1px solid #e8e8e8",
-          marginTop: "auto",
+          padding: "40px 24px",
         }}
       >
-        <p>&copy; 2024 CultureVault. Bảo tồn di sản văn hóa số.</p>
+        <div style={{ textAlign: "center", color: "#8c8c8c" }}>
+          <p>&copy; 2024 CultureVault. Bảo tồn di sản văn hóa số.</p>
+        </div>
       </Footer>
     </Layout>
   );
