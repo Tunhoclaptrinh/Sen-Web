@@ -2,32 +2,30 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ConfigProvider, theme as antdTheme } from "antd";
-import { getMe } from "./Web/src/store/slices/authSlice";
-import MainLayout from "./Web/src/layouts/MainLayout";
-import AdminLayout from "./Web/src/layouts/AdminLayout";
-import AuthLayout from "./Web/src/layouts/AuthLayout";
-import PrivateRoute from "./Web/src/routes/PrivateRoute";
-import AdminRoute from "./Web/src/routes/AdminRoute";
+import { getMe } from "./src/store/slices/authSlice";
+import MainLayout from "./src/layouts/MainLayout";
+import AdminLayout from "./src/layouts/AdminLayout";
+import AuthLayout from "./src/layouts/AuthLayout";
+import PrivateRoute from "./src/routes/PrivateRoute";
+import AdminRoute from "./src/routes/AdminRoute";
 
 // Pages
-import Home from "./Web/src/pages/Home";
-import HeritageListPage from "./Web/src/pages/Heritage/HeritageListPage";
-import HeritageDetailPage from "./Web/src/pages/Heritage/HeritageDetailPage";
-import ArtifactListPage from "./Web/src/pages/Artifact/ArtifactListPage";
-import ArtifactDetailPage from "./Web/src/pages/Artifact/ArtifactDetailPage";
-import Login from "./Web/src/pages/Auth/Login";
-import Register from "./Web/src/pages/Auth/Register";
-import Profile from "./Web/src/pages/Profile/Profile";
-import Collections from "./Web/src/pages/Profile/Collections";
-import NotFound from "./Web/src/pages/NotFound";
-import Profile from "./src/pages/Profile/Profile"; // Cần tạo file này (có thể copy nội dung trang Collections sang sửa lại chút)
-import NotFound from "./src/pages/NotFound"; // Cần tạo file nà
+import Home from "./src/pages/Home/Home";
+import HeritageListPage from "./src/pages/Heritage/HeritageListPage";
+import HeritageDetailPage from "./src/pages/Heritage/HeritageDetailPage";
+import ArtifactListPage from "./src/pages/Artifact/ArtifactListPage";
+import ArtifactDetailPage from "./src/pages/Artifact/ArtifactDetailPage";
+import Login from "./src/pages/Auth/Login";
+import Register from "./src/pages/Auth/Register";
+import Profile from "./src/pages/Profile/Profile";
+import Collections from "./src/pages/Profile/Collections";
+import NotFound from "./src/pages/NotFound/NotFound";
 
 // Admin Pages
-import Dashboard from "./Web/src/pages/Admin/Dashboard";
-import HeritageManagement from "./Web/src/pages/Admin/HeritageManagement";
-import ArtifactManagement from "./Web/src/pages/Admin/ArtifactManagement";
-import UserManagement from "./Web/src/pages/Admin/UserManagement";
+import Dashboard from "./src/pages/Admin/Dashboard";
+import HeritageManagement from "./src/pages/Admin/HeritageManagement";
+import ArtifactManagement from "./src/pages/Admin/ArtifactManagement";
+import UserManagement from "./src/pages/Admin/UserManagement";
 
 function App() {
   const dispatch = useDispatch();

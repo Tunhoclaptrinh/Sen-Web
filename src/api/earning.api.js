@@ -1,3 +1,6 @@
+
+import apiClient from './config';
+
 export const learningAPI = {
   getAll: (params = {}) => apiClient.get('/learning', { params }),
   getPath: () => apiClient.get('/learning/path'),
