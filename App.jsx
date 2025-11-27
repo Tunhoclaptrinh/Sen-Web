@@ -16,7 +16,6 @@ import HeritageDetailPage from "./src/pages/Heritage/HeritageDetailPage";
 import ArtifactListPage from "./src/pages/Artifact/ArtifactListPage";
 import ArtifactDetailPage from "./src/pages/Artifact/ArtifactDetailPage";
 import Login from "./src/pages/Auth/Login";
-import Register from "./src/pages/Auth/Register";
 import Profile from "./src/pages/Profile/Profile";
 import Collections from "./src/pages/Profile/Collections";
 import NotFound from "./src/pages/NotFound/NotFound";
@@ -51,7 +50,7 @@ function App() {
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* <Route path="/login" element={<RegisLoginter />} /> */}
         </Route>
 
         {/* Public Routes */}

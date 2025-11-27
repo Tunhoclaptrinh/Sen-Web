@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/slices/authSlice";
 import { useState } from "react";
 import styles from "./MainLayout.module.css";
+import logo from "@/assets/images/logo.png";
 
 const { Header, Content, Footer } = Layout;
 
@@ -81,10 +82,20 @@ const MainLayout = () => {
         {/* Logo */}
         <Link to="/" style={{ textDecoration: "none" }}>
           <div
-            style={{ fontSize: "22px", fontWeight: "bold", color: "#d4a574" }}
-          >
-            🏛️ CultureVault
-          </div>
+            style={{
+              color: "#d4a574",
+              backgroundImage: `url(${logo})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 10,
+              width: 90,
+              height: 36,
+            }}
+          ></div>
         </Link>
 
         {/* Desktop Menu */}
@@ -127,7 +138,7 @@ const MainLayout = () => {
                   Đăng Nhập
                 </Button>
               </Link>
-              <Link to="/register">
+              <Link to="/login">
                 <Button size="small">Đăng Ký</Button>
               </Link>
             </>
