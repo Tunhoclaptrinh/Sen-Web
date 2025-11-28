@@ -9,6 +9,7 @@ import lotus_3 from "@/assets/images/background/lotus-3.png";
 import smoke_left from "@/assets/images/background/smoke-left.png";
 import smoke_right from "@/assets/images/background/smoke-right.png";
 import leaf from "@/assets/images/background/leaf.png";
+import bird from "@/assets/images/background/bird.png";
 
 interface BackgroundProps {
   children?: React.ReactNode;
@@ -35,6 +36,13 @@ const Background: React.FC<BackgroundProps> = ({
         src={useFullBackground ? background_full : background_nothing}
         alt="background"
       />
+
+      {/* Birds */}
+      {showSmoke && (
+        <>
+          <img className="bg-layer bird " src={`${bird}`} />
+        </>
+      )}
 
       {/* Bronze Drum */}
       {showDrum && (

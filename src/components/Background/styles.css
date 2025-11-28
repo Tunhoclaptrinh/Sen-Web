@@ -18,6 +18,17 @@
   object-fit: cover;
 }
 
+/* Birds */
+
+.bird {
+  left: 10px;
+  top: 0%;
+  width: 94%;
+  margin-top: -36px;
+  animation: smokeMove 4s ease-in-out infinite;
+  opacity: 0.8;
+}
+
 /* Drum (center) */
 .drum {
   top: 60%;
