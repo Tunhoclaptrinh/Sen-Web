@@ -12,12 +12,6 @@ import {
   Empty,
   Tag,
 } from "antd";
-import {
-  HeartOutlined,
-  EyeOutlined,
-  TeamOutlined,
-  ArrowRightOutlined,
-} from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,6 +19,8 @@ import { fetchHeritageSites } from "../../store/slices/heritageSlice";
 import { fetchArtifacts } from "../../store/slices/artifactSlice";
 import { favoriteAPI } from "../../api";
 import styles from "./Home.module.css";
+import logo from "@/assets/images/logo2.png";
+import Background from "@/components/Background";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -48,128 +44,127 @@ const Home = () => {
   const toggleFavorite = async (type, id) => {
     try {
       const key = `${type}-${id}`;
-      if (favorites[key]) {
+      const isFav = favorites[key];
+
+      if (isFav) {
         await favoriteAPI.remove(type, id);
-        setFavorites({ ...favorites, [key]: false });
         message.success("Đã xóa khỏi yêu thích");
       } else {
         await favoriteAPI.add(type, id);
-        setFavorites({ ...favorites, [key]: true });
         message.success("Đã thêm vào yêu thích");
       }
+
+      setFavorites({ ...favorites, [key]: !isFav });
     } catch (error) {
-      console.error("Error:", error);
+      console.log(error);
     }
   };
 
   return (
     <div className={styles.home}>
-      {/* Hero Banner */}
-      <div className={styles.heroBanner}>
-        <div className={styles.heroContent}>
-          <Title
-            level={1}
-            style={{ color: "white", marginBottom: 16, fontSize: 48 }}
-          >
-            🏛️ CultureVault
-          </Title>
-          <Paragraph
-            style={{
-              color: "rgba(255,255,255,0.95)",
-              fontSize: 18,
-              marginBottom: 32,
-              maxWidth: 600,
-            }}
-          >
-            Khám phá, bảo tồn và chia sẻ di sản văn hóa số của Việt Nam
-          </Paragraph>
-          <Space size="large">
-            <Link to="/heritage-sites">
-              <Button
-                type="primary"
-                size="large"
-                style={{
-                  background: "white",
-                  color: "#d4a574",
-                  border: "none",
-                  fontWeight: "bold",
-                }}
-              >
-                Khám Phá Di Sản
-              </Button>
-            </Link>
-            <Link to="/artifacts">
-              <Button
-                size="large"
-                style={{
-                  borderColor: "white",
-                  color: "white",
-                  fontWeight: "bold",
-                }}
-              >
-                Xem Hiện Vật
-              </Button>
-            </Link>
-          </Space>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div
-        style={{
-          marginBottom: 64,
-          marginTop: -40,
-          position: "relative",
-          zIndex: 10,
+      <Background
+        wrapperStyle={{
+          borderRadius: 16,
+          paddingBottom: 140, // tạo không gian cho Stats lọt vào
+          marginBottom: 40,
         }}
       >
-        <Row gutter={[24, 24]}>
-          <Col xs={24} sm={8}>
-            <Card
-              style={{
-                textAlign: "center",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              }}
-            >
-              <Statistic
-                title="Di Sản"
-                value={sites?.length || 0}
-                valueStyle={{ color: "#d4a574", fontSize: 32 }}
+        {/* ---------------- HERO ---------------- */}
+        <div className={styles.heroBanner}>
+          <div className={styles.heroContent}>
+            <div style={{ textAlign: "center", marginBottom: 28 }}>
+              <img
+                src={logo}
+                alt="Logo"
+                style={{
+                  width: 360,
+                  height: 180,
+                  objectFit: "contain",
+                  filter: "drop-shadow(0px 4px 6px rgba(0,0,0,0.3))",
+                }}
               />
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card
-              style={{
-                textAlign: "center",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              }}
-            >
-              <Statistic
-                title="Hiện Vật"
-                value={artifacts?.length || 0}
-                valueStyle={{ color: "#d4a574", fontSize: 32 }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card
-              style={{
-                textAlign: "center",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              }}
-            >
-              <Statistic
-                title="Thành Viên"
-                value={1250}
-                valueStyle={{ color: "#d4a574", fontSize: 32 }}
-              />
-            </Card>
-          </Col>
-        </Row>
-      </div>
 
-      {/* Featured Content */}
+              <Paragraph
+                style={{
+                  color: "#d4a574",
+                  fontWeight: 500,
+                  marginBottom: 0,
+                  marginTop: 12,
+                  fontSize: 24,
+                }}
+              >
+                Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ
+              </Paragraph>
+            </div>
+
+            <Space size="large">
+              <Link to="/heritage-sites">
+                <Button
+                  type="primary"
+                  size="large"
+                  style={{
+                    background: "white",
+                    color: "#d4a574",
+                    border: "none",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Khám Phá Di Sản
+                </Button>
+              </Link>
+
+              <Link to="/artifacts">
+                <Button
+                  size="large"
+                  style={{
+                    borderColor: "white",
+                    color: "#d4a574",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Xem Hiện Vật
+                </Button>
+              </Link>
+            </Space>
+          </div>
+        </div>
+
+        {/* ---------------- STATS ---------------- */}
+        <div
+          style={{
+            marginTop: -60, // kéo lên chui vào background
+            marginBottom: 60,
+            width: "100%",
+            borderRadius: 16,
+            padding: "24px 16px",
+            background: "rgba(255,255,255,0.08)",
+            backdropFilter: "blur(6px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            position: "relative",
+            zIndex: 20,
+          }}
+        >
+          <Row gutter={[24, 24]}>
+            {[
+              { label: "Di Sản", value: sites?.length || 0 },
+              { label: "Hiện Vật", value: artifacts?.length || 0 },
+              { label: "Thành Viên", value: 1250 },
+            ].map((item, index) => (
+              <Col key={index} xs={24} sm={8}>
+                <div style={{ textAlign: "center" }}>
+                  <Statistic
+                    title={item.label}
+                    value={item.value}
+                    valueStyle={{ color: "#d4a574", fontSize: 32 }}
+                  />
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      </Background>
+
+      {/* ---------------- FEATURED CONTENT ---------------- */}
       <div style={{ marginBottom: 80 }}>
         <Title level={2} style={{ fontSize: 32, marginBottom: 8 }}>
           📍 Di Sản & Hiện Vật Nổi Bật
@@ -184,136 +179,142 @@ const Home = () => {
               label: "🏛️ Di Sản",
               children: (
                 <Spin spinning={sitesLoading}>
-                  {!sites || sites.length === 0 ? (
+                  {(!sites || sites.length === 0) && (
                     <Empty description="Chưa có dữ liệu" />
-                  ) : (
-                    <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-                      {sites.map((site) => (
-                        <Col key={site.id} xs={24} sm={12} md={8}>
-                          <Card
-                            hoverable
-                            style={{ height: "100%" }}
-                            cover={
-                              <div
-                                style={{
-                                  height: 200,
-                                  overflow: "hidden",
-                                  background: "#f0f0f0",
-                                }}
-                              >
-                                <img
-                                  alt={site.name}
-                                  src={
-                                    site.image ||
-                                    "https://via.placeholder.com/300x200"
-                                  }
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              </div>
-                            }
-                          >
-                            <Title level={4}>{site.name}</Title>
-                            <Tag color="gold">{site.region}</Tag>
-                            <Paragraph
-                              ellipsis={{ rows: 2 }}
-                              style={{ marginTop: 12 }}
-                            >
-                              {site.description}
-                            </Paragraph>
+                  )}
+
+                  <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+                    {sites?.map((site) => (
+                      <Col key={site.id} xs={24} sm={12} md={8}>
+                        <Card
+                          hoverable
+                          style={{ height: "100%" }}
+                          cover={
                             <div
                               style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginTop: 12,
+                                height: 200,
+                                overflow: "hidden",
+                                background: "#f0f0f0",
                               }}
                             >
-                              <Text strong>
-                                ⭐ {(site.rating || 0).toFixed(1)}
-                              </Text>
-                              <Link to={`/heritage-sites/${site.id}`}>
-                                <Button type="link" size="small">
-                                  Chi Tiết →
-                                </Button>
-                              </Link>
+                              <img
+                                src={
+                                  site.image ||
+                                  "https://via.placeholder.com/300x200"
+                                }
+                                alt={site.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
                             </div>
-                          </Card>
-                        </Col>
-                      ))}
-                    </Row>
-                  )}
+                          }
+                        >
+                          <Title level={4}>{site.name}</Title>
+                          <Tag color="gold">{site.region}</Tag>
+
+                          <Paragraph
+                            ellipsis={{ rows: 2 }}
+                            style={{ marginTop: 12 }}
+                          >
+                            {site.description}
+                          </Paragraph>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginTop: 12,
+                            }}
+                          >
+                            <Text strong>
+                              ⭐ {(site.rating || 0).toFixed(1)}
+                            </Text>
+
+                            <Link to={`/heritage-sites/${site.id}`}>
+                              <Button type="link" size="small">
+                                Chi Tiết →
+                              </Button>
+                            </Link>
+                          </div>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
                 </Spin>
               ),
             },
+
             {
               key: "artifacts",
               label: "🎨 Hiện Vật",
               children: (
                 <Spin spinning={artifactsLoading}>
-                  {!artifacts || artifacts.length === 0 ? (
+                  {(!artifacts || artifacts.length === 0) && (
                     <Empty description="Chưa có dữ liệu" />
-                  ) : (
-                    <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-                      {artifacts.map((artifact) => (
-                        <Col key={artifact.id} xs={24} sm={12} md={8}>
-                          <Card
-                            hoverable
-                            style={{ height: "100%" }}
-                            cover={
-                              <div
-                                style={{
-                                  height: 200,
-                                  overflow: "hidden",
-                                  background: "#f0f0f0",
-                                }}
-                              >
-                                <img
-                                  alt={artifact.name}
-                                  src={
-                                    artifact.image ||
-                                    "https://via.placeholder.com/300x200"
-                                  }
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              </div>
-                            }
-                          >
-                            <Title level={4}>{artifact.name}</Title>
-                            <Tag color="cyan">{artifact.artifact_type}</Tag>
-                            <Paragraph
-                              ellipsis={{ rows: 2 }}
-                              style={{ marginTop: 12 }}
-                            >
-                              {artifact.description}
-                            </Paragraph>
+                  )}
+
+                  <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+                    {artifacts?.map((artifact) => (
+                      <Col key={artifact.id} xs={24} sm={12} md={8}>
+                        <Card
+                          hoverable
+                          style={{ height: "100%" }}
+                          cover={
                             <div
                               style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginTop: 12,
+                                height: 200,
+                                overflow: "hidden",
+                                background: "#f0f0f0",
                               }}
                             >
-                              <Text strong>
-                                ⭐ {(artifact.rating || 0).toFixed(1)}
-                              </Text>
-                              <Link to={`/artifacts/${artifact.id}`}>
-                                <Button type="link" size="small">
-                                  Chi Tiết →
-                                </Button>
-                              </Link>
+                              <img
+                                src={
+                                  artifact.image ||
+                                  "https://via.placeholder.com/300x200"
+                                }
+                                alt={artifact.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
                             </div>
-                          </Card>
-                        </Col>
-                      ))}
-                    </Row>
-                  )}
+                          }
+                        >
+                          <Title level={4}>{artifact.name}</Title>
+                          <Tag color="cyan">{artifact.artifact_type}</Tag>
+
+                          <Paragraph
+                            ellipsis={{ rows: 2 }}
+                            style={{ marginTop: 12 }}
+                          >
+                            {artifact.description}
+                          </Paragraph>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginTop: 12,
+                            }}
+                          >
+                            <Text strong>
+                              ⭐ {(artifact.rating || 0).toFixed(1)}
+                            </Text>
+                            <Link to={`/artifacts/${artifact.id}`}>
+                              <Button type="link" size="small">
+                                Chi Tiết →
+                              </Button>
+                            </Link>
+                          </div>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
                 </Spin>
               ),
             },

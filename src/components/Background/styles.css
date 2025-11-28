@@ -68,8 +68,22 @@
   pointer-events: none;
   user-select: none;
   margin-bottom: -30px;
+  margin: -8px 0;
   /* opacity: 0.9; */
   z-index: 3; /* dưới lotus (4), trên background (2) */
+  animation: leafFloat 4s ease-in-out infinite;
+}
+
+@keyframes leafFloat {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  } /* xoay nhẹ */
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Lotus positions */
@@ -95,7 +109,7 @@
 
 /* Smoke */
 .smoke-left {
-  left: 0;
+  left: -8px;
   top: 0%;
   width: 90%;
   animation: smokeMove 2s linear infinite;
