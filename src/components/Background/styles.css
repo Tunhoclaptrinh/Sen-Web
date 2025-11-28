@@ -63,12 +63,13 @@
 .leaf {
   position: absolute;
   bottom: 0;
+  right: 0;
   left: 0;
   width: 100%;
   pointer-events: none;
   user-select: none;
-  margin-bottom: -30px;
-  margin: -8px 0;
+  margin-bottom: -8px;
+
   /* opacity: 0.9; */
   z-index: 3; /* dưới lotus (4), trên background (2) */
   animation: leafFloat 4s ease-in-out infinite;
@@ -76,12 +77,15 @@
 
 @keyframes leafFloat {
   0% {
+    transform: translateY(0) rotate(0deg);
     opacity: 1;
   }
   50% {
+    transform: translateY(-8px) translateX(4px) rotate(-0.1deg);
     opacity: 0.8;
-  } /* xoay nhẹ */
+  }
   100% {
+    transform: translateY(0) rotate(0deg);
     opacity: 1;
   }
 }

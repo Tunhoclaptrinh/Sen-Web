@@ -2,7 +2,8 @@ import React, { CSSProperties } from "react";
 import "./styles.css";
 
 import background_full from "@/assets/images/background/background-full.png";
-import background_nothing from "@/assets/images/background/background-nothing.png";
+// import background_nothing from "@/assets/images/background/background-nothing.png";
+import background_nothing from "@/assets/images/background/background-red.png";
 import bronze_drum from "@/assets/images/background/bronze-drum.png";
 import lotus_1 from "@/assets/images/background/lotus-1.png";
 import lotus_2 from "@/assets/images/background/lotus-2.png";
