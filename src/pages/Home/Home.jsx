@@ -25,8 +25,6 @@ import { fetchHeritageSites } from "../../store/slices/heritageSlice";
 import { fetchArtifacts } from "../../store/slices/artifactSlice";
 import { favoriteAPI } from "../../api";
 import styles from "./Home.module.css";
-import bg from "@/assets/images/background.png";
-import logo from "@/assets/images/logo2.png";
 
 const { Title, Paragraph, Text } = Typography;
 
