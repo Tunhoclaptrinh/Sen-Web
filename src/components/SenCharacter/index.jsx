@@ -3,6 +3,13 @@ import { Container, Sprite, useTick } from "@pixi/react";
 
 // Đường dẫn base tới thư mục ảnh
 const ASSET_PATH = "/src/assets/images/character";
+const getCharacterAsset = (name) => {
+  // Đường dẫn tương đối từ file component (index.jsx) đến thư mục ảnh
+  // Component đang ở: src/components/SenCharacter/
+  // Ảnh ở: src/assets/images/character/
+  // => Cần lùi ra 2 cấp (../../) để về src, rồi vào assets
+  return new URL(`../../assets/images/character/${name}`, import.meta.url).href;
+};
 
 const SenCharacter = ({
   x,
@@ -131,7 +138,8 @@ const SenCharacter = ({
     if (!visible) return null;
     return (
       <Sprite
-        image={`${ASSET_PATH}/${name}`}
+        // image={`${ASSET_PATH}/${name}`}
+        image={getCharacterAsset(name)}
         anchor={0.5}
         x={xOffset}
         y={yOffset}
