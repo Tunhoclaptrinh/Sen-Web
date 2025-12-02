@@ -51,6 +51,11 @@ const CharacterShowcase = () => {
     setAccessories((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const handleCharacterDrag = (newPos) => {
+    setPosition(newPos);
+    // State 'position' ở đây thay đổi -> Slider sẽ tự động cập nhật theo
+  };
+
   // Render nhân vật với đầy đủ props (để tái sử dụng trong logic hiển thị nền)
   const renderCharacter = () => (
     <SenCharacter
@@ -65,6 +70,8 @@ const CharacterShowcase = () => {
       // Props biểu cảm & hành động
       mouthState={mouthState}
       isTalking={isTalking}
+      draggable={true}
+      onPositionChange={handleCharacterDrag}
     />
   );
 
