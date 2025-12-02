@@ -26,6 +26,8 @@ import HeritageManagement from "./src/pages/Admin/HeritageManagement";
 import ArtifactManagement from "./src/pages/Admin/ArtifactManagement";
 import UserManagement from "./src/pages/Admin/UserManagement";
 
+import CharacterShowcase from "./src/pages/CharacterShowcase";
+
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, token } = useSelector((state) => state.auth);
@@ -60,6 +62,8 @@ function App() {
           <Route path="/heritage-sites/:id" element={<HeritageDetailPage />} />
           <Route path="/artifacts" element={<ArtifactListPage />} />
           <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
+
+          <Route path="/character-showcase" element={<CharacterShowcase />} />
         </Route>
 
         {/* Protected Routes */}
