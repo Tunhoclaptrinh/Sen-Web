@@ -14,6 +14,8 @@ const SenCharacter = ({
   showCoat = true,
   mouthState = "smile", // 'smile', 'sad', 'angry', 'open', 'close', 'half'
   isTalking = false,
+  draggable = false, // Tính năng kéo thả
+  onPositionChange, // Callback khi vị trí thay đổi
 }) => {
   // State cho hiệu ứng thở (breathing)
   const [breathingScale, setBreathingScale] = useState(1);
@@ -27,6 +29,18 @@ const SenCharacter = ({
 
   // State cho việc nói chuyện
   const [talkFrame, setTalkFrame] = useState(0);
+
+  // State cho việc kéo thả
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x, y });
+
+  // Cập nhật position khi props x, y thay đổi từ bên ngoài
+  useEffect(() => {
+    if (!isDragging) {
+      setPosition({ x, y });
+    }
+  }, [x, y, isDragging]);
 
   // useTick chạy mỗi frame (tạo chuyển động mượt mà)
   useTick((delta) => {
@@ -74,6 +88,37 @@ const SenCharacter = ({
     return `mouth_${mouthState}.png`;
   }, [isTalking, talkFrame, mouthState]);
 
+  // Xử lý sự kiện kéo thả
+  const handlePointerDown = (event) => {
+    if (!draggable) return;
+
+    setIsDragging(true);
+    const globalPos = event.data.global;
+    setDragOffset({
+      x: globalPos.x - position.x,
+      y: globalPos.y - position.y,
+    });
+  };
+
+  const handlePointerMove = (event) => {
+    if (!draggable || !isDragging) return;
+
+    const globalPos = event.data.global;
+    const newX = globalPos.x - dragOffset.x;
+    const newY = globalPos.y - dragOffset.y;
+
+    setPosition({ x: newX, y: newY });
+
+    if (onPositionChange) {
+      onPositionChange({ x: newX, y: newY });
+    }
+  };
+
+  const handlePointerUp = () => {
+    if (!draggable) return;
+    setIsDragging(false);
+  };
+
   // Hàm helper để load ảnh nhanh gọn
   const Part = ({
     name,
@@ -98,10 +143,16 @@ const SenCharacter = ({
 
   return (
     <Container
-      x={x}
-      y={y + breathingY} // Áp dụng chuyển động nhún
+      x={position.x}
+      y={position.y + breathingY} // Áp dụng chuyển động nhún
       scale={{ x: scale, y: scale * breathingScale }} // Áp dụng chuyển động thở
       sortableChildren={true} // Cho phép sắp xếp lớp bằng zIndex
+      interactive={draggable}
+      pointerdown={handlePointerDown}
+      pointermove={handlePointerMove}
+      pointerup={handlePointerUp}
+      pointerupoutside={handlePointerUp}
+      cursor={draggable ? (isDragging ? "grabbing" : "grab") : "default"}
     >
       {/* --- CƠ THỂ --- */}
       <Part name="shoes.png" yOffset={1442} zIndex={2} />
