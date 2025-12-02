@@ -17,7 +17,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Get token from localStorage
-    const token = localStorage.getItem(import.meta.env.VITE_TOKEN_KEY || 'culturevault_token');
+    const token = localStorage.getItem(import.meta.env.VITE_TOKEN_KEY || 'sen_token');
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -55,8 +55,8 @@ apiClient.interceptors.response.use(
           break;
         case 401:
           message.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
-          localStorage.removeItem(import.meta.env.VITE_TOKEN_KEY || 'culturevault_token');
-          localStorage.removeItem(import.meta.env.VITE_USER_KEY || 'culturevault_user');
+          localStorage.removeItem(import.meta.env.VITE_TOKEN_KEY || 'sen_token');
+          localStorage.removeItem(import.meta.env.VITE_USER_KEY || 'sen_user');
           window.location.href = '/login';
           break;
         case 403:

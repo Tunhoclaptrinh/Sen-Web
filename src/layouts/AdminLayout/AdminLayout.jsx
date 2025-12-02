@@ -118,7 +118,7 @@ const AdminLayout = () => {
         </Content>
 
         <Footer style={{ textAlign: "center", color: "#8c8c8c" }}>
-          CultureVault Admin &copy; 2024
+          Sen Admin &copy; 2024
         </Footer>
       </Layout>
     </Layout>

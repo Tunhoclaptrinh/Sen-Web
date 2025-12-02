@@ -1,7 +1,7 @@
 {
-  "name": "culturevault-web",
+  "name": "sen-web",
   "version": "1.0.0",
-  "description": "CultureVault Web Application - Heritage Management System",
+  "description": "SEN Web Application - Heritage Management System",
   "private": true,
   "type": "module",
   "scripts": {

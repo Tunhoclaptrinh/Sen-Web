@@ -200,7 +200,10 @@ const MainLayout = () => {
         }}
       >
         <div style={{ textAlign: "center", color: "#8c8c8c" }}>
-          <p>&copy; 2024 CultureVault. Bảo tồn di sản văn hóa số.</p>
+          <p>
+            &copy; 2024 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công
+            nghệ.
+          </p>
         </div>
       </Footer>
     </Layout>

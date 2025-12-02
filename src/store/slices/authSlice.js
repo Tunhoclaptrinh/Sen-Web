@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from '@api';
 
-const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'culturevault_token';
-const USER_KEY = import.meta.env.VITE_USER_KEY || 'culturevault_user';
+const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'sen_token';
+const USER_KEY = import.meta.env.VITE_USER_KEY || 'sen_user';
 
 // Get initial state from localStorage
 const token = localStorage.getItem(TOKEN_KEY);

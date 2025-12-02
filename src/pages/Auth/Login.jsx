@@ -142,7 +142,7 @@ const AuthPage = () => {
         }),
       ).unwrap();
 
-      message.success("✅ Đăng ký thành công! Chào mừng bạn đến CultureVault");
+      message.success("✅ Đăng ký thành công! Chào mừng bạn đến Sen");
 
       // tự động login sau khi register xong
       await dispatch(
