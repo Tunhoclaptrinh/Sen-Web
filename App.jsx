@@ -28,6 +28,9 @@ import UserManagement from "./src/pages/Admin/UserManagement";
 
 import CharacterShowcase from "./src/pages/CharacterShowcase";
 
+import { GlobalCharacterProvider } from "@/contexts/GlobalCharacterContext"; // Import Context mới
+import GlobalCharacterOverlay from "@/components/GlobalCharacterOverlay"; // Import Overlay mới
+
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, token } = useSelector((state) => state.auth);
@@ -48,49 +51,55 @@ function App() {
             : antdTheme.defaultAlgorithm,
       }}
     >
-      <Routes>
-        {/* Auth Routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          {/* <Route path="/login" element={<RegisLoginter />} /> */}
-        </Route>
+      <GlobalCharacterProvider>
+        <GlobalCharacterOverlay />
+        <Routes>
+          {/* Auth Routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            {/* <Route path="/login" element={<RegisLoginter />} /> */}
+          </Route>
 
-        {/* Public Routes */}
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/heritage-sites" element={<HeritageListPage />} />
-          <Route path="/heritage-sites/:id" element={<HeritageDetailPage />} />
-          <Route path="/artifacts" element={<ArtifactListPage />} />
-          <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
-
-          <Route path="/character-showcase" element={<CharacterShowcase />} />
-        </Route>
-
-        {/* Protected Routes */}
-        <Route element={<PrivateRoute />}>
+          {/* Public Routes */}
           <Route element={<MainLayout />}>
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/collections" element={<Collections />} />
-          </Route>
-        </Route>
-
-        {/* Admin Routes */}
-        <Route element={<AdminRoute />}>
-          <Route element={<AdminLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/heritage-sites" element={<HeritageListPage />} />
             <Route
-              path="/admin"
-              element={<Navigate to="/admin/dashboard" replace />}
+              path="/heritage-sites/:id"
+              element={<HeritageDetailPage />}
             />
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/heritage" element={<HeritageManagement />} />
-            <Route path="/admin/artifacts" element={<ArtifactManagement />} />
-            <Route path="/admin/users" element={<UserManagement />} />
-          </Route>
-        </Route>
+            <Route path="/artifacts" element={<ArtifactListPage />} />
+            <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
 
-        {/* 404 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+            <Route path="/character-showcase" element={<CharacterShowcase />} />
+          </Route>
+
+          {/* Protected Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/collections" element={<Collections />} />
+            </Route>
+          </Route>
+
+          {/* Admin Routes */}
+          <Route element={<AdminRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route
+                path="/admin"
+                element={<Navigate to="/admin/dashboard" replace />}
+              />
+              <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/heritage" element={<HeritageManagement />} />
+              <Route path="/admin/artifacts" element={<ArtifactManagement />} />
+              <Route path="/admin/users" element={<UserManagement />} />
+            </Route>
+          </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </GlobalCharacterProvider>
     </ConfigProvider>
   );
 }

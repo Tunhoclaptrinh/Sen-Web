@@ -21,13 +21,28 @@ import SenCharacter from "@/components/SenCharacter";
 // Giả sử Background nằm ở đây, nếu đường dẫn khác bạn hãy sửa lại
 import Background from "@/components/Background";
 
+import { useEffect } from "react";
+import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
+
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 const CharacterShowcase = () => {
+  const { setIsVisible } = useGlobalCharacter();
+
+  useEffect(() => {
+    // 1. Khi vào trang Login -> Ẩn nhân vật
+    setIsVisible(false);
+
+    // 2. Khi rời khỏi trang Login (unmount) -> Hiện lại nhân vật
+    return () => {
+      setIsVisible(true);
+    };
+  }, [setIsVisible]);
+
   // --- STATE VỊ TRÍ & SCALE ---
-  const [position, setPosition] = useState({ x: 400, y: 400 });
-  const [scale, setScale] = useState(0.8);
+  const [position, setPosition] = useState({ x: 460, y: 400 });
+  const [scale, setScale] = useState(0.25);
   const [showBg, setShowBg] = useState(true);
 
   // --- STATE NGOẠI HÌNH (ACCESSORIES) ---
@@ -172,7 +187,7 @@ const CharacterShowcase = () => {
             <div style={{ marginBottom: 10 }}>
               <Text type="secondary">Độ lớn (Scale)</Text>
               <Slider
-                min={0.3}
+                min={0.01}
                 max={1.5}
                 step={0.05}
                 value={scale}

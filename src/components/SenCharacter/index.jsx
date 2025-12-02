@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Sprite, useTick } from "@pixi/react";
-
-// Đường dẫn base tới thư mục ảnh
-const ASSET_PATH = "/src/assets/images/character";
 const getCharacterAsset = (name) => {
   // Đường dẫn tương đối từ file component (index.jsx) đến thư mục ảnh
   // Component đang ở: src/components/SenCharacter/
@@ -23,6 +20,7 @@ const SenCharacter = ({
   isTalking = false,
   draggable = false, // Tính năng kéo thả
   onPositionChange, // Callback khi vị trí thay đổi
+  onClick,
 }) => {
   // State cho hiệu ứng thở (breathing)
   const [breathingScale, setBreathingScale] = useState(1);
@@ -159,8 +157,12 @@ const SenCharacter = ({
       pointerdown={handlePointerDown}
       pointermove={handlePointerMove}
       pointerup={handlePointerUp}
+      pivot={{ x: 0, y: 380 }}
       pointerupoutside={handlePointerUp}
       cursor={draggable ? (isDragging ? "grabbing" : "grab") : "default"}
+      onclick={() => {
+        if (onClick) return onClick;
+      }}
     >
       {/* --- CƠ THỂ --- */}
       <Part name="shoes.png" yOffset={1442} zIndex={2} />
