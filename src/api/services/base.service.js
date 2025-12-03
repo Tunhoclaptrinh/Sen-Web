@@ -17,12 +17,9 @@ class BaseService {
    * @returns {Promise} Response with data and pagination
    */
   async getAll(params = {}) {
-    try {
-      const response = await apiClient.get(this.endpoint, { params });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+
+    const response = await apiClient.get(this.endpoint, { params });
+    return response;
   }
 
   /**
@@ -32,12 +29,10 @@ class BaseService {
    * @returns {Promise} Response with single item
    */
   async getById(id, params = {}) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/${id}`, { params });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+
+    const response = await apiClient.get(`${this.endpoint}/${id}`, { params });
+    return response;
+
   }
 
   /**
@@ -46,12 +41,8 @@ class BaseService {
    * @returns {Promise} Response with created item
    */
   async create(data) {
-    try {
-      const response = await apiClient.post(this.endpoint, data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(this.endpoint, data);
+    return response;
   }
 
   /**
@@ -61,12 +52,8 @@ class BaseService {
    * @returns {Promise} Response with updated item
    */
   async update(id, data) {
-    try {
-      const response = await apiClient.put(`${this.endpoint}/${id}`, data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.put(`${this.endpoint}/${id}`, data);
+    return response;
   }
 
   /**
@@ -75,12 +62,8 @@ class BaseService {
    * @returns {Promise} Response
    */
   async delete(id) {
-    try {
-      const response = await apiClient.delete(`${this.endpoint}/${id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.delete(`${this.endpoint}/${id}`);
+    return response;
   }
 
   /**
@@ -90,14 +73,10 @@ class BaseService {
    * @returns {Promise} Response with search results
    */
   async search(query, params = {}) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/search`, {
-        params: { q: query, ...params },
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(`${this.endpoint}/search`, {
+      params: { q: query, ...params },
+    });
+    return response;
   }
 
   /**
@@ -107,12 +86,9 @@ class BaseService {
    * @returns {Promise} Response with updated item
    */
   async patch(id, data) {
-    try {
-      const response = await apiClient.patch(`${this.endpoint}/${id}`, data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+
+    const response = await apiClient.patch(`${this.endpoint}/${id}`, data);
+    return response;
   }
 }
 

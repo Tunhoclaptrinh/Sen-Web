@@ -18,14 +18,10 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async addArtifact(collectionId, artifactId) {
-    try {
-      const response = await apiClient.post(
-        `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(
+      `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
+    );
+    return response;
   }
 
   /**
@@ -35,14 +31,10 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async removeArtifact(collectionId, artifactId) {
-    try {
-      const response = await apiClient.delete(
-        `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.delete(
+      `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
+    );
+    return response;
   }
 
   /**
@@ -52,15 +44,11 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response with artifacts
    */
   async getArtifacts(collectionId, params = {}) {
-    try {
-      const response = await apiClient.get(
-        `${this.endpoint}/${collectionId}/artifacts`,
-        { params }
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(
+      `${this.endpoint}/${collectionId}/artifacts`,
+      { params }
+    );
+    return response;
   }
 
   /**
@@ -69,14 +57,10 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async togglePublic(collectionId) {
-    try {
-      const response = await apiClient.patch(
-        `${this.endpoint}/${collectionId}/toggle-public`
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.patch(
+      `${this.endpoint}/${collectionId}/toggle-public`
+    );
+    return response;
   }
 
   /**
@@ -95,15 +79,11 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async share(collectionId, data) {
-    try {
-      const response = await apiClient.post(
-        `${this.endpoint}/${collectionId}/share`,
-        data
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(
+      `${this.endpoint}/${collectionId}/share`,
+      data
+    );
+    return response;
   }
 }
 

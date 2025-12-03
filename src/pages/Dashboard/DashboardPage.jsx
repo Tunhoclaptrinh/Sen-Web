@@ -13,8 +13,8 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import heritageService from '../../services/heritage.service';
-import artifactService from '../../services/artifact.service';
+import heritageService from '../../api/services/heritage.service';
+import artifactService from '../../api/services/artifact.service';
 
 const { Title, Text, Paragraph } = Typography;
 

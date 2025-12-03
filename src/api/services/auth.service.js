@@ -1,45 +1,37 @@
 // ============================================
 // src/services/auth.service.js - Authentication Service
 // ============================================
-import apiClient from '../api/config';
+import apiClient from '../config';
 
 class AuthService {
   /**
    * Login user
    */
   async login(credentials) {
-    try {
-      const response = await apiClient.post('/auth/login', credentials);
-
-      // Save token and user to localStorage
-      if (response.data?.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-
-      return response;
-    } catch (error) {
-      throw error;
+    const response = await apiClient.post('/auth/login', credentials);
+    // Save token and user to localStorage
+    if (response.data?.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
+
+    return response;
+
   }
 
   /**
    * Register new user
    */
   async register(userData) {
-    try {
-      const response = await apiClient.post('/auth/register', userData);
+    const response = await apiClient.post('/auth/register', userData);
 
-      // Save token and user to localStorage
-      if (response.data?.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-
-      return response;
-    } catch (error) {
-      throw error;
+    // Save token and user to localStorage
+    if (response.data?.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
+
+    return response;
   }
 
   /**
@@ -61,24 +53,16 @@ class AuthService {
    * Get current user info
    */
   async getMe() {
-    try {
-      const response = await apiClient.get('/auth/me');
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/auth/me');
+    return response;
   }
 
   /**
    * Change password
    */
   async changePassword(data) {
-    try {
-      const response = await apiClient.put('/auth/change-password', data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.put('/auth/change-password', data);
+    return response;
   }
 
   /**
