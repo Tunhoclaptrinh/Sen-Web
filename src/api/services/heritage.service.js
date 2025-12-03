@@ -1,28 +1,90 @@
-// src/api/services/heritage.service.js
-import BaseService from './base.service';
-import apiClient from '../config';
+// ============================================
+// src/services/heritage.service.js - Heritage Sites Service
+// ============================================
+import apiClient from '../api/config';
 
-/**
- * Heritage Service
- * Xử lý operations cho Heritage Sites
- */
-class HeritageService extends BaseService {
-  constructor() {
-    super('/heritage-sites');
+class HeritageService {
+  /**
+   * Get all heritage sites with pagination and filters
+   */
+  async getAll(params = {}) {
+    try {
+      const response = await apiClient.get('/heritage-sites', { params });
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
-   * Get nearby heritage sites based on coordinates
-   * @param {number} latitude - Latitude
-   * @param {number} longitude - Longitude
-   * @param {number} radius - Search radius in km (default: 10)
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with nearby sites
+   * Get single heritage site by ID
    */
-  async getNearby(latitude, longitude, radius = 10, params = {}) {
+  async getById(id) {
     try {
-      const response = await apiClient.get(`${this.endpoint}/nearby`, {
-        params: { latitude, longitude, radius, ...params },
+      const response = await apiClient.get(`/heritage-sites/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Create new heritage site
+   */
+  async create(data) {
+    try {
+      const response = await apiClient.post('/heritage-sites', data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Update heritage site
+   */
+  async update(id, data) {
+    try {
+      const response = await apiClient.put(`/heritage-sites/${id}`, data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Delete heritage site
+   */
+  async delete(id) {
+    try {
+      const response = await apiClient.delete(`/heritage-sites/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Search heritage sites
+   */
+  async search(query, params = {}) {
+    try {
+      const response = await apiClient.get('/heritage-sites/search', {
+        params: { q: query, ...params },
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Get nearby heritage sites
+   */
+  async getNearby(latitude, longitude, radius = 10) {
+    try {
+      const response = await apiClient.get('/heritage-sites/nearby', {
+        params: { latitude, longitude, radius },
       });
       return response;
     } catch (error) {
@@ -32,13 +94,10 @@ class HeritageService extends BaseService {
 
   /**
    * Get artifacts of a heritage site
-   * @param {number|string} id - Heritage site ID
-   * @param {Object} params - Query parameters
-   * @returns {Promise} Response with artifacts
    */
   async getArtifacts(id, params = {}) {
     try {
-      const response = await apiClient.get(`${this.endpoint}/${id}/artifacts`, {
+      const response = await apiClient.get(`/heritage-sites/${id}/artifacts`, {
         params,
       });
       return response;
@@ -48,58 +107,15 @@ class HeritageService extends BaseService {
   }
 
   /**
-   * Get timeline events of a heritage site
-   * @param {number|string} id - Heritage site ID
-   * @param {Object} params - Query parameters
-   * @returns {Promise} Response with timeline events
+   * Get timeline of a heritage site
    */
-  async getTimeline(id, params = {}) {
+  async getTimeline(id) {
     try {
-      const response = await apiClient.get(`${this.endpoint}/${id}/timeline`, {
-        params,
-      });
+      const response = await apiClient.get(`/heritage-sites/${id}/timeline`);
       return response;
     } catch (error) {
       throw error;
     }
-  }
-
-  /**
-   * Get heritage sites by region
-   * @param {string} region - Region name
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with filtered sites
-   */
-  async getByRegion(region, params = {}) {
-    return this.getAll({ region, ...params });
-  }
-
-  /**
-   * Get heritage sites by type
-   * @param {string} type - Heritage type
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with filtered sites
-   */
-  async getByType(type, params = {}) {
-    return this.getAll({ type, ...params });
-  }
-
-  /**
-   * Get featured heritage sites
-   * @param {Object} params - Query parameters
-   * @returns {Promise} Response with featured sites
-   */
-  async getFeatured(params = {}) {
-    return this.getAll({ is_featured: true, ...params });
-  }
-
-  /**
-   * Get UNESCO listed sites
-   * @param {Object} params - Query parameters
-   * @returns {Promise} Response with UNESCO sites
-   */
-  async getUNESCO(params = {}) {
-    return this.getAll({ unesco_listed: true, ...params });
   }
 }
 

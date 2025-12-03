@@ -1,26 +1,76 @@
-// src/api/services/artifact.service.js
-import BaseService from './base.service';
-import apiClient from '../config';
+// ============================================
+// src/services/artifact.service.js - Artifacts Service
+// ============================================
+import apiClient from '../api/config';
 
-/**
- * Artifact Service
- * Xử lý operations cho Artifacts
- */
-class ArtifactService extends BaseService {
-  constructor() {
-    super('/artifacts');
+class ArtifactService {
+  /**
+   * Get all artifacts with pagination and filters
+   */
+  async getAll(params = {}) {
+    try {
+      const response = await apiClient.get('/artifacts', { params });
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
-   * Get related artifacts
-   * @param {number|string} id - Artifact ID
-   * @param {Object} params - Query parameters
-   * @returns {Promise} Response with related artifacts
+   * Get single artifact by ID
    */
-  async getRelated(id, params = {}) {
+  async getById(id) {
     try {
-      const response = await apiClient.get(`${this.endpoint}/${id}/related`, {
-        params,
+      const response = await apiClient.get(`/artifacts/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Create new artifact
+   */
+  async create(data) {
+    try {
+      const response = await apiClient.post('/artifacts', data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Update artifact
+   */
+  async update(id, data) {
+    try {
+      const response = await apiClient.put(`/artifacts/${id}`, data);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Delete artifact
+   */
+  async delete(id) {
+    try {
+      const response = await apiClient.delete(`/artifacts/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Search artifacts
+   */
+  async search(query, params = {}) {
+    try {
+      const response = await apiClient.get('/artifacts/search', {
+        params: { q: query, ...params },
       });
       return response;
     } catch (error) {
@@ -29,43 +79,17 @@ class ArtifactService extends BaseService {
   }
 
   /**
-   * Get artifacts by type
-   * @param {string} type - Artifact type
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with filtered artifacts
+   * Get related artifacts
    */
-  async getByType(type, params = {}) {
-    return this.getAll({ artifact_type: type, ...params });
-  }
-
-  /**
-   * Get artifacts by condition
-   * @param {string} condition - Artifact condition (excellent, good, fair, poor)
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with filtered artifacts
-   */
-  async getByCondition(condition, params = {}) {
-    return this.getAll({ condition, ...params });
-  }
-
-  /**
-   * Get artifacts by heritage site
-   * @param {number|string} heritageSiteId - Heritage site ID
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with filtered artifacts
-   */
-  async getByHeritageSite(heritageSiteId, params = {}) {
-    return this.getAll({ heritage_site_id: heritageSiteId, ...params });
-  }
-
-  /**
-   * Get artifacts by period
-   * @param {string} period - Historical period
-   * @param {Object} params - Additional parameters
-   * @returns {Promise} Response with filtered artifacts
-   */
-  async getByPeriod(period, params = {}) {
-    return this.getAll({ period, ...params });
+  async getRelated(id, params = {}) {
+    try {
+      const response = await apiClient.get(`/artifacts/${id}/related`, {
+        params,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

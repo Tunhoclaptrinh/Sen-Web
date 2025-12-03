@@ -1,19 +1,22 @@
-// src/api/services/auth.service.js
-import apiClient from '../config';
+// ============================================
+// src/services/auth.service.js - Authentication Service
+// ============================================
+import apiClient from '../api/config';
 
-/**
- * Authentication Service
- * Xử lý tất cả authentication operations
- */
 class AuthService {
   /**
    * Login user
-   * @param {Object} credentials - { email, password }
-   * @returns {Promise} Response with user and token
    */
   async login(credentials) {
     try {
       const response = await apiClient.post('/auth/login', credentials);
+
+      // Save token and user to localStorage
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+
       return response;
     } catch (error) {
       throw error;
@@ -22,12 +25,17 @@ class AuthService {
 
   /**
    * Register new user
-   * @param {Object} userData - { name, email, password, phone, address }
-   * @returns {Promise} Response with user and token
    */
   async register(userData) {
     try {
       const response = await apiClient.post('/auth/register', userData);
+
+      // Save token and user to localStorage
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+
       return response;
     } catch (error) {
       throw error;
@@ -36,20 +44,21 @@ class AuthService {
 
   /**
    * Logout current user
-   * @returns {Promise} Response
    */
   async logout() {
     try {
-      const response = await apiClient.post('/auth/logout');
-      return response;
+      await apiClient.post('/auth/logout');
     } catch (error) {
-      throw error;
+      console.error('Logout error:', error);
+    } finally {
+      // Always clear local storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   }
 
   /**
    * Get current user info
-   * @returns {Promise} Response with user data
    */
   async getMe() {
     try {
@@ -62,8 +71,6 @@ class AuthService {
 
   /**
    * Change password
-   * @param {Object} data - { currentPassword, newPassword }
-   * @returns {Promise} Response
    */
   async changePassword(data) {
     try {
@@ -75,44 +82,32 @@ class AuthService {
   }
 
   /**
-   * Refresh token
-   * @returns {Promise} Response with new token
+   * Get current user from localStorage
    */
-  async refreshToken() {
-    try {
-      const response = await apiClient.post('/auth/refresh-token');
-      return response;
-    } catch (error) {
-      throw error;
+  getCurrentUser() {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch (error) {
+        return null;
+      }
     }
+    return null;
   }
 
   /**
-   * Request password reset
-   * @param {string} email - User email
-   * @returns {Promise} Response
+   * Get token from localStorage
    */
-  async forgotPassword(email) {
-    try {
-      const response = await apiClient.post('/auth/forgot-password', { email });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  getToken() {
+    return localStorage.getItem('token');
   }
 
   /**
-   * Reset password with token
-   * @param {Object} data - { token, newPassword }
-   * @returns {Promise} Response
+   * Check if user is authenticated
    */
-  async resetPassword(data) {
-    try {
-      const response = await apiClient.post('/auth/reset-password', data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  isAuthenticated() {
+    return !!this.getToken();
   }
 }
 
