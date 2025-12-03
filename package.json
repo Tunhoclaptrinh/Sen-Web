@@ -1,0 +1,61 @@
+{
+  "name": "sen-web",
+  "version": "2.0.0",
+  "description": "SEN Web Application - Heritage Management System",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext js,jsx --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,json,css}\"",
+    "test": "vitest",
+    "clean": "rm -rf node_modules dist .vite",
+    "reinstall": "npm run clean && npm install",
+    "dev:full": "concurrently \"npm run dev\" \"cd ../backend && npm run dev\"",
+    "analyze": "vite-bundle-visualizer"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@pixi/react": "^7.1.2",
+    "@reduxjs/toolkit": "^2.0.1",
+    "antd": "^5.12.0",
+    "axios": "^1.6.2",
+    "dayjs": "^1.11.10",
+    "framer-motion": "^10.16.0",
+    "immer": "^10.0.3",
+    "leaflet": "^1.9.4",
+    "lodash": "^4.17.21",
+    "pixi.js": "^7.4.3",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet-async": "^2.0.4",
+    "react-leaflet": "^4.2.1",
+    "react-redux": "^9.0.4",
+    "react-router-dom": "^6.20.0",
+    "recharts": "^2.10.3"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.8",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "prettier": "^3.1.1",
+    "vite": "^5.0.8",
+    "vite-bundle-visualizer": "^1.0.1",
+    "vitest": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

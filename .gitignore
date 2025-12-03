@@ -1,0 +1,33 @@
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Build
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Build
+dist/
+build/
+node_modules
