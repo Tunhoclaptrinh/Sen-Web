@@ -1,52 +1,27 @@
-// ============================================
-// src/services/auth.service.js - Authentication Service
-// ============================================
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 
 class AuthService {
   /**
    * Login user
+   * @param {Object} credentials - { email, password }
    */
   async login(credentials) {
-    const response = await apiClient.post('/auth/login', credentials);
-
-    // Save token and user to localStorage
-    if (response.data?.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    }
-
-    return response;
+    return apiClient.post('/auth/login', credentials);
   }
 
   /**
    * Register new user
+   * @param {Object} userData - User registration data
    */
   async register(userData) {
-    const response = await apiClient.post('/auth/register', userData);
-
-    // Save token and user to localStorage
-    if (response.data?.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    }
-
-    return response;
+    return apiClient.post('/auth/register', userData);
   }
 
   /**
    * Logout current user
    */
   async logout() {
-    try {
-      await apiClient.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Always clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
+    return apiClient.post('/auth/logout');
   }
 
   /**
@@ -58,38 +33,10 @@ class AuthService {
 
   /**
    * Change password
+   * @param {Object} data - { currentPassword, newPassword }
    */
   async changePassword(data) {
     return apiClient.put('/auth/change-password', data);
-  }
-
-  /**
-   * Get current user from localStorage
-   */
-  getCurrentUser() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Get token from localStorage
-   */
-  getToken() {
-    return localStorage.getItem('token');
-  }
-
-  /**
-   * Check if user is authenticated
-   */
-  isAuthenticated() {
-    return !!this.getToken();
   }
 }
 

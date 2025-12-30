@@ -25,7 +25,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { default as userService } from "../../services/user.service";
-import { default as apiClient } from "../../api/config";
+import { default as apiClient } from "../../config/axios.config";
 import { getMe } from "../../store/slices/authSlice";
 
 const Profile = () => {

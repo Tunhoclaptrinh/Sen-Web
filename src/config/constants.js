@@ -5,6 +5,12 @@ export const USER_ROLES = {
   CURATOR: 'curator',
 };
 
+// Storage keys used across the app
+export const STORAGE_KEYS = {
+  TOKEN: 'sen_token',
+  USER: 'sen_user',
+};
+
 export const HERITAGE_TYPES = {
   MONUMENT: 'monument',
   TEMPLE: 'temple',

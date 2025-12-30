@@ -1,5 +1,5 @@
 // src/api/services/favorite.service.js
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 
 /**
  * Favorite Service

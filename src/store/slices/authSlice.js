@@ -1,23 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { authService } from '@services';
+import { authService } from '../../services';
+import { STORAGE_KEYS } from '../../config/constants';
 
-const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'sen_token';
-const USER_KEY = import.meta.env.VITE_USER_KEY || 'sen_user';
-
-// Get initial state from localStorage
-const token = localStorage.getItem(TOKEN_KEY);
-const userStr = localStorage.getItem(USER_KEY);
-let user = null;
-try {
-  user = userStr ? JSON.parse(userStr) : null;
-} catch (e) {
-  console.error('Failed to parse user from localStorage', e);
-}
+// Get initial state from localStorage safely
+const getTokenFromStorage = () => localStorage.getItem(STORAGE_KEYS.TOKEN);
+const getUserFromStorage = () => {
+  const userStr = localStorage.getItem(STORAGE_KEYS.USER);
+  try {
+    return userStr ? JSON.parse(userStr) : null;
+  } catch (e) {
+    console.error('Failed to parse user from localStorage', e);
+    return null;
+  }
+};
 
 const initialState = {
-  user: user,
-  token: token,
-  isAuthenticated: !!token,
+  user: getUserFromStorage(),
+  token: getTokenFromStorage(),
+  isAuthenticated: !!getTokenFromStorage(),
   loading: false,
   error: null,
 };
@@ -28,9 +28,14 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
-      return response.data;
+      // API returns: { success: true, message: "...", data: { user, token } }
+      if (response.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.message);
+      }
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message || 'Đăng nhập thất bại');
     }
   }
 );
@@ -40,9 +45,13 @@ export const register = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
-      return response.data;
+      if (response.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.message);
+      }
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message || 'Đăng ký thất bại');
     }
   }
 );
@@ -52,9 +61,27 @@ export const getMe = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.getMe();
-      return response.data;
+      if (response.success) {
+        return response.data; // Usually returns user object
+      } else {
+        return rejectWithValue(response.message);
+      }
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      await authService.logout();
+      return true;
+    } catch (error) {
+      // Even if API fails, we should clear local state
+      console.error('Logout error:', error);
+      return true;
     }
   }
 );
@@ -63,16 +90,17 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
-    },
     clearError: (state) => {
       state.error = null;
     },
+    // Force logout (used when token expires handled by interceptor)
+    forceLogout: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER);
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -83,16 +111,19 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
+        state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.isAuthenticated = true;
-        localStorage.setItem(TOKEN_KEY, action.payload.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(action.payload.user));
+
+        // Save to localStorage
+        localStorage.setItem(STORAGE_KEYS.TOKEN, action.payload.token);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(action.payload.user));
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Đăng nhập thất bại';
+        state.error = action.payload;
       })
+
       // Register
       .addCase(register.pending, (state) => {
         state.loading = true;
@@ -100,23 +131,36 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
+        state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.isAuthenticated = true;
-        localStorage.setItem(TOKEN_KEY, action.payload.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(action.payload.user));
+
+        // Save to localStorage
+        localStorage.setItem(STORAGE_KEYS.TOKEN, action.payload.token);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(action.payload.user));
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Đăng ký thất bại';
+        state.error = action.payload;
       })
+
       // Get Me
       .addCase(getMe.fulfilled, (state, action) => {
-        state.user = action.payload;
-        localStorage.setItem(USER_KEY, JSON.stringify(action.payload));
+        // Update user info if changed
+        state.user = { ...state.user, ...action.payload };
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(state.user));
+      })
+
+      // Logout
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER);
       });
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { clearError, forceLogout } = authSlice.actions;
 export default authSlice.reducer;

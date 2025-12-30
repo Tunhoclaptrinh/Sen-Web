@@ -1,5 +1,5 @@
 
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 
 /**
  * Base Service

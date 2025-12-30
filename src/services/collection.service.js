@@ -1,6 +1,6 @@
 // src/api/services/collection.service.js
 import BaseService from './base.service';
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 
 /**
  * Collection Service

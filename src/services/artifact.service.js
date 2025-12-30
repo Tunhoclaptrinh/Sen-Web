@@ -1,5 +1,5 @@
 import BaseService from './base.service';
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 class ArtifactService extends BaseService {
   constructor() {
     super('/artifacts');

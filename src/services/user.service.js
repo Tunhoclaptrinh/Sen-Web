@@ -1,6 +1,6 @@
 // src/api/services/user.service.js
 import BaseService from './base.service';
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 
 /**
  * User Service

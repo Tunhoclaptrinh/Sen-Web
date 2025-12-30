@@ -1,6 +1,6 @@
 
 import BaseService from './base.service';
-import apiClient from '../api/config';
+import apiClient from '../config/axios.config';;
 
 /**
  * Heritage Service
