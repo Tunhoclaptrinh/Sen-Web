@@ -1,5 +1,5 @@
 import { useAuth } from './useAuth';
-import { USER_ROLES } from '@utils/constants';
+import { USER_ROLES } from '@/config/constants';
 
 export const usePermission = () => {
   const { user } = useAuth();

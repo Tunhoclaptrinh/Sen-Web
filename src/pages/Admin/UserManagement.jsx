@@ -1,7 +1,7 @@
 import { Card, Button, Table, Spin, message, Modal, Tag } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { userAPI } from "@api";
+import userService from "@services/user.service";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);

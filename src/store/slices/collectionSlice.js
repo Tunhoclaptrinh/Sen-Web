@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { collectionAPI } from '@api';
+import { collectionService } from '@services';
 
 const initialState = {
   items: [],
@@ -13,7 +13,7 @@ export const fetchCollections = createAsyncThunk(
   'collection/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await collectionAPI.getAll();
+      const response = await collectionService.getAll();
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -25,7 +25,7 @@ export const createCollection = createAsyncThunk(
   'collection/create',
   async (data, { rejectWithValue }) => {
     try {
-      const response = await collectionAPI.create(data);
+      const response = await collectionService.create(data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -37,7 +37,7 @@ export const deleteCollection = createAsyncThunk(
   'collection/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await collectionAPI.delete(id);
+      await collectionService.delete(id);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -51,9 +51,9 @@ export const toggleArtifactInCollection = createAsyncThunk(
     try {
       let response;
       if (isAdding) {
-        response = await collectionAPI.addArtifact(collectionId, artifactId);
+        response = await collectionService.addArtifact(collectionId, artifactId);
       } else {
-        response = await collectionAPI.removeArtifact(collectionId, artifactId);
+        response = await collectionService.removeArtifact(collectionId, artifactId);
       }
       // Re-fetch collections or update item directly for real-time UI update
       return response.data;

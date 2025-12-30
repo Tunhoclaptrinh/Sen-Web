@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHeritageSites } from "../../store/slices/heritageSlice";
 import { fetchArtifacts } from "../../store/slices/artifactSlice";
-import { favoriteAPI } from "../../api";
+import favoriteService from "../../services/favorite.service";
 import styles from "./Home.module.css";
 import logo from "@/assets/images/logo2.png";
 import Background from "@/components/Background";

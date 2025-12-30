@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { artifactAPI } from '@api';
+import { artifactService } from '@services';
 
 const initialState = {
   items: [],
@@ -20,7 +20,7 @@ export const fetchArtifacts = createAsyncThunk(
   'artifact/fetchAll',
   async (params, { rejectWithValue }) => {
     try {
-      const response = await artifactAPI.getAll(params);
+      const response = await artifactService.getAll(params);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -32,7 +32,7 @@ export const fetchArtifactById = createAsyncThunk(
   'artifact/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await artifactAPI.getById(id);
+      const response = await artifactService.getById(id);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -44,7 +44,7 @@ export const searchArtifacts = createAsyncThunk(
   'artifact/search',
   async ({ query, params }, { rejectWithValue }) => {
     try {
-      const response = await artifactAPI.search(query, params);
+      const response = await artifactService.search(query, params);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -56,7 +56,7 @@ export const createArtifact = createAsyncThunk(
   'artifact/create',
   async (data, { rejectWithValue }) => {
     try {
-      const response = await artifactAPI.create(data);
+      const response = await artifactService.create(data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -68,7 +68,7 @@ export const updateArtifact = createAsyncThunk(
   'artifact/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await artifactAPI.update(id, data);
+      const response = await artifactService.update(id, data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -80,7 +80,7 @@ export const deleteArtifact = createAsyncThunk(
   'artifact/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await artifactAPI.delete(id);
+      await artifactService.delete(id);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

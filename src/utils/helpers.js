@@ -1,4 +1,4 @@
-import { USER_ROLES } from './constants';
+import { USER_ROLES } from '../config/constants';
 
 export const getInitials = (name) => {
   if (!name) return '';

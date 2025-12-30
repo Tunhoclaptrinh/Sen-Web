@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import heritageAPI from '@api/heritage.api';
+import heritageService from '../../services/heritage.service';
 
 const initialState = {
   items: [],
@@ -20,7 +20,7 @@ export const fetchHeritageSites = createAsyncThunk(
   'heritage/fetchAll',
   async (params, { rejectWithValue }) => {
     try {
-      const response = await heritageAPI.getAll(params);
+      const response = await heritageService.getAll(params);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -32,7 +32,7 @@ export const fetchHeritageSiteById = createAsyncThunk(
   'heritage/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await heritageAPI.getById(id, { _embed: 'artifacts,reviews' });
+      const response = await heritageService.getById(id);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -44,7 +44,7 @@ export const searchHeritageSites = createAsyncThunk(
   'heritage/search',
   async ({ query, params }, { rejectWithValue }) => {
     try {
-      const response = await heritageAPI.search(query, params);
+      const response = await heritageService.search(query, params);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -56,7 +56,7 @@ export const fetchNearbyHeritageSites = createAsyncThunk(
   'heritage/fetchNearby',
   async ({ latitude, longitude, radius, params }, { rejectWithValue }) => {
     try {
-      const response = await heritageAPI.getNearby(latitude, longitude, radius, params);
+      const response = await heritageService.getNearby(latitude, longitude, radius);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -68,7 +68,7 @@ export const createHeritageSite = createAsyncThunk(
   'heritage/create',
   async (data, { rejectWithValue }) => {
     try {
-      const response = await heritageAPI.create(data);
+      const response = await heritageService.create(data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -80,7 +80,7 @@ export const updateHeritageSite = createAsyncThunk(
   'heritage/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await heritageAPI.update(id, data);
+      const response = await heritageService.update(id, data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -92,7 +92,7 @@ export const deleteHeritageSite = createAsyncThunk(
   'heritage/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await heritageAPI.delete(id);
+      await heritageService.delete(id);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

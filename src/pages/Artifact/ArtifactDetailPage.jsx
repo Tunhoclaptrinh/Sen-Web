@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchArtifactById } from "@store/slices/artifactSlice";
-import { favoriteAPI } from "@api";
+import favoriteService from "@services/favorite.service";
 
 const ArtifactDetailPage = () => {
   const { id } = useParams();
