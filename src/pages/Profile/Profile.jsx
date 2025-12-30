@@ -24,7 +24,7 @@ import {
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { userAPI } from "../../api";
+import { userAPI, apiClient } from "../../api";
 import { getMe } from "../../store/slices/authSlice";
 
 const Profile = () => {
@@ -80,13 +80,6 @@ const Profile = () => {
     }
   };
 
-  const handleAvatarUpload = (info) => {
-    if (info.file.status === "done") {
-      setAvatar(info.file.response.url);
-      message.success("✅ Cập nhật ảnh đại diện thành công");
-    }
-  };
-
   return (
     <div>
       <Spin spinning={loading}>
@@ -117,9 +110,53 @@ const Profile = () => {
 
                       <Upload
                         name="avatar"
-                        action="/api/upload"
-                        onChange={handleAvatarUpload}
                         showUploadList={false}
+                        customRequest={async ({
+                          file,
+                          onSuccess,
+                          onError,
+                          onProgress,
+                        }) => {
+                          const formData = new FormData();
+                          formData.append("file", file);
+
+                          try {
+                            const res = await apiClient.post(
+                              "/upload",
+                              formData,
+                              {
+                                headers: {
+                                  "Content-Type": "multipart/form-data",
+                                },
+                                onUploadProgress: (e) => {
+                                  if (onProgress && e.total) {
+                                    onProgress({
+                                      percent: Math.round(
+                                        (e.loaded / e.total) * 100,
+                                      ),
+                                    });
+                                  }
+                                },
+                              },
+                            );
+
+                            onSuccess && onSuccess(res);
+
+                            const url =
+                              res?.url ||
+                              res?.data?.url ||
+                              res?.data?.path ||
+                              (res?.data && res.data[0] && res.data[0].url);
+                            if (url) setAvatar(url);
+                            message.success(
+                              "✅ Cập nhật ảnh đại diện thành công",
+                            );
+                            dispatch(getMe());
+                          } catch (err) {
+                            onError && onError(err);
+                            message.error("❌ Upload thất bại");
+                          }
+                        }}
                       >
                         <Button
                           icon={<CameraOutlined />}
