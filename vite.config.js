@@ -15,7 +15,6 @@ export default defineConfig({
       '@store': path.resolve(__dirname, './src/store'),
       '@layouts': path.resolve(__dirname, './src/layouts'),
       '@assets': path.resolve(__dirname, './src/assets'),
-      '@api': path.resolve(__dirname, './src/api'),
       '@contexts': path.resolve(__dirname, './src/contexts'),
     },
   },

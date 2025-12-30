@@ -24,7 +24,8 @@ import {
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { userAPI, apiClient } from "../../api";
+import { default as userService } from "../../services/user.service";
+import { default as apiClient } from "../../api/config";
 import { getMe } from "../../store/slices/authSlice";
 
 const Profile = () => {
@@ -49,7 +50,7 @@ const Profile = () => {
   const onUpdateProfile = async (values) => {
     try {
       setLoading(true);
-      await userAPI.updateProfile(values);
+      await userService.updateProfile(values);
       message.success("✅ Cập nhật thành công!");
       dispatch(getMe());
     } catch (error) {
@@ -67,9 +68,9 @@ const Profile = () => {
 
     try {
       setLoading(true);
-      await userAPI.changePassword({
-        current_password: values.currentPassword,
-        new_password: values.newPassword,
+      await userService.changePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
       });
       message.success("✅ Đổi mật khẩu thành công!");
       passwordForm.resetFields();

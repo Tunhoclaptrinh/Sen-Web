@@ -6,7 +6,8 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { userAPI, heritageAPI } from "@api";
+import userService from "@services/user.service";
+import heritageService from "@services/heritage.service";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({

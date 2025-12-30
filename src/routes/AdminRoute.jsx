@@ -1,6 +1,6 @@
-import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
-import { USER_ROLES } from '@utils/constants';
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import { USER_ROLES } from "@/config/constants";
 
 const AdminRoute = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);

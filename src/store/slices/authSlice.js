@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { authAPI } from '@api';
+import { authService } from '@services';
 
 const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'sen_token';
 const USER_KEY = import.meta.env.VITE_USER_KEY || 'sen_user';
@@ -27,7 +27,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await authAPI.login(credentials);
+      const response = await authService.login(credentials);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -39,7 +39,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await authAPI.register(userData);
+      const response = await authService.register(userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -51,7 +51,7 @@ export const getMe = createAsyncThunk(
   'auth/getMe',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authAPI.getMe();
+      const response = await authService.getMe();
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

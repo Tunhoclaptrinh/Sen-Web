@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHeritageSiteById } from "@store/slices/heritageSlice";
-import { favoriteAPI } from "@api";
+import favoriteService from "@services/favorite.service";
 
 const HeritageDetailPage = () => {
   const { id } = useParams();

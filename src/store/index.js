@@ -3,8 +3,6 @@ import authReducer from './slices/authSlice';
 import heritageReducer from './slices/heritageSlice';
 import artifactReducer from './slices/artifactSlice';
 import uiReducer from './slices/uiSlice';
-import categoryReducer from './slices/categorySlice';
-import reviewReducer from './slices/reviewSlice';
 import collectionReducer from './slices/collectionSlice';
 
 export const store = configureStore({
@@ -13,8 +11,6 @@ export const store = configureStore({
     heritage: heritageReducer,
     artifact: artifactReducer,
     ui: uiReducer,
-    category: categoryReducer,
-    review: reviewReducer,
     collection: collectionReducer,
   },
   middleware: (getDefaultMiddleware) =>
