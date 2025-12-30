@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Chỉ cần define @ là đủ để truy cập mọi thứ, nhưng giữ lại các cái chính để code ngắn gọn hơn
       '@components': path.resolve(__dirname, './src/components'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@services': path.resolve(__dirname, './src/services'),
@@ -16,32 +17,33 @@ export default defineConfig({
       '@layouts': path.resolve(__dirname, './src/layouts'),
       '@assets': path.resolve(__dirname, './src/assets'),
       '@contexts': path.resolve(__dirname, './src/contexts'),
+      '@config': path.resolve(__dirname, './src/config'), // Thêm cái này
     },
   },
   server: {
     port: 3001,
+    open: true, // Tự động mở browser khi chạy dev
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+        secure: false,
       },
     },
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false, // Tắt sourcemap ở production để nhẹ và bảo mật hơn
+    chunkSizeWarningLimit: 1600,
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'redux-vendor': ['@reduxjs/toolkit', 'react-redux'],
-          'antd-vendor': ['antd', '@ant-design/icons'],
+          'ui-vendor': ['antd', '@ant-design/icons', 'framer-motion'], // Gom nhóm UI
           'utils-vendor': ['axios', 'dayjs', 'lodash'],
+          'game-vendor': ['pixi.js', '@pixi/react'], // Tách riêng thư viện game nặng
         },
       },
     },
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'antd'],
   },
 });
