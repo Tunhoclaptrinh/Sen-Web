@@ -17,12 +17,7 @@ class UserService extends BaseService {
    * @returns {Promise} Response with updated profile
    */
   async updateProfile(data) {
-    try {
-      const response = await apiClient.put('/users/profile', data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.put('/users/profile', data);
   }
 
   /**
@@ -31,12 +26,7 @@ class UserService extends BaseService {
    * @returns {Promise} Response with user activity
    */
   async getActivity(id) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/${id}/activity`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/${id}/activity`);
   }
 
   /**
@@ -45,12 +35,7 @@ class UserService extends BaseService {
    * @returns {Promise} Response
    */
   async toggleStatus(id) {
-    try {
-      const response = await apiClient.patch(`${this.endpoint}/${id}/status`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.patch(`${this.endpoint}/${id}/status`);
   }
 
   /**
@@ -58,12 +43,7 @@ class UserService extends BaseService {
    * @returns {Promise} Response with stats
    */
   async getStats() {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/stats/summary`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/stats/summary`);
   }
 
   /**
@@ -72,12 +52,7 @@ class UserService extends BaseService {
    * @returns {Promise} Response
    */
   async deletePermanent(id) {
-    try {
-      const response = await apiClient.delete(`${this.endpoint}/${id}/permanent`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.delete(`${this.endpoint}/${id}/permanent`);
   }
 
   /**
@@ -86,15 +61,10 @@ class UserService extends BaseService {
    * @returns {Promise} Response with file
    */
   async export(params = {}) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/export`, {
-        params,
-        responseType: 'blob',
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/export`, {
+      params,
+      responseType: 'blob',
+    });
   }
 
   /**
@@ -103,18 +73,13 @@ class UserService extends BaseService {
    * @returns {Promise} Response
    */
   async import(file) {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const response = await apiClient.post(`${this.endpoint}/import`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post(`${this.endpoint}/import`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 }
 

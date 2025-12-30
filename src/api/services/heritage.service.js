@@ -2,6 +2,10 @@
 import BaseService from './base.service';
 import apiClient from '../config';
 
+/**
+ * Heritage Service
+ * Xử lý operations cho Heritage Sites
+ */
 class HeritageService extends BaseService {
   constructor() {
     super('/heritage-sites');

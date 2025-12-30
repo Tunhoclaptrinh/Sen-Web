@@ -2,7 +2,7 @@
 // src/contexts/AuthContext.jsx - Authentication Context
 // ============================================
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import authService from '../services/auth.service';
+import authService from '../api/services/auth.service';
 import { message } from 'antd';
 
 const AuthContext = createContext(null);

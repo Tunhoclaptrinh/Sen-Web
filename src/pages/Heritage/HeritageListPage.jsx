@@ -27,7 +27,7 @@ import {
   EyeOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
-import heritageService from '../../services/heritage.service';
+import heritageService from '../../api/services/heritage.service';
 
 const { TextArea } = Input;
 

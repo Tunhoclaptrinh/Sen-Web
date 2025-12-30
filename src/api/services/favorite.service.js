@@ -15,12 +15,7 @@ class FavoriteService {
    * @returns {Promise} Response with all favorites
    */
   async getAll() {
-    try {
-      const response = await apiClient.get(this.endpoint);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(this.endpoint);
   }
 
   /**
@@ -29,12 +24,7 @@ class FavoriteService {
    * @returns {Promise} Response with favorites of specific type
    */
   async getByType(type) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/${type}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/${type}`);
   }
 
   /**
@@ -43,12 +33,7 @@ class FavoriteService {
    * @returns {Promise} Response with array of IDs
    */
   async getIdsByType(type) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/${type}/ids`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/${type}/ids`);
   }
 
   /**
@@ -58,12 +43,7 @@ class FavoriteService {
    * @returns {Promise} Response with { isFavorite: boolean }
    */
   async check(type, id) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/${type}/${id}/check`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/${type}/${id}/check`);
   }
 
   /**
@@ -73,12 +53,7 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async add(type, id) {
-    try {
-      const response = await apiClient.post(`${this.endpoint}/${type}/${id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.post(`${this.endpoint}/${type}/${id}`);
   }
 
   /**
@@ -88,12 +63,7 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async toggle(type, id) {
-    try {
-      const response = await apiClient.post(`${this.endpoint}/${type}/${id}/toggle`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.post(`${this.endpoint}/${type}/${id}/toggle`);
   }
 
   /**
@@ -103,12 +73,7 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async remove(type, id) {
-    try {
-      const response = await apiClient.delete(`${this.endpoint}/${type}/${id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.delete(`${this.endpoint}/${type}/${id}`);
   }
 
   /**
@@ -117,12 +82,7 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async clearByType(type) {
-    try {
-      const response = await apiClient.delete(`${this.endpoint}/${type}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.delete(`${this.endpoint}/${type}`);
   }
 
   /**
@@ -130,12 +90,7 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async clearAll() {
-    try {
-      const response = await apiClient.delete(this.endpoint);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.delete(this.endpoint);
   }
 
   /**
@@ -143,12 +98,7 @@ class FavoriteService {
    * @returns {Promise} Response with stats
    */
   async getStats() {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/stats/summary`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/stats/summary`);
   }
 
   /**
@@ -157,12 +107,7 @@ class FavoriteService {
    * @returns {Promise} Response with trending items
    */
   async getTrending(type) {
-    try {
-      const response = await apiClient.get(`${this.endpoint}/trending/${type}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get(`${this.endpoint}/trending/${type}`);
   }
 }
 
