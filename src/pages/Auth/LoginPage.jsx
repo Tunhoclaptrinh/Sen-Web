@@ -49,7 +49,7 @@ const LoginPage = () => {
           {/* Header */}
           <div style={{ textAlign: 'center' }}>
             <Title level={2} style={{ marginBottom: 8 }}>
-              🌸 SEN Heritage
+              🌸 SEN
             </Title>
             <Text type="secondary">
               Đăng nhập để khám phá di sản văn hóa Việt Nam

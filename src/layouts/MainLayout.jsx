@@ -110,7 +110,11 @@ const MainLayout = () => {
             background: 'rgba(255, 255, 255, 0.1)',
           }}
         >
-          {collapsed ? '🌸' : '🌸 SEN'}
+          <img
+            src="./public/images/logo2.png"
+            alt="Sen Logo"
+            style={{ width: 84 }}
+          />
         </div>
 
         {/* Menu */}
