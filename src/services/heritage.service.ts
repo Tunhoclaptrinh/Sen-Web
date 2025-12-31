@@ -5,7 +5,7 @@ import type {
   HeritageSiteDTO,
   HeritageType,
   HeritageSearchParams,
-  NearbyQuery,
+
   HeritageWithDistance,
   TimelineEvent,
   BaseApiResponse,
@@ -41,7 +41,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
       const queryString = this.buildQueryString(queryParams);
       const url = `${this.endpoint}/nearby?${queryString}`;
 
-      const response = await apiClient.get < BaseApiResponse < HeritageWithDistance[] >> (url);
+      const response = await apiClient.get<BaseApiResponse<HeritageWithDistance[]>>(url);
 
       return {
         success: response.success ?? true,
@@ -64,7 +64,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
         ? `${this.endpoint}/${id}/artifacts?${queryString}`
         : `${this.endpoint}/${id}/artifacts`;
 
-      const response = await apiClient.get < BaseApiResponse < any[] >> (url);
+      const response = await apiClient.get<BaseApiResponse<any[]>>(url);
 
       return {
         success: response.success ?? true,
@@ -83,7 +83,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
    */
   async getTimeline(id: number | string): Promise<BaseApiResponse<TimelineEvent[]>> {
     try {
-      const response = await apiClient.get < BaseApiResponse < TimelineEvent[] >> (
+      const response = await apiClient.get<BaseApiResponse<TimelineEvent[]>>(
         `${this.endpoint}/${id}/timeline`
       );
 
@@ -207,7 +207,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
    */
   async getRelated(id: number | string, limit: number = 6): Promise<BaseApiResponse<HeritageSite[]>> {
     try {
-      const response = await apiClient.get < BaseApiResponse < HeritageSite[] >> (
+      const response = await apiClient.get<BaseApiResponse<HeritageSite[]>>(
         `${this.endpoint}/${id}/related?_limit=${limit}`
       );
 

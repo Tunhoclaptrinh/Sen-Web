@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authService } from '../../services';
 import { STORAGE_KEYS } from '../../config/constants';
-import type { User, AuthResponse, LoginCredentials, RegisterData } from '../../types';
+import type { User, LoginCredentials, RegisterData } from '../../types';
 
 // Định nghĩa State Interface
 interface AuthState {
@@ -63,11 +63,11 @@ const initialState: AuthState = {
 
 // ASYNC THUNKS
 
-export const login = createAsyncThunk <
+export const login = createAsyncThunk<
   { user: User; token: string },
   LoginCredentials,
   { rejectValue: string }
-> (
+>(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
@@ -86,11 +86,11 @@ export const login = createAsyncThunk <
   }
 );
 
-export const register = createAsyncThunk <
+export const register = createAsyncThunk<
   { user: User; token: string },
   RegisterData,
   { rejectValue: string }
-> (
+>(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
@@ -108,24 +108,24 @@ export const register = createAsyncThunk <
   }
 );
 
-export const getMe = createAsyncThunk <
+export const getMe = createAsyncThunk<
   User,
-void,
+  void,
   { rejectValue: string }
-  > (
-    'auth/getMe',
-    async (_, { rejectWithValue }) => {
-      try {
-        const response = await authService.getMe();
-        if (!response.success || !response.data) {
-          return rejectWithValue(response.message || 'Lỗi khi tải thông tin người dùng');
-        }
-        return response.data;
-      } catch (error: any) {
-        return rejectWithValue(error.message || 'Lỗi khi tải thông tin người dùng');
+>(
+  'auth/getMe',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.getMe();
+      if (!response.success || !response.data) {
+        return rejectWithValue(response.message || 'Lỗi khi tải thông tin người dùng');
       }
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Lỗi khi tải thông tin người dùng');
     }
-  );
+  }
+);
 
 export const logout = createAsyncThunk(
   'auth/logout',

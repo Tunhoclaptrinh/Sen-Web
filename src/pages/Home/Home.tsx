@@ -7,7 +7,6 @@ import {
   Space,
   Statistic,
   Spin,
-  message,
   Tabs,
   Empty,
   Tag,
@@ -17,7 +16,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHeritageSites } from "../../store/slices/heritageSlice";
 import { fetchArtifacts } from "../../store/slices/artifactSlice";
-import favoriteService from "../../services/favorite.service";
 import styles from "./Home.module.css";
 import logo from "@/assets/images/logo2.png";
 import Background from "@/components/Background";
@@ -35,31 +33,12 @@ const Home = () => {
     (state: RootState) => state.artifact,
   );
 
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState("heritage");
 
   useEffect(() => {
     dispatch(fetchHeritageSites({ _limit: 6 }));
     dispatch(fetchArtifacts({ _limit: 6 }));
   }, [dispatch]);
-
-  const toggleFavorite = async (type: string, id: number | string) => {
-    try {
-      const key = `${type}-${id}`;
-      const isFav = favorites[key];
-      if (isFav) {
-        await favoriteService.remove(type as any, id);
-        message.success("Đã xóa khỏi yêu thích");
-      } else {
-        await favoriteService.add(type as any, id);
-        message.success("Đã thêm vào yêu thích");
-      }
-
-      setFavorites({ ...favorites, [key]: !isFav });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <div className={styles.home}>

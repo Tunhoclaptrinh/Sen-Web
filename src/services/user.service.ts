@@ -2,7 +2,7 @@ import BaseService from './base.service';
 import apiClient from '@/config/axios.config';
 import type {
   User,
-  UserProfile,
+
   UserUpdateDTO,
   UserActivity,
   UserStats,
@@ -25,7 +25,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
    */
   async updateProfile(data: UserUpdateDTO): Promise<BaseApiResponse<User>> {
     try {
-      const response = await apiClient.put < BaseApiResponse < User >> (
+      const response = await apiClient.put<BaseApiResponse<User>>(
         '/users/profile',
         data
       );
@@ -46,7 +46,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
    */
   async changePassword(data: ChangePasswordData): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.put < BaseApiResponse < void>> (
+      const response = await apiClient.put<BaseApiResponse<void>>(
         '/users/change-password',
         data
       );
@@ -66,7 +66,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
    */
   async getActivity(id: number | string): Promise<BaseApiResponse<UserActivity>> {
     try {
-      const response = await apiClient.get < BaseApiResponse < UserActivity >> (
+      const response = await apiClient.get<BaseApiResponse<UserActivity>>(
         `${this.endpoint}/${id}/activity`
       );
 
@@ -86,7 +86,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
    */
   async toggleStatus(id: number | string): Promise<BaseApiResponse<User>> {
     try {
-      const response = await apiClient.patch < BaseApiResponse < User >> (
+      const response = await apiClient.patch<BaseApiResponse<User>>(
         `${this.endpoint}/${id}/status`
       );
 
@@ -106,7 +106,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
    */
   async getStats(): Promise<BaseApiResponse<UserStats>> {
     try {
-      const response = await apiClient.get < BaseApiResponse < UserStats >> (
+      const response = await apiClient.get<BaseApiResponse<UserStats>>(
         `${this.endpoint}/stats/summary`
       );
 
@@ -126,7 +126,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
    */
   async deletePermanent(id: number | string): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.delete < BaseApiResponse < void>> (
+      const response = await apiClient.delete<BaseApiResponse<void>>(
         `${this.endpoint}/${id}/permanent`
       );
 
@@ -165,7 +165,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await apiClient.post < BaseApiResponse < any >> (
+      const response = await apiClient.post<BaseApiResponse<any>>(
         `${this.endpoint}/import`,
         formData,
         {
@@ -214,7 +214,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await apiClient.post < BaseApiResponse < { url: string } >> (
+      const response = await apiClient.post<BaseApiResponse<{ url: string }>>(
         '/upload/avatar',
         formData,
         {

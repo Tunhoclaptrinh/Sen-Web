@@ -3,21 +3,19 @@ import {
   Form,
   Input,
   Select,
-
+  Row,
   Col,
   Space,
   Tag,
   Button,
   message,
-  Tooltip,
   Avatar,
-  Row,
+  Tooltip,
 } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-
 } from "@ant-design/icons";
 // @ts-ignore
 import { useCRUD } from "../../hooks/useCRUD";
@@ -37,8 +35,10 @@ const ArtifactListPage = () => {
     data,
     loading,
     pagination,
+    // filters,
+    // searchTerm,
     selectedIds,
-
+    // fetchAll,
     create,
     update,
     remove,

@@ -8,20 +8,15 @@ import {
   Popconfirm,
   message,
   Avatar,
-  Tooltip,
-  Form,
-  Row,
-  Col
+  Form
 } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
-  SearchOutlined,
-  PlusOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { User } from "@/types";
-import userService from "@/services/user.service";
+import userService from "@/services/user.service"; // Ensure default import usage is consistent or named
 import DataTable from "@/components/common/DataTable";
 import FormModal from "@/components/common/FormModal";
 import { useCRUD } from "@/hooks/useCRUD";
@@ -38,9 +33,6 @@ const UserManagement = () => {
     create,
     update,
     remove,
-    refresh,
-    filters,
-    updateFilters,
     search,
     batchDelete,
     setSelectedIds,

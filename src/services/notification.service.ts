@@ -1,5 +1,4 @@
 import { message, notification } from "antd";
-import type { ArgsProps as MessageArgsProps } from "antd/es/message";
 import type { ArgsProps as NotificationArgsProps } from "antd/es/notification";
 
 class NotificationService {

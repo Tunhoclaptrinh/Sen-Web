@@ -29,8 +29,6 @@ const ArtifactDetailPage = () => {
     error,
   } = useSelector((state: RootState) => state.artifact);
   const [isFavorite, setIsFavorite] = useState(false);
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
   useEffect(() => {
     if (id) {
       dispatch(fetchArtifactById(id));

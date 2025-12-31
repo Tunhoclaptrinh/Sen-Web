@@ -1,14 +1,14 @@
-
-import React, { useState } from "react";
-import { Modal, Checkbox, Slider, Button } from "antd";
+import { Modal, Checkbox, Button } from "antd";
+import { useState } from "react";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 // @ts-ignore
 import Draggable from "react-draggable";
-import characterImg from "@/assets/images/character.png"; // Placeholder
-import hatImg from "@/assets/images/hat.png";
-import glassesImg from "@/assets/images/glasses.png";
-import bagImg from "@/assets/images/bag.png";
-import coatImg from "@/assets/images/coat.png";
+
+const characterImg = "https://placehold.co/300x400?text=Character";
+const hatImg = "https://placehold.co/100x100?text=Hat";
+const glassesImg = "https://placehold.co/100x50?text=Glasses";
+const bagImg = "https://placehold.co/100x100?text=Bag";
+const coatImg = "https://placehold.co/200x200?text=Coat";
 
 const CharacterShowcase = ({ isVisible = false, setIsVisible = () => { } }: { isVisible?: boolean, setIsVisible?: (v: boolean) => void }) => {
   const [scale, setScale] = useState(1);
@@ -52,7 +52,7 @@ const CharacterShowcase = ({ isVisible = false, setIsVisible = () => { } }: { is
         >
           <Draggable
             position={position}
-            onStop={(e: any, data: any) => setPosition({ x: data.x, y: data.y })}
+            onStop={(_: any, data: any) => setPosition({ x: data.x, y: data.y })}
           >
             <div
               style={{
