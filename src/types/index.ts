@@ -1,7 +1,4 @@
-// ============================================
 // Core Types
-// ============================================
-
 export * from "./auth.types";
 export * from "./heritage.types";
 export * from "./artifact.types";
@@ -9,9 +6,7 @@ export * from "./api.types";
 export * from "./user.types";
 export * from "./collection.types";
 
-// ============================================
 // Common Types
-// ============================================
 
 export interface PaginationParams {
   page?: number;
@@ -70,9 +65,7 @@ export interface TimestampEntity {
   deleted_at?: string | null;
 }
 
-// ============================================
 // Component Props
-// ============================================
 
 export interface BaseComponentProps {
   className?: string;
@@ -85,9 +78,7 @@ export interface LoadingProps {
   error?: string | null;
 }
 
-// ============================================
 // Form Types
-// ============================================
 
 export interface FormModalProps {
   open: boolean;
@@ -123,9 +114,7 @@ export interface FilterConfig {
   value?: any;
 }
 
-// ============================================
 // Redux Types
-// ============================================
 
 export interface RootState {
   auth: any; // Will be replaced with AuthState
@@ -139,9 +128,7 @@ export interface AsyncThunkConfig {
   rejectValue: string;
 }
 
-// ============================================
 // API Response Types
-// ============================================
 
 export interface SuccessResponse<T = any> {
   success: true;
@@ -163,9 +150,7 @@ export interface ErrorResponse {
 
 export type ApiResponse<T = any> = SuccessResponse<T> | ErrorResponse;
 
-// ============================================
 // Route Types
-// ============================================
 
 export interface RouteConfig {
   path: string;
@@ -176,9 +161,7 @@ export interface RouteConfig {
   requiredRoles?: string[];
 }
 
-// ============================================
 // Storage Types
-// ============================================
 
 export interface StorageKeys {
   TOKEN: string;
@@ -186,9 +169,7 @@ export interface StorageKeys {
   THEME: string;
 }
 
-// ============================================
 // Utility Types
-// ============================================
 
 export type Nullable<T> = T | null;
 export type Optional<T> = T | undefined;
@@ -206,17 +187,13 @@ export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
     [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
   }[Keys];
 
-// ============================================
 // Event Types
-// ============================================
 
 export type ChangeHandler = (value: any) => void;
 export type SubmitHandler<T = any> = (values: T) => void | Promise<void>;
 export type ClickHandler = (event: React.MouseEvent) => void;
 
-// ============================================
 // Table Types
-// ============================================
 
 export interface TableColumn<T = any> {
   title: string;
@@ -240,9 +217,7 @@ export interface TablePaginationConfig {
   pageSizeOptions?: string[];
 }
 
-// ============================================
 // Character/Animation Types
-// ============================================
 
 export interface Position {
   x: number;
@@ -267,9 +242,7 @@ export interface CharacterState {
   controlled: boolean;
 }
 
-// ============================================
 // Notification Types
-// ============================================
 
 export interface NotificationConfig {
   message: string;

@@ -1,6 +1,5 @@
-// src/api/services/collection.service.js
 import BaseService from './base.service';
-import apiClient from '../config/axios.config';;
+import apiClient from '@/config/axios.config';
 
 /**
  * Collection Service
@@ -18,9 +17,20 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async addArtifact(collectionId, artifactId) {
-    return apiClient.post(
-      `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
-    );
+    try {
+      const response = await apiClient.post(
+        `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
+      );
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã thêm vào bộ sưu tập',
+      };
+    } catch (error) {
+      console.error('[Collection] addArtifact error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -30,9 +40,20 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async removeArtifact(collectionId, artifactId) {
-    return apiClient.delete(
-      `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
-    );
+    try {
+      const response = await apiClient.delete(
+        `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
+      );
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã xóa khỏi bộ sưu tập',
+      };
+    } catch (error) {
+      console.error('[Collection] removeArtifact error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -42,10 +63,24 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response with artifacts
    */
   async getArtifacts(collectionId, params = {}) {
-    return apiClient.get(
-      `${this.endpoint}/${collectionId}/artifacts`,
-      { params }
-    );
+    try {
+      const queryString = this.buildQueryString(params);
+      const url = queryString
+        ? `${this.endpoint}/${collectionId}/artifacts?${queryString}`
+        : `${this.endpoint}/${collectionId}/artifacts`;
+
+      const response = await apiClient.get(url);
+
+      return {
+        success: response.success || true,
+        data: response.data || [],
+        pagination: response.pagination || response.metadata,
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Collection] getArtifacts error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -54,9 +89,20 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async togglePublic(collectionId) {
-    return apiClient.patch(
-      `${this.endpoint}/${collectionId}/toggle-public`
-    );
+    try {
+      const response = await apiClient.patch(
+        `${this.endpoint}/${collectionId}/toggle-public`
+      );
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã cập nhật trạng thái',
+      };
+    } catch (error) {
+      console.error('[Collection] togglePublic error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -75,10 +121,21 @@ class CollectionService extends BaseService {
    * @returns {Promise} Response
    */
   async share(collectionId, data) {
-    return apiClient.post(
-      `${this.endpoint}/${collectionId}/share`,
-      data
-    );
+    try {
+      const response = await apiClient.post(
+        `${this.endpoint}/${collectionId}/share`,
+        data
+      );
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã chia sẻ bộ sưu tập',
+      };
+    } catch (error) {
+      console.error('[Collection] share error:', error);
+      throw error;
+    }
   }
 }
 

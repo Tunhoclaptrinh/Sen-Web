@@ -11,7 +11,7 @@ import {
   Tag,
 } from "antd";
 import { useCRUD } from "../../hooks/useCRUD";
-import heritageService from "../../services/heritage.service";
+import { heritageService } from "@services";
 import DataTable from "../../components/common/DataTable";
 import FormModal from "../../components/common/FormModal";
 

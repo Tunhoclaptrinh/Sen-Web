@@ -1,5 +1,4 @@
-// src/api/services/favorite.service.js
-import apiClient from '../config/axios.config';;
+import apiClient from '@/config/axios.config';
 
 /**
  * Favorite Service
@@ -15,7 +14,18 @@ class FavoriteService {
    * @returns {Promise} Response with all favorites
    */
   async getAll() {
-    return apiClient.get(this.endpoint);
+    try {
+      const response = await apiClient.get(this.endpoint);
+
+      return {
+        success: response.success || true,
+        data: response.data || [],
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] getAll error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -24,7 +34,18 @@ class FavoriteService {
    * @returns {Promise} Response with favorites of specific type
    */
   async getByType(type) {
-    return apiClient.get(`${this.endpoint}/${type}`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/${type}`);
+
+      return {
+        success: response.success || true,
+        data: response.data || [],
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] getByType error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -33,7 +54,18 @@ class FavoriteService {
    * @returns {Promise} Response with array of IDs
    */
   async getIdsByType(type) {
-    return apiClient.get(`${this.endpoint}/${type}/ids`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/${type}/ids`);
+
+      return {
+        success: response.success || true,
+        data: response.data || [],
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] getIdsByType error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -43,7 +75,18 @@ class FavoriteService {
    * @returns {Promise} Response with { isFavorite: boolean }
    */
   async check(type, id) {
-    return apiClient.get(`${this.endpoint}/${type}/${id}/check`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/${type}/${id}/check`);
+
+      return {
+        success: response.success || true,
+        data: response.data || { isFavorite: false },
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] check error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -53,7 +96,18 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async add(type, id) {
-    return apiClient.post(`${this.endpoint}/${type}/${id}`);
+    try {
+      const response = await apiClient.post(`${this.endpoint}/${type}/${id}`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã thêm vào yêu thích',
+      };
+    } catch (error) {
+      console.error('[Favorite] add error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -63,7 +117,18 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async toggle(type, id) {
-    return apiClient.post(`${this.endpoint}/${type}/${id}/toggle`);
+    try {
+      const response = await apiClient.post(`${this.endpoint}/${type}/${id}/toggle`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] toggle error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -73,7 +138,18 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async remove(type, id) {
-    return apiClient.delete(`${this.endpoint}/${type}/${id}`);
+    try {
+      const response = await apiClient.delete(`${this.endpoint}/${type}/${id}`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã xóa khỏi yêu thích',
+      };
+    } catch (error) {
+      console.error('[Favorite] remove error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -82,7 +158,18 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async clearByType(type) {
-    return apiClient.delete(`${this.endpoint}/${type}`);
+    try {
+      const response = await apiClient.delete(`${this.endpoint}/${type}`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã xóa tất cả',
+      };
+    } catch (error) {
+      console.error('[Favorite] clearByType error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -90,7 +177,18 @@ class FavoriteService {
    * @returns {Promise} Response
    */
   async clearAll() {
-    return apiClient.delete(this.endpoint);
+    try {
+      const response = await apiClient.delete(this.endpoint);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã xóa tất cả yêu thích',
+      };
+    } catch (error) {
+      console.error('[Favorite] clearAll error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -98,7 +196,18 @@ class FavoriteService {
    * @returns {Promise} Response with stats
    */
   async getStats() {
-    return apiClient.get(`${this.endpoint}/stats/summary`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/stats/summary`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] getStats error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -107,7 +216,18 @@ class FavoriteService {
    * @returns {Promise} Response with trending items
    */
   async getTrending(type) {
-    return apiClient.get(`${this.endpoint}/trending/${type}`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/trending/${type}`);
+
+      return {
+        success: response.success || true,
+        data: response.data || [],
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[Favorite] getTrending error:', error);
+      throw error;
+    }
   }
 }
 

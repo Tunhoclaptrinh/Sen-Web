@@ -1,6 +1,5 @@
-// src/api/services/user.service.js
 import BaseService from './base.service';
-import apiClient from '../config/axios.config';;
+import apiClient from '@/config/axios.config';
 
 /**
  * User Service
@@ -17,7 +16,38 @@ class UserService extends BaseService {
    * @returns {Promise} Response with updated profile
    */
   async updateProfile(data) {
-    return apiClient.put('/users/profile', data);
+    try {
+      const response = await apiClient.put('/users/profile', data);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Cập nhật thành công',
+      };
+    } catch (error) {
+      console.error('[User] updateProfile error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Change password
+   * @param {Object} data - Password data
+   * @returns {Promise} Response
+   */
+  async changePassword(data) {
+    try {
+      const response = await apiClient.put('/users/change-password', data);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đổi mật khẩu thành công',
+      };
+    } catch (error) {
+      console.error('[User] changePassword error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -26,7 +56,18 @@ class UserService extends BaseService {
    * @returns {Promise} Response with user activity
    */
   async getActivity(id) {
-    return apiClient.get(`${this.endpoint}/${id}/activity`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/${id}/activity`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[User] getActivity error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -35,7 +76,18 @@ class UserService extends BaseService {
    * @returns {Promise} Response
    */
   async toggleStatus(id) {
-    return apiClient.patch(`${this.endpoint}/${id}/status`);
+    try {
+      const response = await apiClient.patch(`${this.endpoint}/${id}/status`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã cập nhật trạng thái',
+      };
+    } catch (error) {
+      console.error('[User] toggleStatus error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -43,7 +95,18 @@ class UserService extends BaseService {
    * @returns {Promise} Response with stats
    */
   async getStats() {
-    return apiClient.get(`${this.endpoint}/stats/summary`);
+    try {
+      const response = await apiClient.get(`${this.endpoint}/stats/summary`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message,
+      };
+    } catch (error) {
+      console.error('[User] getStats error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -52,7 +115,18 @@ class UserService extends BaseService {
    * @returns {Promise} Response
    */
   async deletePermanent(id) {
-    return apiClient.delete(`${this.endpoint}/${id}/permanent`);
+    try {
+      const response = await apiClient.delete(`${this.endpoint}/${id}/permanent`);
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Đã xóa vĩnh viễn',
+      };
+    } catch (error) {
+      console.error('[User] deletePermanent error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -61,10 +135,17 @@ class UserService extends BaseService {
    * @returns {Promise} Response with file
    */
   async export(params = {}) {
-    return apiClient.get(`${this.endpoint}/export`, {
-      params,
-      responseType: 'blob',
-    });
+    try {
+      const response = await apiClient.get(`${this.endpoint}/export`, {
+        params,
+        responseType: 'blob',
+      });
+
+      return response;
+    } catch (error) {
+      console.error('[User] export error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -73,13 +154,25 @@ class UserService extends BaseService {
    * @returns {Promise} Response
    */
   async import(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    return apiClient.post(`${this.endpoint}/import`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await apiClient.post(`${this.endpoint}/import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return {
+        success: response.success || true,
+        data: response.data || response,
+        message: response.message || 'Import thành công',
+      };
+    } catch (error) {
+      console.error('[User] import error:', error);
+      throw error;
+    }
   }
 }
 

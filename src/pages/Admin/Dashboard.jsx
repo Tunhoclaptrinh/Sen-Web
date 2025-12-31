@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import userService from "@services/user.service";
-import heritageService from "@services/heritage.service";
+import { heritageService } from "@services";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({

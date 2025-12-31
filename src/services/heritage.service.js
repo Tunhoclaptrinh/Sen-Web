@@ -1,6 +1,5 @@
-
 import BaseService from './base.service';
-import apiClient from '../config/axios.config';;
+import apiClient from '@/config/axios.config';
 
 /**
  * Heritage Service
@@ -27,6 +26,7 @@ class HeritageService extends BaseService {
       return {
         success: response.success || true,
         data: response.data || [],
+        message: response.message,
       };
     } catch (error) {
       console.error('[Heritage] getNearby error:', error);
@@ -52,7 +52,8 @@ class HeritageService extends BaseService {
       return {
         success: response.success || true,
         data: response.data || [],
-        pagination: response.pagination,
+        pagination: response.pagination || response.metadata,
+        message: response.message,
       };
     } catch (error) {
       console.error('[Heritage] getArtifacts error:', error);
@@ -72,6 +73,7 @@ class HeritageService extends BaseService {
       return {
         success: response.success || true,
         data: response.data || [],
+        message: response.message,
       };
     } catch (error) {
       console.error('[Heritage] getTimeline error:', error);

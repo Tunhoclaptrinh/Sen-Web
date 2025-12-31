@@ -1,5 +1,6 @@
 import BaseService from './base.service';
-import apiClient from '../config/axios.config';;
+import apiClient from '@/config/axios.config';
+
 class ArtifactService extends BaseService {
   constructor() {
     super('/artifacts');
@@ -23,6 +24,7 @@ class ArtifactService extends BaseService {
       return {
         success: response.success || true,
         data: response.data || [],
+        message: response.message,
       };
     } catch (error) {
       console.error('[Artifact] getRelated error:', error);

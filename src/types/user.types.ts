@@ -1,7 +1,3 @@
-// ============================================
-// src/types/user.types.ts
-// ============================================
-
 import { BaseEntity, TimestampEntity } from "./index";
 
 export enum UserRole {
