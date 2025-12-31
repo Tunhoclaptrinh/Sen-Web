@@ -1,11 +1,10 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { STORAGE_KEYS } from '../config/constants';
+import { STORAGE_KEYS } from './constants';
 
-// API Base URL
+// CONFIGURATION
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
-// Create axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 30000,
@@ -14,80 +13,200 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor
+// REQUEST INTERCEPTOR
+let isRefreshing = false;
+let failedQueue = [];
+
 apiClient.interceptors.request.use(
   (config) => {
-    // Get token from localStorage using constant key
+    // Get token from localStorage
     const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Log request in development
+    if (import.meta.env.DEV) {
+      console.log(`🚀 [${config.method.toUpperCase()}] ${config.url}`, {
+        params: config.params,
+        data: config.data,
+      });
+    }
+
     return config;
   },
   (error) => {
+    console.error('❌ Request Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor
+// RESPONSE INTERCEPTOR
 apiClient.interceptors.response.use(
   (response) => {
-    // Return the full data object from API (includes success, message, data)
+    // Log response in development
+    if (import.meta.env.DEV) {
+      console.log(`✅ [${response.config.method.toUpperCase()}] ${response.config.url}`, response.data);
+    }
+
+    // Return the full data object from API
     return response.data;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
     const { response } = error;
 
-    if (response) {
-      const { status, data } = response;
+    // Log error in development
+    if (import.meta.env.DEV) {
+      console.error('❌ Response Error:', {
+        url: originalRequest?.url,
+        method: originalRequest?.method,
+        status: response?.status,
+        data: response?.data,
+      });
+    }
 
-      switch (status) {
-        case 400:
-          message.error(data.message || 'Yêu cầu không hợp lệ');
-          break;
-        case 401:
-          // Token expired or invalid
-          message.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
-          localStorage.removeItem(STORAGE_KEYS.TOKEN);
-          localStorage.removeItem(STORAGE_KEYS.USER);
-          // Only redirect if not already on login page to avoid loops
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
-          break;
-        case 403:
-          message.error('Bạn không có quyền truy cập tài nguyên này');
-          break;
-        case 404:
-          message.error(data.message || 'Không tìm thấy dữ liệu');
-          break;
-        case 422:
-          if (data.errors) {
-            // Handle validation errors array if present
-            const errorMessages = Array.isArray(data.errors)
-              ? data.errors.map(err => err.message || JSON.stringify(err)).join(', ')
-              : 'Dữ liệu không hợp lệ';
-            message.error(errorMessages);
-          } else {
-            message.error(data.message || 'Dữ liệu không hợp lệ');
-          }
-          break;
-        case 500:
-          message.error('Lỗi hệ thống. Vui lòng thử lại sau.');
-          break;
-        default:
-          message.error(data.message || 'Có lỗi xảy ra');
+
+    // Handle No Response (Network Error)
+
+    if (!response) {
+      message.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+      return Promise.reject(error);
+    }
+
+    const { status, data } = response;
+
+
+    // Handle Specific Status Codes
+
+    switch (status) {
+      case 400: {
+        // Bad Request
+        const errorMessage = data.message || 'Yêu cầu không hợp lệ';
+        message.error(errorMessage);
+        break;
       }
-    } else if (error.request) {
-      message.error('Không thể kết nối đến server');
-    } else {
-      message.error('Có lỗi xảy ra trong quá trình thiết lập yêu cầu');
+
+      case 401: {
+        // Unauthorized - Token expired or invalid
+
+        // Prevent infinite loop
+        if (originalRequest._retry) {
+          // Already retried, force logout
+          handleForceLogout();
+          return Promise.reject(error);
+        }
+
+        // If already refreshing, queue this request
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          })
+            .then(token => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              return apiClient(originalRequest);
+            })
+            .catch(err => Promise.reject(err));
+        }
+
+        // Mark as retrying
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        // Try to refresh token (if you have refresh token endpoint)
+        // For now, we'll just force logout
+        handleForceLogout();
+        return Promise.reject(error);
+      }
+
+      case 403: {
+        // Forbidden
+        message.error('Bạn không có quyền truy cập tài nguyên này');
+        break;
+      }
+
+      case 404: {
+        // Not Found
+        const errorMessage = data.message || 'Không tìm thấy dữ liệu';
+        message.error(errorMessage);
+        break;
+      }
+
+      case 422: {
+        // Validation Error
+        if (data.errors && Array.isArray(data.errors)) {
+          const errorMessages = data.errors
+            .map(err => err.message || JSON.stringify(err))
+            .join(', ');
+          message.error(errorMessages);
+        } else {
+          message.error(data.message || 'Dữ liệu không hợp lệ');
+        }
+        break;
+      }
+
+      case 429: {
+        // Too Many Requests
+        message.warning('Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.');
+        break;
+      }
+
+      case 500: {
+        // Internal Server Error
+        message.error('Lỗi hệ thống. Vui lòng thử lại sau.');
+        break;
+      }
+
+      case 503: {
+        // Service Unavailable
+        message.error('Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.');
+        break;
+      }
+
+      default: {
+        // Unknown Error
+        const errorMessage = data.message || 'Có lỗi xảy ra';
+        message.error(errorMessage);
+      }
     }
 
     return Promise.reject(error);
   }
 );
 
+// HELPER FUNCTIONS
+
+/**
+ * Handle Force Logout
+ * Clears auth data and redirects to login
+ */
+const handleForceLogout = () => {
+  // Clear storage
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
+  localStorage.removeItem(STORAGE_KEYS.USER);
+
+  // Show notification
+  message.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+
+  // Dispatch logout action to Redux (if store is available)
+  // This is handled better in App.jsx with store subscription
+
+  // Redirect to login (only if not already on login page)
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+};
+
+/**
+ * Add request to retry queue
+ */
+const addToRetryQueue = (callback) => {
+  failedQueue.push(callback);
+};
+
+// EXPORTS
 export default apiClient;
+
+// Export helper for manual retry
+export { addToRetryQueue };

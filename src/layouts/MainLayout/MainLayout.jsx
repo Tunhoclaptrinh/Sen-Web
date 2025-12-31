@@ -1,32 +1,56 @@
-import { Layout, Menu, Dropdown, Button, Badge, Input, Drawer } from "antd";
+import {
+  Layout,
+  Menu,
+  Dropdown,
+  Button,
+  Badge,
+  Input,
+  Drawer,
+  Avatar,
+} from "antd";
 import {
   BellOutlined,
   UserOutlined,
   LogoutOutlined,
   SearchOutlined,
   MenuOutlined,
+  SettingOutlined,
+  HeartOutlined,
 } from "@ant-design/icons";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/slices/authSlice";
-import { useState } from "react";
-import styles from "./MainLayout.module.css";
+import { useState, useEffect } from "react";
 import logo from "@/assets/images/logo.png";
 
 const { Header, Content, Footer } = Layout;
 
 const MainLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [searchValue, setSearchValue] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  // Handle Window Resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Handle Logout
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
 
+  // Handle Search
   const handleSearch = () => {
     if (searchValue.trim()) {
       navigate(`/heritage-sites?q=${encodeURIComponent(searchValue)}`);
@@ -34,6 +58,15 @@ const MainLayout = () => {
     }
   };
 
+  // Get Active Menu Key
+  const getActiveKey = () => {
+    if (location.pathname === "/") return "home";
+    if (location.pathname.startsWith("/heritage")) return "heritage";
+    if (location.pathname.startsWith("/artifacts")) return "artifacts";
+    return "";
+  };
+
+  // User Menu Items
   const userMenuItems = [
     {
       key: "profile",
@@ -42,7 +75,13 @@ const MainLayout = () => {
     },
     {
       key: "collections",
+      icon: <HeartOutlined />,
       label: <Link to="/collections">Bộ Sưu Tập</Link>,
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: "Cài Đặt",
     },
     { type: "divider" },
     {
@@ -50,138 +89,211 @@ const MainLayout = () => {
       icon: <LogoutOutlined />,
       label: "Đăng Xuất",
       onClick: handleLogout,
+      danger: true,
     },
   ];
 
+  // Nav Menu Items
   const navMenuItems = [
-    { key: "home", label: <Link to="/">Trang Chủ</Link> },
-    { key: "heritage", label: <Link to="/heritage-sites">Di Sản</Link> },
-    { key: "artifacts", label: <Link to="/artifacts">Hiện Vật</Link> },
+    {
+      key: "home",
+      label: <Link to="/">Trang Chủ</Link>,
+    },
+    {
+      key: "heritage",
+      label: <Link to="/heritage-sites">Di Sản</Link>,
+    },
+    {
+      key: "artifacts",
+      label: <Link to="/artifacts">Hiện Vật</Link>,
+    },
   ];
 
+  // RENDER
   return (
-    <Layout
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-    >
-      {/* Header */}
+    <Layout style={{ minHeight: "100vh" }}>
+      {/* HEADER */}
       <Header
-        className={styles.header}
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "0 24px",
+          padding: isMobile ? "0 16px" : "0 24px",
           background: "#fff",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
           position: "sticky",
           top: 0,
           zIndex: 999,
-          height: 70,
+          height: isMobile ? 60 : 70,
         }}
       >
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link to="/">
           <div
             style={{
-              color: "#d4a574",
               backgroundImage: `url(${logo})`,
               backgroundSize: "contain",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 10,
-              width: 90,
+              width: isMobile ? 70 : 90,
               height: 36,
             }}
-          ></div>
+          />
         </Link>
 
         {/* Desktop Menu */}
-        <Menu
-          mode="horizontal"
-          items={navMenuItems}
-          style={{
-            flex: 1,
-            border: "none",
-            marginLeft: 40,
-          }}
-          className={styles.desktopMenu}
-        />
+        {!isMobile && (
+          <Menu
+            mode="horizontal"
+            selectedKeys={[getActiveKey()]}
+            items={navMenuItems}
+            style={{
+              flex: 1,
+              border: "none",
+              marginLeft: 40,
+            }}
+          />
+        )}
 
         {/* Desktop Search */}
-        <Input
-          placeholder="Tìm kiếm..."
-          prefix={<SearchOutlined />}
-          style={{ width: 200, marginRight: 16 }}
-          className={styles.desktopSearch}
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onPressEnter={handleSearch}
-        />
+        {!isMobile && (
+          <Input
+            placeholder="Tìm kiếm..."
+            prefix={<SearchOutlined />}
+            style={{ width: 200, marginRight: 16 }}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onPressEnter={handleSearch}
+          />
+        )}
 
-        {/* Actions */}
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        {/* Right Side Actions */}
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          {/* Notifications */}
           <Badge count={0}>
-            <BellOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
+            <BellOutlined
+              style={{
+                fontSize: 20,
+                cursor: "pointer",
+                color: "#595959",
+              }}
+            />
           </Badge>
 
+          {/* User Menu / Auth Buttons */}
           {isAuthenticated ? (
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <Button type="text">{user?.name}</Button>
+            <Dropdown
+              menu={{ items: userMenuItems }}
+              placement="bottomRight"
+              trigger={["click"]}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  cursor: "pointer",
+                  padding: "4px 12px",
+                  borderRadius: 8,
+                  transition: "background 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#f5f5f5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                }}
+              >
+                <Avatar
+                  size="small"
+                  src={user?.avatar}
+                  icon={<UserOutlined />}
+                  style={{ background: "#d4a574" }}
+                />
+                {!isMobile && <span>{user?.name}</span>}
+              </div>
             </Dropdown>
           ) : (
-            <>
-              <Link to="/login">
-                <Button type="primary" size="small">
-                  Đăng Nhập
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button size="small">Đăng Ký</Button>
-              </Link>
-            </>
+            !isMobile && (
+              <>
+                <Link to="/login">
+                  <Button type="primary" size="small">
+                    Đăng Nhập
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button size="small">Đăng Ký</Button>
+                </Link>
+              </>
+            )
           )}
 
           {/* Mobile Menu Button */}
-          <Button
-            type="text"
-            icon={<MenuOutlined />}
-            onClick={() => setMobileMenuOpen(true)}
-            className={styles.mobileMenuBtn}
-          />
+          {isMobile && (
+            <Button
+              type="text"
+              icon={<MenuOutlined />}
+              onClick={() => setMobileMenuOpen(true)}
+            />
+          )}
         </div>
       </Header>
 
-      {/* Mobile Menu */}
+      {/* MOBILE DRAWER */}
       <Drawer
         title="Menu"
         placement="left"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
+        width={280}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Mobile Search */}
           <Input
             placeholder="Tìm kiếm..."
+            prefix={<SearchOutlined />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onPressEnter={handleSearch}
           />
+
+          {/* Mobile Menu */}
           <Menu
             mode="vertical"
+            selectedKeys={[getActiveKey()]}
             items={navMenuItems}
             style={{ border: "none" }}
             onClick={() => setMobileMenuOpen(false)}
           />
+
+          {/* Mobile Auth Buttons */}
+          {!isAuthenticated && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginTop: 16,
+              }}
+            >
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button type="primary" block>
+                  Đăng Nhập
+                </Button>
+              </Link>
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button block>Đăng Ký</Button>
+              </Link>
+            </div>
+          )}
         </div>
       </Drawer>
 
-      {/* Content */}
-      <Layout style={{ flex: 1 }}>
+      {/* CONTENT */}
+      <Layout>
         <Content
           style={{
-            padding: "40px 24px",
+            padding: isMobile ? "24px 16px" : "40px 24px",
             maxWidth: "1400px",
             margin: "0 auto",
             width: "100%",
@@ -191,20 +303,18 @@ const MainLayout = () => {
         </Content>
       </Layout>
 
-      {/* Footer */}
+      {/* FOOTER */}
       <Footer
         style={{
           background: "#fafafa",
           borderTop: "1px solid #e8e8e8",
-          padding: "40px 24px",
+          padding: isMobile ? "24px 16px" : "40px 24px",
+          textAlign: "center",
         }}
       >
-        <div style={{ textAlign: "center", color: "#8c8c8c" }}>
-          <p>
-            &copy; 2024 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công
-            nghệ.
-          </p>
-        </div>
+        <p style={{ color: "#8c8c8c", margin: 0 }}>
+          &copy; 2024 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ.
+        </p>
       </Footer>
     </Layout>
   );

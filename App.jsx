@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { ConfigProvider, theme as antdTheme } from "antd";
-import { getMe } from "./src/store/slices/authSlice";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { ConfigProvider, theme as antdTheme, Spin } from "antd";
+import { initializeAuth, forceLogout } from "./src/store/slices/authSlice";
 import MainLayout from "./src/layouts/MainLayout";
 import AdminLayout from "./src/layouts/AdminLayout";
 import AuthLayout from "./src/layouts/AuthLayout";
@@ -28,20 +28,61 @@ import UserManagement from "./src/pages/Admin/UserManagement";
 
 import CharacterShowcase from "./src/pages/CharacterShowcase";
 
-import { GlobalCharacterProvider } from "@/contexts/GlobalCharacterContext"; // Import Context mới
-import GlobalCharacterOverlay from "@/components/GlobalCharacterOverlay"; // Import Overlay mới
+import { GlobalCharacterProvider } from "@/contexts/GlobalCharacterContext";
+import GlobalCharacterOverlay from "@/components/GlobalCharacterOverlay";
 
+// LOADING SCREEN COMPONENT
+const LoadingScreen = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      background: "linear-gradient(135deg, #d4a574 0%, #8b6f47 100%)",
+    }}
+  >
+    <Spin size="large" tip="Đang tải..." />
+  </div>
+);
+
+// MAIN APP COMPONENT
 function App() {
   const dispatch = useDispatch();
-  const { isAuthenticated, token } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { isAuthenticated, isInitialized, loading } = useSelector(
+    (state) => state.auth,
+  );
   const { theme: uiTheme } = useSelector((state) => state.ui);
 
+  // Initialize Auth on Mount
   useEffect(() => {
-    if (token && isAuthenticated) {
-      dispatch(getMe());
-    }
-  }, [dispatch, token, isAuthenticated]);
+    dispatch(initializeAuth());
+  }, [dispatch]);
 
+  // Listen for Storage Changes (Multi-tab Logout)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      // If token is removed in another tab, logout here too
+      if (e.key === "sen_token" && !e.newValue) {
+        dispatch(forceLogout());
+        navigate("/login");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [dispatch, navigate]);
+
+  // Show Loading Screen During Initialization
+  if (!isInitialized || loading) {
+    return <LoadingScreen />;
+  }
+
+  // RENDER APP
   return (
     <ConfigProvider
       theme={{
@@ -49,15 +90,25 @@ function App() {
           uiTheme === "dark"
             ? antdTheme.darkAlgorithm
             : antdTheme.defaultAlgorithm,
+        token: {
+          colorPrimary: "#d4a574",
+          borderRadius: 6,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        },
       }}
     >
       <GlobalCharacterProvider>
         <GlobalCharacterOverlay />
+
         <Routes>
           {/* Auth Routes */}
           <Route element={<AuthLayout />}>
-            <Route path="/login" element={<Login />} />
-            {/* <Route path="/login" element={<RegisLoginter />} /> */}
+            <Route
+              path="/login"
+              element={
+                isAuthenticated ? <Navigate to="/" replace /> : <Login />
+              }
+            />
           </Route>
 
           {/* Public Routes */}
@@ -70,11 +121,10 @@ function App() {
             />
             <Route path="/artifacts" element={<ArtifactListPage />} />
             <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
-
             <Route path="/character-showcase" element={<CharacterShowcase />} />
           </Route>
 
-          {/* Protected Routes */}
+          {/* Protected Routes (Require Login) */}
           <Route element={<PrivateRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/profile" element={<Profile />} />
@@ -82,7 +132,7 @@ function App() {
             </Route>
           </Route>
 
-          {/* Admin Routes */}
+          {/* Admin Routes (Require Admin Role) */}
           <Route element={<AdminRoute />}>
             <Route element={<AdminLayout />}>
               <Route
@@ -96,7 +146,7 @@ function App() {
             </Route>
           </Route>
 
-          {/* 404 */}
+          {/* 404 Not Found */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </GlobalCharacterProvider>
