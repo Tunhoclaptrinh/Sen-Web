@@ -1,4 +1,3 @@
-// App.tsx - Fixed Version
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRoutes, useNavigate } from "react-router-dom";

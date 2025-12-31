@@ -11,7 +11,11 @@ import type {
 
 /**
  * Base Service Class
- * Provides CRUD operations with full TypeScript support
+ * Provides complete CRUD operations with full TypeScript support
+ *
+ * @template T - Entity type
+ * @template CreateDTO - Create data transfer object type
+ * @template UpdateDTO - Update data transfer object type
  */
 class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   protected endpoint: string;
@@ -22,50 +26,57 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
 
   /**
    * Build query string from params
+   * Supports both backend formats (_page, _limit) and frontend formats (page, limit)
    */
   protected buildQueryString(params: QueryParams = {}): string {
     const queryParams = new URLSearchParams();
 
-    // Pagination
-    if (params._page || params.page) {
-      queryParams.append("_page", String(params._page || params.page));
-    }
-    if (params._limit || params.limit) {
-      queryParams.append("_limit", String(params._limit || params.limit));
+    // Pagination - support both formats
+    const page = params._page || params.page;
+    const limit = params._limit || params.limit;
+
+    if (page) queryParams.append("_page", String(page));
+    if (limit) queryParams.append("_limit", String(limit));
+
+    // Sorting - support both formats
+    const sort = params._sort || params.sort;
+    const order = params._order || params.order;
+
+    if (sort) queryParams.append("_sort", sort);
+    if (order) {
+      // Normalize order format
+      const normalizedOrder =
+        order === "ascend" ? "asc" : order === "descend" ? "desc" : order;
+      queryParams.append("_order", normalizedOrder);
     }
 
-    // Sorting
-    if (params._sort || params.sort) {
-      queryParams.append("_sort", params._sort || params.sort);
-    }
-    if (params._order || params.order) {
-      queryParams.append("_order", params._order || params.order);
-    }
+    // Search - support both formats
+    const search = params.q || params.search;
+    if (search) queryParams.append("q", search);
 
-    // Search
-    if (params.q || params.search) {
-      queryParams.append("q", params.q || params.search);
-    }
+    // Filters - add all other params
+    const excludedKeys = [
+      "_page",
+      "_limit",
+      "_sort",
+      "_order",
+      "q",
+      "page",
+      "limit",
+      "sort",
+      "order",
+      "search",
+    ];
 
-    // Filters
-    Object.keys(params).forEach((key) => {
-      if (
-        ![
-          "_page",
-          "_limit",
-          "_sort",
-          "_order",
-          "q",
-          "page",
-          "limit",
-          "sort",
-          "order",
-          "search",
-        ].includes(key)
-      ) {
-        const value = params[key];
+    Object.entries(params).forEach(([key, value]) => {
+      if (!excludedKeys.includes(key)) {
         if (value !== undefined && value !== null && value !== "") {
-          queryParams.append(key, String(value));
+          // Handle array values
+          if (Array.isArray(value)) {
+            value.forEach((v) => queryParams.append(key, String(v)));
+          } else {
+            queryParams.append(key, String(value));
+          }
         }
       }
     });
@@ -74,7 +85,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * GET all items
+   * GET all items with pagination and filtering
    */
   async getAll(params: QueryParams = {}): Promise<BaseApiResponse<T[]>> {
     try {
@@ -86,10 +97,10 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.get<BaseApiResponse<T[]>>(url);
 
       return {
-        success: response.success || true,
-        data: response.data || [],
+        success: response.success ?? true,
+        data: response.data ?? [],
         pagination: response.pagination,
-        metadata: response.metadata || response.pagination,
+        metadata: response.metadata ?? response.pagination,
       };
     } catch (error) {
       console.error(`[${this.endpoint}] getAll error:`, error);
@@ -107,8 +118,8 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       );
 
       return {
-        success: response.success || true,
-        data: response.data || (response as any),
+        success: response.success ?? true,
+        data: response.data ?? (response as any),
       };
     } catch (error) {
       console.error(`[${this.endpoint}] getById error:`, error);
@@ -127,9 +138,9 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       );
 
       return {
-        success: response.success || true,
-        data: response.data || (response as any),
-        message: response.message || "Created successfully",
+        success: response.success ?? true,
+        data: response.data ?? (response as any),
+        message: response.message ?? "Tạo thành công",
       };
     } catch (error) {
       console.error(`[${this.endpoint}] create error:`, error);
@@ -138,7 +149,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * UPDATE existing item
+   * UPDATE existing item (full update)
    */
   async update(
     id: number | string,
@@ -151,12 +162,36 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       );
 
       return {
-        success: response.success || true,
-        data: response.data || (response as any),
-        message: response.message || "Updated successfully",
+        success: response.success ?? true,
+        data: response.data ?? (response as any),
+        message: response.message ?? "Cập nhật thành công",
       };
     } catch (error) {
       console.error(`[${this.endpoint}] update error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * PATCH item (partial update)
+   */
+  async patch(
+    id: number | string,
+    data: Partial<UpdateDTO>,
+  ): Promise<BaseApiResponse<T>> {
+    try {
+      const response = await apiClient.patch<BaseApiResponse<T>>(
+        `${this.endpoint}/${id}`,
+        data,
+      );
+
+      return {
+        success: response.success ?? true,
+        data: response.data ?? (response as any),
+        message: response.message ?? "Cập nhật thành công",
+      };
+    } catch (error) {
+      console.error(`[${this.endpoint}] patch error:`, error);
       throw error;
     }
   }
@@ -171,8 +206,8 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       );
 
       return {
-        success: response.success || true,
-        message: response.message || "Deleted successfully",
+        success: response.success ?? true,
+        message: response.message ?? "Xóa thành công",
       };
     } catch (error) {
       console.error(`[${this.endpoint}] delete error:`, error);
@@ -199,8 +234,8 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.get<BaseApiResponse<T[]>>(url);
 
       return {
-        success: response.success || true,
-        data: response.data || [],
+        success: response.success ?? true,
+        data: response.data ?? [],
         pagination: response.pagination,
       };
     } catch (error) {
@@ -210,36 +245,12 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * PATCH item (partial update)
-   */
-  async patch(
-    id: number | string,
-    data: Partial<UpdateDTO>,
-  ): Promise<BaseApiResponse<T>> {
-    try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}`,
-        data,
-      );
-
-      return {
-        success: response.success || true,
-        data: response.data || (response as any),
-        message: response.message || "Updated successfully",
-      };
-    } catch (error) {
-      console.error(`[${this.endpoint}] patch error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * GET schema
+   * GET schema definition
    */
   async getSchema(): Promise<any> {
     try {
       const response = await apiClient.get(`${this.endpoint}/schema`);
-      return response.data || response;
+      return response.data ?? response;
     } catch (error) {
       console.warn(`[${this.endpoint}] getSchema not supported`);
       return null;
@@ -247,7 +258,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * EXPORT data
+   * EXPORT data to file
    */
   async export(params: ExportParams = {}): Promise<Blob> {
     try {
@@ -268,7 +279,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * IMPORT data
+   * IMPORT data from file
    */
   async import(file: File): Promise<BaseApiResponse<ImportResult>> {
     try {
@@ -293,7 +304,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * BATCH operations
+   * BATCH operations (create/update/delete multiple items)
    */
   async batch<ItemType = T>(
     operation: "create" | "update" | "delete",
@@ -316,12 +327,12 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * GET statistics
+   * GET statistics summary
    */
   async getStats(): Promise<any> {
     try {
       const response = await apiClient.get(`${this.endpoint}/stats/summary`);
-      return response.data || response;
+      return response.data ?? response;
     } catch (error) {
       console.warn(`[${this.endpoint}] getStats not supported`);
       return null;
@@ -329,7 +340,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * DOWNLOAD template
+   * DOWNLOAD import template
    */
   async downloadTemplate(): Promise<Blob> {
     try {
@@ -339,6 +350,115 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       return response as unknown as Blob;
     } catch (error) {
       console.error(`[${this.endpoint}] downloadTemplate error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * VALIDATE data before create/update
+   */
+  async validate(
+    data: CreateDTO | UpdateDTO,
+  ): Promise<{ valid: boolean; errors?: any[] }> {
+    try {
+      const response = await apiClient.post(`${this.endpoint}/validate`, data);
+      return response.data ?? { valid: true };
+    } catch (error) {
+      console.warn(`[${this.endpoint}] validate not supported`);
+      return { valid: true };
+    }
+  }
+
+  /**
+   * COUNT items with filters
+   */
+  async count(params: QueryParams = {}): Promise<number> {
+    try {
+      const queryString = this.buildQueryString(params);
+      const url = queryString
+        ? `${this.endpoint}/count?${queryString}`
+        : `${this.endpoint}/count`;
+
+      const response = await apiClient.get<{ count: number }>(url);
+      return response.count ?? 0;
+    } catch (error) {
+      console.warn(`[${this.endpoint}] count not supported`);
+      return 0;
+    }
+  }
+
+  /**
+   * CHECK if item exists
+   */
+  async exists(id: number | string): Promise<boolean> {
+    try {
+      await this.getById(id);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * BULK CREATE multiple items
+   */
+  async bulkCreate(items: CreateDTO[]): Promise<BaseApiResponse<T[]>> {
+    try {
+      const response = await apiClient.post<BaseApiResponse<T[]>>(
+        `${this.endpoint}/bulk`,
+        { items },
+      );
+
+      return {
+        success: response.success ?? true,
+        data: response.data ?? [],
+        message: response.message ?? "Tạo hàng loạt thành công",
+      };
+    } catch (error) {
+      console.error(`[${this.endpoint}] bulkCreate error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * BULK UPDATE multiple items
+   */
+  async bulkUpdate(
+    updates: Array<{ id: number | string; data: UpdateDTO }>,
+  ): Promise<BaseApiResponse<T[]>> {
+    try {
+      const response = await apiClient.put<BaseApiResponse<T[]>>(
+        `${this.endpoint}/bulk`,
+        { updates },
+      );
+
+      return {
+        success: response.success ?? true,
+        data: response.data ?? [],
+        message: response.message ?? "Cập nhật hàng loạt thành công",
+      };
+    } catch (error) {
+      console.error(`[${this.endpoint}] bulkUpdate error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * BULK DELETE multiple items
+   */
+  async bulkDelete(ids: (number | string)[]): Promise<BaseApiResponse<void>> {
+    try {
+      const response = await apiClient.post<BaseApiResponse<void>>(
+        `${this.endpoint}/bulk/delete`,
+        { ids },
+      );
+
+      return {
+        success: response.success ?? true,
+        message: response.message ?? "Xóa hàng loạt thành công",
+      };
+    } catch (error) {
+      console.error(`[${this.endpoint}] bulkDelete error:`, error);
       throw error;
     }
   }
