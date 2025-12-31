@@ -1,7 +1,7 @@
 {
   "name": "sen-web",
-  "version": "1.0.0",
-  "description": "SEN Web Application - Heritage Management System",
+  "version": "2.0.0",
+  "description": "SEN Web Application - Heritage Management & Educational Game System",
   "private": true,
   "type": "module",
   "scripts": {

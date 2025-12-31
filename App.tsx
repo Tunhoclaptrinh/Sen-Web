@@ -1,10 +1,16 @@
-// App.tsx - Enhanced Version
+// App.tsx - Fixed Version
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRoutes, useNavigate } from "react-router-dom";
 import { ConfigProvider, theme as antdTheme, App as AntApp } from "antd";
 import viVN from "antd/locale/vi_VN";
 import { forceLogout, initializeAuth } from "./src/store/slices/authSlice";
+import { RootState } from "./src/store";
+import routes from "./src/routes/routes.config";
+import Loading from "./src/components/common/Loading";
+import ErrorBoundary from "./src/components/common/ErrorBoundary";
+import { GlobalCharacterProvider } from "./src/contexts/GlobalCharacterContext";
+import GlobalCharacterOverlay from "./src/components/GlobalCharacterOverlay";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
