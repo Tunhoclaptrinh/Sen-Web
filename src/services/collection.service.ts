@@ -73,7 +73,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     artifactId: number | string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < Collection >> (
+      const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
       );
 
@@ -96,7 +96,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     artifactId: number | string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.delete < BaseApiResponse < Collection >> (
+      const response = await apiClient.delete<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
       );
 
@@ -119,7 +119,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     siteId: number | string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < Collection >> (
+      const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/heritage-sites/${siteId}`
       );
 
@@ -142,7 +142,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     siteId: number | string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.delete < BaseApiResponse < Collection >> (
+      const response = await apiClient.delete<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/heritage-sites/${siteId}`
       );
 
@@ -170,7 +170,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         ? `${this.endpoint}/${collectionId}/artifacts?${queryString}`
         : `${this.endpoint}/${collectionId}/artifacts`;
 
-      const response = await apiClient.get < BaseApiResponse < any[] >> (url);
+      const response = await apiClient.get<BaseApiResponse<any[]>>(url);
 
       return {
         success: response.success ?? true,
@@ -197,7 +197,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         ? `${this.endpoint}/${collectionId}/heritage-sites?${queryString}`
         : `${this.endpoint}/${collectionId}/heritage-sites`;
 
-      const response = await apiClient.get < BaseApiResponse < any[] >> (url);
+      const response = await apiClient.get<BaseApiResponse<any[]>>(url);
 
       return {
         success: response.success ?? true,
@@ -218,7 +218,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     collectionId: number | string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.patch < BaseApiResponse < Collection >> (
+      const response = await apiClient.patch<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/toggle-public`
       );
 
@@ -255,7 +255,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     data: ShareCollectionData
   ): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < void>> (
+      const response = await apiClient.post<BaseApiResponse<void>>(
         `${this.endpoint}/${collectionId}/share`,
         data
       );
@@ -278,7 +278,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     newName?: string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < Collection >> (
+      const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/duplicate`,
         { name: newName }
       );
@@ -302,7 +302,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     targetId: number | string
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < Collection >> (
+      const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/merge`,
         { sourceIds, targetId }
       );
@@ -323,7 +323,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async getStats(): Promise<BaseApiResponse<CollectionStats>> {
     try {
-      const response = await apiClient.get < BaseApiResponse < CollectionStats >> (
+      const response = await apiClient.get<BaseApiResponse<CollectionStats>>(
         `${this.endpoint}/stats/summary`
       );
 
@@ -347,7 +347,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     itemId: number | string
   ): Promise<boolean> {
     try {
-      const response = await apiClient.get < { exists: boolean } > (
+      const response = await apiClient.get<{ exists: boolean }>(
         `${this.endpoint}/${collectionId}/check/${type}/${itemId}`
       );
 
@@ -366,7 +366,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     artifactIds: (number | string)[]
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < Collection >> (
+      const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/artifacts/bulk`,
         { artifactIds }
       );
@@ -390,7 +390,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
     artifactIds: (number | string)[]
   ): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post < BaseApiResponse < Collection >> (
+      const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/artifacts/bulk/delete`,
         { artifactIds }
       );
@@ -409,7 +409,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   /**
    * Export collection to file
    */
-  async export(collectionId: number | string): Promise<Blob> {
+  async exportCollection(collectionId: number | string): Promise<Blob> {
     try {
       const response = await apiClient.get(
         `${this.endpoint}/${collectionId}/export`,

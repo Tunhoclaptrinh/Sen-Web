@@ -1,64 +1,42 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { Spin } from "antd";
-import { RootState } from "@/store";
-import { initializeAuth } from "@/store/slices/authSlice";
+import { useAuth } from "@/hooks/useAuth"; // Import hook vừa chuyển đổi
+import Loading from "@/components/common/Loading";
 
 interface AuthGuardProps {
   children: React.ReactNode;
   requireAuth?: boolean;
   requiredRoles?: string[];
-  redirectTo?: string;
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({
   children,
   requireAuth = true,
   requiredRoles = [],
-  redirectTo = "/login",
 }) => {
-  const dispatch = useDispatch();
+  const { isAuthenticated, isInitialized, hasRole, loading } = useAuth();
   const location = useLocation();
-  const { isAuthenticated, user, isInitialized, loading } = useSelector(
-    (state: RootState) => state.auth,
-  );
 
-  // Initialize auth on mount
-  useEffect(() => {
-    if (!isInitialized) {
-      dispatch(initializeAuth() as any);
-    }
-  }, [dispatch, isInitialized]);
-
-  // Show loading spinner during initialization
-  if (!isInitialized || loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          background: "linear-gradient(135deg, #d4a574 0%, #8b6f47 100%)",
-        }}
-      >
-        <Spin size="large" tip="Đang tải..." />
-      </div>
-    );
+  // 1. Chờ Auth khởi tạo xong (check token từ local storage)
+  if (!isInitialized || (loading && !isAuthenticated)) {
+    return <Loading fullScreen message="Đang xác thực..." />;
   }
 
-  // Check authentication requirement
+  // 2. Nếu yêu cầu đăng nhập mà chưa đăng nhập -> Redirect Login
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to={redirectTo} state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check role requirement
-  if (requiredRoles.length > 0 && user) {
-    const hasRequiredRole = requiredRoles.includes(user.role);
-    if (!hasRequiredRole) {
-      return <Navigate to="/" replace />;
-    }
+  // 3. Nếu đã đăng nhập nhưng route yêu cầu Roles cụ thể
+  if (requireAuth && requiredRoles.length > 0 && !hasRole(requiredRoles)) {
+    // User không đủ quyền -> Chuyển về trang 403 hoặc Home
+    // Ở đây tạm thời chuyển về Home và báo lỗi (có thể thêm state notification)
+    return <Navigate to="/" replace />;
+  }
+
+  // 4. Nếu route public (ví dụ Login) mà user đã đăng nhập -> Redirect vào trong
+  if (!requireAuth && isAuthenticated) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

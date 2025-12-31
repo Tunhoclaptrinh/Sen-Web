@@ -7,14 +7,13 @@ import {
   Card,
   Popconfirm,
   Tooltip,
-  Tag,
-  Select,
-  Dropdown,
-  Menu,
   Badge,
+  Menu,
+  Dropdown,
   message,
   Modal,
   Alert,
+  Select,
 } from "antd";
 import {
   PlusOutlined,
@@ -25,85 +24,104 @@ import {
   EyeOutlined,
   DownloadOutlined,
   UploadOutlined,
-  FilterOutlined,
   ClearOutlined,
   MoreOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
+interface DataTableProps {
+  data?: any[];
+  loading?: boolean;
+  columns?: any[];
+  onAdd?: () => void;
+  onView?: (record: any) => void;
+  onEdit?: (record: any) => void;
+  onDelete?: (id: any) => void;
+  onRefresh?: () => void;
+  pagination?: {
+    current: number;
+    pageSize: number;
+    total: number;
+  };
+  onPaginationChange?: (pagination: any, filters: any, sorter: any) => void;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  searchValue?: string;
+  onSearch?: (value: string) => void;
+  filters?: any[];
+  filterValues?: any;
+  onFilterChange?: (key: string, value: any) => void;
+  onClearFilters?: () => void;
+  sortable?: boolean;
+  defaultSort?: any;
+  showActions?: boolean;
+  actionsWidth?: number;
+  customActions?: (record: any) => React.ReactNode;
+  actionPosition?: "left" | "right";
+  batchOperations?: boolean;
+  onBatchDelete?: (keys: any[]) => void;
+  selectedRowKeys?: any[];
+  onSelectChange?: (keys: any[]) => void;
+  batchActions?: any[];
+  importable?: boolean;
+  exportable?: boolean;
+  onImport?: (file: File) => void;
+  onExport?: () => void;
+  title?: React.ReactNode;
+  extra?: React.ReactNode;
+  rowKey?: string;
+  size?: "small" | "middle" | "large";
+  bordered?: boolean;
+  scroll?: any;
+  emptyText?: string;
+  rowSelection?: any;
+  showAlert?: boolean;
+  alertMessage?: string;
+  alertType?: "success" | "info" | "warning" | "error";
+  [key: string]: any;
+}
+
 /**
  * DataTable Component
- *
- * Features:
- * - Full CRUD operations
- * - Server-side pagination
- * - Server-side filtering
- * - Server-side sorting
- * - Server-side searching
- * - Batch operations
- * - Import/Export
- * - Row selection
- * - Responsive design
  */
-const DataTable = ({
-  // Data & Loading
+const DataTable: React.FC<DataTableProps> = ({
   data = [],
   loading = false,
-
-  // Columns
   columns = [],
-
-  // CRUD Operations
   onAdd,
   onView,
   onEdit,
   onDelete,
   onRefresh,
-
-  // Pagination (từ useCRUD)
   pagination = {
     current: 1,
     pageSize: 10,
     total: 0,
   },
   onPaginationChange,
-
-  // Search
   searchable = true,
   searchPlaceholder = "Tìm kiếm...",
   searchValue = "",
   onSearch,
-
-  // Filters
   filters = [],
   filterValues = {},
   onFilterChange,
   onClearFilters,
-
-  // Sorting
   sortable = true,
   defaultSort,
-
-  // Actions Column
   showActions = true,
   actionsWidth = 180,
   customActions,
-  actionPosition = "right", // 'left' | 'right'
-
-  // Batch Operations
+  actionPosition = "right",
   batchOperations = false,
   onBatchDelete,
   selectedRowKeys = [],
   onSelectChange,
   batchActions,
-
-  // Import/Export
   importable = false,
   exportable = false,
   onImport,
   onExport,
-
-  // Customization
   title,
   extra,
   rowKey = "id",
@@ -111,110 +129,99 @@ const DataTable = ({
   bordered = false,
   scroll,
   emptyText = "Không có dữ liệu",
-
-  // Row Selection (Custom)
   rowSelection: customRowSelection,
-
-  // Alert Banner
   showAlert = false,
   alertMessage,
   alertType = "info",
-
-  // Other props
   ...tableProps
 }) => {
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
 
-  // Handle Search
-  const handleSearch = (value) => {
+  const handleSearch = (value: string) => {
     setInternalSearchText(value);
     if (onSearch) {
       onSearch(value);
     }
   };
 
-  // Handle Filter Change
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = (key: string, value: any) => {
     if (onFilterChange) {
       onFilterChange(key, value);
     }
   };
 
-  // Build Row Selection Config
   const rowSelection = batchOperations
     ? customRowSelection || {
-        selectedRowKeys,
-        onChange: onSelectChange,
-        selections: [
-          Table.SELECTION_ALL,
-          Table.SELECTION_INVERT,
-          Table.SELECTION_NONE,
-        ],
-        getCheckboxProps: (record) => ({
-          disabled: record.disabled,
-        }),
-      }
+      selectedRowKeys,
+      onChange: onSelectChange,
+      selections: [
+        Table.SELECTION_ALL,
+        Table.SELECTION_INVERT,
+        Table.SELECTION_NONE,
+      ],
+      getCheckboxProps: (record: any) => ({
+        disabled: record.disabled,
+      }),
+    }
     : undefined;
 
-  // Build Actions Column
   const actionsColumn = showActions
     ? {
-        title: "Thao Tác",
-        key: "actions",
-        width: actionsWidth,
-        fixed: actionPosition,
-        render: (_, record) => (
-          <Space size="small">
-            {onView && (
-              <Tooltip title="Xem chi tiết">
+      title: "Thao Tác",
+      key: "actions",
+      width: actionsWidth,
+      fixed: actionPosition,
+      render: (_: any, record: any) => (
+        <Space size="small">
+          {onView && (
+            <Tooltip title="Xem chi tiết">
+              <Button
+                type="link"
+                size="small"
+                icon={<EyeOutlined />}
+                onClick={() => onView(record)}
+              />
+            </Tooltip>
+          )}
+
+          {onEdit && (
+            <Tooltip title="Chỉnh sửa">
+              <Button
+                type="link"
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => onEdit(record)}
+              />
+            </Tooltip>
+          )}
+
+          {onDelete && (
+            <Popconfirm
+              title="Xác nhận xóa?"
+              description="Bạn có chắc chắn muốn xóa mục này?"
+              onConfirm={() => onDelete(record[rowKey])}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{ danger: true }}
+              icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
+            >
+              <Tooltip title="Xóa">
                 <Button
                   type="link"
                   size="small"
-                  icon={<EyeOutlined />}
-                  onClick={() => onView(record)}
+                  danger
+                  icon={<DeleteOutlined />}
                 />
               </Tooltip>
-            )}
+            </Popconfirm>
+          )}
 
-            {onEdit && (
-              <Tooltip title="Chỉnh sửa">
-                <Button
-                  type="link"
-                  size="small"
-                  icon={<EditOutlined />}
-                  onClick={() => onEdit(record)}
-                />
-              </Tooltip>
-            )}
-
-            {onDelete && (
-              <Popconfirm
-                title="Xác nhận xóa?"
-                description="Bạn có chắc chắn muốn xóa mục này?"
-                onConfirm={() => onDelete(record[rowKey])}
-                okText="Xóa"
-                cancelText="Hủy"
-                okButtonProps={{ danger: true }}
-                icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
-              >
-                <Tooltip title="Xóa">
-                  <Button
-                    type="link"
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                  />
-                </Tooltip>
-              </Popconfirm>
-            )}
-
-            {customActions && customActions(record)}
-          </Space>
-        ),
-      }
+          {customActions && customActions(record)}
+        </Space>
+      ),
+    }
     : null;
 
-  // Final Columns
   const finalColumns = [
     ...(actionsColumn && actionPosition === "left" ? [actionsColumn] : []),
     ...columns.map((col) => ({
@@ -224,7 +231,6 @@ const DataTable = ({
     ...(actionsColumn && actionPosition === "right" ? [actionsColumn] : []),
   ];
 
-  // Batch Actions Menu
   const batchActionsMenu = (
     <Menu>
       {onBatchDelete && (
@@ -265,14 +271,13 @@ const DataTable = ({
     </Menu>
   );
 
-  // Handle Import File
   const handleImportClick = () => {
     if (!onImport) return;
 
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".xlsx,.xls,.csv";
-    input.onchange = (e) => {
+    input.onchange = (e: any) => {
       const file = e.target.files[0];
       if (file) {
         onImport(file);
@@ -281,13 +286,11 @@ const DataTable = ({
     input.click();
   };
 
-  // RENDER
   return (
     <Card
       title={title}
       extra={
         <Space wrap>
-          {/* Search */}
           {searchable && (
             <Input
               placeholder={searchPlaceholder}
@@ -299,7 +302,6 @@ const DataTable = ({
             />
           )}
 
-          {/* Filters */}
           {filters && filters.length > 0 && (
             <>
               {filters.map((filter) => (
@@ -321,7 +323,6 @@ const DataTable = ({
             </>
           )}
 
-          {/* Batch Actions */}
           {batchOperations && selectedRowKeys.length > 0 && (
             <Badge count={selectedRowKeys.length}>
               <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
@@ -330,7 +331,6 @@ const DataTable = ({
             </Badge>
           )}
 
-          {/* Import */}
           {importable && onImport && (
             <Tooltip title="Import dữ liệu">
               <Button icon={<UploadOutlined />} onClick={handleImportClick}>
@@ -339,7 +339,6 @@ const DataTable = ({
             </Tooltip>
           )}
 
-          {/* Export */}
           {exportable && onExport && (
             <Tooltip title="Export dữ liệu">
               <Button icon={<DownloadOutlined />} onClick={onExport}>
@@ -348,7 +347,6 @@ const DataTable = ({
             </Tooltip>
           )}
 
-          {/* Refresh */}
           {onRefresh && (
             <Tooltip title="Làm mới">
               <Button
@@ -359,7 +357,6 @@ const DataTable = ({
             </Tooltip>
           )}
 
-          {/* Add New */}
           {onAdd && (
             <Button type="primary" icon={<PlusOutlined />} onClick={onAdd}>
               Thêm Mới
@@ -370,7 +367,6 @@ const DataTable = ({
         </Space>
       }
     >
-      {/* Alert Banner */}
       {showAlert && alertMessage && (
         <Alert
           message={alertMessage}
@@ -381,7 +377,6 @@ const DataTable = ({
         />
       )}
 
-      {/* Table */}
       <Table
         rowKey={rowKey}
         columns={finalColumns}
@@ -394,9 +389,9 @@ const DataTable = ({
           ...pagination,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `Tổng ${total} mục`,
+          showTotal: (total: number) => `Tổng ${total} mục`,
           pageSizeOptions: ["10", "20", "50", "100"],
-        }}
+        } as any}
         onChange={onPaginationChange}
         scroll={scroll || { x: "max-content" }}
         locale={{

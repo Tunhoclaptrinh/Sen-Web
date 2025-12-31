@@ -1,5 +1,8 @@
 // Core Types
 export * from "./auth.types";
+// export * from "./common.types";
+// export * from "./model.types"; // Comment out or remove if causing issues with User name
+export type { User, UserRole } from "./auth.types"; // Explicit re-export
 export * from "./heritage.types";
 export * from "./artifact.types";
 export * from "./api.types";
@@ -33,17 +36,17 @@ export interface FilterParams {
 
 export interface QueryParams
   extends PaginationParams,
-    SortParams,
-    SearchParams,
-    FilterParams {}
+  SortParams,
+  SearchParams,
+  FilterParams { }
 
 export interface Pagination {
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  totalPages?: number;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
 export interface Metadata {

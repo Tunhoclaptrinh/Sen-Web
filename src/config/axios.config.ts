@@ -6,6 +6,7 @@ import axios, {
 } from "axios";
 import { message } from "antd";
 import { STORAGE_KEYS } from "./constants";
+// KHÔNG import store ở đây để tránh Circular Dependency
 
 // CONFIGURATION
 export const API_BASE_URL =
@@ -13,11 +14,27 @@ export const API_BASE_URL =
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 30000,
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || "30000"),
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+// Override types to match response interceptor behavior (returns data directly)
+import { AxiosRequestConfig } from "axios";
+export interface CustomAxiosInstance extends Omit<AxiosInstance, 'get' | 'put' | 'post' | 'delete' | 'patch'> {
+  get<T = any, R = T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
+  delete<T = any, R = T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
+  post<T = any, R = T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  put<T = any, R = T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  patch<T = any, R = T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+}
+
+// -- INJECT STORE PATTERN --
+let store: any = null; // Sẽ giữ reference tới Redux store
+export const injectStore = (_store: any) => {
+  store = _store;
+};
 
 // REQUEST INTERCEPTOR
 let isRefreshing = false;
@@ -37,193 +54,122 @@ const processQueue = (
       prom.resolve(token);
     }
   });
-
   failedQueue = [];
 };
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Get token from localStorage
     const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Log request in development
     if (import.meta.env.DEV) {
-      console.log(`🚀 [${config.method?.toUpperCase()}] ${config.url}`, {
-        params: config.params,
-        data: config.data,
-      });
+      console.log(`🚀 [${config.method?.toUpperCase()}] ${config.url}`);
     }
-
     return config;
   },
-  (error: AxiosError) => {
-    console.error("❌ Request Error:", error);
-    return Promise.reject(error);
-  },
+  (error: AxiosError) => Promise.reject(error),
 );
 
 // RESPONSE INTERCEPTOR
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    // Log response in development
-    if (import.meta.env.DEV) {
-      console.log(
-        `✅ [${response.config.method?.toUpperCase()}] ${response.config.url}`,
-        response.data,
-      );
-    }
-
-    // Return the data object from API
-    return response.data;
-  },
+  (response: AxiosResponse) => response.data,
   async (error: AxiosError<any>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
     const { response } = error;
 
-    // Log error in development
-    if (import.meta.env.DEV) {
-      console.error("❌ Response Error:", {
-        url: originalRequest?.url,
-        method: originalRequest?.method,
-        status: response?.status,
-        data: response?.data,
-      });
-    }
-
-    // Handle No Response (Network Error)
     if (!response) {
-      message.error(
-        "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.",
-      );
+      message.error("Không thể kết nối đến server. Vui lòng kiểm tra mạng.");
       return Promise.reject(error);
     }
 
-    const { status, data } = response;
+    const { status } = response;
 
-    // Handle Specific Status Codes
-    switch (status) {
-      case 400: {
-        // Bad Request
-        const errorMessage = data.message || "Yêu cầu không hợp lệ";
-        message.error(errorMessage);
-        break;
-      }
-
-      case 401: {
-        // Unauthorized - Token expired or invalid
-
-        // Prevent infinite loop
-        if (originalRequest._retry) {
-          handleForceLogout();
-          return Promise.reject(error);
-        }
-
-        // If already refreshing, queue this request
-        if (isRefreshing) {
-          return new Promise((resolve, reject) => {
-            failedQueue.push({ resolve, reject });
+    // === XỬ LÝ 401: REFRESH TOKEN ===
+    if (status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            return apiClient(originalRequest);
           })
-            .then((token) => {
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-              }
-              return apiClient(originalRequest);
-            })
-            .catch((err) => Promise.reject(err));
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const currentToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+        // Dùng axios thuần để tránh interceptor loop
+        const refreshResponse = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { headers: { Authorization: `Bearer ${currentToken}` } },
+        );
+
+        const newToken = refreshResponse.data?.data?.token;
+
+        if (!newToken) {
+          throw new Error("Không nhận được token mới");
         }
 
-        // Mark as retrying
-        originalRequest._retry = true;
-        isRefreshing = true;
+        // Lưu token
+        localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
 
-        // For now, just force logout
-        // TODO: Implement token refresh logic when backend supports it
+        // Dispatch action cập nhật store nếu store đã được inject
+        if (store) {
+          // Import action creator tại nơi sử dụng nếu cần, hoặc dispatch object
+          store.dispatch({
+            type: "auth/refreshTokenSuccess",
+            payload: newToken,
+          });
+        }
+
+        processQueue(null, newToken);
+
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError as AxiosError, null);
+
+        // Logout nếu refresh thất bại
+        if (store) {
+          // Dispatch action logout (loại bỏ circular dep bằng cách dùng string type hoặc action đã import ở main)
+          store.dispatch({ type: "auth/forceLogout" });
+        }
         handleForceLogout();
-        processQueue(error, null);
+
+        return Promise.reject(refreshError);
+      } finally {
         isRefreshing = false;
-        return Promise.reject(error);
       }
+    }
 
-      case 403: {
-        // Forbidden
-        message.error("Bạn không có quyền truy cập tài nguyên này");
-        break;
-      }
-
-      case 404: {
-        // Not Found
-        const errorMessage = data.message || "Không tìm thấy dữ liệu";
-        message.error(errorMessage);
-        break;
-      }
-
-      case 422: {
-        // Validation Error
-        if (data.errors && Array.isArray(data.errors)) {
-          const errorMessages = data.errors
-            .map((err: any) => err.message || JSON.stringify(err))
-            .join(", ");
-          message.error(errorMessages);
-        } else {
-          message.error(data.message || "Dữ liệu không hợp lệ");
-        }
-        break;
-      }
-
-      case 429: {
-        // Too Many Requests
-        message.warning("Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.");
-        break;
-      }
-
-      case 500: {
-        // Internal Server Error
-        message.error("Lỗi hệ thống. Vui lòng thử lại sau.");
-        break;
-      }
-
-      case 503: {
-        // Service Unavailable
-        message.error("Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.");
-        break;
-      }
-
-      default: {
-        // Unknown Error
-        const errorMessage = data.message || "Có lỗi xảy ra";
-        message.error(errorMessage);
-      }
+    if (status === 403) {
+      message.error("Bạn không có quyền truy cập tài nguyên này.");
     }
 
     return Promise.reject(error);
   },
 );
 
-// HELPER FUNCTIONS
-
-/**
- * Handle Force Logout
- * Clears auth data and redirects to login
- */
 const handleForceLogout = () => {
-  // Clear storage
   localStorage.removeItem(STORAGE_KEYS.TOKEN);
   localStorage.removeItem(STORAGE_KEYS.USER);
-
-  // Show notification
-  message.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-
-  // Redirect to login (only if not already on login page)
   if (window.location.pathname !== "/login") {
+    message.error("Phiên đăng nhập hết hạn.");
     window.location.href = "/login";
   }
 };
 
-// EXPORTS
-export default apiClient;
+export default apiClient as CustomAxiosInstance;
