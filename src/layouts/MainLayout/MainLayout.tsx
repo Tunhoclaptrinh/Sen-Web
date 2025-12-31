@@ -1,13 +1,6 @@
-import {
-  Layout,
-  Menu,
-  Dropdown,
-  Button,
-  Badge,
-  Input,
-  Drawer,
-  Avatar,
-} from "antd";
+// src/layouts/MainLayout/MainLayout.tsx
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Dropdown, Button, Badge, Input, Drawer, Avatar, MenuProps } from 'antd';
 import {
   BellOutlined,
   UserOutlined,
@@ -16,41 +9,41 @@ import {
   MenuOutlined,
   SettingOutlined,
   HeartOutlined,
-} from "@ant-design/icons";
-import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../store/slices/authSlice";
-import { useState, useEffect } from "react";
-import logo from "@/assets/images/logo.png";
+} from '@ant-design/icons';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '@/store/slices/authSlice';
+import { RootState } from '@/store';
+import logo from '@/assets/images/logo.png';
 
 const { Header, Content, Footer } = Layout;
 
-const MainLayout = () => {
+const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const [searchValue, setSearchValue] = useState("");
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  
+  const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  // Handle Window Resize
+  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Handle Logout
+  // Handle logout
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
+    dispatch(logout() as any);
+    navigate('/login');
   };
 
-  // Handle Search
+  // Handle search
   const handleSearch = () => {
     if (searchValue.trim()) {
       navigate(`/heritage-sites?q=${encodeURIComponent(searchValue)}`);
@@ -58,70 +51,69 @@ const MainLayout = () => {
     }
   };
 
-  // Get Active Menu Key
+  // Get active menu key
   const getActiveKey = () => {
-    if (location.pathname === "/") return "home";
-    if (location.pathname.startsWith("/heritage")) return "heritage";
-    if (location.pathname.startsWith("/artifacts")) return "artifacts";
-    return "";
+    if (location.pathname === '/') return 'home';
+    if (location.pathname.startsWith('/heritage')) return 'heritage';
+    if (location.pathname.startsWith('/artifacts')) return 'artifacts';
+    return '';
   };
 
-  // User Menu Items
-  const userMenuItems = [
+  // User menu items
+  const userMenuItems: MenuProps['items'] = [
     {
-      key: "profile",
+      key: 'profile',
       icon: <UserOutlined />,
       label: <Link to="/profile">Hồ Sơ</Link>,
     },
     {
-      key: "collections",
+      key: 'collections',
       icon: <HeartOutlined />,
       label: <Link to="/collections">Bộ Sưu Tập</Link>,
     },
     {
-      key: "settings",
+      key: 'settings',
       icon: <SettingOutlined />,
-      label: "Cài Đặt",
+      label: 'Cài Đặt',
     },
-    { type: "divider" },
+    { type: 'divider' },
     {
-      key: "logout",
+      key: 'logout',
       icon: <LogoutOutlined />,
-      label: "Đăng Xuất",
+      label: 'Đăng Xuất',
       onClick: handleLogout,
       danger: true,
     },
   ];
 
-  // Nav Menu Items
-  const navMenuItems = [
+  // Nav menu items
+  const navMenuItems: MenuProps['items'] = [
     {
-      key: "home",
+      key: 'home',
       label: <Link to="/">Trang Chủ</Link>,
     },
     {
-      key: "heritage",
+      key: 'heritage',
       label: <Link to="/heritage-sites">Di Sản</Link>,
     },
     {
-      key: "artifacts",
+      key: 'artifacts',
       label: <Link to="/artifacts">Hiện Vật</Link>,
     },
   ];
 
-  // RENDER
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: '100vh' }}>
       {/* HEADER */}
       <Header
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: isMobile ? "0 16px" : "0 24px",
-          background: "#fff",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-          position: "sticky",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: isMobile ? '0 16px' : '0 24px',
+          background: '#fff',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          position: 'sticky',
           top: 0,
           zIndex: 999,
           height: isMobile ? 60 : 70,
@@ -132,9 +124,9 @@ const MainLayout = () => {
           <div
             style={{
               backgroundImage: `url(${logo})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
               width: isMobile ? 70 : 90,
               height: 36,
             }}
@@ -149,7 +141,7 @@ const MainLayout = () => {
             items={navMenuItems}
             style={{
               flex: 1,
-              border: "none",
+              border: 'none',
               marginLeft: 40,
             }}
           />
@@ -168,14 +160,14 @@ const MainLayout = () => {
         )}
 
         {/* Right Side Actions */}
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           {/* Notifications */}
           <Badge count={0}>
             <BellOutlined
               style={{
                 fontSize: 20,
-                cursor: "pointer",
-                color: "#595959",
+                cursor: 'pointer',
+                color: '#595959',
               }}
             />
           </Badge>
@@ -185,30 +177,24 @@ const MainLayout = () => {
             <Dropdown
               menu={{ items: userMenuItems }}
               placement="bottomRight"
-              trigger={["click"]}
+              trigger={['click']}
             >
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
+                  display: 'flex',
+                  alignItems: 'center',
                   gap: 8,
-                  cursor: "pointer",
-                  padding: "4px 12px",
+                  cursor: 'pointer',
+                  padding: '4px 12px',
                   borderRadius: 8,
-                  transition: "background 0.3s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#f5f5f5";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
+                  transition: 'background 0.3s',
                 }}
               >
                 <Avatar
                   size="small"
                   src={user?.avatar}
                   icon={<UserOutlined />}
-                  style={{ background: "#d4a574" }}
+                  style={{ background: '#d4a574' }}
                 />
                 {!isMobile && <span>{user?.name}</span>}
               </div>
@@ -220,9 +206,6 @@ const MainLayout = () => {
                   <Button type="primary" size="small">
                     Đăng Nhập
                   </Button>
-                </Link>
-                <Link to="/login">
-                  <Button size="small">Đăng Ký</Button>
                 </Link>
               </>
             )
@@ -247,7 +230,7 @@ const MainLayout = () => {
         open={mobileMenuOpen}
         width={280}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Mobile Search */}
           <Input
             placeholder="Tìm kiếm..."
@@ -262,27 +245,17 @@ const MainLayout = () => {
             mode="vertical"
             selectedKeys={[getActiveKey()]}
             items={navMenuItems}
-            style={{ border: "none" }}
+            style={{ border: 'none' }}
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Mobile Auth Buttons */}
           {!isAuthenticated && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                marginTop: 16,
-              }}
-            >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
               <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button type="primary" block>
                   Đăng Nhập
                 </Button>
-              </Link>
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button block>Đăng Ký</Button>
               </Link>
             </div>
           )}
@@ -290,29 +263,28 @@ const MainLayout = () => {
       </Drawer>
 
       {/* CONTENT */}
-      <Layout>
-        <Content
-          style={{
-            padding: isMobile ? "24px 16px" : "40px 24px",
-            maxWidth: "1400px",
-            margin: "0 auto",
-            width: "100%",
-          }}
-        >
-          <Outlet />
-        </Content>
-      </Layout>
+      <Content
+        style={{
+          padding: isMobile ? '24px 16px' : '40px 24px',
+          maxWidth: '1400px',
+          margin: '0 auto',
+          width: '100%',
+          minHeight: 'calc(100vh - 140px)',
+        }}
+      >
+        <Outlet />
+      </Content>
 
       {/* FOOTER */}
       <Footer
         style={{
-          background: "#fafafa",
-          borderTop: "1px solid #e8e8e8",
-          padding: isMobile ? "24px 16px" : "40px 24px",
-          textAlign: "center",
+          background: '#fafafa',
+          borderTop: '1px solid #e8e8e8',
+          padding: isMobile ? '24px 16px' : '40px 24px',
+          textAlign: 'center',
         }}
       >
-        <p style={{ color: "#8c8c8c", margin: 0 }}>
+        <p style={{ color: '#8c8c8c', margin: 0 }}>
           &copy; 2024 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ.
         </p>
       </Footer>
