@@ -6,6 +6,10 @@ import categoryReducer from "./slices/categorySlice";
 import reviewReducer from "./slices/reviewSlice";
 import collectionReducer from "./slices/collectionSlice";
 import uiReducer from "./slices/uiSlice";
+import gameReducer from "./slices/gameSlice";
+import aiReducer from "./slices/aiSlice";
+import learningReducer from "./slices/learningSlice";
+import questReducer from "./slices/questSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +20,10 @@ export const store = configureStore({
     review: reviewReducer,
     collection: collectionReducer,
     ui: uiReducer,
+    game: gameReducer,
+    ai: aiReducer,
+    learning: learningReducer,
+    quest: questReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

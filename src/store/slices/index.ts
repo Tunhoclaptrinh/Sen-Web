@@ -5,3 +5,7 @@ export { default as categoryReducer } from './categorySlice';
 export { default as reviewReducer } from './reviewSlice';
 export { default as collectionReducer } from './collectionSlice';
 export { default as uiReducer } from './uiSlice';
+export { default as gameReducer } from './gameSlice';
+export { default as aiReducer } from './aiSlice';
+export { default as learningReducer } from './learningSlice';
+export { default as questReducer } from './questSlice';

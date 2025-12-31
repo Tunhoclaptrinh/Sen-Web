@@ -1,0 +1,50 @@
+.leaderboard-page {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.leaderboard-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rank-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.player-cell {
+    display: flex;
+    align-items: center;
+}
+
+.top-rank-row {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.top-rank-row:hover {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+}
+
+@media (max-width: 768px) {
+    .leaderboard-page {
+        padding: 16px;
+    }
+
+    .ant-table {
+        font-size: 12px;
+    }
+
+    .player-cell .ant-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        margin-right: 8px !important;
+    }
+}

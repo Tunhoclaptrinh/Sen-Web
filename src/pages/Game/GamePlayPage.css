@@ -1,0 +1,36 @@
+.gameplay-page {
+    min-height: 100vh;
+    padding: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gameplay-header {
+    margin-bottom: 24px;
+}
+
+.gameplay-header .ant-btn {
+    background: white;
+}
+
+.gameplay-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gameplay-container .ant-empty {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .gameplay-page {
+        padding: 16px;
+    }
+
+    .gameplay-container {
+        min-height: 400px;
+    }
+}

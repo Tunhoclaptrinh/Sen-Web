@@ -8,6 +8,7 @@ export * from "./artifact.types";
 export * from "./api.types";
 export * from "./user.types";
 export * from "./collection.types";
+export * from "./game.types";
 
 // Common Types
 

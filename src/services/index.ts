@@ -1,7 +1,12 @@
 export { default as authService } from './auth.service';
-export { default as heritageService } from './heritage.service';
-export { default as artifactService } from './artifact.service';
 export { default as userService } from './user.service';
-export { default as favoriteService } from './favorite.service';
+export { default as artifactService } from './artifact.service';
+export { default as heritageService } from './heritage.service';
 export { default as collectionService } from './collection.service';
-export { default as apiClient } from '../config/axios.config';
+export { default as favoriteService } from './favorite.service';
+export { default as notificationService } from './notification.service';
+export { default as gameService } from './game.service';
+export { default as aiService } from './ai.service';
+export { default as learningService } from './learning.service';
+export { default as questService } from './quest.service';
+export { default as exhibitionService } from './exhibition.service';

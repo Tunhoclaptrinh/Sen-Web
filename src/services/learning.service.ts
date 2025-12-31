@@ -1,0 +1,132 @@
+import BaseService from './base.service';
+
+// Learning Path
+export interface LearningPath {
+    id: number;
+    title: string;
+    description: string;
+    category: string;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    duration_minutes: number;
+    thumbnail?: string;
+    modules: LearningModule[];
+    is_enrolled: boolean;
+    progress?: number;
+    completed_modules?: number;
+    total_modules?: number;
+}
+
+// Learning Module
+export interface LearningModule {
+    id: number;
+    path_id: number;
+    title: string;
+    description: string;
+    order: number;
+    content_type: 'video' | 'article' | 'quiz' | 'interactive';
+    content_url?: string;
+    duration_minutes: number;
+    is_completed: boolean;
+    quiz?: Quiz;
+}
+
+// Quiz
+export interface Quiz {
+    id: number;
+    questions: QuizQuestion[];
+    passing_score: number;
+    time_limit?: number;
+}
+
+export interface QuizQuestion {
+    id: number;
+    question: string;
+    options: string[];
+    correct_answer: number;
+    explanation?: string;
+}
+
+// User Progress
+export interface LearningProgress {
+    path_id: number;
+    user_id: number;
+    enrolled_at: string;
+    completed_modules: number[];
+    current_module_id?: number;
+    progress_percentage: number;
+    completed_at?: string;
+}
+
+class LearningService extends BaseService {
+    constructor() {
+        super('/learning');
+    }
+
+    // Get all learning paths
+    async getPaths(filters?: {
+        category?: string;
+        difficulty?: string;
+        q?: string;
+    }): Promise<LearningPath[]> {
+        const response = await this.get('/paths', filters);
+        return response.data;
+    }
+
+    // Get path detail
+    async getPathDetail(id: number): Promise<LearningPath> {
+        const response = await this.get(`/paths/${id}`);
+        return response.data;
+    }
+
+    // Enroll in path
+    async enrollPath(id: number): Promise<{ success: boolean; progress: LearningProgress }> {
+        const response = await this.post(`/paths/${id}/enroll`);
+        return response.data;
+    }
+
+    // Get user's enrolled paths
+    async getEnrolledPaths(): Promise<LearningPath[]> {
+        const response = await this.get('/enrolled');
+        return response.data;
+    }
+
+    // Get module detail
+    async getModuleDetail(pathId: number, moduleId: number): Promise<LearningModule> {
+        const response = await this.get(`/paths/${pathId}/modules/${moduleId}`);
+        return response.data;
+    }
+
+    // Complete module
+    async completeModule(pathId: number, moduleId: number, data?: {
+        quiz_answers?: number[];
+        time_spent?: number;
+    }): Promise<{
+        success: boolean;
+        score?: number;
+        passed?: boolean;
+        next_module?: LearningModule;
+    }> {
+        const response = await this.post(`/paths/${pathId}/modules/${moduleId}/complete`, data);
+        return response.data;
+    }
+
+    // Get user progress
+    async getProgress(pathId: number): Promise<LearningProgress> {
+        const response = await this.get(`/paths/${pathId}/progress`);
+        return response.data;
+    }
+
+    // Submit quiz
+    async submitQuiz(pathId: number, moduleId: number, answers: number[]): Promise<{
+        score: number;
+        passed: boolean;
+        correct_answers: number[];
+        explanations: string[];
+    }> {
+        const response = await this.post(`/paths/${pathId}/modules/${moduleId}/quiz`, { answers });
+        return response.data;
+    }
+}
+
+export const learningService = new LearningService();
+export default learningService;

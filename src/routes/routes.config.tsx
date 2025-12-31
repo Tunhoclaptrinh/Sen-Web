@@ -4,9 +4,12 @@ import { RouteObject } from "react-router-dom";
 // Layouts
 import MainLayout from "@/layouts/MainLayout/MainLayout";
 import AdminLayout from "@/layouts/AdminLayout/AdminLayout";
+import CustomerLayout from "@/layouts/CustomerLayout";
+import ResearcherLayout from "@/layouts/ResearcherLayout";
 import AuthLayout from "@/layouts/AuthLayout/AuthLayout";
 import Loading from "@/components/common/Loading";
 import AuthGuard from "@/components/common/guards/AuthGuard";
+import { RoleGuard } from "./RouteGuards";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/Home/Home"));
@@ -37,6 +40,13 @@ const ArtifactManagement = lazy(
   () => import("@/pages/Admin/ArtifactManagement"),
 );
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
+
+// Game Pages
+const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
+const LevelsPage = lazy(() => import("@/pages/Game/LevelsPage"));
+const GamePlayPage = lazy(() => import("@/pages/Game/GamePlayPage"));
+const MuseumPage = lazy(() => import("@/pages/Game/MuseumPage"));
+const LeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
 
 // Wrapper component for Suspense
 const LazyLoadWrapper: React.FC<{ children: React.ReactNode }> = ({
@@ -106,6 +116,90 @@ const routes: RouteObject[] = [
     ],
   },
 
+  // ============ CUSTOMER ROUTES (Game Players) ============
+  {
+    path: "/game",
+    element: (
+      <RoleGuard allowedRoles={["customer"]} redirectTo="/">
+        <LazyLoadWrapper>
+          <CustomerLayout />
+        </LazyLoadWrapper>
+      </RoleGuard>
+    ),
+    children: [
+      {
+        path: "chapters",
+        element: <ChaptersPage />,
+      },
+      {
+        path: "chapters/:chapterId/levels",
+        element: <LevelsPage />,
+      },
+      {
+        path: "play/:levelId",
+        element: <GamePlayPage />,
+      },
+      {
+        path: "museum",
+        element: <MuseumPage />,
+      },
+      {
+        path: "leaderboard",
+        element: <LeaderboardPage />,
+      },
+    ],
+  },
+
+  // ============ RESEARCHER ROUTES (Content Creators) ============
+  {
+    path: "/researcher",
+    element: (
+      <RoleGuard allowedRoles={["researcher"]} redirectTo="/">
+        <LazyLoadWrapper>
+          <ResearcherLayout />
+        </LazyLoadWrapper>
+      </RoleGuard>
+    ),
+    children: [
+      {
+        path: "heritage/my-submissions",
+        element: <HeritageManagement />, // Placeholder - reuse for now
+      },
+      {
+        path: "heritage/create",
+        element: <HeritageManagement />, // Placeholder
+      },
+      {
+        path: "heritage/pending",
+        element: <HeritageManagement />, // Placeholder
+      },
+      {
+        path: "artifacts/my-artifacts",
+        element: <ArtifactManagement />, // Placeholder
+      },
+      {
+        path: "artifacts/create",
+        element: <ArtifactManagement />, // Placeholder
+      },
+      {
+        path: "artifacts/pending",
+        element: <ArtifactManagement />, // Placeholder
+      },
+      {
+        path: "exhibitions/my-exhibitions",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "exhibitions/create",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "analytics",
+        element: <Dashboard />, // Placeholder
+      },
+    ],
+  },
+
   // ============ PROTECTED ROUTES (Require Auth) ============
   {
     path: "/",
@@ -159,17 +253,48 @@ const routes: RouteObject[] = [
         path: "users",
         element: <UserManagement />,
       },
+      // Game CMS Routes
+      {
+        path: "game/chapters",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "game/levels",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "game/characters",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "game/screens",
+        element: <Dashboard />, // Placeholder
+      },
+      // Analytics
+      {
+        path: "analytics",
+        element: <Dashboard />, // Placeholder
+      },
+      // Assets
+      {
+        path: "assets/images",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "assets/videos",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "assets/audio",
+        element: <Dashboard />, // Placeholder
+      },
     ],
   },
 
   // ============ 404 NOT FOUND ============
   {
     path: "*",
-    element: (
-      <LazyLoadWrapper>
-        <NotFound />
-      </LazyLoadWrapper>
-    ),
+    element: <NotFound />,
   },
 ];
 

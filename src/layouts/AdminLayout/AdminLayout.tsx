@@ -9,6 +9,9 @@ import {
   SettingOutlined,
   LogoutOutlined,
   DashboardOutlined,
+  TrophyOutlined,
+  BarChartOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,6 +83,53 @@ const AdminLayout = () => {
       key: "users",
       icon: <UserOutlined />,
       label: <Link to="/admin/users">Quản Lý Người Dùng</Link>,
+    },
+    {
+      key: "game-cms",
+      icon: <TrophyOutlined />,
+      label: "Game CMS",
+      children: [
+        {
+          key: "chapters",
+          label: <Link to="/admin/game/chapters">Chapters</Link>,
+        },
+        {
+          key: "levels",
+          label: <Link to="/admin/game/levels">Levels</Link>,
+        },
+        {
+          key: "characters",
+          label: <Link to="/admin/game/characters">Characters</Link>,
+        },
+        {
+          key: "screens",
+          label: <Link to="/admin/game/screens">Screens</Link>,
+        },
+      ],
+    },
+    {
+      key: "analytics",
+      icon: <BarChartOutlined />,
+      label: <Link to="/admin/analytics">Analytics</Link>,
+    },
+    {
+      key: "assets",
+      icon: <FileImageOutlined />,
+      label: "Assets",
+      children: [
+        {
+          key: "images",
+          label: <Link to="/admin/assets/images">Images</Link>,
+        },
+        {
+          key: "videos",
+          label: <Link to="/admin/assets/videos">Videos</Link>,
+        },
+        {
+          key: "audio",
+          label: <Link to="/admin/assets/audio">Audio</Link>,
+        },
+      ],
     },
   ];
 

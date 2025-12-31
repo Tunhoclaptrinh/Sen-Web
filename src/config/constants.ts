@@ -124,6 +124,54 @@ export const TIMELINE_CATEGORY_LABELS = {
 export const PAGINATION_OPTIONS = [10, 20, 50, 100] as const;
 export const DEFAULT_PAGE_SIZE = 10;
 
+// Game System Constants
+export const SCREEN_TYPES = {
+  DIALOGUE: "DIALOGUE",
+  HIDDEN_OBJECT: "HIDDEN_OBJECT",
+  QUIZ: "QUIZ",
+  TIMELINE: "TIMELINE",
+  IMAGE_VIEWER: "IMAGE_VIEWER",
+  VIDEO: "VIDEO",
+} as const;
+
+export const CHAPTER_THEMES = {
+  PINK: "Văn hóa Đại Việt",
+  GOLD: "Thời Hoàng Kim",
+  WHITE: "Di Sản Bất Tử",
+} as const;
+
+export const BADGE_CATEGORIES = {
+  COMPLETION: "completion",
+  COLLECTION: "collection",
+  EXPLORATION: "exploration",
+  ACHIEVEMENT: "achievement",
+} as const;
+
+export const QUEST_TYPES = {
+  DAILY: "daily",
+  WEEKLY: "weekly",
+  ACHIEVEMENT: "achievement",
+  EXPLORATION: "exploration",
+} as const;
+
+export const LEVEL_DIFFICULTY = {
+  EASY: "easy",
+  MEDIUM: "medium",
+  HARD: "hard",
+} as const;
+
+export const LEVEL_TYPES = {
+  STORY: "story",
+  QUIZ: "quiz",
+  MIXED: "mixed",
+} as const;
+
+export const PETAL_STATES = {
+  CLOSED: "closed",
+  BLOOMING: "blooming",
+  FULL: "full",
+} as const;
+
 // Type exports
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 export type HeritageType = (typeof HERITAGE_TYPES)[keyof typeof HERITAGE_TYPES];
@@ -134,3 +182,10 @@ export type SignificanceLevel =
   (typeof SIGNIFICANCE_LEVELS)[keyof typeof SIGNIFICANCE_LEVELS];
 export type TimelineCategory =
   (typeof TIMELINE_CATEGORIES)[keyof typeof TIMELINE_CATEGORIES];
+export type ScreenType = (typeof SCREEN_TYPES)[keyof typeof SCREEN_TYPES];
+export type BadgeCategory = (typeof BADGE_CATEGORIES)[keyof typeof BADGE_CATEGORIES];
+export type QuestType = (typeof QUEST_TYPES)[keyof typeof QUEST_TYPES];
+export type LevelDifficulty = (typeof LEVEL_DIFFICULTY)[keyof typeof LEVEL_DIFFICULTY];
+export type LevelType = (typeof LEVEL_TYPES)[keyof typeof LEVEL_TYPES];
+export type PetalState = (typeof PETAL_STATES)[keyof typeof PETAL_STATES];
+

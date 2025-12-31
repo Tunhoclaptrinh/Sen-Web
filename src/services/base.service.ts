@@ -85,6 +85,84 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
+   * Protected HTTP helper methods for child services
+   * These allow child services to make custom API calls while maintaining consistency
+   */
+
+  /**
+   * Protected GET request
+   */
+  protected async get<T = any>(path: string, params?: QueryParams): Promise<T> {
+    try {
+      const queryString = params ? this.buildQueryString(params) : '';
+      const url = queryString ? `${this.endpoint}${path}?${queryString}` : `${this.endpoint}${path}`;
+
+      const response = await apiClient.get<T>(url);
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] GET ${path} error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Protected POST request
+   */
+  protected async post<T = any>(path: string, data?: any): Promise<T> {
+    try {
+      const url = `${this.endpoint}${path}`;
+      const response = await apiClient.post<T>(url, data);
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] POST ${path} error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Protected PUT request
+   */
+  protected async put<T = any>(path: string, data?: any): Promise<T> {
+    try {
+      const url = `${this.endpoint}${path}`;
+      const response = await apiClient.put<T>(url, data);
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] PUT ${path} error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Protected PATCH request
+   */
+  protected async patchRequest<T = any>(path: string, data?: any): Promise<T> {
+    try {
+      const url = `${this.endpoint}${path}`;
+      const response = await apiClient.patch<T>(url, data);
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] PATCH ${path} error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Protected DELETE request
+   */
+  protected async deleteRequest<T = any>(path: string): Promise<T> {
+    try {
+      const url = `${this.endpoint}${path}`;
+      const response = await apiClient.delete<T>(url);
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] DELETE ${path} error:`, error);
+      throw error;
+    }
+  }
+
+
+  /**
    * GET all items with pagination and filtering
    */
   async getAll(params: QueryParams = {}): Promise<BaseApiResponse<T[]>> {

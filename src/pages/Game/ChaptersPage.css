@@ -1,0 +1,114 @@
+.chapters-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.chapters-header {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.progress-card {
+    margin-top: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.progress-card .ant-card-body {
+    padding: 24px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+}
+
+.stat-item .ant-typography {
+    color: white !important;
+    margin: 0;
+}
+
+.chapters-grid {
+    margin-top: 32px;
+}
+
+.chapter-card {
+    position: relative;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.chapter-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.chapter-card.locked {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.chapter-card.locked:hover {
+    transform: none;
+}
+
+.chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.chapter-icon {
+    flex-shrink: 0;
+}
+
+.chapter-info {
+    flex: 1;
+}
+
+.chapter-info .ant-typography {
+    margin: 0;
+}
+
+.chapter-stats {
+    margin-top: 16px;
+}
+
+.chapter-stats .stat {
+    margin-bottom: 8px;
+}
+
+.locked-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 8px;
+}
+
+.locked-overlay .ant-typography {
+    color: white !important;
+}
+
+@media (max-width: 768px) {
+    .chapters-page {
+        padding: 16px;
+    }
+
+    .stat-item {
+        flex-direction: column;
+        gap: 4px;
+    }
+}

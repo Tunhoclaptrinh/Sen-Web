@@ -1,0 +1,64 @@
+.museum-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.museum-header {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.museum-stats {
+    margin-top: 24px;
+}
+
+.museum-stats .ant-card {
+    text-align: center;
+}
+
+.upgrade-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.upgrade-card .ant-card-body {
+    padding: 24px;
+}
+
+.upgrade-card .ant-typography {
+    color: white !important;
+    margin: 0;
+}
+
+.artifacts-section {
+    margin-top: 48px;
+}
+
+.artifact-image {
+    position: relative;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.artifact-image img {
+    transition: transform 0.3s ease;
+}
+
+.artifact-image:hover img {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .museum-page {
+        padding: 16px;
+    }
+
+    .museum-stats {
+        margin-top: 16px;
+    }
+
+    .museum-stats .ant-col {
+        margin-bottom: 16px;
+    }
+}
