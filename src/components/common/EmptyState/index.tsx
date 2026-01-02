@@ -1,15 +1,8 @@
 import React from "react";
-import { Empty, Button, EmptyProps } from "antd";
+import { Empty, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "./styles.less";
-
-interface EmptyStateProps extends EmptyProps {
-  title?: string;
-  description?: string;
-  actionText?: string;
-  onAction?: () => void;
-  showAction?: boolean;
-}
+import { EmptyStateProps } from "./types";
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   title,

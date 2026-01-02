@@ -28,58 +28,7 @@ import {
   MoreOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-
-interface DataTableProps {
-  data?: any[];
-  loading?: boolean;
-  columns?: any[];
-  onAdd?: () => void;
-  onView?: (record: any) => void;
-  onEdit?: (record: any) => void;
-  onDelete?: (id: any) => void;
-  onRefresh?: () => void;
-  pagination?: {
-    current: number;
-    pageSize: number;
-    total: number;
-  };
-  onPaginationChange?: (pagination: any, filters: any, sorter: any) => void;
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  searchValue?: string;
-  onSearch?: (value: string) => void;
-  filters?: any[];
-  filterValues?: any;
-  onFilterChange?: (key: string, value: any) => void;
-  onClearFilters?: () => void;
-  sortable?: boolean;
-  defaultSort?: any;
-  showActions?: boolean;
-  actionsWidth?: number;
-  customActions?: (record: any) => React.ReactNode;
-  actionPosition?: "left" | "right";
-  batchOperations?: boolean;
-  onBatchDelete?: (keys: any[]) => void;
-  selectedRowKeys?: any[];
-  onSelectChange?: (keys: any[]) => void;
-  batchActions?: any[];
-  importable?: boolean;
-  exportable?: boolean;
-  onImport?: (file: File) => void;
-  onExport?: () => void;
-  title?: React.ReactNode;
-  extra?: React.ReactNode;
-  rowKey?: string;
-  size?: "small" | "middle" | "large";
-  bordered?: boolean;
-  scroll?: any;
-  emptyText?: string;
-  rowSelection?: any;
-  showAlert?: boolean;
-  alertMessage?: string;
-  alertType?: "success" | "info" | "warning" | "error";
-  [key: string]: any;
-}
+import { DataTableProps } from "./types";
 
 /**
  * DataTable Component

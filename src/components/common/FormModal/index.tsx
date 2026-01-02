@@ -1,16 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Modal, Form, Spin, ModalProps, FormInstance } from 'antd';
-import { FormLayout } from 'antd/es/form/Form';
-
-interface FormModalProps extends ModalProps {
-  onCancel?: () => void;
-  onOk?: (values: any) => Promise<void> | void;
-  form: FormInstance;
-  initialValues?: any;
-  loading?: boolean;
-  layout?: FormLayout;
-  children?: ReactNode;
-}
+import React from 'react';
+import { Modal, Form, Spin } from 'antd';
+import { FormModalProps } from './types';
 
 /**
  * Universal Form Modal Component

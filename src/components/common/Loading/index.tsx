@@ -1,12 +1,8 @@
 import React from "react";
-import { Spin, SpinProps } from "antd";
+import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import "./styles.less";
-
-interface LoadingProps extends SpinProps {
-  fullScreen?: boolean;
-  message?: string;
-}
+import { LoadingProps } from "./types";
 
 const Loading: React.FC<LoadingProps> = ({
   fullScreen = false,

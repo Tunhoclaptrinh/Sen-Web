@@ -3,21 +3,10 @@ import { Card, Tag, Typography, Tooltip } from 'antd';
 import { EyeOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import "./styles.less";
+import { ArtifactCardProps } from './types';
 
 const { Meta } = Card;
 const { Text } = Typography;
-
-interface ArtifactCardProps {
-    artifact: {
-        id: number | string;
-        name: string;
-        images?: string[];
-        dynasty?: string;
-        rarity?: string;
-        category?: string;
-    };
-    actions?: React.ReactNode[];
-}
 
 const ArtifactCard: React.FC<ArtifactCardProps> = ({ artifact, actions }) => {
     const imageUrl = artifact.images && artifact.images.length > 0 ? artifact.images[0] : 'https://via.placeholder.com/300x200?text=No+Image';

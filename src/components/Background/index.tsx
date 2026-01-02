@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import "./styles.less";
 
 import background_full from "@/assets/images/background/background-full.png";
@@ -12,34 +12,7 @@ import smoke_left from "@/assets/images/background/smoke-left.png";
 import smoke_right from "@/assets/images/background/smoke-right.png";
 import leaf from "@/assets/images/background/leaf.png";
 import bird from "@/assets/images/background/bird.png";
-
-interface BackgroundProps {
-  children?: React.ReactNode;
-
-  /** Background */
-  useFullBackground?: boolean;
-  showBase?: boolean;
-
-  /** Elements */
-  showBird?: boolean;
-  showDrum?: boolean;
-  showLeaf?: boolean;
-
-  /** Lotus */
-  showLotus?: boolean;
-  showLotus1?: boolean;
-  showLotus2?: boolean;
-  showLotus3?: boolean;
-
-  /** Smoke */
-  showSmoke?: boolean;
-  showSmokeLeft?: boolean;
-  showSmokeRight?: boolean;
-
-  /** Custom style */
-  wrapperStyle?: CSSProperties;
-  contentStyle?: CSSProperties;
-}
+import { BackgroundProps } from "./types";
 
 const Background: React.FC<BackgroundProps> = ({
   children,

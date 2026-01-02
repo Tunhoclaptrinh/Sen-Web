@@ -9,25 +9,7 @@ import {
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import "./styles.less";
-
-interface HeritageSite {
-  id: number;
-  name: string;
-  description: string;
-  image?: string;
-  region: string;
-  type: string;
-  rating?: number;
-  total_reviews?: number;
-  unesco_listed?: boolean;
-}
-
-interface HeritageCardProps {
-  site: HeritageSite;
-  onFavoriteToggle?: (id: number, isFavorite: boolean) => void;
-  isFavorite?: boolean;
-  loading?: boolean;
-}
+import { HeritageCardProps } from "./types";
 
 const HeritageCard: React.FC<HeritageCardProps> = ({
   site,

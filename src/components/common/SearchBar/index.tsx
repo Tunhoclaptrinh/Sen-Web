@@ -5,33 +5,9 @@ import {
   SearchOutlined,
   ClearOutlined,
 } from '@ant-design/icons';
-import { SizeType } from 'antd/es/config-provider/SizeContext';
+
 import "./styles.less";
-
-interface FilterOption {
-  key: string;
-  placeholder?: string;
-  value?: any;
-  options?: { label: string; value: any }[];
-  disabled?: boolean;
-  loading?: boolean;
-  colSpan?: number;
-  width?: number | string;
-}
-
-interface SearchBarProps {
-  searchValue?: string;
-  onSearchChange?: (value: string) => void;
-  onSearch?: (value: string) => void;
-  placeholder?: string;
-  filters?: FilterOption[];
-  onFilterChange?: (key: string, value: any) => void;
-  onClearFilters?: () => void;
-  size?: SizeType;
-  showClearButton?: boolean;
-  responsive?: boolean;
-  [key: string]: any;
-}
+import { SearchBarProps } from "./types";
 
 /**
  * Universal Search Bar Component
