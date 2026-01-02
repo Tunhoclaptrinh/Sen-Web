@@ -9,6 +9,7 @@ import {
   Dropdown,
   Alert,
   Modal as AntModal,
+  Checkbox,
 } from "antd";
 import {
   PlusOutlined,
@@ -24,7 +25,7 @@ import {
   FileExcelOutlined
 } from "@ant-design/icons";
 import { Button, Input, Card, Modal, Select, toast } from "@/components/common";
-import { DataTableProps } from "./types";
+import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
 
@@ -89,9 +90,19 @@ const DataTable: React.FC<DataTableProps> = ({
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [operators, setOperators] = useState<Record<string, string>>({});
 
+  // Dynamic filters state - start EMPTY, user adds as needed
+  const [activeFilters, setActiveFilters] = useState<FilterConfig[]>([]);
+  const [availableFilters] = useState(filters); // Keep all available filters
+
+  const [enabledFilters, setEnabledFilters] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    filters.forEach(f => initial[f.key] = true);
+    return initial;
+  });
+
   const getActiveFilterKey = (filterKey: string, op?: string) => {
     const currentOp = op || operators[filterKey] || 'eq';
-    return currentOp === 'eq' ? filterKey : `${filterKey}_${currentOp}`;
+    return currentOp === 'eq' ? filterKey : `${filterKey}_${currentOp} `;
   };
 
   const handleOperatorChange = (filterKey: string, newOp: string) => {
@@ -100,8 +111,8 @@ const DataTable: React.FC<DataTableProps> = ({
 
     setOperators(prev => ({ ...prev, [filterKey]: newOp }));
 
-    const oldKey = oldOp === 'eq' ? filterKey : `${filterKey}_${oldOp}`;
-    const newKey = newOp === 'eq' ? filterKey : `${filterKey}_${newOp}`;
+    const oldKey = oldOp === 'eq' ? filterKey : `${filterKey}_${oldOp} `;
+    const newKey = newOp === 'eq' ? filterKey : `${filterKey}_${newOp} `;
     const currentValue = filterValues[oldKey];
 
     if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
@@ -113,6 +124,32 @@ const DataTable: React.FC<DataTableProps> = ({
   const handleFilterValueChange = (filterKey: string, value: any) => {
     const activeKey = getActiveFilterKey(filterKey);
     handleFilterChange(activeKey, value);
+  };
+
+  const toggleFilterEnabled = (key: string) => {
+    setEnabledFilters(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const addFilterCondition = (filterKey: string) => {
+    const filterToAdd = availableFilters.find(f => f.key === filterKey);
+    if (filterToAdd && !activeFilters.find(f => f.key === filterKey)) {
+      setActiveFilters(prev => [...prev, filterToAdd]);
+      setEnabledFilters(prev => ({ ...prev, [filterKey]: true }));
+    }
+  };
+
+  const removeFilterCondition = (filterKey: string) => {
+    setActiveFilters(prev => prev.filter(f => f.key !== filterKey));
+    // Also clear the filter value
+    const currentOp = operators[filterKey] || 'eq';
+    const activeKey = currentOp === 'eq' ? filterKey : `${filterKey}_${currentOp}`;
+    handleFilterChange(activeKey, undefined);
+    // Remove from enabled filters
+    setEnabledFilters(prev => {
+      const newEnabled = { ...prev };
+      delete newEnabled[filterKey];
+      return newEnabled;
+    });
   };
 
   // Effect to trigger search when debounced value changes
@@ -136,7 +173,7 @@ const DataTable: React.FC<DataTableProps> = ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
       <div className="filter-dropdown-container" onKeyDown={(e) => e.stopPropagation()}>
         <Input
-          placeholder={`Tìm kiếm ${label}`}
+          placeholder={`Tìm kiếm ${label} `}
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => confirm()}
@@ -178,6 +215,10 @@ const DataTable: React.FC<DataTableProps> = ({
     if (onClearFilters) {
       onClearFilters();
     }
+    // Re-enable all filters when clearing
+    const allEnabled: Record<string, boolean> = {};
+    filters.forEach(f => allEnabled[f.key] = true);
+    setEnabledFilters(allEnabled);
     setFilterModalOpen(false);
   };
 
@@ -320,7 +361,7 @@ const DataTable: React.FC<DataTableProps> = ({
             }
             AntModal.confirm({
               title: "Xác nhận xóa hàng loạt?",
-              content: `Bạn có chắc chắn muốn xóa ${activeSelectedRowKeys.length} mục đã chọn?`,
+              content: `Bạn có chắc chắn muốn xóa ${activeSelectedRowKeys.length} mục đã chọn ? `,
               okText: "Xóa",
               cancelText: "Hủy",
               okButtonProps: { danger: true },
@@ -521,92 +562,159 @@ const DataTable: React.FC<DataTableProps> = ({
           {...tableProps}
         />
 
-        {/* Filter Modal */}
+        {/* Filter Modal - Custom Filter Builder */}
         <Modal
           open={filterModalOpen}
           onCancel={() => setFilterModalOpen(false)}
-          title="Bộ lọc nâng cao"
-          width={520}
-          footer={
-            <div className="filter-modal-footer">
+          title="Bộ lọc tùy chỉnh"
+          width={700}
+          footer={null}
+          bodyStyle={{ padding: 0 }}
+          className="custom-filter-modal"
+        >
+          <div className="filter-builder-container">
+            <div className="active-filters-section">
+              <div className="section-title">Các điều kiện lọc đang được áp dụng:</div>
+
+              {activeFilters.length === 0 ? (
+                <div className="empty-filter-state">
+                  <p>Chưa có điều kiện lọc nào. Nhấn "+ Thêm điều kiện lọc" để bắt đầu.</p>
+                </div>
+              ) : (
+                <div className="filter-conditions-list">
+                  {activeFilters.map((filter, index) => {
+                    const label = filter.label || filter.placeholder;
+                    const currentOp = operators[filter.key] || filter.defaultOperator || 'eq';
+                    const activeKey = currentOp === 'eq' ? filter.key : `${filter.key}_${currentOp} `;
+                    const hasValue = filterValues[activeKey] !== undefined &&
+                      filterValues[activeKey] !== null &&
+                      filterValues[activeKey] !== '';
+                    const isEnabled = enabledFilters[filter.key] !== false;
+
+                    return (
+                      <div key={filter.key} className={`filter-condition-item ${!isEnabled ? 'disabled' : ''}`}>
+                        {index > 0 && <div className="condition-connector">VÀ</div>}
+
+                        <div className="condition-row">
+                          {/* Checkbox */}
+                          <div className="condition-checkbox">
+                            <Checkbox
+                              checked={isEnabled}
+                              onChange={() => toggleFilterEnabled(filter.key)}
+                            />
+                          </div>
+
+                          {/* Field Selector */}
+                          <div className="condition-field">
+                            <Select
+                              value={filter.key}
+                              disabled
+                              options={[{ label: label, value: filter.key }]}
+                              style={{ width: '100%' }}
+                            />
+                          </div>
+
+                          {filter.operators && (
+                            <div className="condition-operator">
+                              <Select
+                                value={currentOp}
+                                onChange={(val) => handleOperatorChange(filter.key, val)}
+                                options={[
+                                  { label: 'Bằng', value: 'eq' },
+                                  { label: 'Lớn hơn', value: 'gt' },
+                                  { label: 'Lớn hơn hoặc bằng', value: 'gte' },
+                                  { label: 'Nhỏ hơn', value: 'lt' },
+                                  { label: 'Nhỏ hơn hoặc bằng', value: 'lte' },
+                                  { label: 'Chứa', value: 'like' },
+                                  { label: 'Khác', value: 'ne' },
+                                  { label: 'Trong', value: 'in' },
+                                ].filter(op => filter.operators?.includes(op.value as any))}
+                                style={{ width: '100%' }}
+                              />
+                            </div>
+                          )}
+
+                          <div className="condition-value">
+                            {(!filter.type || filter.type === 'select') && (
+                              <Select
+                                placeholder={filter.placeholder || `Chọn ${label?.toLowerCase()} `}
+                                value={filterValues[activeKey]}
+                                onChange={(value) => handleFilterValueChange(filter.key, value)}
+                                options={filter.options}
+                                allowClear
+                                mode={currentOp === 'in' ? 'multiple' : undefined}
+                                style={{ width: '100%' }}
+                              />
+                            )}
+
+                            {(filter.type === 'input' || filter.type === 'number') && (
+                              <Input
+                                placeholder={filter.placeholder || `Nhập ${label?.toLowerCase()} `}
+                                value={filterValues[activeKey]}
+                                onChange={(e) => handleFilterValueChange(filter.key, e.target.value)}
+                                allowClear
+                                style={{ width: '100%' }}
+                                type={filter.type === 'number' ? 'number' : 'text'}
+                              />
+                            )}
+                          </div>
+                          {/* Delete Button */}
+                          <button
+                            className="condition-delete"
+                            onClick={() => removeFilterCondition(filter.key)}
+                            title="Xóa điều kiện"
+                          >
+                            ×
+                          </button>
+                        </div>
+
+                        {hasValue && (
+                          <div className="condition-preview">
+                            {label} {currentOp === 'like' ? 'chứa' : currentOp === 'in' ? 'trong' : '='} <strong>{
+                              Array.isArray(filterValues[activeKey])
+                                ? filterValues[activeKey].join(', ')
+                                : filterValues[activeKey]
+                            }</strong>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Add Condition Button */}
+              <div className="filter-actions">
+                <Dropdown
+                  menu={{
+                    items: availableFilters
+                      .filter(f => !activeFilters.find(af => af.key === f.key))
+                      .map(f => ({
+                        key: f.key,
+                        label: f.label || f.placeholder,
+                        onClick: () => addFilterCondition(f.key)
+                      })),
+                  }}
+                  disabled={availableFilters.length === activeFilters.length}
+                >
+                  <Button variant="outline" style={{ width: '100%' }}>
+                    + Thêm điều kiện lọc
+                  </Button>
+                </Dropdown>
+              </div>
+            </div>
+
+            <div className="filter-builder-footer">
+              <Button variant="outline" onClick={() => setFilterModalOpen(false)}>
+                Hủy
+              </Button>
               <Button variant="outline" onClick={handleClearFilters}>
-                Xóa bộ lọc
+                Bỏ lọc
               </Button>
               <Button variant="primary" onClick={() => setFilterModalOpen(false)}>
-                Áp dụng
+                Áp dụng bộ lọc
               </Button>
             </div>
-          }
-          bodyStyle={{ padding: 0 }}
-        >
-          <div className="filter-modal-content">
-            {filters.length === 0 ? (
-              <div className="empty-filter-text">
-                Không có bộ lọc nào được cấu hình.
-              </div>
-            ) : (
-              <div className="filter-grid">
-                {filters.map((filter) => {
-                  const label = filter.label || filter.placeholder;
-                  const currentOp = operators[filter.key] || filter.defaultOperator || 'eq';
-                  const activeKey = currentOp === 'eq' ? filter.key : `${filter.key}_${currentOp}`;
-
-                  return (
-                    <div key={filter.key} className="filter-item-container">
-                      <span className="filter-label">
-                        {label}
-                      </span>
-
-                      <div className="filter-controls">
-                        {filter.operators && (
-                          <Select
-                            className="operator-select"
-                            value={currentOp}
-                            onChange={(val) => handleOperatorChange(filter.key, val)}
-                            options={[
-                              { label: '=', value: 'eq' },
-                              { label: '>', value: 'gt' },
-                              { label: '≥', value: 'gte' },
-                              { label: '<', value: 'lt' },
-                              { label: '≤', value: 'lte' },
-                              { label: 'Chứa', value: 'like' },
-                              { label: 'Khác', value: 'ne' },
-                              { label: 'Trong', value: 'in' },
-                            ].filter(op => filter.operators?.includes(op.value as any))}
-                            dropdownMatchSelectWidth={false}
-                          />
-                        )}
-
-                        <div style={{ flex: 1 }}>
-                          {(!filter.type || filter.type === 'select') && (
-                            <Select
-                              placeholder={`Chọn ${label?.toLowerCase()}`}
-                              value={filterValues[activeKey]}
-                              onChange={(value) => handleFilterValueChange(filter.key, value)}
-                              options={filter.options}
-                              fullWidth
-                              allowClear
-                              mode={currentOp === 'in' ? 'multiple' : undefined}
-                            />
-                          )}
-
-                          {(filter.type === 'input' || filter.type === 'number') && (
-                            <Input
-                              placeholder={`Nhập ${label?.toLowerCase()}`}
-                              value={filterValues[activeKey]}
-                              onChange={(e) => handleFilterValueChange(filter.key, e.target.value)}
-                              allowClear
-                              style={{ width: '100%' }}
-                              type={filter.type === 'number' ? 'number' : 'text'}
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </Modal>
       </Card>

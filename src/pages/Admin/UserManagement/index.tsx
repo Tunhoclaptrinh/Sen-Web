@@ -152,7 +152,7 @@ const UserManagement = () => {
       fixed: "right" as const,
       align: "center" as const,
       render: (_: any, record: User) => (
-        <Space size="middle">
+        <Space size="middle" style={{ gap: 4 }}>
           <Tooltip title="Xem chi tiết">
             <Button
               type="text"
