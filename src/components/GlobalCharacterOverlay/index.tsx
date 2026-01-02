@@ -67,12 +67,13 @@ const GlobalCharacterOverlay = () => {
     return costumes;
   };
 
-  const [accessories, setAccessories] = useState<Record<string, boolean>>(getCostume());
+  const [accessories, setAccessories] =
+    useState<Record<string, boolean>>(getCostume());
   const [mouthState, setMouthState] = useState<any>("smile");
   const [gesture, setGesture] = useState<any>("normal");
 
-  const CHAR_WIDTH = isChibi ? 300 * (scale * 2.5) : 250 * (scale * 4);
-  const CHAR_HEIGHT = isChibi ? 400 * (scale * 2.5) : 650 * (scale * 4);
+  const CHAR_WIDTH = isChibi ? 600 * (scale * 2.5) : 250 * (scale * 4);
+  const CHAR_HEIGHT = isChibi ? 1100 * (scale * 2.5) : 650 * (scale * 4);
 
   // Drag logic
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -185,9 +186,10 @@ const GlobalCharacterOverlay = () => {
         footer={null}
         width={600}
       >
-
         <Title level={5}>Chế độ nhân vật</Title>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 20 }}
+        >
           <span style={{ marginRight: 10 }}>Dạng Chibi (Mới)</span>
           <Switch checked={isChibi} onChange={setIsChibi} />
         </div>
@@ -241,7 +243,9 @@ const GlobalCharacterOverlay = () => {
         </Title>
         <div className="expression-control">
           <div className="expression-control__header">
-            <span className={`expression-control__label ${isTalking ? "expression-control__label--active" : ""}`}>
+            <span
+              className={`expression-control__label ${isTalking ? "expression-control__label--active" : ""}`}
+            >
               <SoundOutlined /> Chế độ nói chuyện:
             </span>
             <Switch checked={isTalking} onChange={setIsTalking} />
@@ -253,7 +257,10 @@ const GlobalCharacterOverlay = () => {
 
         {isChibi && (
           <>
-            <Text className="mouth-select-label" style={{ marginTop: 10, display: 'block' }}>
+            <Text
+              className="mouth-select-label"
+              style={{ marginTop: 10, display: "block" }}
+            >
               Cử chỉ tay (Gestures):
             </Text>
             <Select
@@ -266,7 +273,6 @@ const GlobalCharacterOverlay = () => {
               <Option value="point">Chỉ tay (Point)</Option>
               <Option value="like">Thích (Like)</Option>
               <Option value="flag">Cầm cờ (Flag)</Option>
-              <Option value="hand_back">Chắp tay sau lưng</Option>
             </Select>
           </>
         )}

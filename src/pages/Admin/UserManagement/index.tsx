@@ -16,7 +16,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { User } from "@/types";
-import userService from "@/services/user.service"; // Ensure default import usage is consistent or named
+import userService from "@/services/user.service"; 
 import DataTable from "@/components/common/DataTable";
 import FormModal from "@/components/common/FormModal";
 import { useCRUD } from "@/hooks/useCRUD";
