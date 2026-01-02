@@ -2,18 +2,18 @@ import React, { lazy, Suspense } from "react";
 import { RouteObject } from "react-router-dom";
 
 // Layouts
-import MainLayout from "@/layouts/MainLayout/MainLayout";
-import AdminLayout from "@/layouts/AdminLayout/AdminLayout";
+import MainLayout from "@/layouts/MainLayout";
+import AdminLayout from "@/layouts/AdminLayout";
 import CustomerLayout from "@/layouts/CustomerLayout";
 import ResearcherLayout from "@/layouts/ResearcherLayout";
-import AuthLayout from "@/layouts/AuthLayout/AuthLayout";
+import AuthLayout from "@/layouts/AuthLayout";
 import Loading from "@/components/common/Loading";
 import AuthGuard from "@/components/common/guards/AuthGuard";
 import { RoleGuard } from "./RouteGuards";
 
 // Lazy load pages
-const Home = lazy(() => import("@/pages/Home/Home"));
-const Login = lazy(() => import("@/pages/Auth/Login"));
+const Home = lazy(() => import("@/pages/Home"));
+const Login = lazy(() => import("@/pages/Auth"));
 const HeritageListPage = lazy(
   () => import("@/pages/Heritage/HeritageListPage"),
 );
@@ -28,7 +28,7 @@ const ArtifactDetailPage = lazy(
 );
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
 const Collections = lazy(() => import("@/pages/Profile/Collections"));
-const NotFound = lazy(() => import("@/pages/NotFound/NotFound"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
 
 // Admin Pages

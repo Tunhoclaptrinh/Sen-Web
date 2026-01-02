@@ -8,9 +8,8 @@ import store from "./store";
 import { injectStore } from "./config/axios.config";
 
 // Import CSS
-import "antd/dist/reset.css";
-import "./assets/styles/global.css";
-import "./assets/styles/antd-override.css";
+import "./styles/global.less";
+import "./styles/antd-custom.less";
 
 // Inject store vào axios config để tránh circular dependency
 injectStore(store);

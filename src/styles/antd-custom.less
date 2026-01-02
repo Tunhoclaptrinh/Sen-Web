@@ -1,0 +1,136 @@
+/* Ant Design Custom Overrides */
+@primary-color: #d4a574;
+
+.ant-layout {
+    background: white;
+}
+
+.ant-menu-light {
+    background: transparent;
+}
+
+.ant-menu-item-selected::after {
+    border-right-color: @primary-color !important;
+}
+
+.ant-menu-item:hover,
+.ant-menu-item-selected {
+    color: @primary-color !important;
+}
+
+.ant-btn-primary {
+    background-color: @primary-color;
+    border-color: @primary-color;
+
+    &:hover,
+    &:focus {
+        background-color: darken(@primary-color, 10%);
+        border-color: darken(@primary-color, 10%);
+    }
+}
+
+.ant-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.ant-input,
+.ant-select-selector,
+.ant-picker {
+    border-radius: 4px !important;
+
+    &:hover {
+        border-color: @primary-color !important;
+    }
+}
+
+.ant-input-focused,
+.ant-select-focused .ant-select-selector,
+.ant-picker-focused .ant-picker {
+    border-color: @primary-color !important;
+    box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* ==================== Layout Customizations ==================== */
+.ant-layout-header {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-layout-footer {
+    background: #fafafa;
+    border-top: 1px solid #e8e8e8;
+}
+
+/* ==================== Table Customizations ==================== */
+.ant-table {
+    background: white;
+}
+
+.ant-table-thead>tr>th {
+    background-color: #fafafa;
+    border-bottom-color: #e8e8e8;
+}
+
+/* ==================== Form Customizations ==================== */
+.ant-form-item-required::before {
+    color: @primary-color;
+}
+
+.ant-checkbox-inner {
+    border-color: @primary-color;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+    background-color: @primary-color;
+    border-color: @primary-color;
+}
+
+/* ==================== Utilities ==================== */
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #8c8c8c;
+}
+
+.mt-16 {
+    margin-top: 16px;
+}
+
+.mt-24 {
+    margin-top: 24px;
+}
+
+.mb-16 {
+    margin-bottom: 16px;
+}
+
+.mb-24 {
+    margin-bottom: 24px;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .ant-layout-header {
+        padding: 0 16px;
+    }
+}
