@@ -1,0 +1,34 @@
+.sen-toggle-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 4px solid #fff;
+    cursor: pointer;
+    z-index: 9990;
+    /* Below overlay but above content */
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    &--active {
+        border-color: #52c41a;
+        /* Green ring when active */
+    }
+
+    &__icon {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+    }
+}
