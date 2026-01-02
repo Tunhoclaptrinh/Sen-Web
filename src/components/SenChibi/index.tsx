@@ -20,6 +20,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
   eyeState = "normal",
   gesture = "normal",
   isTalking = false,
+  isBlinking = true, // Default to true
   interactive = false,
   onClick,
 }) => {
@@ -49,25 +50,35 @@ const SenChibi: React.FC<SenChibiProps> = ({
 
   // Blinking Logic
   useEffect(() => {
+    if (!isBlinking) {
+      setBlinkState(false);
+      return;
+    }
+
+    let timer: NodeJS.Timeout;
     const blinkLoop = () => {
       setBlinkState(true);
       setTimeout(() => setBlinkState(false), 150);
 
       // Random next blink 2-5s
       const nextBlink = Math.random() * 3000 + 2000;
-      setTimeout(blinkLoop, nextBlink);
+      timer = setTimeout(blinkLoop, nextBlink);
     };
 
-    const timer = setTimeout(blinkLoop, 2000);
+    timer = setTimeout(blinkLoop, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isBlinking]);
 
   // Determine current textures
   const eyeTexture = useMemo(() => {
-    if (blinkState) return "eye_blink.png";
+    // Automatic blink uses "sleep" texture (closed eyes) or "close" (happy eyes).
+    // Usually a neutral blink is "sleep" or just closed.
+    // User requested "chớp mắt là chớp cả 2 mắt" (blink = both eyes).
+    if (blinkState) return "eye_sleep.png";
+
     switch (eyeState) {
       case "blink":
-        return "eye_blink.png";
+        return "eye_blink.png"; // Explicit Wink
       case "close":
         return "eye_close.png";
       case "half":
@@ -214,11 +225,11 @@ const SenChibi: React.FC<SenChibiProps> = ({
       {gesture === "hello" && (
         <Part
           name="arm_hello.png"
-          xOfs={-184}
+          xOfs={-228}
           yOfs={16}
           scale={0.7}
           z={6}
-          pivot={(30, 120)}
+          pivot={{ x: 30, y: 120 }}
           rot={-Math.sin(Date.now() / 200) * 0.05}
         />
       )}

@@ -1,5 +1,10 @@
 
 
+export type SenChibiOutfit = 'normal' | 'ao_dai';
+export type SenChibiGesture = 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back';
+export type SenChibiMouthState = 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue';
+export type SenChibiEyeState = 'normal' | 'blink' | 'close' | 'half' | 'like' | 'sleep';
+
 export interface SenChibiProps {
     x?: number;
     y?: number;
@@ -10,15 +15,19 @@ export interface SenChibiProps {
     showHat?: boolean;
     showGlasses?: boolean;
     showCoat?: boolean;
-    outfit?: 'normal' | 'ao_dai';
-    gesture?: 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back';
+    outfit?: SenChibiOutfit;
+    gesture?: SenChibiGesture;
 
     // Expression
-    mouthState?: 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue';
-    eyeState?: 'normal' | 'blink' | 'close' | 'half' | 'like' | 'sleep';
+    mouthState?: SenChibiMouthState;
+    eyeState?: SenChibiEyeState;
 
     // Animation States
     isTalking?: boolean;
+    /**
+     * Whether the character should blink automatically.
+     * Default: true
+     */
     isBlinking?: boolean;
 
     // Interaction

@@ -70,7 +70,9 @@ const GlobalCharacterOverlay = () => {
   const [accessories, setAccessories] =
     useState<Record<string, boolean>>(getCostume());
   const [mouthState, setMouthState] = useState<any>("smile");
+  const [eyeState, setEyeState] = useState<any>("normal"); // New Eye State
   const [gesture, setGesture] = useState<any>("normal");
+  const [isBlinking, setIsBlinking] = useState(true); // New Blink Toggle
 
   const CHAR_WIDTH = isChibi ? 600 * (scale * 2.5) : 250 * (scale * 4);
   const CHAR_HEIGHT = isChibi ? 1100 * (scale * 2.5) : 650 * (scale * 4);
@@ -146,8 +148,10 @@ const GlobalCharacterOverlay = () => {
                 showGlasses={accessories.glasses}
                 showCoat={accessories.coat}
                 mouthState={mouthState}
-                gesture={gesture} // Pass gesture
+                eyeState={eyeState} // Pass eyeState
+                gesture={gesture}
                 isTalking={isTalking}
+                isBlinking={isBlinking} // Pass isBlinking
               />
             ) : (
               <SenCharacter
@@ -239,7 +243,7 @@ const GlobalCharacterOverlay = () => {
 
         <Divider />
         <Title level={5}>
-          <SmileOutlined /> Biểu Cảm & Cử Chỉ
+          <SoundOutlined /> Hội thoại (Speaking)
         </Title>
         <div className="expression-control">
           <div className="expression-control__header">
@@ -257,15 +261,51 @@ const GlobalCharacterOverlay = () => {
 
         {isChibi && (
           <>
+            <Title level={5}>
+              <SmileOutlined /> Biểu Cảm (Expressions)
+            </Title>
+
+            {/* Eye Control */}
+            <Text className="mouth-select-label">Mắt (Eyes):</Text>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: 10 }}>
+              <Select
+                value={eyeState}
+                onChange={setEyeState}
+                style={{ flex: 1 }}
+              >
+                <Option value="normal">Bình thường (Normal)</Option>
+                <Option value="blink">Nháy mắt (Wink)</Option>
+                <Option value="close">Cười tít (Happy)</Option>
+                <Option value="like">Mắt Like (&gt; &lt;)</Option>
+                <Option value="half">Mắt lờ đờ (Half)</Option>
+                <Option value="sleep">Mắt ngủ (Sleep)</Option>
+              </Select>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 80 }}>
+                <span style={{ fontSize: 12 }}>Auto Blink</span>
+                <Switch size="small" checked={isBlinking} onChange={setIsBlinking} />
+              </div>
+            </div>
+
+            {/* Gesture Control */}
             <Text
               className="mouth-select-label"
-              style={{ marginTop: 10, display: "block" }}
+              style={{ display: "block" }}
             >
               Cử chỉ tay (Gestures):
             </Text>
             <Select
               value={gesture}
-              onChange={setGesture}
+              onChange={(val) => {
+                setGesture(val);
+                // "Mắt - hành động like": Automatically switch eyes when Like gesture is chosen
+                if (val === 'like') {
+                  setEyeState('like');
+                } else if (eyeState === 'like') {
+                  // Smart Reset: If switching away from "Like" gesture and eyes are still "Like",
+                  // reset eyes to "Normal".
+                  setEyeState('normal');
+                }
+              }}
               style={{ width: "100%", marginBottom: 16 }}
             >
               <Option value="normal">Bình thường</Option>
@@ -288,6 +328,7 @@ const GlobalCharacterOverlay = () => {
         >
           <Option value="smile">Cười nhẹ (Smile)</Option>
           {isChibi && <Option value="smile_2">Cười tươi (Smile 2)</Option>}
+          {isChibi && <Option value="half">Mở hé (Half)</Option>}
           <Option value="open">Mở to (Open)</Option>
           <Option value="close">Đóng (Close)</Option>
           <Option value="sad">Buồn (Sad)</Option>
