@@ -1,8 +1,13 @@
 // @ts-nocheck
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Sprite, useTick } from "@pixi/react";
+
 const getCharacterAsset = (name) => {
   return new URL(`../../assets/images/character/${name}`, import.meta.url).href;
+};
+
+const getChibiAsset = (name) => {
+  return new URL(`../../assets/images/SenChibi/${name}`, import.meta.url).href;
 };
 
 const SenCharacter = ({
@@ -13,8 +18,10 @@ const SenCharacter = ({
   showGlasses = true,
   showBag = true,
   showCoat = true,
-  mouthState = "smile", // 'smile', 'sad', 'angry', 'open', 'close', 'half'
+  mouthState = "smile", // 'smile', 'sad', 'angry', 'open', 'close', 'half', 'tongue', 'smile_2'
+  eyeState = "normal", // 'normal', 'close', 'half', 'like', 'blink', 'sleep'
   isTalking = false,
+  isBlinking = true, // Control auto-blink
   draggable = false, // Tính năng kéo thả
   onPositionChange, // Callback khi vị trí thay đổi
   onClick,
@@ -27,7 +34,7 @@ const SenCharacter = ({
   const [swayRotation, setSwayRotation] = useState(0);
 
   // State cho việc chớp mắt
-  const [isBlinking, setIsBlinking] = useState(false);
+  const [blinkActive, setBlinkActive] = useState(false);
 
   // State cho việc nói chuyện
   const [talkFrame, setTalkFrame] = useState(0);
@@ -66,9 +73,13 @@ const SenCharacter = ({
   });
 
   useEffect(() => {
+    if (!isBlinking) {
+      setBlinkActive(false);
+      return;
+    }
     const blinkLoop = () => {
-      setIsBlinking(true);
-      setTimeout(() => setIsBlinking(false), 150); // Mắt nhắm trong 150ms
+      setBlinkActive(true);
+      setTimeout(() => setBlinkActive(false), 150); // Mắt nhắm trong 150ms
 
       const nextBlinkTime = Math.random() * 2000 + 2000;
       setTimeout(blinkLoop, nextBlinkTime);
@@ -76,19 +87,103 @@ const SenCharacter = ({
 
     const timeoutId = setTimeout(blinkLoop, 6000);
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [isBlinking]);
 
-  // Tính toán tên file ảnh miệng dựa trên props
+  // --- MOUTH ASSET LOGIC ---
   const currentMouthImage = useMemo(() => {
     if (isTalking) {
-      // Animation mấp máy môi: close -> half -> open
       const frames = ["mouth_close.png", "mouth_half.png", "mouth_open.png"];
-      return frames[talkFrame];
+      return {
+        text: frames[talkFrame],
+        source: "char",
+        yOffset: -526,
+        xOffset: -48,
+        scale: 1,
+      };
     }
 
-    // Nếu không nói, dùng prop mouthState
-    return `mouth_${mouthState}.png`;
+    // Handle Chibi Fallback for Tongue/Smile_2 if needed
+    if (mouthState === "tongue") {
+      return {
+        text: "mouth_tongue.png",
+        source: "chibi",
+        yOffset: -516,
+        xOffset: -48,
+        scale: 0.4,
+      };
+    }
+    if (mouthState === "smile_2") {
+      return {
+        text: "mouth_smile_2.png",
+        source: "chibi",
+        yOffset: -510,
+        xOffset: -36,
+        scale: 0.45,
+      };
+    }
+
+    return {
+      text: `mouth_${mouthState}.png`,
+      source: "char",
+      yOffset: -526,
+      xOffset: -48,
+      scale: 1,
+    };
   }, [isTalking, talkFrame, mouthState]);
+
+  // --- EYE ASSET LOGIC ---
+  const currentEyeImage = useMemo(() => {
+    if (blinkActive) {
+      // Prefer "eyes_closed" (Happy/Sleep) for blink unless we want Wink
+      // Standard Sen doesn't have "sleep" specifically, but "eyes_closed" is happy/closed.
+      return {
+        text: "eyes_closed.png",
+        source: "char",
+        yOffset: -598,
+        scale: 1,
+      };
+    }
+
+    switch (eyeState) {
+      case "close":
+      case "sleep":
+        return {
+          text: "eyes_closed.png",
+          source: "char",
+          yOffset: -598,
+          scale: 1,
+        };
+      case "half":
+        return {
+          text: "eyes_half.png",
+          source: "char",
+          yOffset: -600,
+          scale: 1,
+        };
+      case "like":
+        return {
+          text: "eye_Like.png",
+          source: "chibi",
+          yOffset: -595,
+          scale: 0.3,
+        }; // Smaller scale for Chibi eyes
+      case "blink":
+        return {
+          text: "eye_blink.png",
+          source: "chibi",
+          yOffset: -595,
+          scale: 0.3,
+        }; // Smaller scale for Chibi eyes (Wink)
+      case "normal":
+      default:
+        return {
+          text: "eyes_open.png",
+          source: "char",
+          yOffset: -600,
+          scale: 1,
+        };
+    }
+  }, [eyeState, blinkActive]);
 
   // Xử lý sự kiện kéo thả
   const handlePointerDown = (event) => {
@@ -121,25 +216,32 @@ const SenCharacter = ({
     setIsDragging(false);
   };
 
-  // Hàm helper để load ảnh nhanh gọn
+  // Hàm helper để load ảnh
   const Part = ({
-    name,
+    name, // Image filename
+    source = "char", // 'char' or 'chibi'
     yOffset = 0,
     xOffset = 0,
     zIndex = 0,
     visible = true,
     rotation = 0,
+    scale = 1, // Add scale support
   }) => {
     if (!visible) return null;
+
+    // Determine path based on source
+    const imageUrl =
+      source === "chibi" ? getChibiAsset(name) : getCharacterAsset(name);
+
     return (
       <Sprite
-        // image={`${ASSET_PATH}/${name}`}
-        image={getCharacterAsset(name)}
+        image={imageUrl}
         anchor={0.5}
         x={xOffset}
         y={yOffset}
         zIndex={zIndex}
         rotation={rotation}
+        scale={scale}
       />
     );
   };
@@ -203,29 +305,28 @@ const SenCharacter = ({
       <Part name="coats.png" yOffset={30} zIndex={9} visible={showCoat} />
 
       {/* --- KHUÔN MẶT --- */}
+
+      {/* Whites of eyes: Only show if using Standard eyes. Chibi eyes usually cover/replace this. 
+          Standard eyes: open, closed, half. 
+          Chibi eyes: like, blink.
+      */}
       <Part
         name="whites_of_the_eyes.png"
         yOffset={-600}
         xOffset={-48}
         zIndex={10}
+        visible={currentEyeImage.source === "char"}
       />
 
-      {/* Logic đổi texture mắt khi chớp */}
-      {isBlinking ? (
-        <Part
-          name="eyes_closed.png"
-          yOffset={-78 - 520}
-          xOffset={-48}
-          zIndex={11}
-        />
-      ) : (
-        <Part
-          name="eyes_open.png"
-          yOffset={-80 - 520}
-          xOffset={-48}
-          zIndex={11}
-        />
-      )}
+      {/* Eyes */}
+      <Part
+        name={currentEyeImage.text}
+        source={currentEyeImage.source}
+        yOffset={currentEyeImage.yOffset}
+        xOffset={-48}
+        zIndex={11}
+        scale={currentEyeImage.scale}
+      />
 
       <Part name="eyebrow_1.png" yOffset={-596} xOffset={-48} zIndex={12} />
 
@@ -239,7 +340,14 @@ const SenCharacter = ({
       />
 
       {/* Miệng thay đổi động */}
-      <Part name={currentMouthImage} yOffset={-526} xOffset={-48} zIndex={12} />
+      <Part
+        name={currentMouthImage.text}
+        source={currentMouthImage.source}
+        yOffset={currentMouthImage.yOffset}
+        xOffset={currentMouthImage.xOffset}
+        zIndex={12}
+        scale={currentMouthImage.scale}
+      />
 
       <Part
         name="hair_back.png"

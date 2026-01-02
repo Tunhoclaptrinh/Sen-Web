@@ -163,7 +163,9 @@ const GlobalCharacterOverlay = () => {
                 showCoat={accessories.coat}
                 showBag={accessories.bag}
                 mouthState={mouthState}
+                eyeState={eyeState} // Pass eyeState
                 isTalking={isTalking}
+                isBlinking={isBlinking} // Pass isBlinking
                 draggable={false} // Handled by div wrapper for better DOM events
                 onPositionChange={() => { }}
                 onClick={() => { }}
@@ -259,34 +261,35 @@ const GlobalCharacterOverlay = () => {
           </Text>
         </div>
 
+        <Divider />
+        <Title level={5}>
+          <SmileOutlined /> Biểu Cảm (Expressions)
+        </Title>
+
+        {/* Eye Control */}
+        <Text className="mouth-select-label">Mắt (Eyes):</Text>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: 10 }}>
+          <Select
+            value={eyeState}
+            onChange={setEyeState}
+            style={{ flex: 1 }}
+          >
+            <Option value="normal">Bình thường (Normal)</Option>
+            <Option value="blink">Nháy mắt (Wink)</Option>
+            <Option value="close">Cười tít (Happy)</Option>
+            <Option value="like">Mắt Like (&gt; &lt;)</Option>
+            <Option value="half">Mắt lờ đờ (Half)</Option>
+            <Option value="sleep">Mắt ngủ (Sleep)</Option>
+          </Select>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 80 }}>
+            <span style={{ fontSize: 12 }}>Auto Blink</span>
+            <Switch size="small" checked={isBlinking} onChange={setIsBlinking} />
+          </div>
+        </div>
+
         {isChibi && (
           <>
-            <Title level={5}>
-              <SmileOutlined /> Biểu Cảm (Expressions)
-            </Title>
-
-            {/* Eye Control */}
-            <Text className="mouth-select-label">Mắt (Eyes):</Text>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: 10 }}>
-              <Select
-                value={eyeState}
-                onChange={setEyeState}
-                style={{ flex: 1 }}
-              >
-                <Option value="normal">Bình thường (Normal)</Option>
-                <Option value="blink">Nháy mắt (Wink)</Option>
-                <Option value="close">Cười tít (Happy)</Option>
-                <Option value="like">Mắt Like (&gt; &lt;)</Option>
-                <Option value="half">Mắt lờ đờ (Half)</Option>
-                <Option value="sleep">Mắt ngủ (Sleep)</Option>
-              </Select>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 80 }}>
-                <span style={{ fontSize: 12 }}>Auto Blink</span>
-                <Switch size="small" checked={isBlinking} onChange={setIsBlinking} />
-              </div>
-            </div>
-
-            {/* Gesture Control */}
+            {/* Gesture Control - CHIBI ONLY */}
             <Text
               className="mouth-select-label"
               style={{ display: "block" }}
@@ -327,7 +330,8 @@ const GlobalCharacterOverlay = () => {
           disabled={isTalking}
         >
           <Option value="smile">Cười nhẹ (Smile)</Option>
-          {isChibi && <Option value="smile_2">Cười tươi (Smile 2)</Option>}
+          <Option value="smile_2">Cười tươi (Smile 2) {isChibi ? "" : "(Chibi)"}</Option>
+          <Option value="tongue">Lè lưỡi (Tongue) {isChibi ? "" : "(Chibi)"}</Option>
           {isChibi && <Option value="half">Mở hé (Half)</Option>}
           <Option value="open">Mở to (Open)</Option>
           <Option value="close">Đóng (Close)</Option>
