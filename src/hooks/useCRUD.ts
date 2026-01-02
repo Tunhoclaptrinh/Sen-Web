@@ -329,7 +329,7 @@ export const useCRUD = (service: any, options: any = {}) => {
         async (ids: any[]) => {
             try {
                 setLoading(true);
-                // Fallback to client-side loop as requested or for compatibility
+                // Use Promise.all for individual deletes as requested
                 await Promise.all(ids.map(id => service.delete(id)));
                 message.success(`Đã xóa ${ids.length} mục`);
                 setSelectedIds([]);

@@ -87,6 +87,33 @@ const DataTable: React.FC<DataTableProps> = ({
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
   const debouncedSearchTerm = useDebounce(internalSearchText, 500);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [operators, setOperators] = useState<Record<string, string>>({});
+
+  const getActiveFilterKey = (filterKey: string, op?: string) => {
+    const currentOp = op || operators[filterKey] || 'eq';
+    return currentOp === 'eq' ? filterKey : `${filterKey}_${currentOp}`;
+  };
+
+  const handleOperatorChange = (filterKey: string, newOp: string) => {
+    const oldOp = operators[filterKey] || 'eq';
+    if (oldOp === newOp) return;
+
+    setOperators(prev => ({ ...prev, [filterKey]: newOp }));
+
+    const oldKey = oldOp === 'eq' ? filterKey : `${filterKey}_${oldOp}`;
+    const newKey = newOp === 'eq' ? filterKey : `${filterKey}_${newOp}`;
+    const currentValue = filterValues[oldKey];
+
+    if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
+      handleFilterChange(newKey, currentValue);
+      handleFilterChange(oldKey, undefined);
+    }
+  };
+
+  const handleFilterValueChange = (filterKey: string, value: any) => {
+    const activeKey = getActiveFilterKey(filterKey);
+    handleFilterChange(activeKey, value);
+  };
 
   // Effect to trigger search when debounced value changes
   React.useEffect(() => {
@@ -499,7 +526,7 @@ const DataTable: React.FC<DataTableProps> = ({
           open={filterModalOpen}
           onCancel={() => setFilterModalOpen(false)}
           title="Bộ lọc nâng cao"
-          width={600}
+          width={520}
           footer={
             <div className="filter-modal-footer">
               <Button variant="outline" onClick={handleClearFilters}>
@@ -510,89 +537,74 @@ const DataTable: React.FC<DataTableProps> = ({
               </Button>
             </div>
           }
+          bodyStyle={{ padding: 0 }}
         >
           <div className="filter-modal-content">
-            <div className="filter-grid">
-              {filters.map((filter) => {
-                const label = filter.label || filter.placeholder;
-                // Determine current operator if using complex keys?
-                // For simplicity, we assume filterValues uses the direct API keys for now.
-                // Or we can add a simple logic: if we want to separate "value" and "operator" in UI, we need local state.
-                // But filterValues is passed from outside (useCRUD). custom logic might be needed.
-                // Let's stick to simple key binding for now, but UI can be improved.
-                // If user wants operator selection, we need that to effectively change the `key` being set in filterValues.
-                // E.g. key='age', if op='>', we set filterValues['age_gt'] = value and clear filterValues['age'].
-
-                return (
-                  <div key={filter.key} className="filter-item-container">
-                    {/* Filter Label */}
-                    <span className="filter-label">
-                      {label}
-                    </span>
-
-                    <div className="filter-controls">
-                      {/* Operator Select (if configured) */}
-                      {filter.operators && (
-                        <Select
-                          className="operator-select"
-                          placeholder="Op"
-                          defaultValue={filter.defaultOperator || 'eq'}
-                          options={[
-                            { label: '=', value: 'eq' },
-                            { label: '>', value: 'gt' },
-                            { label: '≥', value: 'gte' },
-                            { label: '<', value: 'lt' },
-                            { label: '≤', value: 'lte' },
-                            { label: 'Chứa', value: 'like' },
-                            { label: 'Khác', value: 'ne' },
-                          ].filter(op => filter.operators?.includes(op.value as any))}
-                          onChange={(op) => {
-                            // Logic to switch operator: currently complex to handle with simple key-value props.
-                            // Ideally: onFilterOperatorChange(key, op)
-                            // For now, let's just show the UI structure the user asked for.
-                            // We will implement the actual key-switching logic if useCRUD supports it.
-                            // User requirement: "cải thiện luôn modal bộ lọc... (khớp với backend)"
-                            // We'll pass the composite key to onFilterChange.
-                            // e.g. handleFilterChange(`${filter.key}_${op}`, value)
-                            // This requires tracking the *current* operator for this field to unset the old one.
-                            // This is too complex for stateless props without massive refactor.
-                            // Fallback: Just show the input for now, and maybe assume specific keys in config.
-                          }}
-                        />
-                      )}
-
-                      {/* Filter Input */}
-                      <div style={{ flex: 1 }}>
-                        {(!filter.type || filter.type === 'select') && (
-                          <Select
-                            placeholder={`Chọn ${label?.toLowerCase()}`}
-                            value={filterValues[filter.key]}
-                            onChange={(value) => handleFilterChange(filter.key, value)}
-                            options={filter.options}
-                            fullWidth
-                            allowClear
-                          />
-                        )}
-
-                        {(filter.type === 'input' || filter.type === 'number') && (
-                          <Input
-                            placeholder={`Nhập ${label?.toLowerCase()}`}
-                            value={filterValues[filter.key]}
-                            onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-                            allowClear
-                            style={{ width: '100%' }}
-                            type={filter.type === 'number' ? 'number' : 'text'}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            {filters.length === 0 && (
+            {filters.length === 0 ? (
               <div className="empty-filter-text">
                 Không có bộ lọc nào được cấu hình.
+              </div>
+            ) : (
+              <div className="filter-grid">
+                {filters.map((filter) => {
+                  const label = filter.label || filter.placeholder;
+                  const currentOp = operators[filter.key] || filter.defaultOperator || 'eq';
+                  const activeKey = currentOp === 'eq' ? filter.key : `${filter.key}_${currentOp}`;
+
+                  return (
+                    <div key={filter.key} className="filter-item-container">
+                      <span className="filter-label">
+                        {label}
+                      </span>
+
+                      <div className="filter-controls">
+                        {filter.operators && (
+                          <Select
+                            className="operator-select"
+                            value={currentOp}
+                            onChange={(val) => handleOperatorChange(filter.key, val)}
+                            options={[
+                              { label: '=', value: 'eq' },
+                              { label: '>', value: 'gt' },
+                              { label: '≥', value: 'gte' },
+                              { label: '<', value: 'lt' },
+                              { label: '≤', value: 'lte' },
+                              { label: 'Chứa', value: 'like' },
+                              { label: 'Khác', value: 'ne' },
+                              { label: 'Trong', value: 'in' },
+                            ].filter(op => filter.operators?.includes(op.value as any))}
+                            dropdownMatchSelectWidth={false}
+                          />
+                        )}
+
+                        <div style={{ flex: 1 }}>
+                          {(!filter.type || filter.type === 'select') && (
+                            <Select
+                              placeholder={`Chọn ${label?.toLowerCase()}`}
+                              value={filterValues[activeKey]}
+                              onChange={(value) => handleFilterValueChange(filter.key, value)}
+                              options={filter.options}
+                              fullWidth
+                              allowClear
+                              mode={currentOp === 'in' ? 'multiple' : undefined}
+                            />
+                          )}
+
+                          {(filter.type === 'input' || filter.type === 'number') && (
+                            <Input
+                              placeholder={`Nhập ${label?.toLowerCase()}`}
+                              value={filterValues[activeKey]}
+                              onChange={(e) => handleFilterValueChange(filter.key, e.target.value)}
+                              allowClear
+                              style={{ width: '100%' }}
+                              type={filter.type === 'number' ? 'number' : 'text'}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

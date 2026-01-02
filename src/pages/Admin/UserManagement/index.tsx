@@ -228,6 +228,8 @@ const UserManagement = () => {
               { label: "Customer", value: "customer" },
               { label: "Researcher", value: "researcher" },
             ],
+            operators: ['eq', 'in', 'ne'], // Support Equals, In, Not Equals
+            defaultOperator: 'in'
           },
           {
             key: "isActive",
@@ -236,7 +238,23 @@ const UserManagement = () => {
               { label: "Hoạt động", value: true },
               { label: "Bị khóa", value: false },
             ],
+            operators: ['eq'],
+            defaultOperator: 'eq'
           },
+          {
+            key: "name",
+            placeholder: "Tên người dùng",
+            type: 'input',
+            operators: ['like', 'eq', 'ne'],
+            defaultOperator: 'like'
+          },
+          {
+            key: "email",
+            placeholder: "Email",
+            type: 'input',
+            operators: ['like', 'eq'],
+            defaultOperator: 'like'
+          }
         ]}
         filterValues={filters}
         onFilterChange={onFilterChange}

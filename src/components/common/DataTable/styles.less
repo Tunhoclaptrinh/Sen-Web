@@ -56,16 +56,22 @@
     width: 90px;
 }
 
+.filter-modal-content {
+    padding: 20px;
+}
+
 .filter-modal-footer {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     justify-content: flex-end;
+    padding: 16px 20px;
+    border-top: 1px solid #f0f0f0;
 }
 
 .filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .filter-item-container {
@@ -75,24 +81,28 @@
 }
 
 .filter-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #444;
+    font-size: 14px;
+    font-weight: 500;
+    color: #262626;
+    margin-bottom: 4px;
 }
 
 .filter-controls {
     display: flex;
     gap: 8px;
+    align-items: center;
 }
 
 .operator-select {
     width: 100px;
+    flex-shrink: 0;
 }
 
 .empty-filter-text {
     text-align: center;
     color: #999;
-    padding: 20px 0;
+    padding: 40px 20px;
+    font-size: 14px;
 }
 
 .search-icon {
@@ -101,14 +111,4 @@
 
 .main-table {
     padding: 16px;
-}
-
-.ant-modal-content,
-.ant-modal-body {
-    padding: 0 !important;
-    margin: 0 !important;
-
-    >div {
-        padding: 8px !important;
-    }
 }
