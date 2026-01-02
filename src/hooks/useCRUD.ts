@@ -260,13 +260,48 @@ export const useCRUD = (service: any, options: any = {}) => {
     /**
      * Handle Ant Design Table onChange
      */
-    const handleTableChange = useCallback((newPagination: any, _filters: any, sorter: any) => {
+    const handleTableChange = useCallback((newPagination: any, newFilters: any, sorter: any) => {
         // Update pagination
         setPagination((prev) => ({
             ...prev,
             current: newPagination.current,
             pageSize: newPagination.pageSize,
         }));
+
+        // Update filters
+        // Ant Design filters are { key: [value] } or { key: null }
+        if (newFilters) {
+            const cleanedFilters: any = {};
+            Object.keys(newFilters).forEach(key => {
+                if (newFilters[key]) {
+                    // If it's an array (from multiple select or our search filter), take the first value or join them?
+                    // Updated to support multiple values (arrays)
+                    cleanedFilters[key] = newFilters[key];
+                } else {
+                    // undefined/null means filter removed
+                }
+            });
+
+            // Merge with existing filters that might NOT be in the table (like external dropdowns)?
+            // Or replace? Table filters usually represent the "active" filters for those columns.
+            // But we have external filters (Role, IsActive) which might NOT be passed here if they are not in columns?
+            // Actually, if we use separate Select components outside table, they update 'filters' state directly.
+            // If we use Table columns filters, they come here.
+
+            // We should only update the keys present in newFilters to avoid wiping external filters?
+            // Or we should assume this function only handles table-based filters.
+            setFilters((prev: any) => {
+                const updated = { ...prev };
+                Object.keys(newFilters).forEach(key => {
+                    if (newFilters[key]) {
+                        updated[key] = Array.isArray(newFilters[key]) ? newFilters[key][0] : newFilters[key];
+                    } else {
+                        delete updated[key];
+                    }
+                });
+                return updated;
+            });
+        }
 
         // Update sorter
         if (sorter.field) {
@@ -301,7 +336,8 @@ export const useCRUD = (service: any, options: any = {}) => {
         async (ids: any[]) => {
             try {
                 setLoading(true);
-                await service.batch('delete', ids);
+                // Fallback to client-side loop as requested or for compatibility
+                await Promise.all(ids.map(id => service.delete(id)));
                 message.success(`Đã xóa ${ids.length} mục`);
                 setSelectedIds([]);
                 await fetchAll();

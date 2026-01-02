@@ -8,6 +8,7 @@ export interface User {
   isActive: boolean;
   created_at: string;
   updated_at?: string;
+  address?: string;
 }
 
 export enum UserRole {

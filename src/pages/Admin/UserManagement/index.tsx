@@ -1,28 +1,30 @@
-import { useState } from "react";
+import React from "react";
 import {
   Space,
-  Button,
   Tag,
-  Input,
-  Select,
-  Popconfirm,
-  message,
   Avatar,
-  Form
+  Switch,
+  Tooltip,
+  Button,
+  Popconfirm
 } from "antd";
 import {
+  UserOutlined,
   EditOutlined,
   DeleteOutlined,
-  UserOutlined,
+  EyeOutlined
 } from "@ant-design/icons";
 import { User } from "@/types";
-import userService from "@/services/user.service"; 
 import DataTable from "@/components/common/DataTable";
-import FormModal from "@/components/common/FormModal";
-import { useCRUD } from "@/hooks/useCRUD";
 import dayjs from "dayjs";
 
-const { Option } = Select;
+import UserDetailModal from "./components/DetailModal";
+import UserForm from "./components/Form";
+
+import { useUserModel } from "./model";
+import UserStatsCard from "./components/Stats";
+
+// Force HMR update
 
 const UserManagement = () => {
   const {
@@ -30,26 +32,41 @@ const UserManagement = () => {
     loading,
     pagination,
     handleTableChange,
-    create,
-    update,
-    remove,
     search,
-    batchDelete,
+    selectedIds,
     setSelectedIds,
-    selectedIds
-  } = useCRUD(userService, {
-    pageSize: 10,
-    onError: (action: any, error: any) => {
-      console.error(`Error ${action} user:`, error);
-      message.error(`Thao tác thất bại: ${error.message}`);
-    },
-  });
+    refresh,
+    updateFilters,
+    filters,
+    clearFilters,
+    stats,
+    statsLoading,
+    toggleStatus,
+    deleteUser,
+    batchDeleteUsers,
+    exportData,
+    importData,
+    downloadTemplate,
+    importLoading,
+    exportLoading,
+    handleSubmit,
+    // UI State & Handlers
+    currentRecord,
+    formVisible,
+    detailVisible,
+    openCreate,
+    openEdit,
+    openDetail,
+    closeForm,
+    closeDetail
+  } = useUserModel();
 
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [form] = Form.useForm();
+  // Filter handlers
+  const onFilterChange = (key: string, value: any) => {
+    updateFilters({ [key]: value });
+  };
 
-  // Columns definition
+  // Columns definition (must be after handlers)
   const columns = [
     {
       title: "ID",
@@ -60,7 +77,9 @@ const UserManagement = () => {
     {
       title: "Người dùng",
       dataIndex: "name",
+      key: "name_like",
       width: 250,
+      searchable: true,
       render: (text: string, record: User) => (
         <Space>
           <Avatar icon={<UserOutlined />} src={record.avatar} />
@@ -70,15 +89,31 @@ const UserManagement = () => {
           </div>
         </Space>
       ),
+      align: "left" as const,
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      key: "phone",
+      width: 150,
+      render: (phone: string) => phone || "---",
     },
     {
       title: "Vai trò",
       dataIndex: "role",
+      key: "role",
       width: 120,
+      filters: [
+        { text: "Admin", value: "admin" },
+        { text: "Customer", value: "customer" },
+        { text: "Researcher", value: "researcher" },
+        { text: "Curator", value: "curator" },
+      ],
+      filteredValue: filters.role ? (Array.isArray(filters.role) ? filters.role : [filters.role]) : null,
       render: (role: string) => {
         let color = "geekblue";
         if (role === "admin") color = "red";
-        if (role === "editor") color = "green";
+        if (role === "editor") color = "green"; // Leaving existing logic, though 'editor' isn't in filter
         return (
           <Tag color={color} key={role}>
             {role ? role.toUpperCase() : "UNKNOWN"}
@@ -87,136 +122,141 @@ const UserManagement = () => {
       },
     },
     {
+      title: "Trạng thái",
+      dataIndex: "isActive",
+      key: "isActive",
+      width: 100,
+      filters: [
+        { text: "Hoạt động", value: true },
+        { text: "Bị khóa", value: false },
+      ],
+      filteredValue: filters.isActive ? (Array.isArray(filters.isActive) ? filters.isActive : [filters.isActive]) : null,
+      render: (isActive: boolean, record: User) => (
+        <Switch
+          checked={isActive}
+          onChange={() => toggleStatus(record)}
+          size="small"
+        />
+      ),
+    },
+    {
       title: "Ngày tạo",
-      dataIndex: "createdAt",
+      dataIndex: "created_at",
       width: 150,
       render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
     },
     {
       title: "Thao tác",
-      key: "action",
-      width: 120,
+      key: "actions",
+      width: 90,
+      fixed: "right" as const,
+      align: "center" as const,
       render: (_: any, record: User) => (
-        <Space>
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-            type="text"
-          />
-          <Popconfirm
-            title="Bạn có chắc muốn xóa người dùng này?"
-            onConfirm={() => handleDelete(record.id)}
-          >
+        <Space size="middle">
+          <Tooltip title="Xem chi tiết">
             <Button
-              icon={<DeleteOutlined />}
-              danger
               type="text"
+              icon={<EyeOutlined />}
+              onClick={() => openDetail(record)}
             />
+          </Tooltip>
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              type="text"
+              icon={<EditOutlined style={{ color: "orange" }} />}
+              onClick={() => openEdit(record)}
+            />
+          </Tooltip>
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa?"
+            onConfirm={() => deleteUser(record.id)}
+            okText="Đồng ý"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+          >
+            <Tooltip title="Xóa">
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+              />
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),
-    },
+    }
   ];
 
-  const handleEdit = (record: User) => {
-    setEditingId(record.id);
-    form.setFieldsValue(record);
-    setFormOpen(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    await remove(id);
-  };
-
-  const handleCreate = () => {
-    setEditingId(null);
-    form.resetFields();
-    setFormOpen(true);
-  };
-
-  const handleSubmit = async (values: any) => {
-    if (editingId) {
-      await update(editingId, values);
-    } else {
-      await create(values);
-    }
-    setFormOpen(false);
-  };
-
   return (
-    <div style={{ padding: 24 }}>
+    <>
       <DataTable
         title="Quản lý Người Dùng"
+        headerContent={<UserStatsCard stats={stats} loading={statsLoading} />}
         loading={loading}
         columns={columns}
         dataSource={data}
         pagination={pagination}
         onChange={handleTableChange}
         searchable
+        hideGlobalSearch={true} // Hide global search as we have column search
         onSearch={search}
-        onAdd={handleCreate}
+        onAdd={openCreate}
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
         }}
-        onDelete={(keys: any) => batchDelete(keys)}
+        onView={openDetail}
+        onEdit={openEdit}
+        onDelete={deleteUser}
+        onBatchDelete={batchDeleteUsers}
+        batchOperations={true}
+        // Import/Export integration
+        importable={true}
+        importLoading={importLoading}
+        exportable={true}
+        exportLoading={exportLoading}
+        onImport={importData as any}
+        onDownloadTemplate={downloadTemplate}
+        onExport={exportData}
+        onRefresh={refresh}
+        filters={[
+          {
+            key: "role",
+            placeholder: "Vai trò",
+            options: [
+              { label: "Admin", value: "admin" },
+              { label: "Customer", value: "customer" },
+              { label: "Researcher", value: "researcher" },
+            ],
+          },
+          {
+            key: "isActive",
+            placeholder: "Trạng thái",
+            options: [
+              { label: "Hoạt động", value: true },
+              { label: "Bị khóa", value: false },
+            ],
+          },
+        ]}
+        filterValues={filters}
+        onFilterChange={onFilterChange}
+        onClearFilters={clearFilters}
       />
 
-      <FormModal
-        title={editingId ? "Cập nhật Người Dùng" : "Thêm mới Người Dùng"}
-        open={formOpen}
-        onCancel={() => setFormOpen(false)}
-        onOk={() => form.submit()}
-        form={form}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            name="name"
-            label="Họ tên"
-            rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
-          >
-            <Input placeholder="Nguyễn Văn A" />
-          </Form.Item>
+      <UserForm
+        visible={formVisible}
+        onCancel={closeForm}
+        onSubmit={handleSubmit}
+        initialValues={currentRecord}
+        loading={loading}
+      />
 
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              { required: true, message: "Vui lòng nhập email" },
-              { type: "email", message: "Email không hợp lệ" }
-            ]}
-          >
-            <Input placeholder="example@email.com" />
-          </Form.Item>
-
-          {!editingId && (
-            <Form.Item
-              name="password"
-              label="Mật khẩu"
-              rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
-            >
-              <Input.Password placeholder="******" />
-            </Form.Item>
-          )}
-
-          <Form.Item
-            name="role"
-            label="Vai trò"
-            initialValue="customer"
-          >
-            <Select>
-              <Option value="customer">Khách hàng (Customer)</Option>
-              <Option value="researcher">Nhà nghiên cứu (Researcher)</Option>
-              <Option value="admin">Quản trị viên (Admin)</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </FormModal>
-    </div>
+      <UserDetailModal
+        userId={currentRecord?.id || null}
+        visible={detailVisible}
+        onCancel={closeDetail}
+      />
+    </>
   );
 };
 

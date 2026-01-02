@@ -221,6 +221,37 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
       throw error;
     }
   }
+  /**
+   * Get heritage site statistics
+   * Aggregates data by making parallel requests for counts
+   */
+  async getStats(): Promise<BaseApiResponse<any>> {
+    try {
+      const [total, unesco, north, center, south] = await Promise.all([
+        this.getAll({ limit: 1 }),
+        this.getUNESCO({ limit: 1 }),
+        this.getByRegion("Bắc", { limit: 1 }),
+        this.getByRegion("Trung", { limit: 1 }),
+        this.getByRegion("Nam", { limit: 1 }),
+      ]);
+
+      return {
+        success: true,
+        data: {
+          total: total.pagination?.total || 0,
+          unesco: unesco.pagination?.total || 0,
+          region: {
+            north: north.pagination?.total || 0,
+            center: center.pagination?.total || 0,
+            south: south.pagination?.total || 0,
+          }
+        }
+      };
+    } catch (error) {
+      logger.error('[Heritage] getStats error:', error);
+      return { success: false, message: "Failed to load stats", data: null };
+    }
+  }
 }
 
 export default new HeritageService();

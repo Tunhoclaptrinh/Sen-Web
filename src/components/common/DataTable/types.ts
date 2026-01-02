@@ -1,5 +1,21 @@
 import React from 'react';
 
+export interface FilterOption {
+    label: string;
+    value: any;
+}
+
+export interface FilterConfig {
+    key: string;
+    label?: string; // Display label
+    placeholder?: string;
+    type?: 'select' | 'input' | 'date' | 'date-range' | 'number'; // Supported types
+    options?: FilterOption[]; // For select type
+    operators?: ('eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'like' | 'not_like')[]; // Allowed operators
+    defaultOperator?: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'like' | 'not_like'; // Default operator
+    colSpan?: number; // Grid span (default 12 or 24)
+}
+
 export interface DataTableProps {
     data?: any[];
     loading?: boolean;
@@ -19,7 +35,9 @@ export interface DataTableProps {
     searchPlaceholder?: string;
     searchValue?: string;
     onSearch?: (value: string) => void;
-    filters?: any[];
+    hideGlobalSearch?: boolean;
+    headerContent?: React.ReactNode;
+    filters?: FilterConfig[]; // Updated type
     filterValues?: any;
     onFilterChange?: (key: string, value: any) => void;
     onClearFilters?: () => void;
@@ -28,6 +46,7 @@ export interface DataTableProps {
     showActions?: boolean;
     actionsWidth?: number;
     customActions?: (record: any) => React.ReactNode;
+    actionColumnProps?: any; // Allow overriding action column config
     actionPosition?: "left" | "right";
     batchOperations?: boolean;
     onBatchDelete?: (keys: any[]) => void;
@@ -35,8 +54,11 @@ export interface DataTableProps {
     onSelectChange?: (keys: any[]) => void;
     batchActions?: any[];
     importable?: boolean;
+    importLoading?: boolean;
     exportable?: boolean;
+    exportLoading?: boolean;
     onImport?: (file: File) => void;
+    onDownloadTemplate?: () => void;
     onExport?: () => void;
     title?: React.ReactNode;
     extra?: React.ReactNode;

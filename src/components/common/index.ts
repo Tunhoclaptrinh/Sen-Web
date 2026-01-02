@@ -38,7 +38,7 @@ export { default as LoadingState } from './LoadingState';
 export { default as SearchBar } from './SearchBar';
 
 // Cards
-export { default as ArtifactCard } from './ArtifactCard';
+export { default as StatisticsCard } from './StatisticsCard';
 export { default as CardGrid } from './CardGrid';
 
 // Chat

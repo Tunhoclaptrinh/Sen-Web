@@ -281,7 +281,7 @@ Authorization: Bearer <admin-token>
 
 ---
 
-#### Get User by ID
+#### Get User by ID (Admin Only)
 
 ```http
 GET /api/users/:id
@@ -314,7 +314,7 @@ Content-Type: application/json
 
 ---
 
-#### Get User Activity
+#### Get User Activity (Protected)
 
 ```http
 GET /api/users/:id/activity
@@ -596,14 +596,15 @@ Content-Type: application/json
 
 ```json
 {
-  "name": "Site Name",
-  "description": "Description",
-  "type": "monument",
-  "cultural_period": "Triều Lý",
-  "region": "Hà Nội",
-  "address": "Address",
-  "latitude": 21.0285,
-  "longitude": 105.8542,
+  "name": "Hoàng thành Thăng Long",
+  "description": "Một trong những di tích lịch sử quan trọng bậc nhất của Việt Nam.",
+  "location": {
+    "address": "19C Hoàng Diệu, Ba Đình, Hà Nội",
+    "latitude": 21.0345,
+    "longitude": 105.8421
+  },
+  "period": "Thời Lý - Trần - Lê",
+  "type": "historic_building",
   "year_established": 1010
 }
 ```
@@ -2642,6 +2643,81 @@ Content-Type: multipart/form-data
   }
 }
 ```
+
+---
+
+#### Upload Category Image (Admin Only)
+
+```http
+POST /api/upload/category/:categoryId
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+```
+
+**Body:** Form data with `file` field
+
+**Response:** `200 OK`
+
+---
+
+#### Upload Heritage Site Image (Admin/Researcher)
+
+```http
+POST /api/upload/heritage-site/:id
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+```
+
+**Body:** Form data with `file` field
+
+**Response:** `200 OK`
+
+---
+
+#### Upload Artifact Image (Admin/Researcher)
+
+```http
+POST /api/upload/artifact/:id
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+```
+
+**Body:** Form data with `file` field
+
+**Response:** `200 OK`
+
+---
+
+#### Upload Exhibition Image (Admin)
+
+```http
+POST /api/upload/exhibition/:id
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+```
+
+**Body:** Form data with `file` field
+
+**Response:** `200 OK`
+
+---
+
+#### Upload Game Asset (Admin)
+
+```http
+POST /api/upload/game/:type/:id
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+```
+
+**Path Parameters:**
+
+- `type`: `character`, `badge`, `level_thumb`, etc.
+- `id`: ID of the asset
+
+**Body:** Form data with `file` field
+
+**Response:** `200 OK`
 
 ---
 

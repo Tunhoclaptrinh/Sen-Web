@@ -159,6 +159,22 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
   }
 
   /**
+   * Download user import template (admin only)
+   */
+  async downloadTemplate(): Promise<Blob> {
+    try {
+      const response = await apiClient.get(`${this.endpoint}/template`, {
+        responseType: 'blob',
+      });
+
+      return response as unknown as Blob;
+    } catch (error) {
+      logger.error('[User] downloadTemplate error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Import users (admin only)
    */
   async import(file: File): Promise<BaseApiResponse<any>> {
