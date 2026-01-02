@@ -264,45 +264,52 @@ const SenCharacter = ({
       }}
     >
       {/* --- CƠ THỂ --- */}
-      <Part name="shoes.png" yOffset={1442} zIndex={2} />
-      <Part name="leg.png" yOffset={954} xOffset={-17} zIndex={3} />
+      <Part name="shoes.png" yOffset={1416} xOffset={-6} zIndex={2} />
+      <Part name="leg.png" yOffset={926} xOffset={-24} zIndex={3} />
       <Part
         name="ribbon_shoes.png"
-        yOffset={1512}
-        xOffset={-18}
+        yOffset={1500}
+        xOffset={-24}
         zIndex={4}
         rotation={swayRotation}
       />
 
       <Part name="head_base.png" yOffset={-500} xOffset={-48} zIndex={5} />
-      <Part name="inner_shirt.png" yOffset={-110} xOffset={-18} zIndex={6} />
+      <Part name="inner_shirt.png" yOffset={-110} xOffset={-24} zIndex={7} />
 
       {/* --- TAY (Cần chỉnh khớp với áo) --- */}
       <Part
         name="hand_left.png"
-        xOffset={-360}
-        yOffset={436}
-        zIndex={8}
-        rotation={swayRotation * 0.2}
+        xOffset={-320}
+        yOffset={166}
+        zIndex={6}
+        rotation={swayRotation * 0.1}
       />
       <Part
         name="hand_right.png"
-        xOffset={390}
-        yOffset={430}
-        zIndex={8}
-        rotation={-swayRotation * 0.2}
+        xOffset={294}
+        yOffset={166}
+        zIndex={6}
+        rotation={-swayRotation * 0.1}
       />
 
       {/* --- QUẦN ÁO --- */}
       {/* Váy cũng nên bay nhẹ */}
       <Part
         name="dress.png"
-        yOffset={424}
-        zIndex={7}
+        xOffset={-30}
+        yOffset={396}
+        zIndex={6}
         rotation={swayRotation * 0.2}
       />
       {/* Áo khoác có thể bật tắt */}
-      <Part name="coats.png" yOffset={30} zIndex={9} visible={showCoat} />
+      <Part
+        name="coats.png"
+        yOffset={36}
+        xOffset={-18}
+        zIndex={9}
+        visible={showCoat}
+      />
 
       {/* --- KHUÔN MẶT --- */}
 
@@ -386,8 +393,8 @@ const SenCharacter = ({
       {/* Túi lắc lư nhiều hơn và có thể bật tắt */}
       <Part
         name="bag.png"
-        xOffset={60}
-        yOffset={80}
+        xOffset={36}
+        yOffset={60}
         zIndex={17}
         // rotation={swayRotation}
         visible={showBag}
