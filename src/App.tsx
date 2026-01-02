@@ -8,6 +8,7 @@ import { RootState } from "./store";
 import routes from "./routes/routes.config";
 import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import { ToastProvider } from "./components/common/Toast";
 import { GlobalCharacterProvider } from "./contexts/GlobalCharacterContext";
 import GlobalCharacterOverlay from "./components/GlobalCharacterOverlay";
 
@@ -56,32 +57,60 @@ const App: React.FC = () => {
               ? antdTheme.darkAlgorithm
               : antdTheme.defaultAlgorithm,
           token: {
-            colorPrimary: "#d4a574",
-            borderRadius: 6,
+            // Lotus Pink Theme
+            colorPrimary: "#F43F5E",
+            colorSuccess: "#22C55E",
+            colorWarning: "#F97316",
+            colorError: "#EF4444",
+            colorInfo: "#3B82F6",
+
+            // Border & Radius
+            borderRadius: 8,
+            borderRadiusLG: 12,
+            borderRadiusSM: 6,
+
+            // Typography
             fontFamily:
               "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontSize: 14,
+
+            // Spacing
+            padding: 16,
+            margin: 16,
           },
           components: {
             Button: {
               controlHeight: 40,
               fontSize: 14,
+              borderRadius: 8,
+              primaryColor: "#FFFFFF",
             },
             Input: {
               controlHeight: 40,
               fontSize: 14,
+              borderRadius: 8,
             },
             Select: {
               controlHeight: 40,
               fontSize: 14,
+              borderRadius: 8,
+            },
+            Card: {
+              borderRadiusLG: 12,
+            },
+            Modal: {
+              borderRadiusLG: 16,
             },
           },
         }}
       >
         <AntApp>
-          <GlobalCharacterProvider>
-            <GlobalCharacterOverlay />
-            {routing}
-          </GlobalCharacterProvider>
+          <ToastProvider>
+            <GlobalCharacterProvider>
+              <GlobalCharacterOverlay />
+              {routing}
+            </GlobalCharacterProvider>
+          </ToastProvider>
         </AntApp>
       </ConfigProvider>
     </ErrorBoundary>
@@ -89,3 +118,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

@@ -1,5 +1,9 @@
 /* Ant Design Custom Overrides */
-@primary-color: #d4a574;
+// Ant Design Custom Theme
+@primary-color: #F43F5E; // Lotus Pink
+@link-color: #F43F5E;
+@success-color: #22C55E;
+@warning-color: #F97316;
 
 .ant-layout {
     background: white;
@@ -10,12 +14,17 @@
 }
 
 .ant-menu-item-selected::after {
-    border-right-color: @primary-color !important;
+    border-right-color: #F43F5E !important;
 }
 
 .ant-menu-item:hover,
 .ant-menu-item-selected {
-    color: @primary-color !important;
+    color: #F43F5E !important;
+    background-color: transparent !important;
+}
+
+.ant-menu-item-selected {
+    font-weight: 600;
 }
 
 .ant-btn-primary {

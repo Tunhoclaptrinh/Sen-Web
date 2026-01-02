@@ -2,18 +2,12 @@ import React, { useState } from "react";
 import {
   Table,
   Space,
-  Button,
-  Input,
-  Card,
   Popconfirm,
   Tooltip,
   Badge,
   Menu,
   Dropdown,
-  message,
-  Modal,
   Alert,
-  Select,
 } from "antd";
 import {
   PlusOutlined,
@@ -24,14 +18,15 @@ import {
   EyeOutlined,
   DownloadOutlined,
   UploadOutlined,
-  ClearOutlined,
-  MoreOutlined,
+  FilterOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
+import { Button, Input, Card, Modal, Select, toast } from "@/components/common";
 import { DataTableProps } from "./types";
 
 /**
  * DataTable Component
+ * Enhanced table with lotus pink theme, centered headers, and filter modal
  */
 const DataTable: React.FC<DataTableProps> = ({
   data = [],
@@ -57,7 +52,6 @@ const DataTable: React.FC<DataTableProps> = ({
   onFilterChange,
   onClearFilters,
   sortable = true,
-  defaultSort,
   showActions = true,
   actionsWidth = 180,
   customActions,
@@ -85,6 +79,7 @@ const DataTable: React.FC<DataTableProps> = ({
   ...tableProps
 }) => {
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const handleSearch = (value: string) => {
     setInternalSearchText(value);
@@ -97,6 +92,13 @@ const DataTable: React.FC<DataTableProps> = ({
     if (onFilterChange) {
       onFilterChange(key, value);
     }
+  };
+
+  const handleClearFilters = () => {
+    if (onClearFilters) {
+      onClearFilters();
+    }
+    setFilterModalOpen(false);
   };
 
   const rowSelection = batchOperations
@@ -120,27 +122,32 @@ const DataTable: React.FC<DataTableProps> = ({
       key: "actions",
       width: actionsWidth,
       fixed: actionPosition,
+      align: "center" as const,
       render: (_: any, record: any) => (
         <Space size="small">
           {onView && (
             <Tooltip title="Xem chi tiết">
               <Button
-                type="link"
-                size="small"
-                icon={<EyeOutlined />}
+                variant="ghost"
+                buttonSize="small"
                 onClick={() => onView(record)}
-              />
+                style={{ padding: "4px 8px" }}
+              >
+                <EyeOutlined />
+              </Button>
             </Tooltip>
           )}
 
           {onEdit && (
             <Tooltip title="Chỉnh sửa">
               <Button
-                type="link"
-                size="small"
-                icon={<EditOutlined />}
+                variant="ghost"
+                buttonSize="small"
                 onClick={() => onEdit(record)}
-              />
+                style={{ padding: "4px 8px" }}
+              >
+                <EditOutlined />
+              </Button>
             </Tooltip>
           )}
 
@@ -152,15 +159,16 @@ const DataTable: React.FC<DataTableProps> = ({
               okText="Xóa"
               cancelText="Hủy"
               okButtonProps={{ danger: true }}
-              icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
+              icon={<ExclamationCircleOutlined style={{ color: "#EF4444" }} />}
             >
               <Tooltip title="Xóa">
                 <Button
-                  type="link"
-                  size="small"
-                  danger
-                  icon={<DeleteOutlined />}
-                />
+                  variant="danger"
+                  buttonSize="small"
+                  style={{ padding: "4px 8px" }}
+                >
+                  <DeleteOutlined />
+                </Button>
               </Tooltip>
             </Popconfirm>
           )}
@@ -171,10 +179,12 @@ const DataTable: React.FC<DataTableProps> = ({
     }
     : null;
 
+  // Add centered alignment to all columns
   const finalColumns = [
     ...(actionsColumn && actionPosition === "left" ? [actionsColumn] : []),
     ...columns.map((col) => ({
       ...col,
+      align: col.align || ("center" as const),
       sorter: sortable && col.sortable !== false,
     })),
     ...(actionsColumn && actionPosition === "right" ? [actionsColumn] : []),
@@ -189,18 +199,26 @@ const DataTable: React.FC<DataTableProps> = ({
           icon={<DeleteOutlined />}
           onClick={() => {
             if (selectedRowKeys.length === 0) {
-              message.warning("Vui lòng chọn ít nhất 1 mục");
+              toast.warning("Vui lòng chọn ít nhất 1 mục");
               return;
             }
             Modal.confirm({
               title: "Xác nhận xóa hàng loạt?",
-              icon: <ExclamationCircleOutlined />,
-              content: `Bạn có chắc chắn muốn xóa ${selectedRowKeys.length} mục đã chọn?`,
-              okText: "Xóa",
-              okButtonProps: { danger: true },
-              cancelText: "Hủy",
-              onOk: () => onBatchDelete(selectedRowKeys),
-            });
+              children: `Bạn có chắc chắn muốn xóa ${selectedRowKeys.length} mục đã chọn?`,
+              footer: (
+                <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                  <Button variant="outline" onClick={() => { }}>
+                    Hủy
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => onBatchDelete(selectedRowKeys)}
+                  >
+                    Xóa
+                  </Button>
+                </div>
+              ),
+            } as any);
           }}
         >
           Xóa đã chọn ({selectedRowKeys.length})
@@ -235,6 +253,8 @@ const DataTable: React.FC<DataTableProps> = ({
     input.click();
   };
 
+  const hasActiveFilters = filters && filters.length > 0 && Object.keys(filterValues).some(key => filterValues[key]);
+
   return (
     <Card
       title={title}
@@ -243,55 +263,43 @@ const DataTable: React.FC<DataTableProps> = ({
           {searchable && (
             <Input
               placeholder={searchPlaceholder}
-              prefix={<SearchOutlined />}
               value={internalSearchText}
               onChange={(e) => handleSearch(e.target.value)}
               style={{ width: 250 }}
-              allowClear
             />
           )}
 
           {filters && filters.length > 0 && (
-            <>
-              {filters.map((filter) => (
-                <Select
-                  key={filter.key}
-                  placeholder={filter.placeholder}
-                  style={{ width: filter.width || 150 }}
-                  value={filterValues[filter.key]}
-                  onChange={(value) => handleFilterChange(filter.key, value)}
-                  allowClear
-                  options={filter.options}
-                />
-              ))}
-              {onClearFilters && (
-                <Tooltip title="Xóa bộ lọc">
-                  <Button icon={<ClearOutlined />} onClick={onClearFilters} />
-                </Tooltip>
-              )}
-            </>
+            <Badge dot={hasActiveFilters} color="#F43F5E">
+              <Button
+                variant="outline"
+                onClick={() => setFilterModalOpen(true)}
+              >
+                <FilterOutlined /> Bộ lọc
+              </Button>
+            </Badge>
           )}
 
           {batchOperations && selectedRowKeys.length > 0 && (
-            <Badge count={selectedRowKeys.length}>
+            <Badge count={selectedRowKeys.length} color="#F43F5E">
               <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                <Button icon={<MoreOutlined />}>Thao tác hàng loạt</Button>
+                <Button variant="outline">Thao tác hàng loạt</Button>
               </Dropdown>
             </Badge>
           )}
 
           {importable && onImport && (
             <Tooltip title="Import dữ liệu">
-              <Button icon={<UploadOutlined />} onClick={handleImportClick}>
-                Import
+              <Button variant="outline" onClick={handleImportClick}>
+                <UploadOutlined /> Import
               </Button>
             </Tooltip>
           )}
 
           {exportable && onExport && (
             <Tooltip title="Export dữ liệu">
-              <Button icon={<DownloadOutlined />} onClick={onExport}>
-                Export
+              <Button variant="outline" onClick={onExport}>
+                <DownloadOutlined /> Export
               </Button>
             </Tooltip>
           )}
@@ -299,16 +307,18 @@ const DataTable: React.FC<DataTableProps> = ({
           {onRefresh && (
             <Tooltip title="Làm mới">
               <Button
-                icon={<ReloadOutlined />}
+                variant="ghost"
                 onClick={onRefresh}
                 loading={loading}
-              />
+              >
+                <ReloadOutlined />
+              </Button>
             </Tooltip>
           )}
 
           {onAdd && (
-            <Button type="primary" icon={<PlusOutlined />} onClick={onAdd}>
-              Thêm Mới
+            <Button variant="primary" onClick={onAdd}>
+              <PlusOutlined /> Thêm Mới
             </Button>
           )}
 
@@ -348,6 +358,37 @@ const DataTable: React.FC<DataTableProps> = ({
         }}
         {...tableProps}
       />
+
+      {/* Filter Modal */}
+      <Modal
+        open={filterModalOpen}
+        onCancel={() => setFilterModalOpen(false)}
+        title="Bộ lọc"
+        footer={
+          <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+            <Button variant="outline" onClick={handleClearFilters}>
+              Xóa bộ lọc
+            </Button>
+            <Button variant="primary" onClick={() => setFilterModalOpen(false)}>
+              Áp dụng
+            </Button>
+          </div>
+        }
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {filters.map((filter) => (
+            <Select
+              key={filter.key}
+              label={filter.placeholder}
+              placeholder={`Chọn ${filter.placeholder}`}
+              value={filterValues[filter.key]}
+              onChange={(value) => handleFilterChange(filter.key, value)}
+              options={filter.options}
+              fullWidth
+            />
+          ))}
+        </div>
+      </Modal>
     </Card>
   );
 };

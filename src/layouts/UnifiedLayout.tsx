@@ -52,6 +52,7 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
       location={{
         pathname: location.pathname,
       }}
+      onMenuHeaderClick={() => navigate('/')}
       menuItemRender={(item, dom) => (
         <div onClick={() => item.path && navigate(item.path)}>{dom}</div>
       )}

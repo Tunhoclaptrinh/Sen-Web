@@ -7,23 +7,28 @@
 }
 
 .ant-menu-item-selected::after {
-  border-right-color: #d4a574 !important;
+  border-right-color: #F43F5E !important;
 }
 
 .ant-menu-item:hover,
 .ant-menu-item-selected {
-  color: #d4a574 !important;
+  color: #F43F5E !important;
+  background-color: transparent !important;
+}
+
+.ant-menu-item-selected {
+  font-weight: 600;
 }
 
 .ant-btn-primary {
-  background-color: #d4a574;
-  border-color: #d4a574;
+  background-color: #F43F5E;
+  border-color: #F43F5E;
 }
 
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background-color: #c9935a;
-  border-color: #c9935a;
+  background-color: #E11D48;
+  border-color: #E11D48;
 }
 
 .ant-card {
@@ -45,14 +50,14 @@
 .ant-input:hover,
 .ant-select-selector:hover,
 .ant-picker:hover {
-  border-color: #d4a574 !important;
+  border-color: #F43F5E !important;
 }
 
 .ant-input-focused,
 .ant-select-focused .ant-select-selector,
 .ant-picker-focused .ant-picker {
-  border-color: #d4a574 !important;
-  box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
+  border-color: #F43F5E !important;
+  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2) !important;
 }
 
 /* ==================== Layout Customizations ==================== */
@@ -71,23 +76,23 @@
   background: white;
 }
 
-.ant-table-thead > tr > th {
+.ant-table-thead>tr>th {
   background-color: #fafafa;
   border-bottom-color: #e8e8e8;
 }
 
 /* ==================== Form Customizations ==================== */
 .ant-form-item-required::before {
-  color: #d4a574;
+  color: #F43F5E;
 }
 
 .ant-checkbox-inner {
-  border-color: #d4a574;
+  border-color: #F43F5E;
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #d4a574;
-  border-color: #d4a574;
+  background-color: #F43F5E;
+  border-color: #F43F5E;
 }
 
 /* ==================== Utilities ==================== */

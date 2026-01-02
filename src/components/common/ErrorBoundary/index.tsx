@@ -1,9 +1,12 @@
-import { Component, ErrorInfo, ReactNode } from "react";
-import { Result, Button } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Result, Button } from 'antd';
+import { ReloadOutlined, HomeOutlined } from '@ant-design/icons';
+import { logger } from '@/utils/logger.utils';
 
 interface Props {
-  children?: ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
+  onReset?: () => void;
 }
 
 interface State {
@@ -12,6 +15,10 @@ interface State {
   errorInfo: ErrorInfo | null;
 }
 
+/**
+ * ErrorBoundary Component
+ * Catches React errors and displays a beautiful fallback UI
+ */
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -22,117 +29,148 @@ class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    // Update state so the next render will show the fallback UI
-    return { hasError: true, error, errorInfo: null };
+  static getDerivedStateFromError(error: Error): Partial<State> {
+    return {
+      hasError: true,
+      error,
+    };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to console in development
-    if (import.meta.env.DEV) {
-      console.error("ErrorBoundary caught an error:", error, errorInfo);
-    }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    // Log error to console and external service
+    logger.error('[ErrorBoundary] Caught error:', error, errorInfo);
 
-    // You can also log to an error reporting service here
     this.setState({
       error,
       errorInfo,
     });
 
-    // Optional: Send to error tracking service (Sentry, etc.)
-    // logErrorToService(error, errorInfo);
+    // TODO: Send to error reporting service (e.g., Sentry)
+    // Sentry.captureException(error, { extra: errorInfo });
   }
 
-  handleReset = () => {
+  handleReset = (): void => {
     this.setState({
       hasError: false,
       error: null,
       errorInfo: null,
     });
+
+    if (this.props.onReset) {
+      this.props.onReset();
+    }
   };
 
-  handleReload = () => {
-    window.location.reload();
+  handleGoHome = (): void => {
+    window.location.href = '/';
   };
 
-  render() {
+  render(): ReactNode {
     if (this.state.hasError) {
       // Custom fallback UI
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      // Default fallback UI
       return (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-            padding: "24px",
-            background: "#f5f5f5",
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%)',
+            padding: '24px',
           }}
         >
-          <Result
-            status="error"
-            icon={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
-            title="Oops! Đã có lỗi xảy ra"
-            subTitle="Xin lỗi, có gì đó không ổn. Vui lòng thử lại hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn."
-            extra={[
-              <Button type="primary" onClick={this.handleReload} key="reload">
-                Tải Lại Trang
-              </Button>,
-              <Button onClick={this.handleReset} key="reset">
-                Thử Lại
-              </Button>,
-            ]}
+          <div
+            style={{
+              maxWidth: '600px',
+              width: '100%',
+              background: 'white',
+              borderRadius: '16px',
+              padding: '48px 32px',
+              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+            }}
           >
-            {import.meta.env.DEV && this.state.error && (
-              <div
-                style={{
-                  textAlign: "left",
-                  padding: "16px",
-                  background: "#fff",
-                  borderRadius: "8px",
-                  marginTop: "24px",
-                  maxWidth: "600px",
-                  margin: "24px auto 0",
-                }}
-              >
-                <details style={{ whiteSpace: "pre-wrap" }}>
-                  <summary
+            <Result
+              status="error"
+              title={
+                <span style={{ color: '#F43F5E', fontSize: '24px', fontWeight: 600 }}>
+                  Oops! Có lỗi xảy ra
+                </span>
+              }
+              subTitle={
+                <div style={{ color: '#737373', fontSize: '16px', marginTop: '16px' }}>
+                  <p>Đã xảy ra lỗi không mong muốn. Chúng tôi rất xin lỗi về sự bất tiện này.</p>
+                  {import.meta.env.DEV && this.state.error && (
+                    <details style={{ marginTop: '16px', textAlign: 'left' }}>
+                      <summary style={{ cursor: 'pointer', color: '#F43F5E', fontWeight: 500 }}>
+                        Chi tiết lỗi (Dev only)
+                      </summary>
+                      <pre
+                        style={{
+                          marginTop: '12px',
+                          padding: '16px',
+                          background: '#FAFAFA',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          overflow: 'auto',
+                          maxHeight: '200px',
+                        }}
+                      >
+                        {this.state.error.toString()}
+                        {this.state.errorInfo && (
+                          <>
+                            {'\n\n'}
+                            {this.state.errorInfo.componentStack}
+                          </>
+                        )}
+                      </pre>
+                    </details>
+                  )}
+                </div>
+              }
+              extra={
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '24px' }}>
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<ReloadOutlined />}
+                    onClick={this.handleReset}
                     style={{
-                      cursor: "pointer",
-                      marginBottom: "8px",
-                      fontWeight: 600,
+                      background: '#F43F5E',
+                      borderColor: '#F43F5E',
+                      borderRadius: '8px',
+                      height: '44px',
+                      padding: '0 24px',
+                      fontSize: '16px',
+                      fontWeight: 500,
                     }}
                   >
-                    Chi tiết lỗi (Development Only)
-                  </summary>
-                  <div style={{ fontSize: "12px", color: "#666" }}>
-                    <strong>Error:</strong>
-                    <pre
-                      style={{
-                        background: "#f5f5f5",
-                        padding: "8px",
-                        borderRadius: "4px",
-                        overflow: "auto",
-                      }}
-                    >
-                      {this.state.error.toString()}
-                    </pre>
-                    <strong>Stack Trace:</strong>
-                    <pre
-                      style={{
-                        background: "#f5f5f5",
-                        padding: "8px",
-                        borderRadius: "4px",
-                        overflow: "auto",
-                      }}
-                    >
-                      {this.state.errorInfo?.componentStack}
-                    </pre>
-                  </div>
-                </details>
-              </div>
-            )}
-          </Result>
+                    Thử lại
+                  </Button>
+                  <Button
+                    size="large"
+                    icon={<HomeOutlined />}
+                    onClick={this.handleGoHome}
+                    style={{
+                      borderColor: '#F43F5E',
+                      color: '#F43F5E',
+                      borderRadius: '8px',
+                      height: '44px',
+                      padding: '0 24px',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Về trang chủ
+                  </Button>
+                </div>
+              }
+            />
+          </div>
         </div>
       );
     }

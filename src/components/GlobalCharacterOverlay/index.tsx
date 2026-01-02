@@ -19,7 +19,7 @@ import {
 import SenCharacter from "@/components/SenCharacter";
 import SenChibi from "@/components/SenChibi"; // New Chibi
 import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
-import senHead from "@/assets/images/SenChibi/face.png"; // Use face as icon
+import QuickActionButtons from "./QuickActionButtons";
 
 import "./styles.less";
 import "./SenToggle.less"; // Import new toggle styles
@@ -175,14 +175,11 @@ const GlobalCharacterOverlay = () => {
         </div>
       )}
 
-      {/* 2. The Toggle Button (Always Visible in Corner) */}
-      <div
-        className={`sen-toggle-btn ${!isMinimized ? "sen-toggle-btn--active" : ""}`}
-        onClick={() => setIsMinimized(!isMinimized)}
-        title={isMinimized ? "Gọi Sen" : "Ẩn Sen"}
-      >
-        <img src={senHead} alt="Sen Toggle" className="sen-toggle-btn__icon" />
-      </div>
+      {/* 2. Quick Action Buttons (includes Sen toggle) */}
+      <QuickActionButtons
+        isMinimized={isMinimized}
+        onToggleMinimize={() => setIsMinimized(!isMinimized)}
+      />
 
       {/* 3. Settings Modal */}
       <Modal

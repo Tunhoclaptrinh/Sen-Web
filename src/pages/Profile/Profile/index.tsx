@@ -251,8 +251,8 @@ const Profile = () => {
                             size="large"
                             icon={<SaveOutlined />}
                             style={{
-                              background: "#d4a574",
-                              borderColor: "#d4a574",
+                              background: "#F43F5E",
+                              borderColor: "#F43F5E",
                             }}
                             block
                           >
@@ -340,8 +340,8 @@ const Profile = () => {
                             size="large"
                             block
                             style={{
-                              background: "#d4a574",
-                              borderColor: "#d4a574",
+                              background: "#F43F5E",
+                              borderColor: "#F43F5E",
                             }}
                           >
                             Đổi Mật Khẩu

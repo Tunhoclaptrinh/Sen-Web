@@ -84,7 +84,7 @@ const Home = () => {
                   size="large"
                   style={{
                     background: "white",
-                    color: "#d4a574",
+                    color: "#F43F5E",
                     border: "none",
                     fontWeight: "bold",
                   }}
@@ -98,7 +98,7 @@ const Home = () => {
                   size="large"
                   style={{
                     borderColor: "white",
-                    color: "#d4a574",
+                    color: "#F43F5E",
                     fontWeight: "bold",
                   }}
                 >
@@ -135,7 +135,7 @@ const Home = () => {
                   <Statistic
                     title={item.label}
                     value={item.value}
-                    valueStyle={{ color: "#d4a574", fontSize: 32 }}
+                    valueStyle={{ color: "#F43F5E", fontSize: 32 }}
                   />
                 </div>
               </Col>

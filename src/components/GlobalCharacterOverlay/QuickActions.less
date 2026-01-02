@@ -1,0 +1,179 @@
+/* Quick Action Buttons Styles */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 9998;
+    /* Below Sen toggle (9999) */
+}
+
+.quick-action-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+
+        &::before {
+            opacity: 1;
+        }
+    }
+
+    &:active {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    /* Icon animation */
+    .anticon {
+        transition: transform 0.3s ease;
+    }
+
+    &:hover .anticon {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+/* Game button - Lotus Pink */
+.quick-action-btn--game {
+    background: #F43F5E;
+
+    &:hover {
+        background: #E11D48;
+    }
+}
+
+/* Learn button - Blue */
+.quick-action-btn--learn {
+    background: #3B82F6;
+
+    &:hover {
+        background: #2563EB;
+    }
+}
+
+/* Admin button - Purple */
+.quick-action-btn--admin {
+    background: #A855F7;
+
+    &:hover {
+        background: #9333EA;
+    }
+}
+
+/* Dashboard button - Orange */
+.quick-action-btn--dashboard {
+    background: #F97316;
+
+    &:hover {
+        background: #EA580C;
+    }
+}
+
+/* Home button - Green */
+.quick-action-btn--home {
+    background: #22C55E;
+
+    &:hover {
+        background: #16A34A;
+    }
+}
+
+/* Research button - Teal */
+.quick-action-btn--research {
+    background: #14B8A6;
+
+    &:hover {
+        background: #0D9488;
+    }
+}
+
+/* Create button - Indigo */
+.quick-action-btn--create {
+    background: #6366F1;
+
+    &:hover {
+        background: #4F46E5;
+    }
+}
+
+/* Collection button - Pink */
+.quick-action-btn--collection {
+    background: #EC4899;
+
+    &:hover {
+        background: #DB2777;
+    }
+}
+
+/* Explore button - Cyan */
+.quick-action-btn--explore {
+    background: #06B6D4;
+
+    &:hover {
+        background: #0891B2;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .quick-actions {
+        right: 80px;
+        bottom: 20px;
+    }
+
+    .quick-action-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+}
+
+/* Animation on mount */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.quick-actions {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-btn:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.quick-action-btn:nth-child(2) {
+    animation-delay: 0.2s;
+}

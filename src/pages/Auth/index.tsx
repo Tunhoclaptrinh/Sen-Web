@@ -210,6 +210,7 @@ const AuthPage = () => {
                 fontWeight: 500,
                 marginBottom: 0,
                 marginTop: 12,
+                fontSize: 16,
               }}
             >
               Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ
@@ -305,19 +306,19 @@ const AuthPage = () => {
                     </Checkbox>
                     <Button
                       type="link"
-                      style={{ color: "#ffb38a", padding: 0 }}
+                      style={{ color: "#d4a574", padding: 0 }}
                     >
                       Quên mật khẩu?
                     </Button>
                   </Row>
 
                   <Button
-                    type="primary"
                     onClick={handleLogin}
                     loading={loading}
                     block
                     size="large"
                     style={{
+                      color: "white",
                       background: "linear-gradient(135deg, #d4a574, #c27d4f)",
                       border: "none",
                       fontWeight: 600,
@@ -512,7 +513,7 @@ const AuthPage = () => {
                       Tôi đồng ý với{" "}
                       <Button
                         type="link"
-                        style={{ color: "#ffcf9e", padding: 0, height: "auto" }}
+                        style={{ color: "#FFC0CB", padding: 0, height: "auto" }}
                       >
                         Điều khoản dịch vụ
                       </Button>
@@ -520,12 +521,12 @@ const AuthPage = () => {
                   </div>
 
                   <Button
-                    type="primary"
                     onClick={handleRegister}
                     loading={loading}
                     block
                     size="large"
                     style={{
+                      color: "white",
                       background: "linear-gradient(135deg, #d4a574, #c27d4f)",
                       border: "none",
                       fontWeight: 600,
@@ -597,7 +598,7 @@ const AuthPage = () => {
             <Button
               type="link"
               onClick={toggleForm}
-              style={{ color: "#ffcf9e", fontWeight: "bold", padding: 0 }}
+              style={{ color: "#d4a574", fontWeight: "bold", padding: 0 }}
             >
               {isLogin ? "Đăng ký ngay" : "Đăng nhập"}
             </Button>

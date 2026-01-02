@@ -84,7 +84,7 @@ const HeritageCard: React.FC<HeritageCardProps> = ({
 
           {/* Location */}
           <div className="card-location">
-            <EnvironmentOutlined style={{ color: "#d4a574" }} />
+            <EnvironmentOutlined style={{ color: "#F43F5E" }} />
             <span>{site.region}</span>
           </div>
 

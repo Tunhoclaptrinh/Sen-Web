@@ -194,7 +194,7 @@ const MainLayout: React.FC = () => {
                   size="small"
                   src={user?.avatar}
                   icon={<UserOutlined />}
-                  style={{ background: '#d4a574' }}
+                  style={{ background: '#F43F5E' }}
                 />
                 {!isMobile && <span>{user?.name}</span>}
               </div>
@@ -284,7 +284,7 @@ const MainLayout: React.FC = () => {
           textAlign: 'center',
         }}
       >
-        <p style={{ color: '#8c8c8c', margin: 0 }}>
+        <p style={{ color: '#d4a574', margin: 0 }}>
           &copy; 2024 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ.
         </p>
       </Footer>
