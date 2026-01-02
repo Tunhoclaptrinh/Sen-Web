@@ -1,162 +1,40 @@
 import BaseService from './base.service';
-
-// Game Progress
-export interface GameProgress {
-    user_id: number;
-    level: number;
-    total_points: number;
-    coins: number;
-    total_sen_petals: number;
-    unlocked_chapters: number[];
-    completed_levels: number[];
-    collected_characters: string[];
-    badges: Badge[];
-    achievements: Achievement[];
-    museum_open: boolean;
-    museum_income: number;
-    stats: {
-        completion_rate: number;
-        chapters_unlocked: number;
-        total_chapters: number;
-        characters_collected: number;
-        total_badges: number;
-    };
-}
-
-// Chapter (Sen Flower)
-export interface Chapter {
-    id: number;
-    name: string;
-    description: string;
-    theme: string;
-    order: number;
-    layer_index: 1 | 2 | 3;
-    petal_state: 'closed' | 'blooming' | 'full';
-    color: string;
-    required_petals: number;
-    is_unlocked: boolean;
-    total_levels: number;
-    completed_levels: number;
-    completion_rate: number;
-    can_unlock: boolean;
-    levels?: Level[];
-}
-
-// Level
-export interface Level {
-    id: number;
-    chapter_id: number;
-    name: string;
-    description: string;
-    type: 'story' | 'quiz' | 'mixed';
-    difficulty: 'easy' | 'medium' | 'hard';
-    order: number;
-    thumbnail?: string;
-    is_completed: boolean;
-    is_locked: boolean;
-    player_best_score?: number;
-    play_count?: number;
-    rewards: Rewards;
-    time_limit?: number;
-    passing_score?: number;
-    total_screens?: number;
-    screens?: Screen[];
-}
-
-// Screen Types
-export type ScreenType = 'DIALOGUE' | 'HIDDEN_OBJECT' | 'QUIZ' | 'TIMELINE' | 'IMAGE_VIEWER' | 'VIDEO';
-
-export interface Screen {
-    id: number;
-    type: ScreenType;
-    order: number;
-    content: any; // Varies by screen type
-    character_id?: number;
-    next_screen_id?: number;
-}
-
-// Rewards
-export interface Rewards {
-    coins?: number;
-    petals?: number;
-    character?: string;
-    badge?: string;
-    museum_item?: number;
-}
-
-// Badge
-export interface Badge {
-    id: number;
-    name: string;
-    description: string;
-    icon: string;
-    category: 'completion' | 'collection' | 'exploration' | 'achievement';
-    earned_at?: string;
-}
-
-// Achievement
-export interface Achievement {
-    id: number;
-    name: string;
-    description: string;
-    progress: number;
-    target: number;
-    completed: boolean;
-}
-
-// Game Session
-export interface GameSession {
-    session_id: number;
-    level_id: number;
-    user_id: number;
-    current_screen_index: number;
-    score: number;
-    started_at: string;
-    completed_at?: string;
-}
-
-// Leaderboard Entry
-export interface LeaderboardEntry {
-    rank: number;
-    user_id: number;
-    user_name: string;
-    user_avatar?: string;
-    total_points: number;
-    level: number;
-    sen_petals: number;
-    characters_count: number;
-}
-
-// Museum
-export interface Museum {
-    user_id: number;
-    is_open: boolean;
-    level: number;
-    artifacts: MuseumArtifact[];
-    total_income: number;
-    income_per_hour: number;
-}
-
-export interface MuseumArtifact {
-    artifact_id: number;
-    name: string;
-    image: string;
-    acquired_at: string;
-    display_position?: number;
-}
+import type {
+    GameProgress,
+    Chapter,
+    Level,
+    Screen,
+    Rewards,
+    Badge,
+    Achievement,
+    LeaderboardEntry,
+    Museum,
+    MuseumToggleResponse,
+    MuseumCollectResponse,
+    NavigateScreenResponse,
+    SubmitAnswerResponse,
+    SubmitTimelineResponse,
+    CollectClueResponse,
+    CompleteLevelResponse,
+    InventoryItem,
+    ShopItem,
+    PurchaseItemResponse,
+    UseItemResponse,
+    ScanObjectResponse,
+} from '@/types/game.types';
 
 class GameService extends BaseService {
     constructor() {
         super('/game');
     }
 
-    // Progress
+    // ==================== Progress ====================
     async getProgress(): Promise<GameProgress> {
         const response = await this.get('/progress');
         return response.data;
     }
 
-    // Chapters
+    // ==================== Chapters ====================
     async getChapters(): Promise<Chapter[]> {
         const response = await this.get('/chapters');
         return response.data;
@@ -167,12 +45,12 @@ class GameService extends BaseService {
         return response.data;
     }
 
-    async unlockChapter(id: number): Promise<{ success: boolean; message: string }> {
+    async unlockChapter(id: number): Promise<{ success: boolean; message: string; data: any }> {
         const response = await this.post(`/chapters/${id}/unlock`);
-        return response.data;
+        return response;
     }
 
-    // Levels
+    // ==================== Levels ====================
     async getLevelsByChapter(chapterId: number): Promise<Level[]> {
         const response = await this.get(`/levels/${chapterId}`);
         return response.data;
@@ -188,82 +66,250 @@ class GameService extends BaseService {
         return response.data;
     }
 
-    async navigateToNextScreen(sessionId: number): Promise<{ screen: Screen; is_last: boolean }> {
-        const response = await this.post(`/sessions/${sessionId}/next`);
+    // ==================== Session Management ====================
+    /**
+     * Navigate to next screen in game session
+     * @param sessionId - Game session ID
+     */
+    async navigateToNextScreen(sessionId: number): Promise<{
+        session_id: number;
+        current_screen: Screen;
+        progress: {
+            completed_screens: number;
+            total_screens: number;
+            percentage: number;
+        };
+    }> {
+        const response = await this.post(`/sessions/${sessionId}/next-screen`);
         return response.data;
     }
 
-    async submitAnswer(sessionId: number, data: { screen_id: number; answer: any }): Promise<{
-        correct: boolean;
-        score: number;
+    /**
+     * Submit answer for QUIZ screen
+     * @param sessionId - Game session ID
+     * @param answerId - Selected answer ID
+     */
+    async submitAnswer(sessionId: number, answerId: string): Promise<{
+        is_correct: boolean;
+        points_earned: number;
+        total_score: number;
         explanation?: string;
+        correct_answer?: string;
     }> {
-        const response = await this.post(`/sessions/${sessionId}/submit`, data);
+        const response = await this.post(`/sessions/${sessionId}/submit-answer`, { answerId });
         return response.data;
     }
 
-    async completeLevel(sessionId: number): Promise<{
-        success: boolean;
-        final_score: number;
-        rewards: Rewards;
-        unlocked_items: any[];
+    /**
+     * Submit timeline order for TIMELINE screen
+     * @param sessionId - Game session ID
+     * @param eventOrder - Array of event IDs in order
+     */
+    async submitTimeline(sessionId: number, eventOrder: string[]): Promise<{
+        isCorrect: boolean;
+        points_earned?: number;
+        total_score?: number;
+        correct_order?: string[];
     }> {
-        const response = await this.post(`/sessions/${sessionId}/complete`);
+        const response = await this.post(`/sessions/${sessionId}/submit-timeline`, { eventOrder });
         return response.data;
     }
 
-    // Leaderboard
+    /**
+     * Collect clue/item for HIDDEN_OBJECT screen
+     * @param levelId - Level ID
+     * @param clueId - Clue/item ID to collect
+     */
+    async collectClue(levelId: number, clueId: string): Promise<{
+        item: {
+            id: string;
+            name: string;
+            fact_popup: string;
+        };
+        points_earned: number;
+        total_score: number;
+        progress: {
+            collected: number;
+            required: number;
+            all_collected: boolean;
+        };
+    }> {
+        const response = await this.post(`/levels/${levelId}/collect-clue`, { clueId });
+        return response.data;
+    }
+
+    /**
+     * Complete level
+     * @param levelId - Level ID
+     * @param score - Final score
+     * @param timeSpent - Time spent in seconds
+     */
+    async completeLevel(levelId: number, score: number, timeSpent: number): Promise<{
+        passed: boolean;
+        score: number;
+        rewards: {
+            petals: number;
+            coins: number;
+            character?: string;
+        };
+        new_totals: {
+            petals: number;
+            points: number;
+            coins: number;
+        };
+    }> {
+        const response = await this.post(`/levels/${levelId}/complete`, { score, timeSpent });
+        return response.data;
+    }
+
+    // ==================== Leaderboard ====================
     async getLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global', limit: number = 20): Promise<LeaderboardEntry[]> {
         const response = await this.get('/leaderboard', { type, limit });
         return response.data;
     }
 
-    // Daily Reward
+    // ==================== Daily Reward ====================
     async claimDailyReward(): Promise<{ coins: number; petals: number }> {
         const response = await this.get('/daily-reward');
         return response.data;
     }
 
-    // Museum
-    async getMuseum(): Promise<Museum> {
+    // ==================== Museum ====================
+    async getMuseum(): Promise<{
+        is_open: boolean;
+        income_per_hour: number;
+        total_income_generated: number;
+        pending_income: number;
+        hours_accumulated: number;
+        capped: boolean;
+        characters: string[];
+        visitor_count: number;
+        can_collect: boolean;
+        next_collection_in: string;
+    }> {
         const response = await this.get('/museum');
         return response.data;
     }
 
-    async upgradeMuseum(): Promise<{ success: boolean; new_level: number }> {
-        const response = await this.post('/museum/upgrade');
+    /**
+     * Toggle museum open/close status
+     * @param isOpen - true to open, false to close
+     */
+    async toggleMuseum(isOpen: boolean): Promise<{
+        is_open: boolean;
+        income_per_hour: number;
+    }> {
+        const response = await this.post('/museum/toggle', { isOpen });
         return response.data;
     }
 
-    async collectMuseumIncome(): Promise<{ coins: number }> {
+    /**
+     * Collect accumulated museum income
+     */
+    async collectMuseumIncome(): Promise<{
+        collected: number;
+        total_coins: number;
+        total_museum_income: number;
+        next_collection_in: string;
+    }> {
         const response = await this.post('/museum/collect');
         return response.data;
     }
 
-    // Badges
+    // ==================== Badges & Achievements ====================
     async getBadges(): Promise<Badge[]> {
         const response = await this.get('/badges');
         return response.data;
     }
 
-    // Shop
+    async getAchievements(): Promise<Achievement[]> {
+        const response = await this.get('/achievements');
+        return response.data;
+    }
+
+    // ==================== Shop & Inventory ====================
     async getShopItems(): Promise<any[]> {
         const response = await this.get('/shop');
         return response.data;
     }
 
-    async purchaseItem(itemId: number): Promise<{ success: boolean; item: any }> {
-        const response = await this.post('/shop/purchase', { item_id: itemId });
+    /**
+     * Purchase item from shop
+     * @param itemId - Item ID to purchase
+     * @param quantity - Quantity to purchase (default: 1)
+     */
+    async purchaseItem(itemId: number, quantity: number = 1): Promise<{
+        item: {
+            id: number;
+            name: string;
+            type: string;
+        };
+        quantity: number;
+        total_cost: number;
+        remaining_coins: number;
+    }> {
+        const response = await this.post('/shop/purchase', { itemId, quantity });
         return response.data;
     }
 
-    // QR Scanning
-    async scanObject(qrCode: string): Promise<{
-        success: boolean;
-        object: any;
-        rewards: Rewards;
+    /**
+     * Get user inventory
+     */
+    async getInventory(): Promise<{
+        items: Array<{
+            item_id: number;
+            name: string;
+            type: string;
+            quantity: number;
+            acquired_at: string;
+        }>;
     }> {
-        const response = await this.post('/scan', { qr_code: qrCode });
+        const response = await this.get('/inventory');
+        return response.data;
+    }
+
+    /**
+     * Use item from inventory
+     * @param itemId - Item ID to use
+     * @param targetId - Target ID (e.g., level ID for hint)
+     */
+    async useItem(itemId: number, targetId?: number): Promise<{
+        item: {
+            id: number;
+            name: string;
+        };
+        effect: string;
+    }> {
+        const response = await this.post('/inventory/use', { itemId, targetId });
+        return response.data;
+    }
+
+    // ==================== QR Scanning ====================
+    /**
+     * Scan QR code at heritage site
+     * @param code - QR code value
+     * @param latitude - User's latitude
+     * @param longitude - User's longitude
+     */
+    async scanObject(code: string, latitude?: number, longitude?: number): Promise<{
+        artifact: {
+            id: number;
+            name: string;
+            description: string;
+            image: string;
+        };
+        rewards: {
+            coins: number;
+            petals: number;
+            character?: string;
+        };
+        new_totals: {
+            coins: number;
+            petals: number;
+        };
+        is_new_discovery: boolean;
+    }> {
+        const response = await this.post('/scan', { code, latitude, longitude });
         return response.data;
     }
 }

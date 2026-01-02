@@ -8,6 +8,7 @@ import type {
   BatchResult,
   ImportResult,
 } from "@/types";
+import { logger } from "@/utils/logger.utils";
 
 /**
  * Base Service Class
@@ -100,7 +101,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.get<T>(url);
       return response;
     } catch (error) {
-      console.error(`[${this.endpoint}] GET ${path} error:`, error);
+      logger.error(`[${this.endpoint}] GET ${path} error:`, error);
       throw error;
     }
   }
@@ -114,7 +115,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.post<T>(url, data);
       return response;
     } catch (error) {
-      console.error(`[${this.endpoint}] POST ${path} error:`, error);
+      logger.error(`[${this.endpoint}] POST ${path} error:`, error);
       throw error;
     }
   }
@@ -128,7 +129,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.put<T>(url, data);
       return response;
     } catch (error) {
-      console.error(`[${this.endpoint}] PUT ${path} error:`, error);
+      logger.error(`[${this.endpoint}] PUT ${path} error:`, error);
       throw error;
     }
   }
@@ -142,7 +143,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.patch<T>(url, data);
       return response;
     } catch (error) {
-      console.error(`[${this.endpoint}] PATCH ${path} error:`, error);
+      logger.error(`[${this.endpoint}] PATCH ${path} error:`, error);
       throw error;
     }
   }
@@ -156,7 +157,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.delete<T>(url);
       return response;
     } catch (error) {
-      console.error(`[${this.endpoint}] DELETE ${path} error:`, error);
+      logger.error(`[${this.endpoint}] DELETE ${path} error:`, error);
       throw error;
     }
   }
@@ -330,7 +331,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.get(`${this.endpoint}/schema`);
       return response.data ?? response;
     } catch (error) {
-      console.warn(`[${this.endpoint}] getSchema not supported`);
+      logger.warn(`[${this.endpoint}] getSchema not supported`);
       return null;
     }
   }
@@ -412,7 +413,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.get(`${this.endpoint}/stats/summary`);
       return response.data ?? response;
     } catch (error) {
-      console.warn(`[${this.endpoint}] getStats not supported`);
+      logger.warn(`[${this.endpoint}] getStats not supported`);
       return null;
     }
   }
@@ -442,7 +443,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.post(`${this.endpoint}/validate`, data);
       return response.data ?? { valid: true };
     } catch (error) {
-      console.warn(`[${this.endpoint}] validate not supported`);
+      logger.warn(`[${this.endpoint}] validate not supported`);
       return { valid: true };
     }
   }
@@ -460,7 +461,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const response = await apiClient.get<{ count: number }>(url);
       return response.count ?? 0;
     } catch (error) {
-      console.warn(`[${this.endpoint}] count not supported`);
+      logger.warn(`[${this.endpoint}] count not supported`);
       return 0;
     }
   }

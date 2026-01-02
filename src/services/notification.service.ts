@@ -1,144 +1,104 @@
-import { message, notification } from "antd";
-import type { ArgsProps as NotificationArgsProps } from "antd/es/notification";
+import BaseService from './base.service';
+import type { BaseApiResponse } from '@/types';
+import type { Notification, NotificationPreferences } from '@/types/notification.types';
 
-class NotificationService {
-  // MESSAGE METHODS
-  success(content: string, duration?: number) {
-    message.success(content, duration);
+// ==================== Notification Types ====================
+
+export interface Notification {
+  id: number;
+  user_id: number;
+  type: 'system' | 'reward' | 'achievement' | 'quest' | 'social';
+  title: string;
+  message: string;
+  data?: any;
+  is_read: boolean;
+  created_at: string;
+  read_at?: string;
+}
+
+export interface NotificationPreferences {
+  user_id: number;
+  email_notifications: boolean;
+  push_notifications: boolean;
+  quest_notifications: boolean;
+  achievement_notifications: boolean;
+  social_notifications: boolean;
+}
+
+// ==================== Notification Service ====================
+
+class NotificationService extends BaseService<Notification> {
+  constructor() {
+    super('/notifications');
   }
 
-  error(content: string, duration?: number) {
-    message.error(content, duration);
+  /**
+   * Get all notifications for current user
+   */
+  async getNotifications(params?: {
+    is_read?: boolean;
+    type?: string;
+    limit?: number;
+  }): Promise<BaseApiResponse<Notification[]>> {
+    const response = await this.get('/', params);
+    return response;
   }
 
-  warning(content: string, duration?: number) {
-    message.warning(content, duration);
+  /**
+   * Get unread notifications count
+   */
+  async getUnreadCount(): Promise<number> {
+    const response = await this.get<{ count: number }>('/unread/count');
+    return response.count || 0;
   }
 
-  info(content: string, duration?: number) {
-    message.info(content, duration);
+  /**
+   * Mark notification as read
+   */
+  async markAsRead(id: number): Promise<BaseApiResponse<Notification>> {
+    const response = await this.patchRequest<BaseApiResponse<Notification>>(`/${id}/read`);
+    return response;
   }
 
-  loading(content: string, duration?: number) {
-    return message.loading(content, duration);
+  /**
+   * Mark all notifications as read
+   */
+  async markAllAsRead(): Promise<BaseApiResponse<void>> {
+    const response = await this.post<BaseApiResponse<void>>('/read-all');
+    return response;
   }
 
-  // NOTIFICATION METHODS
-  showNotification(
-    type: "success" | "error" | "warning" | "info",
-    config: NotificationArgsProps,
-  ) {
-    notification[type](config);
+  /**
+   * Delete notification
+   */
+  async deleteNotification(id: number): Promise<BaseApiResponse<void>> {
+    return this.delete(id);
   }
 
-  successNotification(
-    title: string,
-    description?: string,
-    duration: number = 4.5,
-  ) {
-    notification.success({
-      message: title,
-      description,
-      duration,
-      placement: "topRight",
-    });
+  /**
+   * Delete all read notifications
+   */
+  async deleteAllRead(): Promise<BaseApiResponse<void>> {
+    const response = await this.deleteRequest<BaseApiResponse<void>>('/read');
+    return response;
   }
 
-  errorNotification(
-    title: string,
-    description?: string,
-    duration: number = 4.5,
-  ) {
-    notification.error({
-      message: title,
-      description,
-      duration,
-      placement: "topRight",
-    });
+  /**
+   * Get notification preferences
+   */
+  async getPreferences(): Promise<BaseApiResponse<NotificationPreferences>> {
+    const response = await this.get<BaseApiResponse<NotificationPreferences>>('/preferences');
+    return response;
   }
 
-  warningNotification(
-    title: string,
-    description?: string,
-    duration: number = 4.5,
-  ) {
-    notification.warning({
-      message: title,
-      description,
-      duration,
-      placement: "topRight",
-    });
-  }
-
-  infoNotification(
-    title: string,
-    description?: string,
-    duration: number = 4.5,
-  ) {
-    notification.info({
-      message: title,
-      description,
-      duration,
-      placement: "topRight",
-    });
-  }
-
-  // CUSTOM NOTIFICATION
-  customNotification(config: NotificationArgsProps) {
-    notification.open(config);
-  }
-
-  // CLOSE ALL NOTIFICATIONS
-  closeAllNotifications() {
-    notification.destroy();
-  }
-
-  closeAllMessages() {
-    message.destroy();
-  }
-
-  // API ERROR HANDLER
-  handleApiError(error: any) {
-    const errorMessage =
-      error?.response?.data?.message || error?.message || "Có lỗi xảy ra";
-    const statusCode = error?.response?.status;
-
-    switch (statusCode) {
-      case 400:
-        this.error("Yêu cầu không hợp lệ");
-        break;
-      case 401:
-        this.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-        break;
-      case 403:
-        this.error("Bạn không có quyền truy cập");
-        break;
-      case 404:
-        this.error("Không tìm thấy dữ liệu");
-        break;
-      case 422:
-        this.error("Dữ liệu không hợp lệ");
-        break;
-      case 429:
-        this.error("Quá nhiều yêu cầu. Vui lòng thử lại sau.");
-        break;
-      case 500:
-        this.error("Lỗi hệ thống. Vui lòng thử lại sau.");
-        break;
-      default:
-        this.error(errorMessage);
-    }
-  }
-
-  // VALIDATION ERROR HANDLER
-  handleValidationErrors(errors: Array<{ field: string; message: string }>) {
-    if (errors && errors.length > 0) {
-      const errorMessages = errors
-        .map((err) => `${err.field}: ${err.message}`)
-        .join("\n");
-      this.errorNotification("Lỗi xác thực", errorMessages);
-    }
+  /**
+   * Update notification preferences
+   */
+  async updatePreferences(preferences: Partial<NotificationPreferences>): Promise<BaseApiResponse<NotificationPreferences>> {
+    const response = await this.put<BaseApiResponse<NotificationPreferences>>('/preferences', preferences);
+    return response;
   }
 }
 
-export default new NotificationService();
+export const notificationService = new NotificationService();
+export default notificationService;

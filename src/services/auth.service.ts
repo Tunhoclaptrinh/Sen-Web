@@ -7,6 +7,7 @@ import type {
   User,
   BaseApiResponse,
 } from "@/types";
+import { logger } from "@/utils/logger.utils";
 
 /**
  * Auth Service
@@ -36,10 +37,9 @@ class AuthService {
 
       return response;
     } catch (error: any) {
-      console.error("[Auth] login error:", error);
-      const message =
-        error.response?.data?.message || error.message || "Đăng nhập thất bại";
-      throw new Error(message);
+      logger.error("[Auth] login error:", error);
+      // Không hiển thị message ở đây nữa vì axios interceptor đã xử lý
+      throw error;
     }
   }
 
@@ -65,10 +65,9 @@ class AuthService {
 
       return response;
     } catch (error: any) {
-      console.error("[Auth] register error:", error);
-      const message =
-        error.response?.data?.message || error.message || "Đăng ký thất bại";
-      throw new Error(message);
+      logger.error("[Auth] register error:", error);
+      // Không hiển thị message ở đây nữa vì axios interceptor đã xử lý
+      throw error;
     }
   }
 
@@ -85,7 +84,7 @@ class AuthService {
         message: response.message ?? "Đăng xuất thành công",
       };
     } catch (error) {
-      console.error("[Auth] logout error:", error);
+      logger.error("[Auth] logout error:", error);
       // Don't throw error on logout - always succeed locally
       return {
         success: true,
@@ -111,12 +110,8 @@ class AuthService {
         message: response.message,
       };
     } catch (error: any) {
-      console.error("[Auth] getMe error:", error);
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Lỗi khi tải thông tin người dùng";
-      throw new Error(message);
+      logger.error("[Auth] getMe error:", error);
+      throw error;
     }
   }
 
@@ -137,12 +132,8 @@ class AuthService {
         message: response.message ?? "Đổi mật khẩu thành công",
       };
     } catch (error: any) {
-      console.error("[Auth] changePassword error:", error);
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Đổi mật khẩu thất bại";
-      throw new Error(message);
+      logger.error("[Auth] changePassword error:", error);
+      throw error;
     }
   }
 
@@ -161,10 +152,8 @@ class AuthService {
         message: response.message ?? "Đã gửi email đặt lại mật khẩu",
       };
     } catch (error: any) {
-      console.error("[Auth] forgotPassword error:", error);
-      const message =
-        error.response?.data?.message || error.message || "Gửi email thất bại";
-      throw new Error(message);
+      logger.error("[Auth] forgotPassword error:", error);
+      throw error;
     }
   }
 
@@ -186,12 +175,8 @@ class AuthService {
         message: response.message ?? "Đặt lại mật khẩu thành công",
       };
     } catch (error: any) {
-      console.error("[Auth] resetPassword error:", error);
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Đặt lại mật khẩu thất bại";
-      throw new Error(message);
+      logger.error("[Auth] resetPassword error:", error);
+      throw error;
     }
   }
 
@@ -210,12 +195,8 @@ class AuthService {
         message: response.message ?? "Xác thực email thành công",
       };
     } catch (error: any) {
-      console.error("[Auth] verifyEmail error:", error);
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Xác thực email thất bại";
-      throw new Error(message);
+      logger.error("[Auth] verifyEmail error:", error);
+      throw error;
     }
   }
 
@@ -234,10 +215,8 @@ class AuthService {
         message: response.message ?? "Đã gửi lại email xác thực",
       };
     } catch (error: any) {
-      console.error("[Auth] resendVerification error:", error);
-      const message =
-        error.response?.data?.message || error.message || "Gửi email thất bại";
-      throw new Error(message);
+      logger.error("[Auth] resendVerification error:", error);
+      throw error;
     }
   }
 
@@ -254,12 +233,8 @@ class AuthService {
 
       return response;
     } catch (error: any) {
-      console.error("[Auth] refreshToken error:", error);
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Làm mới token thất bại";
-      throw new Error(message);
+      logger.error("[Auth] refreshToken error:", error);
+      throw error;
     }
   }
 
@@ -275,7 +250,7 @@ class AuthService {
 
       return response.exists ?? false;
     } catch (error) {
-      console.error("[Auth] checkEmailExists error:", error);
+      logger.error("[Auth] checkEmailExists error:", error);
       return false;
     }
   }
@@ -292,7 +267,7 @@ class AuthService {
 
       return response.valid ?? false;
     } catch (error) {
-      console.error("[Auth] validateToken error:", error);
+      logger.error("[Auth] validateToken error:", error);
       return false;
     }
   }

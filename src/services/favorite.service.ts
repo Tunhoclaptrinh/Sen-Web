@@ -1,5 +1,6 @@
 import apiClient from "@/config/axios.config";
 import type { BaseApiResponse } from "@/types";
+import { logger } from "@/utils/logger.utils";
 
 /**
  * Favorite item type
@@ -76,7 +77,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] getAll error:", error);
+      logger.error("[Favorite] getAll error:", error);
       throw error;
     }
   }
@@ -96,7 +97,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] getByType error:", error);
+      logger.error("[Favorite] getByType error:", error);
       throw error;
     }
   }
@@ -116,7 +117,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] getIdsByType error:", error);
+      logger.error("[Favorite] getIdsByType error:", error);
       throw error;
     }
   }
@@ -139,7 +140,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] check error:", error);
+      logger.error("[Favorite] check error:", error);
       throw error;
     }
   }
@@ -162,7 +163,7 @@ class FavoriteService {
         message: response.message ?? "Đã thêm vào yêu thích",
       };
     } catch (error) {
-      console.error("[Favorite] add error:", error);
+      logger.error("[Favorite] add error:", error);
       throw error;
     }
   }
@@ -185,7 +186,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] toggle error:", error);
+      logger.error("[Favorite] toggle error:", error);
       throw error;
     }
   }
@@ -207,7 +208,7 @@ class FavoriteService {
         message: response.message ?? "Đã xóa khỏi yêu thích",
       };
     } catch (error) {
-      console.error("[Favorite] remove error:", error);
+      logger.error("[Favorite] remove error:", error);
       throw error;
     }
   }
@@ -226,7 +227,7 @@ class FavoriteService {
         message: response.message ?? "Đã xóa tất cả",
       };
     } catch (error) {
-      console.error("[Favorite] clearByType error:", error);
+      logger.error("[Favorite] clearByType error:", error);
       throw error;
     }
   }
@@ -245,7 +246,7 @@ class FavoriteService {
         message: response.message ?? "Đã xóa tất cả yêu thích",
       };
     } catch (error) {
-      console.error("[Favorite] clearAll error:", error);
+      logger.error("[Favorite] clearAll error:", error);
       throw error;
     }
   }
@@ -265,7 +266,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] getStats error:", error);
+      logger.error("[Favorite] getStats error:", error);
       throw error;
     }
   }
@@ -287,7 +288,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] getTrending error:", error);
+      logger.error("[Favorite] getTrending error:", error);
       throw error;
     }
   }
@@ -310,7 +311,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] checkMultiple error:", error);
+      logger.error("[Favorite] checkMultiple error:", error);
       throw error;
     }
   }
@@ -334,7 +335,7 @@ class FavoriteService {
         message: response.message ?? "Đã thêm vào yêu thích",
       };
     } catch (error) {
-      console.error("[Favorite] addMultiple error:", error);
+      logger.error("[Favorite] addMultiple error:", error);
       throw error;
     }
   }
@@ -357,7 +358,7 @@ class FavoriteService {
         message: response.message ?? "Đã xóa khỏi yêu thích",
       };
     } catch (error) {
-      console.error("[Favorite] removeMultiple error:", error);
+      logger.error("[Favorite] removeMultiple error:", error);
       throw error;
     }
   }
@@ -373,7 +374,7 @@ class FavoriteService {
 
       return response.count ?? 0;
     } catch (error) {
-      console.error("[Favorite] getCount error:", error);
+      logger.error("[Favorite] getCount error:", error);
       return 0;
     }
   }
@@ -393,7 +394,7 @@ class FavoriteService {
         message: response.message,
       };
     } catch (error) {
-      console.error("[Favorite] getRecent error:", error);
+      logger.error("[Favorite] getRecent error:", error);
       throw error;
     }
   }
@@ -413,7 +414,7 @@ class FavoriteService {
 
       return response as unknown as Blob;
     } catch (error) {
-      console.error("[Favorite] export error:", error);
+      logger.error("[Favorite] export error:", error);
       throw error;
     }
   }

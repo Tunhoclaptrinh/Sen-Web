@@ -9,6 +9,7 @@ import type {
   BaseApiResponse,
   QueryParams,
 } from '@/types';
+import { logger } from '@/utils/logger.utils';
 
 /**
  * Artifact Service
@@ -32,7 +33,7 @@ class ArtifactService extends BaseService<Artifact, ArtifactDTO, ArtifactDTO> {
         ? `${this.endpoint}/${id}/related?${queryString}`
         : `${this.endpoint}/${id}/related`;
 
-      const response = await apiClient.get < BaseApiResponse < Artifact[] >> (url);
+      const response = await apiClient.get<BaseApiResponse<Artifact[]>>(url);
 
       return {
         success: response.success ?? true,
@@ -40,7 +41,7 @@ class ArtifactService extends BaseService<Artifact, ArtifactDTO, ArtifactDTO> {
         message: response.message,
       };
     } catch (error) {
-      console.error('[Artifact] getRelated error:', error);
+      logger.error('[Artifact] getRelated error:', error);
       throw error;
     }
   }
@@ -187,7 +188,7 @@ class ArtifactService extends BaseService<Artifact, ArtifactDTO, ArtifactDTO> {
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      console.warn('[Artifact] incrementViewCount failed:', error);
+      logger.warn('[Artifact] incrementViewCount failed:', error);
     }
   }
 
@@ -202,7 +203,7 @@ class ArtifactService extends BaseService<Artifact, ArtifactDTO, ArtifactDTO> {
         data: artifact.data?.images ?? [],
       };
     } catch (error) {
-      console.error('[Artifact] getImages error:', error);
+      logger.error('[Artifact] getImages error:', error);
       throw error;
     }
   }

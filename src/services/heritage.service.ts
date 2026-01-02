@@ -11,6 +11,7 @@ import type {
   BaseApiResponse,
   QueryParams,
 } from '@/types';
+import { logger } from '@/utils/logger.utils';
 
 /**
  * Heritage Service
@@ -49,7 +50,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
         message: response.message,
       };
     } catch (error) {
-      console.error('[Heritage] getNearby error:', error);
+      logger.error('[Heritage] getNearby error:', error);
       throw error;
     }
   }
@@ -73,7 +74,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
         message: response.message,
       };
     } catch (error) {
-      console.error('[Heritage] getArtifacts error:', error);
+      logger.error('[Heritage] getArtifacts error:', error);
       throw error;
     }
   }
@@ -93,7 +94,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
         message: response.message,
       };
     } catch (error) {
-      console.error('[Heritage] getTimeline error:', error);
+      logger.error('[Heritage] getTimeline error:', error);
       throw error;
     }
   }
@@ -198,7 +199,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      console.warn('[Heritage] incrementViewCount failed:', error);
+      logger.warn('[Heritage] incrementViewCount failed:', error);
     }
   }
 
@@ -216,7 +217,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
         data: response.data ?? [],
       };
     } catch (error) {
-      console.error('[Heritage] getRelated error:', error);
+      logger.error('[Heritage] getRelated error:', error);
       throw error;
     }
   }

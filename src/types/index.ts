@@ -9,6 +9,7 @@ export * from "./api.types";
 export * from "./user.types";
 export * from "./collection.types";
 export * from "./game.types";
+export * from "./notification.types";
 
 // Common Types
 

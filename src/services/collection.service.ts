@@ -1,6 +1,7 @@
 import BaseService from './base.service';
 import apiClient from '@/config/axios.config';
 import type { BaseApiResponse, QueryParams } from '@/types';
+import { logger } from '@/utils/logger.utils';
 
 /**
  * Collection interface
@@ -83,7 +84,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã thêm vào bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] addArtifact error:', error);
+      logger.error('[Collection] addArtifact error:', error);
       throw error;
     }
   }
@@ -106,7 +107,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] removeArtifact error:', error);
+      logger.error('[Collection] removeArtifact error:', error);
       throw error;
     }
   }
@@ -129,7 +130,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã thêm vào bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] addHeritageSite error:', error);
+      logger.error('[Collection] addHeritageSite error:', error);
       throw error;
     }
   }
@@ -152,7 +153,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] removeHeritageSite error:', error);
+      logger.error('[Collection] removeHeritageSite error:', error);
       throw error;
     }
   }
@@ -179,7 +180,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message,
       };
     } catch (error) {
-      console.error('[Collection] getArtifacts error:', error);
+      logger.error('[Collection] getArtifacts error:', error);
       throw error;
     }
   }
@@ -206,7 +207,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message,
       };
     } catch (error) {
-      console.error('[Collection] getHeritageSites error:', error);
+      logger.error('[Collection] getHeritageSites error:', error);
       throw error;
     }
   }
@@ -228,7 +229,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã cập nhật trạng thái',
       };
     } catch (error) {
-      console.error('[Collection] togglePublic error:', error);
+      logger.error('[Collection] togglePublic error:', error);
       throw error;
     }
   }
@@ -265,7 +266,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã chia sẻ bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] share error:', error);
+      logger.error('[Collection] share error:', error);
       throw error;
     }
   }
@@ -289,7 +290,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã sao chép bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] duplicate error:', error);
+      logger.error('[Collection] duplicate error:', error);
       throw error;
     }
   }
@@ -313,7 +314,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã gộp bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] merge error:', error);
+      logger.error('[Collection] merge error:', error);
       throw error;
     }
   }
@@ -333,7 +334,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message,
       };
     } catch (error) {
-      console.error('[Collection] getStats error:', error);
+      logger.error('[Collection] getStats error:', error);
       throw error;
     }
   }
@@ -353,7 +354,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
 
       return response.exists ?? false;
     } catch (error) {
-      console.error('[Collection] checkItem error:', error);
+      logger.error('[Collection] checkItem error:', error);
       return false;
     }
   }
@@ -377,7 +378,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã thêm vào bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] addMultipleArtifacts error:', error);
+      logger.error('[Collection] addMultipleArtifacts error:', error);
       throw error;
     }
   }
@@ -401,7 +402,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
       };
     } catch (error) {
-      console.error('[Collection] removeMultipleArtifacts error:', error);
+      logger.error('[Collection] removeMultipleArtifacts error:', error);
       throw error;
     }
   }
@@ -418,7 +419,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
 
       return response as unknown as Blob;
     } catch (error) {
-      console.error('[Collection] export error:', error);
+      logger.error('[Collection] export error:', error);
       throw error;
     }
   }

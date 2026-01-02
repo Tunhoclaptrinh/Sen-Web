@@ -65,7 +65,7 @@ apiClient.interceptors.request.use(
     }
 
     if (import.meta.env.DEV) {
-      console.log(`🚀 [${config.method?.toUpperCase()}] ${config.url}`);
+      console.log(`[API ${config.method?.toUpperCase()}] ${config.url}`);
     }
     return config;
   },
@@ -81,15 +81,25 @@ apiClient.interceptors.response.use(
     };
     const { response } = error;
 
+    // === XỬ LÝ NETWORK ERROR ===
     if (!response) {
       message.error("Không thể kết nối đến server. Vui lòng kiểm tra mạng.");
       return Promise.reject(error);
     }
 
-    const { status } = response;
+    const { status, data } = response;
 
     // === XỬ LÝ 401: REFRESH TOKEN ===
     if (status === 401 && !originalRequest._retry) {
+      // Nếu là endpoint login/register, không refresh token
+      if (originalRequest.url?.includes('/auth/login') ||
+        originalRequest.url?.includes('/auth/register')) {
+        // Hiển thị lỗi từ backend
+        const errorMessage = data?.message || 'Đăng nhập thất bại';
+        message.error(errorMessage);
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -126,7 +136,6 @@ apiClient.interceptors.response.use(
 
         // Dispatch action cập nhật store nếu store đã được inject
         if (store) {
-          // Import action creator tại nơi sử dụng nếu cần, hoặc dispatch object
           store.dispatch({
             type: "auth/refreshTokenSuccess",
             payload: newToken,
@@ -144,7 +153,6 @@ apiClient.interceptors.response.use(
 
         // Logout nếu refresh thất bại
         if (store) {
-          // Dispatch action logout (loại bỏ circular dep bằng cách dùng string type hoặc action đã import ở main)
           store.dispatch({ type: "auth/forceLogout" });
         }
         handleForceLogout();
@@ -155,8 +163,34 @@ apiClient.interceptors.response.use(
       }
     }
 
+    // === XỬ LÝ CÁC STATUS CODE KHÁC ===
     if (status === 403) {
-      message.error("Bạn không có quyền truy cập tài nguyên này.");
+      const errorMessage = data?.message || "Bạn không có quyền truy cập tài nguyên này.";
+      message.error(errorMessage);
+    } else if (status === 404) {
+      const errorMessage = data?.message || "Không tìm thấy tài nguyên.";
+      message.error(errorMessage);
+    } else if (status === 400) {
+      const errorMessage = data?.message || "Yêu cầu không hợp lệ.";
+      message.error(errorMessage);
+    } else if (status === 422) {
+      // Validation errors
+      if (data?.errors && Array.isArray(data.errors)) {
+        const errorMessages = data.errors.map((err: any) =>
+          err.field ? `${err.field}: ${err.message}` : err.message
+        ).join('\n');
+        message.error(errorMessages);
+      } else {
+        const errorMessage = data?.message || "Dữ liệu không hợp lệ.";
+        message.error(errorMessage);
+      }
+    } else if (status === 500) {
+      const errorMessage = data?.message || "Lỗi server. Vui lòng thử lại sau.";
+      message.error(errorMessage);
+    } else if (status >= 400) {
+      // Generic error for other 4xx/5xx
+      const errorMessage = data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
+      message.error(errorMessage);
     }
 
     return Promise.reject(error);

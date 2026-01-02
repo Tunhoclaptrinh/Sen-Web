@@ -10,6 +10,7 @@ import type {
   QueryParams,
   ChangePasswordData,
 } from '@/types';
+import { logger } from '@/utils/logger.utils';
 
 /**
  * User Service
@@ -36,7 +37,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message ?? 'Cập nhật thành công',
       };
     } catch (error) {
-      console.error('[User] updateProfile error:', error);
+      logger.error('[User] updateProfile error:', error);
       throw error;
     }
   }
@@ -56,7 +57,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message ?? 'Đổi mật khẩu thành công',
       };
     } catch (error) {
-      console.error('[User] changePassword error:', error);
+      logger.error('[User] changePassword error:', error);
       throw error;
     }
   }
@@ -76,7 +77,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message,
       };
     } catch (error) {
-      console.error('[User] getActivity error:', error);
+      logger.error('[User] getActivity error:', error);
       throw error;
     }
   }
@@ -96,7 +97,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message ?? 'Đã cập nhật trạng thái',
       };
     } catch (error) {
-      console.error('[User] toggleStatus error:', error);
+      logger.error('[User] toggleStatus error:', error);
       throw error;
     }
   }
@@ -116,7 +117,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message,
       };
     } catch (error) {
-      console.error('[User] getStats error:', error);
+      logger.error('[User] getStats error:', error);
       throw error;
     }
   }
@@ -135,7 +136,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message ?? 'Đã xóa vĩnh viễn',
       };
     } catch (error) {
-      console.error('[User] deletePermanent error:', error);
+      logger.error('[User] deletePermanent error:', error);
       throw error;
     }
   }
@@ -152,7 +153,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
 
       return response as unknown as Blob;
     } catch (error) {
-      console.error('[User] export error:', error);
+      logger.error('[User] export error:', error);
       throw error;
     }
   }
@@ -181,7 +182,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message ?? 'Import thành công',
       };
     } catch (error) {
-      console.error('[User] import error:', error);
+      logger.error('[User] import error:', error);
       throw error;
     }
   }
@@ -230,7 +231,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         message: response.message ?? 'Upload thành công',
       };
     } catch (error) {
-      console.error('[User] uploadAvatar error:', error);
+      logger.error('[User] uploadAvatar error:', error);
       throw error;
     }
   }
@@ -259,7 +260,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
         data: user,
       };
     } catch (error) {
-      console.error('[User] getByEmail error:', error);
+      logger.error('[User] getByEmail error:', error);
       throw error;
     }
   }
