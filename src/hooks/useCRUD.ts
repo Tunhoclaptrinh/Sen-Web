@@ -67,8 +67,19 @@ export const useCRUD = (service: any, options: any = {}) => {
         const params: any = {
             _page: pagination.current,
             _limit: pagination.pageSize,
-            ...filters,
         };
+
+        // Process filters
+        Object.keys(filters).forEach(key => {
+            const value = filters[key];
+            if (Array.isArray(value)) {
+                // User requested explicit usage of _in operator
+                // e.g. role=['admin','customer'] -> role_in='admin,customer'
+                params[`${key}_in`] = value.join(',');
+            } else {
+                params[key] = value;
+            }
+        });
 
         // Add sorting
         if (sorter.field) {
@@ -271,30 +282,12 @@ export const useCRUD = (service: any, options: any = {}) => {
         // Update filters
         // Ant Design filters are { key: [value] } or { key: null }
         if (newFilters) {
-            const cleanedFilters: any = {};
-            Object.keys(newFilters).forEach(key => {
-                if (newFilters[key]) {
-                    // If it's an array (from multiple select or our search filter), take the first value or join them?
-                    // Updated to support multiple values (arrays)
-                    cleanedFilters[key] = newFilters[key];
-                } else {
-                    // undefined/null means filter removed
-                }
-            });
-
-            // Merge with existing filters that might NOT be in the table (like external dropdowns)?
-            // Or replace? Table filters usually represent the "active" filters for those columns.
-            // But we have external filters (Role, IsActive) which might NOT be passed here if they are not in columns?
-            // Actually, if we use separate Select components outside table, they update 'filters' state directly.
-            // If we use Table columns filters, they come here.
-
-            // We should only update the keys present in newFilters to avoid wiping external filters?
-            // Or we should assume this function only handles table-based filters.
             setFilters((prev: any) => {
                 const updated = { ...prev };
                 Object.keys(newFilters).forEach(key => {
                     if (newFilters[key]) {
-                        updated[key] = Array.isArray(newFilters[key]) ? newFilters[key][0] : newFilters[key];
+                        // Store raw value (array or single) to support backend repeated params (e.g. role=admin&role=customer)
+                        updated[key] = newFilters[key];
                     } else {
                         delete updated[key];
                     }
