@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@ant-design/pro-components": "^2.8.10",
     "@pixi/react": "^7.1.2",
     "@reduxjs/toolkit": "^2.0.1",
     "antd": "^5.12.0",

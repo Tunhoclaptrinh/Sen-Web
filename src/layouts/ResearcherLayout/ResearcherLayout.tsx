@@ -1,153 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Dropdown, Button, Badge, Avatar, FloatButton } from 'antd';
+import React from 'react';
+import { Button, Badge, FloatButton } from 'antd';
 import {
     HomeOutlined,
     BankOutlined,
     FileImageOutlined,
     PictureOutlined,
     UserOutlined,
-    LogoutOutlined,
-    BellOutlined,
-    MenuFoldOutlined,
     PlusOutlined,
     ClockCircleOutlined,
     CheckCircleOutlined,
     BarChartOutlined,
+    BellOutlined,
 } from '@ant-design/icons';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
-import logo from '@/assets/images/logo.png';
+import UnifiedLayout from '../UnifiedLayout';
 import './ResearcherLayout.css';
-
-const { Header, Sider, Content, Footer } = Layout;
 
 const ResearcherLayout: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const dispatch = useDispatch();
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const [collapsed, setCollapsed] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
-
-    // Handle responsive
-    useEffect(() => {
-        const handleResize = () => {
-            const mobile = window.innerWidth < 768;
-            setIsMobile(mobile);
-            if (mobile) {
-                setCollapsed(true);
-            }
-        };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Handle logout
     const handleLogout = () => {
         dispatch(logout() as any);
         navigate('/login');
     };
 
-    // Get active menu key
-    const getActiveKey = (): string => {
-        const path = location.pathname;
-        if (path.startsWith('/researcher/heritage')) return 'heritage';
-        if (path.startsWith('/researcher/artifacts')) return 'artifacts';
-        if (path.startsWith('/researcher/exhibitions')) return 'exhibitions';
-        if (path.startsWith('/researcher/analytics')) return 'analytics';
-        if (path.startsWith('/profile')) return 'profile';
-        return 'home';
-    };
-
-    // Menu items
-    const menuItems = [
-        {
-            key: 'home',
-            icon: <HomeOutlined />,
-            label: 'Trang chủ',
-            onClick: () => navigate('/'),
-        },
-        {
-            key: 'heritage',
-            icon: <BankOutlined />,
-            label: 'Di sản',
-            children: [
-                {
-                    key: 'my-heritage',
-                    label: 'Bài viết của tôi',
-                    onClick: () => navigate('/researcher/heritage/my-submissions'),
-                },
-                {
-                    key: 'create-heritage',
-                    icon: <PlusOutlined />,
-                    label: 'Tạo mới',
-                    onClick: () => navigate('/researcher/heritage/create'),
-                },
-                {
-                    key: 'pending-heritage',
-                    icon: <ClockCircleOutlined />,
-                    label: 'Chờ duyệt',
-                    onClick: () => navigate('/researcher/heritage/pending'),
-                },
-            ],
-        },
-        {
-            key: 'artifacts',
-            icon: <FileImageOutlined />,
-            label: 'Hiện vật',
-            children: [
-                {
-                    key: 'my-artifacts',
-                    label: 'Hiện vật của tôi',
-                    onClick: () => navigate('/researcher/artifacts/my-artifacts'),
-                },
-                {
-                    key: 'create-artifact',
-                    icon: <PlusOutlined />,
-                    label: 'Tạo mới',
-                    onClick: () => navigate('/researcher/artifacts/create'),
-                },
-                {
-                    key: 'pending-artifacts',
-                    icon: <ClockCircleOutlined />,
-                    label: 'Chờ duyệt',
-                    onClick: () => navigate('/researcher/artifacts/pending'),
-                },
-            ],
-        },
-        {
-            key: 'exhibitions',
-            icon: <PictureOutlined />,
-            label: 'Triển lãm',
-            children: [
-                {
-                    key: 'my-exhibitions',
-                    label: 'Triển lãm của tôi',
-                    onClick: () => navigate('/researcher/exhibitions/my-exhibitions'),
-                },
-                {
-                    key: 'create-exhibition',
-                    icon: <PlusOutlined />,
-                    label: 'Tạo triển lãm',
-                    onClick: () => navigate('/researcher/exhibitions/create'),
-                },
-            ],
-        },
-        {
-            key: 'analytics',
-            icon: <BarChartOutlined />,
-            label: 'Thống kê',
-            onClick: () => navigate('/researcher/analytics'),
-        },
-    ];
-
-    // User dropdown menu
-    const userMenuItems = [
+    const userMenuExtraItems = [
         {
             key: 'profile',
             icon: <UserOutlined />,
@@ -155,15 +37,50 @@ const ResearcherLayout: React.FC = () => {
             onClick: () => navigate('/profile'),
         },
         {
-            type: 'divider' as const,
-        },
-        {
-            key: 'logout',
-            icon: <LogoutOutlined />,
-            label: 'Đăng xuất',
-            onClick: handleLogout,
+            type: 'divider',
         },
     ];
+
+    const route = {
+        routes: [
+            {
+                path: '/',
+                name: 'Trang chủ',
+                icon: <HomeOutlined />,
+            },
+            {
+                name: 'Di sản',
+                icon: <BankOutlined />,
+                routes: [
+                    { path: '/researcher/heritage/my-submissions', name: 'Bài viết của tôi' },
+                    { path: '/researcher/heritage/create', name: 'Tạo mới', icon: <PlusOutlined /> },
+                    { path: '/researcher/heritage/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
+                ],
+            },
+            {
+                name: 'Hiện vật',
+                icon: <FileImageOutlined />,
+                routes: [
+                    { path: '/researcher/artifacts/my-artifacts', name: 'Hiện vật của tôi' },
+                    { path: '/researcher/artifacts/create', name: 'Tạo mới', icon: <PlusOutlined /> },
+                    { path: '/researcher/artifacts/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
+                ],
+            },
+            {
+                name: 'Triển lãm',
+                icon: <PictureOutlined />,
+                routes: [
+                    { path: '/researcher/exhibitions/my-exhibitions', name: 'Triển lãm của tôi' },
+                    { path: '/researcher/exhibitions/create', name: 'Tạo triển lãm', icon: <PlusOutlined /> },
+                ],
+            },
+            {
+                path: '/researcher/analytics',
+                name: 'Thống kê',
+                icon: <BarChartOutlined />,
+            },
+        ],
+    };
 
     // Quick create menu
     const quickCreateMenuItems = [
@@ -188,54 +105,22 @@ const ResearcherLayout: React.FC = () => {
     ];
 
     return (
-        <Layout className="researcher-layout" style={{ minHeight: '100vh' }}>
-            {/* Sidebar */}
-            <Sider
-                collapsible
-                collapsed={collapsed}
-                onCollapse={setCollapsed}
-                width={250}
-                theme="light"
-                className="researcher-sider"
-                breakpoint="lg"
-                collapsedWidth={isMobile ? 0 : 80}
-            >
-                <div className="logo-container">
-                    <img src={logo} alt="Logo" className="logo" />
-                    {!collapsed && <span className="logo-text">Sen Research</span>}
-                </div>
-                <Menu
-                    mode="inline"
-                    selectedKeys={[getActiveKey()]}
-                    defaultOpenKeys={['heritage', 'artifacts', 'exhibitions']}
-                    items={menuItems}
-                    style={{ height: '100%', borderRight: 0 }}
-                />
-            </Sider>
-
-            <Layout>
-                {/* Header */}
-                <Header className="researcher-header">
-                    <div className="header-left">
-                        {isMobile && (
-                            <Button
-                                type="text"
-                                icon={<MenuFoldOutlined />}
-                                onClick={() => setCollapsed(!collapsed)}
-                                className="mobile-menu-btn"
-                            />
-                        )}
-                    </div>
-
-                    {/* Status Indicators */}
-                    <div className="status-indicators">
+        <>
+            <UnifiedLayout
+                route={route}
+                user={user || undefined}
+                onLogout={handleLogout}
+                userMenuExtraItems={userMenuExtraItems}
+                navTheme="light"
+                actionsRender={() => [
+                    <div key="status" className="status-indicators" style={{ display: 'flex', gap: 16, alignItems: 'center', marginRight: 16 }}>
                         <Badge count={3} size="small">
                             <Button
                                 type="text"
                                 icon={<ClockCircleOutlined />}
                                 onClick={() => navigate('/researcher/heritage/pending')}
                             >
-                                {!isMobile && 'Chờ duyệt'}
+                                <span className="hidden md:inline">Chờ duyệt</span>
                             </Button>
                         </Badge>
                         <Badge count={5} dot color="green">
@@ -244,41 +129,20 @@ const ResearcherLayout: React.FC = () => {
                                 icon={<CheckCircleOutlined />}
                                 onClick={() => navigate('/researcher/heritage/approved')}
                             >
-                                {!isMobile && 'Đã duyệt'}
+                                <span className="hidden md:inline">Đã duyệt</span>
                             </Button>
                         </Badge>
-                    </div>
-
-                    <div className="header-right">
-                        {/* Notifications */}
-                        <Badge count={2} size="small">
-                            <Button
-                                type="text"
-                                icon={<BellOutlined />}
-                                className="header-btn"
-                            />
-                        </Badge>
-
-                        {/* User Menu */}
-                        <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-                            <div className="user-info">
-                                <Avatar icon={<UserOutlined />} src={user?.avatar} />
-                                {!isMobile && <span className="user-name">{user?.name}</span>}
-                            </div>
-                        </Dropdown>
-                    </div>
-                </Header>
-
-                {/* Content */}
-                <Content className="researcher-content">
-                    <Outlet />
-                </Content>
-
-                {/* Footer */}
-                <Footer className="researcher-footer">
-                    <div>Sen Research ©{new Date().getFullYear()} - Đóng góp nội dung di sản</div>
-                </Footer>
-            </Layout>
+                    </div>,
+                    <Badge count={2} size="small" key="notifications">
+                        <Button
+                            type="text"
+                            icon={<BellOutlined />}
+                        />
+                    </Badge>
+                ]}
+            >
+                <Outlet />
+            </UnifiedLayout>
 
             {/* Quick Create FAB */}
             <FloatButton.Group
@@ -286,6 +150,7 @@ const ResearcherLayout: React.FC = () => {
                 type="primary"
                 icon={<PlusOutlined />}
                 tooltip="Tạo nội dung mới"
+                style={{ right: 24, bottom: 24 }}
             >
                 {quickCreateMenuItems.map((item) => (
                     <FloatButton
@@ -296,7 +161,7 @@ const ResearcherLayout: React.FC = () => {
                     />
                 ))}
             </FloatButton.Group>
-        </Layout>
+        </>
     );
 };
 
