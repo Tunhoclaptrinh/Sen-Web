@@ -6,7 +6,7 @@ import classNames from 'classnames';
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 type ButtonSize = 'small' | 'medium' | 'large';
 
-export interface CustomButtonProps extends Omit<AntButtonProps, 'type' | 'size'> {
+export interface CustomButtonProps extends Omit<AntButtonProps, 'type' | 'size' | 'variant'> {
     variant?: ButtonVariant;
     buttonSize?: ButtonSize;
     fullWidth?: boolean;
@@ -108,16 +108,6 @@ const Button: React.FC<CustomButtonProps> = ({
             cursor: 'not-allowed',
         }),
         ...style,
-    };
-
-    // Hover styles (applied via CSS)
-    const hoverStyles: Record<ButtonVariant, string> = {
-        primary: '#E11D48',
-        secondary: '#DB2777',
-        outline: '#FFF1F2',
-        ghost: '#FFF1F2',
-        danger: '#DC2626',
-        success: '#16A34A',
     };
 
     return (

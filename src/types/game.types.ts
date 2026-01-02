@@ -246,12 +246,19 @@ export interface LeaderboardEntry {
 // ==================== Museum ====================
 export interface Museum {
     is_open: boolean;
+    level: number;
     income_per_hour: number;
     total_income_generated: number;
     pending_income: number;
     hours_accumulated: number;
     capped: boolean;
     characters: string[];
+    artifacts: {
+        artifact_id: number;
+        name: string;
+        image: string;
+        acquired_at: string;
+    }[];
     visitor_count: number;
     can_collect: boolean;
     next_collection_in: string;

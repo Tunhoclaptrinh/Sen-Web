@@ -7,10 +7,8 @@ import {
     RocketOutlined,
     BookOutlined,
     DashboardOutlined,
-    ControlOutlined,
     FileTextOutlined,
-    ExperimentOutlined,
-    PlusOutlined
+    ExperimentOutlined
 } from '@ant-design/icons';
 import senHead from '@/assets/images/SenChibi/face.png';
 import './QuickActions.less';

@@ -8,12 +8,12 @@ import {
   Menu,
   Dropdown,
   Alert,
+  Modal as AntModal,
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  SearchOutlined,
   ReloadOutlined,
   EyeOutlined,
   DownloadOutlined,
@@ -202,7 +202,7 @@ const DataTable: React.FC<DataTableProps> = ({
               toast.warning("Vui lòng chọn ít nhất 1 mục");
               return;
             }
-            Modal.confirm({
+            AntModal.confirm({
               title: "Xác nhận xóa hàng loạt?",
               children: `Bạn có chắc chắn muốn xóa ${selectedRowKeys.length} mục đã chọn?`,
               footer: (

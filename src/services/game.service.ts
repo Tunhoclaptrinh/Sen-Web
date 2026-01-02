@@ -4,23 +4,9 @@ import type {
     Chapter,
     Level,
     Screen,
-    Rewards,
+    LeaderboardEntry,
     Badge,
     Achievement,
-    LeaderboardEntry,
-    Museum,
-    MuseumToggleResponse,
-    MuseumCollectResponse,
-    NavigateScreenResponse,
-    SubmitAnswerResponse,
-    SubmitTimelineResponse,
-    CollectClueResponse,
-    CompleteLevelResponse,
-    InventoryItem,
-    ShopItem,
-    PurchaseItemResponse,
-    UseItemResponse,
-    ScanObjectResponse,
 } from '@/types/game.types';
 
 class GameService extends BaseService {
@@ -177,12 +163,19 @@ class GameService extends BaseService {
     // ==================== Museum ====================
     async getMuseum(): Promise<{
         is_open: boolean;
+        level: number;
         income_per_hour: number;
         total_income_generated: number;
         pending_income: number;
         hours_accumulated: number;
         capped: boolean;
         characters: string[];
+        artifacts: {
+            artifact_id: number;
+            name: string;
+            image: string;
+            acquired_at: string;
+        }[];
         visitor_count: number;
         can_collect: boolean;
         next_collection_in: string;

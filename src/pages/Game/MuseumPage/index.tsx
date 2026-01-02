@@ -91,7 +91,7 @@ const MuseumPage: React.FC = () => {
                         <Card>
                             <Statistic
                                 title="Tổng thu nhập"
-                                value={museum.total_income}
+                                value={museum.total_income_generated}
                                 prefix={<GoldOutlined />}
                                 suffix="xu"
                                 valueStyle={{ color: '#faad14' }}

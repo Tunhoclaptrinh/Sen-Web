@@ -167,9 +167,9 @@ export const startLevel = createAsyncThunk(
 // Complete level
 export const completeLevel = createAsyncThunk(
     'game/completeLevel',
-    async (sessionId: number, { rejectWithValue, dispatch }) => {
+    async (payload: { levelId: number; score: number; timeSpent: number }, { rejectWithValue, dispatch }) => {
         try {
-            const result = await gameService.completeLevel(sessionId);
+            const result = await gameService.completeLevel(payload.levelId, payload.score, payload.timeSpent);
             // Refresh progress after completing level
             dispatch(fetchProgress());
             return result;
@@ -377,7 +377,7 @@ const gameSlice = createSlice({
             .addCase(completeLevel.fulfilled, (state, action) => {
                 state.sessionLoading = false;
                 state.currentSession = null;
-                state.successMessage = `Level completed! Score: ${action.payload.final_score}`;
+                state.successMessage = `Level completed! Score: ${action.payload.score}`;
             })
             .addCase(completeLevel.rejected, (state, action) => {
                 state.sessionLoading = false;

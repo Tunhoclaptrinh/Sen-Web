@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useCallback, ReactNode } from 'react';
 import { message } from 'antd';
 import {
     CheckCircleOutlined,
@@ -6,8 +6,6 @@ import {
     ExclamationCircleOutlined,
     InfoCircleOutlined,
 } from '@ant-design/icons';
-
-type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 interface ToastOptions {
     duration?: number;
