@@ -6,6 +6,7 @@ import {
   ClearOutlined,
 } from '@ant-design/icons';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import "./styles.less";
 
 interface FilterOption {
   key: string;
@@ -89,7 +90,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   if (responsive) {
     return (
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }} {...props}>
+      <Row gutter={[16, 16]} className="search-bar search-bar--responsive" {...props}>
         {/* Search Input */}
         <Col xs={24} sm={24} md={12} lg={8}>
           <Input
@@ -141,7 +142,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <Space
       size="middle"
-      style={{ width: '100%', marginBottom: 24 }}
+      className="search-bar search-bar--inline"
       wrap
       {...props}
     >
@@ -152,7 +153,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChange={handleSearchChange}
         onPressEnter={handleKeyPress}
         size={size}
-        style={{ width: 250 }}
+        className="search-bar__input"
         allowClear
       />
 

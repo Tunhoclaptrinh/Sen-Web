@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import "./styles.css";
+import "./styles.less";
 
 import background_full from "@/assets/images/background/background-full.png";
 // import background_nothing from "@/assets/images/background/background-nothing.png";

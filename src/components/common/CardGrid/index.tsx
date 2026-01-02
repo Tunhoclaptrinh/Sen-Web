@@ -1,7 +1,5 @@
-// ============================================
-// src/components/common/CardGrid/index.jsx
-// ============================================
-import { Row, Col, Empty, Spin } from 'antd';
+import { Row, Col, Empty } from 'antd';
+import Loading from '../Loading';
 
 const CardGrid = ({
   data = [],
@@ -26,11 +24,7 @@ const CardGrid = ({
   gutter?: [number, number];
 }) => {
   if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '50px 0' }}>
-        <Spin size="large" />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!data || data.length === 0) {

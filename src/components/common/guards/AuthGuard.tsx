@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth"; // Import hook vừa chuyển đổi
+import { useAuth } from "@/hooks/useAuth";
 import Loading from "@/components/common/Loading";
 
 interface AuthGuardProps {

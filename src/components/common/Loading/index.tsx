@@ -1,6 +1,7 @@
 import React from "react";
 import { Spin, SpinProps } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import "./styles.less";
 
 interface LoadingProps extends SpinProps {
   fullScreen?: boolean;
@@ -13,35 +14,10 @@ const Loading: React.FC<LoadingProps> = ({
   size = "large",
   ...props
 }) => {
-  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
-
-  if (fullScreen) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "rgba(255, 255, 255, 0.9)",
-          zIndex: 9999,
-        }}
-      >
-        <Spin indicator={antIcon} tip={message} size={size} {...props} />
-      </div>
-    );
-  }
+  const antIcon = <LoadingOutlined className="loading-icon" spin />;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "50px 20px",
-      }}
-    >
+    <div className={`loading-container ${fullScreen ? "loading-container--fullscreen" : ""}`}>
       <Spin indicator={antIcon} tip={message} size={size} {...props} />
     </div>
   );

@@ -8,7 +8,7 @@ import {
   StarFilled,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import styles from "./HeritageCard.module.css";
+import "./styles.less";
 
 interface HeritageSite {
   id: number;
@@ -50,9 +50,9 @@ const HeritageCard: React.FC<HeritageCardProps> = ({
       <Card
         hoverable
         loading={loading}
-        className={styles.heritageCard}
+        className="heritage-card"
         cover={
-          <div className={styles.cardCover}>
+          <div className="card-cover">
             <Image
               src={
                 site.image ||
@@ -60,14 +60,14 @@ const HeritageCard: React.FC<HeritageCardProps> = ({
               }
               alt={site.name}
               preview={false}
-              className={styles.cardImage}
+              className="card-image"
               fallback="https://via.placeholder.com/300x200?text=No+Image"
             />
 
             {/* Overlay Badges */}
-            <div className={styles.overlayBadges}>
+            <div className="overlay-badges">
               {site.unesco_listed && (
-                <Tag color="gold" className={styles.unescoTag}>
+                <Tag color="gold" className="unesco-tag">
                   UNESCO
                 </Tag>
               )}
@@ -90,40 +90,40 @@ const HeritageCard: React.FC<HeritageCardProps> = ({
                   )
                 }
                 onClick={handleFavoriteClick}
-                className={styles.favoriteButton}
+                className="favorite-button"
               />
             </Tooltip>
           </div>
         }
       >
-        <div className={styles.cardContent}>
+        <div className="card-content">
           {/* Title */}
-          <h3 className={styles.cardTitle}>{site.name}</h3>
+          <h3 className="card-title">{site.name}</h3>
 
           {/* Location */}
-          <div className={styles.cardLocation}>
+          <div className="card-location">
             <EnvironmentOutlined style={{ color: "#d4a574" }} />
             <span>{site.region}</span>
           </div>
 
           {/* Rating */}
           {site.rating && (
-            <div className={styles.cardRating}>
+            <div className="card-rating">
               <StarFilled style={{ color: "#faad14" }} />
-              <span className={styles.ratingValue}>
+              <span className="rating-value">
                 {site.rating.toFixed(1)}
               </span>
-              <span className={styles.ratingCount}>
+              <span className="rating-count">
                 ({site.total_reviews || 0} đánh giá)
               </span>
             </div>
           )}
 
           {/* Description */}
-          <p className={styles.cardDescription}>{site.description}</p>
+          <p className="card-description">{site.description}</p>
 
           {/* Footer */}
-          <div className={styles.cardFooter}>
+          <div className="card-footer">
             <Tag color="blue">{site.type}</Tag>
             <Button type="link" size="small" icon={<EyeOutlined />}>
               Chi tiết

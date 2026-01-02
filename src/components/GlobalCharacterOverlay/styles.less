@@ -1,0 +1,50 @@
+.global-char-overlay {
+    position: fixed;
+    z-index: 9999;
+    user-select: none;
+
+    &.dragging {
+        cursor: grabbing;
+    }
+
+    &:not(.dragging) {
+        cursor: grab;
+    }
+}
+
+.accessory-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.expression-control {
+    margin-bottom: 16px;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    &__label {
+        font-weight: 600;
+
+        &--active {
+            color: #1890ff;
+        }
+    }
+
+    &__hint {
+        font-size: 12px;
+    }
+}
+
+.mouth-select-label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.visibility-control {
+    display: flex;
+    justify-content: space-between;
+}

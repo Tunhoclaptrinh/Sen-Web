@@ -2,10 +2,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Sprite, useTick } from "@pixi/react";
 const getCharacterAsset = (name) => {
-  // Đường dẫn tương đối từ file component (index.jsx) đến thư mục ảnh
-  // Component đang ở: src/components/SenCharacter/
-  // Ảnh ở: src/assets/images/character/
-  // => Cần lùi ra 2 cấp (../../) để về src, rồi vào assets
   return new URL(`../../assets/images/character/${name}`, import.meta.url).href;
 };
 

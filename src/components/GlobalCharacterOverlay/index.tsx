@@ -20,6 +20,8 @@ import {
 import SenCharacter from "@/components/SenCharacter";
 import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
 
+import "./styles.less";
+
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -103,15 +105,12 @@ const GlobalCharacterOverlay = () => {
   return (
     <>
       <div
+        className={`global-char-overlay ${isDragging ? "dragging" : ""}`}
         style={{
-          position: "fixed",
           left: position.x,
           top: position.y,
           width: CHAR_WIDTH,
           height: CHAR_HEIGHT,
-          zIndex: 9999,
-          cursor: isDragging ? "grabbing" : "grab",
-          userSelect: "none",
         }}
         onMouseDown={handleMouseDown}
         onDoubleClick={() => setShowModal(true)}
@@ -168,7 +167,7 @@ const GlobalCharacterOverlay = () => {
         <Row gutter={[16, 16]}>
           {["hat", "glasses", "bag", "coat"].map((key) => (
             <Col span={12} key={key}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div className="accessory-item">
                 <span>{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
                 <Switch
                   checked={accessories[key]}
@@ -183,30 +182,19 @@ const GlobalCharacterOverlay = () => {
         <Title level={5}>
           <SmileOutlined /> Biểu Cảm
         </Title>
-        <div style={{ marginBottom: 16 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: 8,
-            }}
-          >
-            <span
-              style={{
-                fontWeight: 600,
-                color: isTalking ? "#1890ff" : "inherit",
-              }}
-            >
+        <div className="expression-control">
+          <div className="expression-control__header">
+            <span className={`expression-control__label ${isTalking ? "expression-control__label--active" : ""}`}>
               <SoundOutlined /> Chế độ nói chuyện:
             </span>
             <Switch checked={isTalking} onChange={setIsTalking} />
           </div>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type="secondary" className="expression-control__hint">
             (Nhân vật sẽ tự động mấp máy môi khi bật)
           </Text>
         </div>
 
-        <Text style={{ display: "block", marginBottom: 6 }}>
+        <Text className="mouth-select-label">
           Trạng thái miệng (khi im lặng):
         </Text>
         <Select
@@ -223,7 +211,7 @@ const GlobalCharacterOverlay = () => {
           <Option value="half">Hé mở (Half)</Option>
         </Select>
 
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div className="visibility-control" style={{ marginTop: 16 }}>
           <span>Ẩn Sen</span>
           <Switch onChange={() => setVisibleChar(!visibleChar)} />
         </div>

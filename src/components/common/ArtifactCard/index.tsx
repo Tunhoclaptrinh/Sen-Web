@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Tag, Typography, Tooltip } from 'antd';
 import { EyeOutlined, HeartOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import "./styles.less";
 
 const { Meta } = Card;
 const { Text } = Typography;
@@ -33,24 +34,17 @@ const ArtifactCard: React.FC<ArtifactCardProps> = ({ artifact, actions }) => {
     return (
         <Card
             hoverable
+            className="artifact-card"
             cover={
-                <div style={{ height: 200, overflow: 'hidden', position: 'relative' }}>
+                <div className="artifact-card__cover">
                     <img
                         alt={artifact.name}
                         src={imageUrl}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            transition: 'transform 0.3s ease'
-                        }}
-                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                     />
                     {artifact.rarity && (
                         <Tag
                             color={getRarityColor(artifact.rarity)}
-                            style={{ position: 'absolute', top: 10, right: 10, zIndex: 1, margin: 0 }}
+                            className="artifact-card__rarity-tag"
                         >
                             {artifact.rarity.toUpperCase()}
                         </Tag>
@@ -70,18 +64,17 @@ const ArtifactCard: React.FC<ArtifactCardProps> = ({ artifact, actions }) => {
                     <ShareAltOutlined key="share" />
                 </Tooltip>,
             ]}
-            style={{ borderRadius: 12, overflow: 'hidden', height: '100%' }}
         >
             <Meta
                 title={
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{artifact.name}</span>
+                    <div className="artifact-meta__title">
+                        <span>{artifact.name}</span>
                     </div>
                 }
                 description={
                     <div>
                         {artifact.dynasty && <Tag color="geekblue">{artifact.dynasty}</Tag>}
-                        {artifact.category && <Text type="secondary" style={{ fontSize: 12 }}>{artifact.category}</Text>}
+                        {artifact.category && <Text type="secondary" className="artifact-meta__category">{artifact.category}</Text>}
                     </div>
                 }
             />
