@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { message } from "antd";
 import { Chapter } from "@/types";
 import adminChapterService from "@/services/admin-chapter.service";

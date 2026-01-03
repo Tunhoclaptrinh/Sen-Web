@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { message } from "antd";
 import { Level } from "@/types";
 import adminLevelService from "@/services/admin-level.service";

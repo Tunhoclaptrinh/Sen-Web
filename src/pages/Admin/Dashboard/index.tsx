@@ -131,7 +131,7 @@ const Dashboard = () => {
                     dataKey="value"
                     label
                   >
-                    {regionData.map((entry, index) => (
+                    {regionData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
