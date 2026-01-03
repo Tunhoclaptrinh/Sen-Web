@@ -387,7 +387,7 @@ This project is licensed under the MIT License.
 
 ## 📞 Support
 
-- 📧 Email: support@sen-game.com
+- 📧 Email: support@sen.com
 - 🐛 Issues: [GitHub Issues](https://github.com/Tunhoclaptrinh/Sen-Web/issues)
 - 📖 Docs: [Documentation](https://docs.sen-game.com)
 

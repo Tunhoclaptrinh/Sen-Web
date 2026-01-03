@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles.less';
-import { Layout, Menu, Dropdown, Button, Badge, Input, Drawer, Avatar, MenuProps } from 'antd';
+import { Layout, Menu, Dropdown, Button, Badge, Input, Drawer, Avatar, MenuProps, Space, Typography } from 'antd';
 import {
   BellOutlined,
   UserOutlined,
@@ -9,14 +9,18 @@ import {
   MenuOutlined,
   SettingOutlined,
   HeartOutlined,
+  MailOutlined,
+  FacebookOutlined,
 } from '@ant-design/icons';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
 import logo from '@/assets/images/logo.png';
+import CustomFooter from '@/components/Footer';
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
+const { Text } = Typography;
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -26,12 +30,22 @@ const MainLayout: React.FC = () => {
 
   const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Handle scroll for premium transition
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -104,31 +118,45 @@ const MainLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {/* HEADER */}
+      {/* TOP UTILITY BAR (Premium extra) */}
+      {!isMobile && (
+        <div className={`top-utility-bar ${scrolled ? 'hidden' : ''}`}>
+          <div className="utility-content">
+            <Space split={<span className="divider">|</span>}>
+              <Text className="util-item"><MailOutlined /> support@sen.com</Text>
+              <Text className="util-item">Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ</Text>
+            </Space>
+            <Space size="middle">
+              <FacebookOutlined className="social-icon" />
+              <HeartOutlined className="social-icon" />
+              <div className="language-switcher">
+                <span className="lang-item active">
+                  <img src="https://flagcdn.com/w20/vn.png" alt="VN" className="flag-icon" />
+                  {!isMobile && "VN"}
+                </span>
+                <span className="lang-divider">|</span>
+                <span className="lang-item">
+                  <img src="https://flagcdn.com/w20/gb.png" alt="EN" className="flag-icon" />
+                  {!isMobile && "EN"}
+                </span>
+              </div>
+            </Space>
+          </div>
+        </div>
+      )}
+
       <Header
+        className={`main-header ${scrolled ? 'header-scrolled' : ''}`}
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: isMobile ? '0 16px' : '0 24px',
-          background: '#fff',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 999,
-          height: isMobile ? 60 : 70,
+          padding: isMobile ? '0 16px' : '0 40px',
         }}
       >
         {/* Logo */}
-        <Link to="/">
+        <Link to="/" className="logo-container">
           <div
+            className="logo-img"
             style={{
               backgroundImage: `url(${logo})`,
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: isMobile ? 70 : 90,
-              height: 36,
             }}
           />
         </Link>
@@ -150,9 +178,10 @@ const MainLayout: React.FC = () => {
         {/* Desktop Search */}
         {!isMobile && (
           <Input
-            placeholder="Tìm kiếm..."
+            placeholder="Tìm kiếm di sản..."
             prefix={<SearchOutlined />}
-            style={{ width: 200, marginRight: 16 }}
+            className="search-input-premium"
+            style={{ width: 240, marginRight: 24 }}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onPressEnter={handleSearch}
@@ -160,17 +189,19 @@ const MainLayout: React.FC = () => {
         )}
 
         {/* Right Side Actions */}
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           {/* Notifications */}
-          <Badge count={0}>
-            <BellOutlined
-              style={{
-                fontSize: 20,
-                cursor: 'pointer',
-                color: '#595959',
-              }}
-            />
-          </Badge>
+          {!isMobile && (
+            <Badge count={0} dot offset={[-2, 4]}>
+              <BellOutlined
+                style={{
+                  fontSize: 22,
+                  cursor: 'pointer',
+                  color: '#666',
+                }}
+              />
+            </Badge>
+          )}
 
           {/* User Menu / Auth Buttons */}
           {isAuthenticated ? (
@@ -183,28 +214,31 @@ const MainLayout: React.FC = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
+                  gap: 12,
                   cursor: 'pointer',
-                  padding: '4px 12px',
-                  borderRadius: 8,
+                  padding: '4px 8px',
+                  borderRadius: 12,
                   transition: 'background 0.3s',
                 }}
+                className="user-profile-trigger"
               >
                 <Avatar
-                  size="small"
+                  size={isMobile ? "small" : "default"}
                   src={user?.avatar}
                   icon={<UserOutlined />}
-                  style={{ background: '#F43F5E' }}
+                  style={{ background: '#F43F5E', border: '2px solid rgba(244, 63, 94, 0.2)' }}
                 />
-                {!isMobile && <span>{user?.name}</span>}
+                {!isMobile && (
+                  <span style={{ fontWeight: 600, color: '#444' }}>{user?.name}</span>
+                )}
               </div>
             </Dropdown>
           ) : (
             !isMobile && (
               <>
                 <Link to="/login">
-                  <Button type="primary" size="small">
-                    Đăng Nhập
+                  <Button type="primary" className="action-btn-premium">
+                    Bắt đầu ngay
                   </Button>
                 </Link>
               </>
@@ -224,17 +258,19 @@ const MainLayout: React.FC = () => {
 
       {/* MOBILE DRAWER */}
       <Drawer
-        title="Menu"
+        title="KHÁM PHÁ SEN"
         placement="left"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
-        width={280}
+        width={300}
+        className="mobile-drawer-premium"
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Mobile Search */}
           <Input
             placeholder="Tìm kiếm..."
             prefix={<SearchOutlined />}
+            className="search-input-premium"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onPressEnter={handleSearch}
@@ -245,15 +281,15 @@ const MainLayout: React.FC = () => {
             mode="vertical"
             selectedKeys={[getActiveKey()]}
             items={navMenuItems}
-            style={{ border: 'none' }}
+            className="mobile-nav-menu"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Mobile Auth Buttons */}
           {!isAuthenticated && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+            <div className="mobile-auth-section">
               <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button type="primary" block>
+                <Button type="primary" block className="action-btn-premium">
                   Đăng Nhập
                 </Button>
               </Link>
@@ -276,18 +312,7 @@ const MainLayout: React.FC = () => {
       </Content>
 
       {/* FOOTER */}
-      <Footer
-        style={{
-          background: '#fafafa',
-          borderTop: '1px solid #e8e8e8',
-          padding: isMobile ? '24px 16px' : '40px 24px',
-          textAlign: 'center',
-        }}
-      >
-        <p style={{ color: '#d4a574', margin: 0 }}>
-          &copy; 2024 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ.
-        </p>
-      </Footer>
+      <CustomFooter />
     </Layout>
   );
 };

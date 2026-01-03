@@ -147,7 +147,7 @@ const Home = () => {
       {/* ---------------- FEATURED CONTENT ---------------- */}
       <div style={{ marginBottom: 80 }}>
         <Title level={2} style={{ fontSize: 32, marginBottom: 8 }}>
-          📍 Di Sản & Hiện Vật Nổi Bật
+          Di Sản & Hiện Vật Nổi Bật
         </Title>
 
         <Tabs
@@ -156,7 +156,7 @@ const Home = () => {
           items={[
             {
               key: "heritage",
-              label: "🏛️ Di Sản",
+              label: "Di Sản",
               children: (
                 <Spin spinning={sitesLoading}>
                   {(!sites || sites.length === 0) && (
@@ -231,7 +231,7 @@ const Home = () => {
 
             {
               key: "artifacts",
-              label: "🎨 Hiện Vật",
+              label: "Hiện Vật",
               children: (
                 <Spin spinning={artifactsLoading}>
                   {(!artifacts || artifacts.length === 0) && (

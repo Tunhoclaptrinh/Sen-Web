@@ -3576,7 +3576,7 @@ const chapterData = await chapters.json();
 For issues or questions:
 
 - **GitHub:** [Sen-Web Repository](https://github.com/Tunhoclaptrinh/Sen-Web)
-- **Email:** support@sen-game.com
+- **Email:** support@sencom
 
 ---
 
