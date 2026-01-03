@@ -9,6 +9,7 @@ export interface CustomInputProps extends Omit<AntInputProps, 'size'> {
     required?: boolean;
     fullWidth?: boolean;
     inputSize?: 'small' | 'middle' | 'large';
+    containerStyle?: CSSProperties;
 }
 
 /**
@@ -24,11 +25,16 @@ const Input: React.FC<CustomInputProps> = ({
     inputSize = 'middle',
     className,
     style,
+    containerStyle: propContainerStyle,
     ...props
 }) => {
     const containerStyle: CSSProperties = {
         width: fullWidth ? '100%' : 'auto',
+        display: fullWidth ? 'block' : 'inline-flex',
+        flexDirection: 'column',
+        verticalAlign: 'middle',
         marginBottom: error || helperText ? '24px' : '16px',
+        ...propContainerStyle,
     };
 
     const labelStyle: CSSProperties = {
@@ -113,6 +119,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
     const containerStyle: CSSProperties = {
         width: fullWidth ? '100%' : 'auto',
         marginBottom: error || helperText ? '24px' : '16px',
+        ...props.containerStyle,
     };
 
     const labelStyle: CSSProperties = {

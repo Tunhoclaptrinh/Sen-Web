@@ -3,6 +3,7 @@ import axios, {
   InternalAxiosRequestConfig,
   AxiosResponse,
   AxiosError,
+  AxiosRequestConfig,
 } from "axios";
 import { message } from "antd";
 import { STORAGE_KEYS } from "./constants";
@@ -21,7 +22,6 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 // Override types to match response interceptor behavior (returns data directly)
-import { AxiosRequestConfig } from "axios";
 export interface CustomAxiosInstance extends Omit<AxiosInstance, 'get' | 'put' | 'post' | 'delete' | 'patch'> {
   get<T = any, R = T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
   delete<T = any, R = T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;

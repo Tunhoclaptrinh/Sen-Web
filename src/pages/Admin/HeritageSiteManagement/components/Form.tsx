@@ -1,59 +1,48 @@
-import React, { useEffect } from "react";
-import { Form, Input, InputNumber, Select, Switch, Row, Col } from "antd";
-import { FormModal, toast } from "@/components/common";
-import heritageService from "@/services/heritage.service";
-import { HeritageType, SignificanceLevel } from "@/types/heritage.types";
+import { Input, InputNumber, Select, Switch, Row, Col, Form } from "antd";
+import { FormModal } from "@/components/common";
+import { HeritageType, SignificanceLevel } from "@/types";
+import { useEffect } from "react";
 
 interface HeritageFormProps {
     open: boolean;
     onCancel: () => void;
-    onSuccess: () => void;
+    onSubmit: (values: any) => Promise<boolean>;
     initialValues?: any;
+    loading?: boolean;
     title?: string;
 }
 
 const HeritageForm: React.FC<HeritageFormProps> = ({
     open,
     onCancel,
-    onSuccess,
+    onSubmit,
     initialValues,
-    title = "Thêm mới Di sản",
+    loading = false,
+    title = "Thông tin Di sản",
 }) => {
     const [form] = Form.useForm();
-    const isEdit = !!initialValues;
 
     useEffect(() => {
         if (open && initialValues) {
             form.setFieldsValue(initialValues);
-        } else {
+        } else if (open) {
             form.resetFields();
         }
     }, [open, initialValues, form]);
 
-    const handleSubmit = async (values: any) => {
-        try {
-            if (isEdit && initialValues?.id) {
-                await heritageService.update(initialValues.id, values);
-                toast.success("Cập nhật di sản thành công");
-            } else {
-                await heritageService.create(values);
-                toast.success("Thêm mới di sản thành công");
-            }
-            onSuccess();
-        } catch (error) {
-            console.error(error);
-            toast.error("Có lỗi xảy ra");
-        }
+    const handleOk = async (values: any) => {
+        await onSubmit(values);
     };
 
     return (
         <FormModal
             open={open}
             onCancel={onCancel}
-            onOk={handleSubmit}
+            onOk={handleOk}
             title={title}
             width={800}
             form={form}
+            loading={loading}
             initialValues={{ is_active: true, unesco_listed: false, ...initialValues }}
         >
             <Row gutter={16}>

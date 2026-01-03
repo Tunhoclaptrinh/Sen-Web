@@ -46,7 +46,7 @@ const AdminLayout = () => {
 
   return (
     <UnifiedLayout
-      route={{ routes: adminMenu }}
+      menu={{ request: async () => adminMenu }}
       user={user || undefined}
       onLogout={handleLogout}
       userMenuExtraItems={userMenuExtraItems}

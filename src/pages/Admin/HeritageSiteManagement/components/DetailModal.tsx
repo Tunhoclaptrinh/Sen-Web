@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
 import { Modal, Descriptions, Tabs, Tag, Image, Space, List, Card } from "antd";
-import { HeritageSite } from "@/types/heritage.types";
+import { HeritageSite } from "@/types";
 import { ClockCircleOutlined, EnvironmentOutlined, StarOutlined } from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
+import { useEffect, useState } from "react";
 
-interface HeritageDetailModalProps {
+interface DetailModalProps {
     open: boolean;
     onCancel: () => void;
     record: HeritageSite | null;
 }
 
-const HeritageDetailModal: React.FC<HeritageDetailModalProps> = ({
+const DetailModal: React.FC<DetailModalProps> = ({
     open,
     onCancel,
     record,
@@ -123,4 +123,4 @@ const HeritageDetailModal: React.FC<HeritageDetailModalProps> = ({
     );
 };
 
-export default HeritageDetailModal;
+export default DetailModal;

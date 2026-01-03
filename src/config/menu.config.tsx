@@ -8,97 +8,151 @@ import {
     PlusOutlined,
     ClockCircleOutlined,
     DashboardOutlined,
-    FileOutlined,
     TrophyOutlined,
-    BarChartOutlined,
     BookOutlined,
     FlagOutlined,
 } from '@ant-design/icons';
 
 export interface IMenuItem {
+    key?: string;
     path?: string;
     name: string;
     icon?: React.ReactNode;
     routes?: IMenuItem[];
-    accessFilter?: string[]; // Roles that CAN access this items. If undefined, everyone can access.
+    children?: IMenuItem[]; // Some versions of ProLayout use children
+    accessFilter?: string[];
     hideInMenu?: boolean;
 }
 
 // ================= ADMIN MENU =================
 export const adminMenu: IMenuItem[] = [
     {
+        key: 'admin-dashboard',
         path: '/admin/dashboard',
         name: 'Dashboard',
         icon: <DashboardOutlined />,
     },
     {
-        path: '/admin/heritage',
-        name: 'Quản Lý Di Sản',
+        key: 'content-management',
+        name: 'Quản lý Nội dung',
         icon: <BankOutlined />,
+        children: [
+            {
+                key: 'sites',
+                path: '/admin/heritage-sites',
+                name: 'Di sản Văn hóa',
+            },
+            {
+                key: 'artifacts',
+                path: '/admin/artifacts',
+                name: 'Hiện vật Lịch sử',
+            },
+            {
+                key: 'categories',
+                path: '/admin/categories',
+                name: 'Danh mục Văn hóa',
+            },
+            {
+                key: 'exhibitions',
+                path: '/admin/exhibitions',
+                name: 'Triển lãm ảo',
+            },
+        ]
     },
     {
-        path: '/admin/artifacts',
-        name: 'Quản Lý Hiện Vật',
-        icon: <FileOutlined />,
-    },
-    {
-        path: '/admin/users',
-        name: 'Quản Lý Người Dùng',
-        icon: <UserOutlined />,
-    },
-    {
-        name: 'Game CMS',
+        key: 'game-management',
+        name: 'Quản lý Game',
         icon: <TrophyOutlined />,
-        routes: [
-            { path: '/admin/game/chapters', name: 'Chapters' },
-            { path: '/admin/game/levels', name: 'Levels' },
-            { path: '/admin/game/characters', name: 'Characters' },
-            { path: '/admin/game/screens', name: 'Screens' },
-        ],
+        children: [
+            {
+                key: 'chapters',
+                path: '/admin/chapters',
+                name: 'Chương & Màn chơi',
+            },
+            {
+                key: 'characters',
+                path: '/admin/characters',
+                name: 'Nhân vật Game',
+            },
+            {
+                key: 'quests',
+                path: '/admin/quests',
+                name: 'Nhiệm vụ',
+            },
+            {
+                key: 'assets',
+                path: '/admin/assets',
+                name: 'Đối tượng Quét (QR)',
+            },
+            {
+                key: 'badges',
+                path: '/admin/badges',
+                name: 'Huy hiệu & Thành tựu',
+            },
+            {
+                key: 'shop',
+                path: '/admin/shop',
+                name: 'Cửa hàng vật phẩm',
+            },
+        ]
     },
     {
-        path: '/admin/analytics',
-        name: 'Analytics',
-        icon: <BarChartOutlined />,
+        key: 'education-community',
+        name: 'Giáo dục & Cộng đồng',
+        icon: <BookOutlined />,
+        children: [
+            {
+                key: 'learning',
+                path: '/admin/learning',
+                name: 'Bài học & Lộ trình',
+            },
+            {
+                key: 'reviews',
+                path: '/admin/reviews',
+                name: 'Đánh giá & Phản hồi',
+            },
+        ]
     },
     {
-        name: 'Assets',
-        icon: <FileImageOutlined />,
-        routes: [
-            { path: '/admin/assets/images', name: 'Images' },
-            { path: '/admin/assets/videos', name: 'Videos' },
-            { path: '/admin/assets/audio', name: 'Audio' },
-        ],
+        key: 'users',
+        path: '/admin/users',
+        name: 'Người dùng',
+        icon: <UserOutlined />,
     },
 ];
 
 // ================= CUSTOMER MENU =================
 export const customerMenu: IMenuItem[] = [
     {
+        key: 'home',
         path: '/',
         name: 'Trang chủ',
         icon: <HomeOutlined />,
     },
     {
+        key: 'game',
         name: 'Trò chơi',
         icon: <TrophyOutlined />,
-        routes: [
-            { path: '/game/chapters', name: 'Sen Hoa' },
-            { path: '/game/museum', name: 'Bảo tàng' },
-            { path: '/game/leaderboard', name: 'Bảng xếp hạng' },
+        children: [
+            { key: 'chapters', path: '/game/chapters', name: 'Sen Hoa' },
+            { key: 'museum', path: '/game/museum', name: 'Bảo tàng' },
+            { key: 'leaderboard', path: '/game/leaderboard', name: 'Bảng xếp hạng' },
         ],
     },
     {
+        key: 'learning',
         path: '/learning',
         name: 'Học tập',
         icon: <BookOutlined />,
     },
     {
+        key: 'quests',
         path: '/quests',
         name: 'Nhiệm vụ',
         icon: <FlagOutlined />,
     },
     {
+        key: 'heritage',
         path: '/heritage-sites',
         name: 'Di sản',
         icon: <BankOutlined />,
@@ -108,39 +162,38 @@ export const customerMenu: IMenuItem[] = [
 // ================= RESEARCHER MENU =================
 export const researcherMenu: IMenuItem[] = [
     {
+        key: 'home',
         path: '/',
         name: 'Trang chủ',
         icon: <HomeOutlined />,
     },
     {
+        key: 'heritage',
         name: 'Di sản',
         icon: <BankOutlined />,
-        routes: [
-            { path: '/researcher/heritage/my-submissions', name: 'Bài viết của tôi' },
-            { path: '/researcher/heritage/create', name: 'Tạo mới', icon: <PlusOutlined /> },
-            { path: '/researcher/heritage/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
+        children: [
+            { key: 'my-submissions', path: '/researcher/heritage/my-submissions', name: 'Bài viết của tôi' },
+            { key: 'create', path: '/researcher/heritage/create', name: 'Tạo mới', icon: <PlusOutlined /> },
+            { key: 'pending', path: '/researcher/heritage/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
         ],
     },
     {
+        key: 'artifacts',
         name: 'Hiện vật',
         icon: <FileImageOutlined />,
-        routes: [
-            { path: '/researcher/artifacts/my-artifacts', name: 'Hiện vật của tôi' },
-            { path: '/researcher/artifacts/create', name: 'Tạo mới', icon: <PlusOutlined /> },
-            { path: '/researcher/artifacts/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
+        children: [
+            { key: 'my-artifacts', path: '/researcher/artifacts/my-artifacts', name: 'Hiện vật của tôi' },
+            { key: 'create-artifact', path: '/researcher/artifacts/create', name: 'Tạo mới', icon: <PlusOutlined /> },
+            { key: 'pending-artifact', path: '/researcher/artifacts/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
         ],
     },
     {
+        key: 'exhibitions',
         name: 'Triển lãm',
         icon: <PictureOutlined />,
-        routes: [
-            { path: '/researcher/exhibitions/my-exhibitions', name: 'Triển lãm của tôi' },
-            { path: '/researcher/exhibitions/create', name: 'Tạo triển lãm', icon: <PlusOutlined /> },
+        children: [
+            { key: 'my-exhibitions', path: '/researcher/exhibitions/my-exhibitions', name: 'Triển lãm của tôi' },
+            { key: 'create-exhibition', path: '/researcher/exhibitions/create', name: 'Tạo triển lãm', icon: <PlusOutlined /> },
         ],
-    },
-    {
-        path: '/researcher/analytics',
-        name: 'Thống kê',
-        icon: <BarChartOutlined />,
     },
 ];

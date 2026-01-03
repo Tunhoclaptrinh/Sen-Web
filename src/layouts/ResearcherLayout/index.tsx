@@ -65,7 +65,7 @@ const ResearcherLayout: React.FC = () => {
     return (
         <>
             <UnifiedLayout
-                route={{ routes: researcherMenu }}
+                menu={{ request: async () => researcherMenu }}
                 user={user || undefined}
                 onLogout={handleLogout}
                 userMenuExtraItems={userMenuExtraItems}

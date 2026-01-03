@@ -1,192 +1,225 @@
-import { useState, useMemo } from "react";
-import { Tag } from "antd";
+import {
+    Space,
+    Tag,
+    Tooltip,
+    Button,
+    Popconfirm
+} from "antd";
+import {
+    EditOutlined,
+    DeleteOutlined,
+    EyeOutlined
+} from "@ant-design/icons";
+import { HeritageSite } from "@/types";
 import DataTable from "@/components/common/DataTable";
-import { useCRUD } from "@/hooks/useCRUD";
-import heritageService from "@/services/heritage.service";
-import { HeritageSite, HeritageType } from "@/types/heritage.types";
-import { toast } from "@/components/common";
-import HeritageStats from "./HeritageStats";
-import HeritageForm from "./HeritageForm";
-import HeritageDetailModal from "./HeritageDetailModal";
+
+import HeritageDetailModal from "./components/DetailModal";
+import HeritageForm from "./components/Form";
+import HeritageStats from "./components/Stats";
+import { useHeritageModel } from "./model";
 
 const HeritageSiteManagement = () => {
-    // 1. State for Modals
-    const [formOpen, setFormOpen] = useState(false);
-    const [detailOpen, setDetailOpen] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState<HeritageSite | null>(null);
-
-    // 2. CRUD Hook
     const {
         data,
         loading,
         pagination,
-        filters: filterValues,
-        fetchAll: fetchData,
         handleTableChange,
-        updateFilters,
-        searchTerm,
         search,
-        remove: handleDelete,
-        batchDelete: handleBatchDelete,
-        importData,
+        selectedIds,
+        setSelectedIds,
+        refresh,
+        updateFilters,
+        filters,
+        clearFilters,
+        stats,
+        statsLoading,
+        deleteHeritage,
+        batchDeleteHeritages,
         exportData,
-    } = useCRUD({
-        service: heritageService,
-        autoFetch: true,
-        resourceName: "di sản",
-    });
+        importData,
+        downloadTemplate,
+        importLoading,
+        exportLoading,
+        handleSubmit,
+        // UI State & Handlers
+        currentRecord,
+        formVisible,
+        detailVisible,
+        openCreate,
+        openEdit,
+        openDetail,
+        closeForm,
+        closeDetail
+    } = useHeritageModel();
 
-    // 3. Handlers
-    const handleAdd = () => {
-        setSelectedRecord(null);
-        setFormOpen(true);
+    const onFilterChange = (key: string, value: any) => {
+        updateFilters({ [key]: value });
     };
-
-    const handleEdit = (record: HeritageSite) => {
-        setSelectedRecord(record);
-        setFormOpen(true);
-    };
-
-    const handleView = (record: HeritageSite) => {
-        setSelectedRecord(record);
-        setDetailOpen(true);
-    };
-
-    const handleFormSuccess = () => {
-        setFormOpen(false);
-        fetchData();
-        toast.success("Thao tác thành công");
-    };
-
-    // 4. Configuration
-    const tableFilters = useMemo(() => [
-        {
-            key: "type",
-            placeholder: "Loại hình",
-            options: Object.values(HeritageType).map((type) => ({
-                label: type,
-                value: type,
-            })),
-        },
-        {
-            key: "region",
-            placeholder: "Khu vực",
-            options: [
-                { label: "Miền Bắc", value: "Bắc" },
-                { label: "Miền Trung", value: "Trung" },
-                { label: "Miền Nam", value: "Nam" },
-            ],
-        },
-        {
-            key: "unesco_listed",
-            placeholder: "UNESCO",
-            options: [
-                { label: "Có", value: true },
-                { label: "Không", value: false },
-            ],
-        },
-    ], []);
 
     const columns = [
         {
             title: "ID",
             dataIndex: "id",
+            key: "id",
             width: 80,
-            sortable: true,
         },
         {
             title: "Tên Di Sản",
             dataIndex: "name",
             key: "name_like",
+            width: 250,
             searchable: true,
-            render: (text: string) => (
-                <span style={{ fontWeight: 500 }}>{text}</span>
-            ),
+            align: "left" as const,
         },
         {
             title: "Loại hình",
             dataIndex: "type",
+            key: "type",
             width: 150,
-            render: (type: HeritageType) => <Tag color="blue">{type}</Tag>,
+            filters: [
+                { text: "Monument", value: "monument" },
+                { text: "Temple", value: "temple" },
+                { text: "Museum", value: "museum" },
+            ],
+            filteredValue: filters.type ? (Array.isArray(filters.type) ? filters.type : [filters.type]) : null,
+            render: (type: string) => <Tag color="blue">{type.toUpperCase()}</Tag>,
         },
         {
             title: "Khu vực",
             dataIndex: "region",
-            width: 150,
+            key: "region",
+            width: 120,
+            filters: [
+                { text: "Bắc", value: "Bắc" },
+                { text: "Trung", value: "Trung" },
+                { text: "Nam", value: "Nam" },
+            ],
+            filteredValue: filters.region ? (Array.isArray(filters.region) ? filters.region : [filters.region]) : null,
         },
         {
             title: "UNESCO",
             dataIndex: "unesco_listed",
+            key: "unesco_listed",
             width: 100,
-            render: (isListed: boolean) => (
-                isListed ? <Tag color="green">UNESCO</Tag> : <Tag color="default">-</Tag>
-            ),
+            render: (listed: boolean) => listed ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>,
         },
         {
-            title: "Đánh giá",
-            dataIndex: "rating",
-            width: 100,
-            align: "center",
-            render: (rating: number) => rating ? rating.toFixed(1) : "-",
+            title: "Giá vé",
+            dataIndex: "entrance_fee",
+            width: 120,
+            render: (fee: number) => fee ? `${fee.toLocaleString()} VND` : "Free",
         },
+        {
+            title: "Thao tác",
+            key: "actions",
+            width: 120,
+            fixed: "right" as const,
+            align: "center" as const,
+            render: (_: any, record: HeritageSite) => (
+                <Space size="middle">
+                    <Tooltip title="Xem chi tiết">
+                        <Button
+                            type="text"
+                            icon={<EyeOutlined />}
+                            onClick={() => openDetail(record)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Chỉnh sửa">
+                        <Button
+                            type="text"
+                            icon={<EditOutlined style={{ color: "orange" }} />}
+                            onClick={() => openEdit(record)}
+                        />
+                    </Tooltip>
+                    <Popconfirm
+                        title="Bạn có chắc chắn muốn xóa?"
+                        onConfirm={() => deleteHeritage(record.id)}
+                        okText="Đồng ý"
+                        cancelText="Hủy"
+                        okButtonProps={{ danger: true }}
+                    >
+                        <Tooltip title="Xóa">
+                            <Button
+                                type="text"
+                                danger
+                                icon={<DeleteOutlined />}
+                            />
+                        </Tooltip>
+                    </Popconfirm>
+                </Space>
+            ),
+        }
     ];
 
-    // 5. Render
     return (
-        <div className="p-6">
+        <>
             <DataTable
-                title="Quản Lý Di Sản Văn Hóa"
-                headerContent={<HeritageStats />}
-                data={data}
+                title="Quản lý Di sản Văn hóa"
+                headerContent={<HeritageStats stats={stats} loading={statsLoading} />}
                 loading={loading}
                 columns={columns}
+                dataSource={data}
                 pagination={pagination}
-                onPaginationChange={handleTableChange}
-
-                // Search & Filter
+                onChange={handleTableChange}
+                searchable
                 onSearch={search}
-                searchValue={searchTerm}
-                hideGlobalSearch={true}
-                filters={tableFilters}
-                filterValues={filterValues}
-                onFilterChange={updateFilters}
-                onRefresh={fetchData}
-
-                // Actions
-                onAdd={handleAdd}
-                onView={handleView}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onBatchDelete={handleBatchDelete}
+                onAdd={openCreate}
+                rowSelection={{
+                    selectedRowKeys: selectedIds,
+                    onChange: setSelectedIds,
+                }}
+                onView={openDetail}
+                onEdit={openEdit}
+                onDelete={deleteHeritage}
+                onBatchDelete={batchDeleteHeritages}
                 batchOperations={true}
-                showActions={true}
-                rowKey="id"
-
-                // Import / Export
                 importable={true}
+                importLoading={importLoading}
                 exportable={true}
+                exportLoading={exportLoading}
                 onImport={importData}
-                onExport={() => exportData('xlsx')}
+                onDownloadTemplate={downloadTemplate}
+                onExport={exportData}
+                onRefresh={refresh}
+                filters={[
+                    {
+                        key: "type",
+                        placeholder: "Loại hình",
+                        options: [
+                            { label: "Monument", value: "monument" },
+                            { label: "Temple", value: "temple" },
+                            { label: "Museum", value: "museum" },
+                        ],
+                    },
+                    {
+                        key: "region",
+                        placeholder: "Khu vực",
+                        options: [
+                            { label: "Miền Bắc", value: "Bắc" },
+                            { label: "Miền Trung", value: "Trung" },
+                            { label: "Miền Nam", value: "Nam" },
+                        ],
+                    }
+                ]}
+                filterValues={filters}
+                onFilterChange={onFilterChange}
+                onClearFilters={clearFilters}
             />
 
-            {formOpen && (
-                <HeritageForm
-                    open={formOpen}
-                    onCancel={() => setFormOpen(false)}
-                    onSuccess={handleFormSuccess}
-                    initialValues={selectedRecord}
-                    title={selectedRecord ? "Cập nhật di sản" : "Thêm mới di sản"}
-                />
-            )}
+            <HeritageForm
+                open={formVisible}
+                onCancel={closeForm}
+                onSubmit={handleSubmit}
+                initialValues={currentRecord}
+                loading={loading}
+            />
 
-            {detailOpen && (
-                <HeritageDetailModal
-                    open={detailOpen}
-                    onCancel={() => setDetailOpen(false)}
-                    record={selectedRecord}
-                />
-            )}
-        </div>
+            <HeritageDetailModal
+                record={currentRecord}
+                open={detailVisible}
+                onCancel={closeDetail}
+            />
+        </>
     );
 };
 

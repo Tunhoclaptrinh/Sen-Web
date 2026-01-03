@@ -33,13 +33,23 @@ const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
 
 // Admin Pages
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageManagement = lazy(
-  () => import("@/pages/Admin/HeritageManagement"),
+const HeritageSiteManagement = lazy(
+  () => import("@/pages/Admin/HeritageSiteManagement"),
 );
 const ArtifactManagement = lazy(
   () => import("@/pages/Admin/ArtifactManagement"),
 );
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
+const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
+const CategoryManagement = lazy(() => import("@/pages/Admin/CategoryManagement"));
+const CharacterManagement = lazy(() => import("@/pages/Admin/GameManagement/CharacterManagement"));
+const AssetManagement = lazy(() => import("@/pages/Admin/AssetManagement"));
+const QuestManagement = lazy(() => import("@/pages/Admin/QuestManagement"));
+const LearningManagement = lazy(() => import("@/pages/Admin/LearningManagement"));
+const ExhibitionManagement = lazy(() => import("@/pages/Admin/ExhibitionManagement"));
+const BadgeManagement = lazy(() => import("@/pages/Admin/GameManagement/BadgeManagement"));
+const ShopManagement = lazy(() => import("@/pages/Admin/GameManagement/ShopManagement"));
+const ChapterManagement = lazy(() => import("@/pages/Admin/GameManagement/ChapterManagement"));
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -163,15 +173,15 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "heritage/my-submissions",
-        element: <HeritageManagement />, // Placeholder - reuse for now
+        element: <HeritageSiteManagement />, // Placeholder - reuse for now
       },
       {
         path: "heritage/create",
-        element: <HeritageManagement />, // Placeholder
+        element: <HeritageSiteManagement />, // Placeholder
       },
       {
         path: "heritage/pending",
-        element: <HeritageManagement />, // Placeholder
+        element: <HeritageSiteManagement />, // Placeholder
       },
       {
         path: "artifacts/my-artifacts",
@@ -191,10 +201,6 @@ const routes: RouteObject[] = [
       },
       {
         path: "exhibitions/create",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "analytics",
         element: <Dashboard />, // Placeholder
       },
     ],
@@ -234,59 +240,64 @@ const routes: RouteObject[] = [
     ),
     children: [
       {
-        index: true,
-        element: <Dashboard />,
-      },
-      {
         path: "dashboard",
         element: <Dashboard />,
       },
+      // Content Management
       {
-        path: "heritage",
-        element: <HeritageManagement />,
+        path: "heritage-sites",
+        element: <HeritageSiteManagement />,
       },
       {
         path: "artifacts",
         element: <ArtifactManagement />,
       },
       {
+        path: "categories",
+        element: <CategoryManagement />,
+      },
+      {
+        path: "exhibitions",
+        element: <ExhibitionManagement />,
+      },
+      // Game Management
+      {
+        path: "chapters",
+        element: <ChapterManagement />,
+      },
+      {
+        path: "characters",
+        element: <CharacterManagement />,
+      },
+      {
+        path: "quests",
+        element: <QuestManagement />,
+      },
+      {
+        path: "assets",
+        element: <AssetManagement />,
+      },
+      {
+        path: "badges",
+        element: <BadgeManagement />,
+      },
+      {
+        path: "shop",
+        element: <ShopManagement />,
+      },
+      // Education & Community
+      {
+        path: "learning",
+        element: <LearningManagement />,
+      },
+      {
+        path: "reviews",
+        element: <ReviewManagement />,
+      },
+      // User Management
+      {
         path: "users",
         element: <UserManagement />,
-      },
-      // Game CMS Routes
-      {
-        path: "game/chapters",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "game/levels",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "game/characters",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "game/screens",
-        element: <Dashboard />, // Placeholder
-      },
-      // Analytics
-      {
-        path: "analytics",
-        element: <Dashboard />, // Placeholder
-      },
-      // Assets
-      {
-        path: "assets/images",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "assets/videos",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "assets/audio",
-        element: <Dashboard />, // Placeholder
       },
     ],
   },

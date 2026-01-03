@@ -28,14 +28,32 @@
 }
 
 .total-count-badge {
-    background-color: #f5f5f5;
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 14px;
+    background-color: #fff;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 500;
-    color: #666;
-    border: 1px solid #d9d9d9;
+    color: #262626;
+    border: 1px solid #d4d4d4;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    cursor: default;
+
+    &:hover {
+        border-color: #F43F5E;
+        box-shadow: 0 2px 8px rgba(244, 63, 94, 0.1);
+    }
+
+    span {
+        color: #F43F5E;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1;
+    }
 }
 
 .data-table-alert {
@@ -266,12 +284,21 @@
     display: block;
 }
 
-.filter-action-button {
+ý cu .filter-action-button {
     width: 90px;
 }
 
 .search-icon {
     color: rgba(0, 0, 0, 0.25);
+}
+
+.ant-input-affix-wrapper {
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: #F43F5E !important;
+        box-shadow: 0 2px 8px rgba(244, 63, 94, 0.1) !important;
+    }
 }
 
 .main-table {

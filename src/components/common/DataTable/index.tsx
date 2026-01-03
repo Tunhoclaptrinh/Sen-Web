@@ -178,6 +178,8 @@ const DataTable: React.FC<DataTableProps> = ({
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => confirm()}
           className="filter-search-input"
+          containerStyle={{ marginBottom: 8 }} // Maintain the intended 8px margin here
+          fullWidth={false}
         />
         <Space>
           <Button
@@ -429,7 +431,7 @@ const DataTable: React.FC<DataTableProps> = ({
           {/* Left Side: Primary Actions (Add, Import, Export, Batch) */}
           <Space wrap>
             {onAdd && (
-              <Button variant="primary" onClick={onAdd}>
+              <Button variant="primary" onClick={onAdd} buttonSize="small">
                 <PlusOutlined /> Thêm Mới
               </Button>
             )}
@@ -451,13 +453,13 @@ const DataTable: React.FC<DataTableProps> = ({
                       </Menu>
                     }
                   >
-                    <Button variant="outline" loading={tableProps.importLoading}>
+                    <Button variant="outline" loading={tableProps.importLoading} buttonSize="small">
                       <UploadOutlined /> Import <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
                     </Button>
                   </Dropdown>
                 ) : (
                   <Tooltip title="Import dữ liệu">
-                    <Button variant="outline" onClick={handleImportClick} loading={tableProps.importLoading}>
+                    <Button variant="outline" onClick={handleImportClick} loading={tableProps.importLoading} buttonSize="small">
                       <UploadOutlined /> Import
                     </Button>
                   </Tooltip>
@@ -467,7 +469,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
             {exportable && onExport && (
               <Tooltip title="Export dữ liệu">
-                <Button variant="outline" onClick={onExport} loading={tableProps.exportLoading}>
+                <Button variant="outline" onClick={onExport} loading={tableProps.exportLoading} buttonSize="small">
                   <DownloadOutlined /> Export
                 </Button>
               </Tooltip>
@@ -476,7 +478,7 @@ const DataTable: React.FC<DataTableProps> = ({
             {batchOperations && activeSelectedRowKeys.length > 0 && (
               <Badge count={activeSelectedRowKeys.length} color="#F43F5E">
                 <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                  <Button variant="outline">Thao tác hàng loạt</Button>
+                  <Button variant="outline" buttonSize="small">Thao tác hàng loạt</Button>
                 </Dropdown>
               </Badge>
             )}
@@ -485,15 +487,18 @@ const DataTable: React.FC<DataTableProps> = ({
           </Space>
 
           {/* Right Side: Tools (Search, Filter, Refresh, Total) */}
-          <Space wrap align="center">
+          <Space wrap align="center" className="right-tools">
             {searchable && !tableProps.hideGlobalSearch && (
               <Input
                 placeholder={searchPlaceholder}
                 value={internalSearchText}
                 onChange={(e) => handleSearch(e.target.value)}
-                style={{ width: 250 }}
+                style={{ width: 220, height: 32 }}
                 allowClear
-                prefix={<SearchOutlined className="search-icon" />}
+                prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                containerStyle={{ marginBottom: 0, height: 32 }}
+                fullWidth={false}
+                inputSize="middle"
               />
             )}
 
@@ -503,6 +508,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   variant="outline"
                   onClick={() => setFilterModalOpen(true)}
                   icon={<FilterOutlined />}
+                  buttonSize="small"
                 >
                   Bộ lọc
                 </Button>
@@ -516,6 +522,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   onClick={onRefresh}
                   loading={loading}
                   icon={<ReloadOutlined />}
+                  buttonSize="small"
                 >
                   Làm mới
                 </Button>
@@ -524,7 +531,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
             {/* Total Count Display */}
             <div className="total-count-badge">
-              Tổng số: {pagination.total || 0}
+              Tổng số: <span>{pagination.total || 0}</span>
             </div>
           </Space>
         </div>
@@ -655,6 +662,7 @@ const DataTable: React.FC<DataTableProps> = ({
                                 allowClear
                                 style={{ width: '100%' }}
                                 type={filter.type === 'number' ? 'number' : 'text'}
+                                containerStyle={{ marginBottom: 0 }}
                               />
                             )}
                           </div>

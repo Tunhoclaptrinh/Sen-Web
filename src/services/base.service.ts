@@ -408,13 +408,20 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * GET statistics summary
    */
-  async getStats(): Promise<any> {
+  async getStats(): Promise<BaseApiResponse<any>> {
     try {
-      const response = await apiClient.get(`${this.endpoint}/stats/summary`);
-      return response.data ?? response;
+      const response = await apiClient.get<BaseApiResponse<any>>(`${this.endpoint}/stats/summary`);
+      return {
+        success: response.success ?? true,
+        data: response.data ?? (response as any),
+      };
     } catch (error) {
       logger.warn(`[${this.endpoint}] getStats not supported`);
-      return null;
+      return {
+        success: false,
+        data: null,
+        message: "Stats not supported"
+      };
     }
   }
 

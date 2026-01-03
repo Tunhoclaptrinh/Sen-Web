@@ -53,9 +53,12 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
         pathname: location.pathname,
       }}
       onMenuHeaderClick={() => navigate('/')}
-      menuItemRender={(item, dom) => (
-        <div onClick={() => item.path && navigate(item.path)}>{dom}</div>
-      )}
+      menuItemRender={(item, dom) => {
+        if (item.isUrl || !item.path || (item as any).children) {
+          return dom;
+        }
+        return <div onClick={() => navigate(item.path!)}>{dom}</div>;
+      }}
       avatarProps={{
         src: user?.avatar,
         icon: <UserOutlined />,

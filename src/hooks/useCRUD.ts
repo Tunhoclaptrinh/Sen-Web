@@ -401,22 +401,13 @@ export const useCRUD = (service: any, options: any = {}) => {
     );
 
     /**
-     * Auto-fetch on mount if enabled
+     * Fetch on mount or when dependencies change (via fetchAll identity)
      */
     useEffect(() => {
         if (autoFetch) {
             fetchAll();
         }
     }, [autoFetch, fetchAll]);
-
-    /**
-     * Re-fetch when filters, sorter, or search changes
-     */
-    useEffect(() => {
-        if (autoFetch) {
-            fetchAll();
-        }
-    }, [filters, sorter, searchTerm, pagination.current, pagination.pageSize]);
 
     return {
         // Data

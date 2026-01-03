@@ -51,7 +51,7 @@ const CustomerLayout: React.FC = () => {
     return (
         <>
             <UnifiedLayout
-                route={{ routes: customerMenu }}
+                menu={{ request: async () => customerMenu }}
                 user={user || undefined}
                 onLogout={handleLogout}
                 userMenuExtraItems={userMenuExtraItems}
