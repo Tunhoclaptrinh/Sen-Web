@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BankOutlined, EnvironmentOutlined, GlobalOutlined, StarOutlined } from "@ant-design/icons";
 import { StatisticsCard } from "@/components/common";
 import heritageService from "@/services/heritage.service";
-import { toast } from "@/components/common";
 
 const HeritageStats = () => {
     const [loading, setLoading] = useState(false);
