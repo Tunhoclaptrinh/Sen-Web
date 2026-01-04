@@ -61,21 +61,21 @@ export interface LearningProgress {
     completed_at?: string;
 }
 
-class LearningService extends BaseService {
+class LearningService extends BaseService<LearningModule> {
     constructor() {
         super('/learning');
     }
 
     // Get learning path with progress
     async getLearningPath(): Promise<{ data: LearningModule[]; progress: any }> {
-        const response: any = await this.get('/path');
+        const response = await this.get<{ data: LearningModule[]; progress: any }>('/path');
         return response;
     }
 
     // Get module detail
     async getModuleDetail(moduleId: number): Promise<LearningModule> {
-        const response: any = await this.getById(moduleId);
-        return response.data;
+        const response = await this.getById(moduleId);
+        return response.data as LearningModule;
     }
 
     // Complete module
@@ -89,7 +89,17 @@ class LearningService extends BaseService {
             passed: boolean;
         }
     }> {
-        const response: any = await this.post(`/${moduleId}/complete`, { score });
+        type CompleteResponse = {
+            success: boolean;
+            message: string;
+            data: {
+                module_title: string;
+                score: number;
+                points_earned: number;
+                passed: boolean;
+            }
+        };
+        const response = await this.post<CompleteResponse>(`/${moduleId}/complete`, { score });
         return response;
     }
 }
