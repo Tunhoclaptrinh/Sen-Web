@@ -61,7 +61,10 @@ const LearningDetail: React.FC = () => {
 
         try {
             setSubmitting(true);
-            const response = await learningService.completeModule(module.id, score);
+            const response = await learningService.completeModule(0, module.id, {
+                time_spent: 0,
+                score: score
+            });
             if (response.success) {
                 if (response.data.passed) {
                     Modal.success({

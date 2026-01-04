@@ -148,7 +148,7 @@ const LearningManagement: React.FC = () => {
                         <Input.TextArea
                             rows={8}
                             placeholder='{"id": 1, "passing_score": 50, "questions": [...]}'
-                            onChange={(e) => {
+                            onChange={() => {
                                 // Optional: validate JSON on change
                             }}
                         />
