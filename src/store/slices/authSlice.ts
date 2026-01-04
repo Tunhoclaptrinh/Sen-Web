@@ -87,7 +87,7 @@ export const login = createAsyncThunk<
 );
 
 export const register = createAsyncThunk<
-  { user: User; token: string },
+  { message: string },
   RegisterData,
   { rejectValue: string }
 >(
@@ -99,9 +99,8 @@ export const register = createAsyncThunk<
         return rejectWithValue(response.message || 'Đăng ký thất bại');
       }
 
-      const { user, token } = response.data;
-      saveAuthToStorage(token, user);
-      return { user, token };
+      // No auto-login after registration
+      return { message: response.message || 'Registration successful' };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Đăng ký thất bại');
     }
@@ -235,11 +234,12 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(register.fulfilled, (state) => {
+        // Registration successful but user is NOT logged in
         state.loading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
