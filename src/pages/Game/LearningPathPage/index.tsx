@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, startTransition, Suspense, lazy } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     Row,
     Col,
@@ -18,20 +18,26 @@ import {
     CheckCircleOutlined,
     TrophyOutlined,
 } from '@ant-design/icons';
-import learningService from '@services/learning.service';
+import learningService from '@/services/learning.service';
 import './styles.less';
+
+const LearningDetail = lazy(() => import('./LearningDetail'));
+
 
 const { Meta } = Card;
 
 const LearningPathPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<any[]>([]);
     const [progress, setProgress] = useState<any>(null);
 
     useEffect(() => {
-        fetchLearningPath();
-    }, []);
+        if (!id) {
+            fetchLearningPath();
+        }
+    }, [id]);
 
     const fetchLearningPath = async () => {
         try {
@@ -63,6 +69,21 @@ const LearningPathPage: React.FC = () => {
         };
         return labels[difficulty] || difficulty;
     };
+
+    const handleNavigate = (path: string) => {
+        startTransition(() => {
+            navigate(path);
+        });
+    };
+
+    // If ID is present, render detail view (LearningDetail handle its own loading)
+    if (id) {
+        return (
+            <Suspense fallback={<div className="loading-container"><Spin size="large" tip="Đang tải bài học..." /></div>}>
+                <LearningDetail />
+            </Suspense>
+        );
+    }
 
     if (loading) {
         return (
@@ -165,7 +186,7 @@ const LearningPathPage: React.FC = () => {
                                             key="start"
                                             type={module.is_completed ? 'default' : 'primary'}
                                             block
-                                            onClick={() => navigate(`/game/learning/${module.id}`)}
+                                            onClick={() => handleNavigate(`/game/learning/${module.id}`)}
                                         >
                                             {module.is_completed ? 'Xem Lại' : 'Bắt Đầu'}
                                         </Button>,

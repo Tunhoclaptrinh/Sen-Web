@@ -167,11 +167,19 @@ const routes: RouteObject[] = [
       },
       {
         path: "learning",
-        element: <LearningPathPage />,
+        element: (
+          <LazyLoadWrapper>
+            <LearningPathPage />
+          </LazyLoadWrapper>
+        ),
       },
       {
         path: "learning/:id",
-        element: <LearningPathPage />, // TODO: Detail page
+        element: (
+          <LazyLoadWrapper>
+            <LearningPathPage />
+          </LazyLoadWrapper>
+        ),
       }
     ],
   },
@@ -314,7 +322,11 @@ const routes: RouteObject[] = [
   // ============ 404 ============
   {
     path: "*",
-    element: <NotFound />,
+    element: (
+      <LazyLoadWrapper>
+        <NotFound />
+      </LazyLoadWrapper>
+    ),
   },
 ];
 

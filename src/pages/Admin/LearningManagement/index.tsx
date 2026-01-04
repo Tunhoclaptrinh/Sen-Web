@@ -62,7 +62,7 @@ const LearningManagement: React.FC = () => {
             >
                 <Form
                     layout="vertical"
-                    initialValues={model.currentRecord || { difficulty: 'easy', estimated_duration: 30 }}
+                    initialValues={model.currentRecord || { difficulty: 'easy', estimated_duration: 30, content_type: 'article' }}
                     onFinish={model.handleSubmit}
                 >
                     <Form.Item
@@ -73,7 +73,7 @@ const LearningManagement: React.FC = () => {
                         <Input prefix={<ReadOutlined />} placeholder="Ví dụ: Lịch sử nhà Đinh" />
                     </Form.Item>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
                         <Form.Item
                             name="difficulty"
                             label="Độ khó"
@@ -86,17 +86,79 @@ const LearningManagement: React.FC = () => {
                         </Form.Item>
                         <Form.Item
                             name="estimated_duration"
-                            label="Thời gian ước tính (phút)"
+                            label="Thời gian (phút)"
                         >
                             <InputNumber style={{ width: '100%' }} min={1} />
+                        </Form.Item>
+                        <Form.Item
+                            name="content_type"
+                            label="Loại nội dung"
+                        >
+                            <Select>
+                                <Select.Option value="article">Article (Bài đọc)</Select.Option>
+                                <Select.Option value="video">Video</Select.Option>
+                                <Select.Option value="interactive">Interactive (Tương tác)</Select.Option>
+                                <Select.Option value="quiz">Quiz</Select.Option>
+                            </Select>
                         </Form.Item>
                     </div>
 
                     <Form.Item
-                        name="content"
-                        label="Nội dung bài học"
+                        noStyle
+                        shouldUpdate={(prev, current) => prev.content_type !== current.content_type}
                     >
-                        <Input.TextArea rows={8} placeholder="Nội dung kiến thức của bài học" />
+                        {({ getFieldValue }) => {
+                            const type = getFieldValue('content_type');
+                            return type === 'video' ? (
+                                <Form.Item
+                                    name="content_url"
+                                    label="Video URL (Embed Link)"
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input placeholder="https://www.youtube.com/embed/..." />
+                                </Form.Item>
+                            ) : type === 'article' ? (
+                                <Form.Item
+                                    name="content_url"
+                                    label="Nội dung bài học (HTML)"
+                                >
+                                    <Input.TextArea rows={8} placeholder="<p>Nội dung...</p>" />
+                                </Form.Item>
+                            ) : type === 'interactive' ? (
+                                <Form.Item
+                                    name="content_url"
+                                    label="Đường dẫn Game/App"
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input placeholder="/game/..." />
+                                </Form.Item>
+                            ) : null;
+                        }}
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Cấu trúc Quiz (JSON)"
+                        name={['quiz']}
+                        tooltip="Nhập cấu trúc JSON cho Quiz nếu có"
+                        normalize={(value) => {
+                            // Attempt to parse to check validity or just leave as is if handling string
+                            return value;
+                        }}
+                    >
+                        <Input.TextArea
+                            rows={8}
+                            placeholder='{"id": 1, "passing_score": 50, "questions": [...]}'
+                            onChange={(e) => {
+                                // Optional: validate JSON on change
+                            }}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="description"
+                        label="Mô tả ngắn"
+                    >
+                        <Input.TextArea rows={3} />
                     </Form.Item>
 
                     <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>

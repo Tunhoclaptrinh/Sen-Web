@@ -141,13 +141,13 @@ export const customerMenu: IMenuItem[] = [
     },
     {
         key: 'learning',
-        path: '/learning',
+        path: '/game/learning',
         name: 'Học tập',
         icon: <BookOutlined />,
     },
     {
         key: 'quests',
-        path: '/quests',
+        path: '/game/quests',
         name: 'Nhiệm vụ',
         icon: <FlagOutlined />,
     },
