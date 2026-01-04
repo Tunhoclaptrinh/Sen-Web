@@ -72,14 +72,42 @@ class LearningService extends BaseService {
         return response;
     }
 
-    // Get module detail
-    async getModuleDetail(moduleId: number): Promise<LearningModule> {
-        const response = await this.getById(moduleId);
-        return response.data as LearningModule;
+    // --- Methods for Redux Slice ---
+
+    // Get all paths
+    async getPaths(params?: { difficulty?: string; category?: string }): Promise<LearningPath[]> {
+        const response = await this.get<LearningPath[]>('/paths', params);
+        return response || [];
+    }
+
+    // Get path detail
+    async getPathDetail(pathId: number): Promise<LearningPath> {
+        const response = await this.getById(pathId);
+        return response.data as any; // Cast to LearningPath
+    }
+
+    // Enroll in path
+    async enrollPath(pathId: number): Promise<{ success: boolean; message: string }> {
+        const response = await this.post(`/${pathId}/enroll`);
+        return response as any;
+    }
+
+    // Get enrolled paths
+    async getEnrolledPaths(): Promise<LearningPath[]> {
+        const response = await this.get<LearningPath[]>('/enrolled');
+        return response || [];
+    }
+
+    // Get module detail (Overloaded or Flexible)
+    async getModuleDetail(pathIdOrModuleId: number, moduleId?: number): Promise<LearningModule> {
+        // If 2 args provided (pathId, moduleId), use moduleId. If 1 arg, use it as moduleId
+        const targetModuleId = moduleId || pathIdOrModuleId;
+        const response = await this.getById(targetModuleId);
+        return response.data as any;
     }
 
     // Complete module
-    async completeModule(moduleId: number, score: number): Promise<{
+    async completeModule(_pathId: number, moduleId: number, data: { time_spent: number; score?: number }): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -89,18 +117,22 @@ class LearningService extends BaseService {
             passed: boolean;
         }
     }> {
-        type CompleteResponse = {
-            success: boolean;
-            message: string;
-            data: {
-                module_title: string;
-                score: number;
-                points_earned: number;
-                passed: boolean;
-            }
-        };
-        const response = await this.post<CompleteResponse>(`/${moduleId}/complete`, { score });
-        return response;
+        // Match the signature in slice: completeModule(params.pathId, params.moduleId, params.data)
+        // Ignoring pathId for now if backend doesn't need it, or pass it if payload requires
+        const response = await this.post(`/${moduleId}/complete`, data);
+        return response as any;
+    }
+
+    // Get progress
+    async getProgress(pathId: number): Promise<number> {
+        const response = await this.get<{ percentage: number }>(`/${pathId}/progress`);
+        return response?.percentage || 0;
+    }
+
+    // Submit Quiz
+    async submitQuiz(_pathId: number, moduleId: number, answers: Record<number, number>): Promise<{ score: number; passed: boolean }> {
+        const response = await this.post(`/${moduleId}/quiz/submit`, { answers });
+        return response as any;
     }
 }
 
