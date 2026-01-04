@@ -1,0 +1,210 @@
+.favorites-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    .page-header {
+        margin-bottom: 32px;
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-description {
+            color: #8c8c8c;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+    }
+
+    .favorites-stats {
+        margin-bottom: 32px;
+
+        .stat-card {
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            color: white;
+
+            &:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                transform: translateY(-4px);
+            }
+
+            &.gradient-1 {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            &.gradient-2 {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            &.gradient-3 {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            &.gradient-4 {
+                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            }
+
+            .ant-statistic-title {
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 14px;
+            }
+
+            .ant-statistic-content {
+                font-size: 32px;
+                font-weight: 700;
+                color: white;
+            }
+        }
+    }
+
+    .favorites-content {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+        .ant-tabs {
+            .ant-tabs-tab {
+                font-weight: 500;
+                font-size: 16px;
+
+                &.ant-tabs-tab-active {
+                    .ant-tabs-tab-btn {
+                        color: #f5576c;
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            .ant-tabs-ink-bar {
+                background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            }
+        }
+
+        .ant-empty {
+            padding: 48px 24px;
+
+            h3 {
+                font-size: 18px;
+                font-weight: 600;
+                margin-top: 16px;
+            }
+
+            p {
+                color: #8c8c8c;
+                margin-bottom: 24px;
+            }
+        }
+
+        .favorites-grid {
+            margin-top: 24px;
+
+            .favorite-card {
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+                &:hover {
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                    transform: translateY(-4px);
+
+                    .favorite-overlay {
+                        opacity: 1;
+                    }
+                }
+
+                .favorite-cover {
+                    height: 200px;
+                    position: relative;
+                    overflow: hidden;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        transition: transform 0.3s ease;
+                    }
+
+                    &:hover img {
+                        transform: scale(1.1);
+                    }
+
+                    .favorite-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+                }
+
+                .favorite-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .favorite-description {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 8px;
+
+                    .rating {
+                        font-weight: 600;
+                        color: #faad14;
+                    }
+                }
+
+                .ant-card-actions {
+                    background: #fafafa;
+                    border-top: 1px solid #f0f0f0;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .favorites-page {
+        padding: 16px;
+
+        .page-header {
+            .page-title {
+                font-size: 24px;
+            }
+        }
+
+        .favorites-stats {
+            .ant-col {
+                margin-bottom: 8px;
+            }
+
+            .stat-card {
+                .ant-statistic-content {
+                    font-size: 24px;
+                }
+            }
+        }
+    }
+}

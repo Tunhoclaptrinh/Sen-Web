@@ -1,0 +1,198 @@
+.collections-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-description {
+      color: #8c8c8c;
+      margin-top: 8px;
+      font-size: 16px;
+    }
+  }
+
+  .empty-state-card {
+    margin-top: 48px;
+    text-align: center;
+    padding: 48px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+
+    p {
+      color: #8c8c8c;
+      margin-bottom: 24px;
+    }
+  }
+
+  .collections-stats {
+    margin-bottom: 32px;
+
+    .stat-card {
+      text-align: center;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .ant-statistic-title {
+        font-size: 14px;
+        color: #8c8c8c;
+      }
+
+      .ant-statistic-content {
+        font-size: 28px;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .collections-grid {
+    .collection-card {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+      }
+
+      .collection-cover {
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .collection-overlay {
+          text-align: center;
+          color: white;
+
+          .collection-icon {
+            font-size: 64px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+          }
+
+          .collection-count {
+            font-size: 18px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+          }
+        }
+      }
+
+      .ant-card-body {
+        padding: 20px;
+      }
+
+      .collection-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        font-size: 18px;
+        font-weight: 600;
+
+        span {
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .collection-description {
+        margin-top: 8px;
+
+        p {
+          color: #595959;
+          margin-bottom: 12px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .collection-meta {
+          display: flex;
+          gap: 16px;
+          font-size: 13px;
+          color: #8c8c8c;
+
+          span {
+            strong {
+              color: #262626;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+
+      .ant-card-actions {
+        background: #fafafa;
+        border-top: 1px solid #f0f0f0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .collections-page {
+    padding: 16px;
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .collections-stats {
+      .ant-col {
+        margin-bottom: 8px;
+      }
+    }
+  }
+}

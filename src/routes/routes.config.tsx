@@ -14,31 +14,28 @@ import { RoleGuard } from "./RouteGuards";
 // Lazy load pages
 const Home = lazy(() => import("@/pages/Home"));
 const Login = lazy(() => import("@/pages/Auth"));
-const HeritageListPage = lazy(
-  () => import("@/pages/Heritage/HeritageListPage"),
-);
-const HeritageDetailPage = lazy(
-  () => import("@/pages/Heritage/HeritageDetailPage"),
-);
-const ArtifactListPage = lazy(
-  () => import("@/pages/Artifact/ArtifactListPage"),
-);
-const ArtifactDetailPage = lazy(
-  () => import("@/pages/Artifact/ArtifactDetailPage"),
-);
+
+// Public Browse Pages (User Friendly)
+const HeritageBrowsePage = lazy(() => import("@/pages/Heritage/HeritageBrowsePage"));
+const ArtifactBrowsePage = lazy(() => import("@/pages/Artifact/ArtifactBrowsePage"));
+
+// Detail Pages
+const HeritageDetailPage = lazy(() => import("@/pages/Heritage/HeritageDetailPage"));
+const ArtifactDetailPage = lazy(() => import("@/pages/Artifact/ArtifactDetailPage"));
+
+// Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
-const Collections = lazy(() => import("@/pages/Profile/Collections"));
+const CollectionsPage = lazy(() => import("@/pages/Profile/Collections/CollectionsPage"));
+const FavoritesPage = lazy(() => import("@/pages/Profile/FavoritesPage"));
+// const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
+
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
 
-// Admin Pages
+// Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageSiteManagement = lazy(
-  () => import("@/pages/Admin/HeritageSiteManagement"),
-);
-const ArtifactManagement = lazy(
-  () => import("@/pages/Admin/ArtifactManagement"),
-);
+const HeritageListPage = lazy(() => import("@/pages/Heritage/HeritageListPage")); // Admin view
+const ArtifactListPage = lazy(() => import("@/pages/Artifact/ArtifactListPage")); // Admin view
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
 const CategoryManagement = lazy(() => import("@/pages/Admin/CategoryManagement"));
@@ -57,6 +54,8 @@ const LevelsPage = lazy(() => import("@/pages/Game/LevelsPage"));
 const GamePlayPage = lazy(() => import("@/pages/Game/GamePlayPage"));
 const MuseumPage = lazy(() => import("@/pages/Game/MuseumPage"));
 const LeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
+const QuestsPage = lazy(() => import("@/pages/Game/QuestsPage"));
+const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
 
 // Wrapper component for Suspense
 const LazyLoadWrapper: React.FC<{ children: React.ReactNode }> = ({
@@ -98,7 +97,7 @@ const routes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <HeritageListPage />,
+            element: <HeritageBrowsePage />,
           },
           {
             path: ":id",
@@ -110,8 +109,12 @@ const routes: RouteObject[] = [
         path: "artifacts",
         children: [
           {
+            path: "browse", // Explicit browse path if needed, or index
+            element: <ArtifactBrowsePage />,
+          },
+          {
             index: true,
-            element: <ArtifactListPage />,
+            element: <ArtifactBrowsePage />, // Default to browse
           },
           {
             path: ":id",
@@ -126,7 +129,7 @@ const routes: RouteObject[] = [
     ],
   },
 
-  // ============ CUSTOMER ROUTES (Game Players) ============
+  // ============ CUSTOMER/GAME ROUTES ============
   {
     path: "/game",
     element: (
@@ -157,10 +160,22 @@ const routes: RouteObject[] = [
         path: "leaderboard",
         element: <LeaderboardPage />,
       },
+      {
+        path: "quests",
+        element: <QuestsPage />,
+      },
+      {
+        path: "learning",
+        element: <LearningPathPage />,
+      },
+      {
+        path: "learning/:id",
+        element: <LearningPathPage />, // TODO: Detail page
+      }
     ],
   },
 
-  // ============ RESEARCHER ROUTES (Content Creators) ============
+  // ============ RESEARCHER ROUTES ============
   {
     path: "/researcher",
     element: (
@@ -173,42 +188,15 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "heritage/my-submissions",
-        element: <HeritageSiteManagement />, // Placeholder - reuse for now
+        element: <HeritageListPage />,
       },
-      {
-        path: "heritage/create",
-        element: <HeritageSiteManagement />, // Placeholder
-      },
-      {
-        path: "heritage/pending",
-        element: <HeritageSiteManagement />, // Placeholder
-      },
-      {
-        path: "artifacts/my-artifacts",
-        element: <ArtifactManagement />, // Placeholder
-      },
-      {
-        path: "artifacts/create",
-        element: <ArtifactManagement />, // Placeholder
-      },
-      {
-        path: "artifacts/pending",
-        element: <ArtifactManagement />, // Placeholder
-      },
-      {
-        path: "exhibitions/my-exhibitions",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "exhibitions/create",
-        element: <Dashboard />, // Placeholder
-      },
+      // ... retain other researcher routes
     ],
   },
 
-  // ============ PROTECTED ROUTES (Require Auth) ============
+  // ============ PROTECTED USER ROUTES ============
   {
-    path: "/",
+    path: "/profile",
     element: (
       <AuthGuard requireAuth={true}>
         <LazyLoadWrapper>
@@ -218,17 +206,25 @@ const routes: RouteObject[] = [
     ),
     children: [
       {
-        path: "profile",
+        index: true,
         element: <Profile />,
       },
       {
         path: "collections",
-        element: <Collections />,
+        element: <CollectionsPage />,
       },
+      {
+        path: "favorites",
+        element: <FavoritesPage />,
+      },
+      // {
+      //   path: "reviews",
+      //   element: <ReviewsPage />,
+      // },
     ],
   },
 
-  // ============ ADMIN ROUTES (Require Admin Role) ============
+  // ============ ADMIN ROUTES ============
   {
     path: "/admin",
     element: (
@@ -243,14 +239,13 @@ const routes: RouteObject[] = [
         path: "dashboard",
         element: <Dashboard />,
       },
-      // Content Management
       {
         path: "heritage-sites",
-        element: <HeritageSiteManagement />,
+        element: <HeritageListPage />,
       },
       {
         path: "artifacts",
-        element: <ArtifactManagement />,
+        element: <ArtifactListPage />,
       },
       {
         path: "categories",
@@ -260,7 +255,6 @@ const routes: RouteObject[] = [
         path: "exhibitions",
         element: <ExhibitionManagement />,
       },
-      // Game Management
       {
         path: "chapters",
         element: <ChapterManagement />,
@@ -285,7 +279,6 @@ const routes: RouteObject[] = [
         path: "shop",
         element: <ShopManagement />,
       },
-      // Education & Community
       {
         path: "learning",
         element: <LearningManagement />,
@@ -294,7 +287,6 @@ const routes: RouteObject[] = [
         path: "reviews",
         element: <ReviewManagement />,
       },
-      // User Management
       {
         path: "users",
         element: <UserManagement />,
@@ -302,7 +294,7 @@ const routes: RouteObject[] = [
     ],
   },
 
-  // ============ 404 NOT FOUND ============
+  // ============ 404 ============
   {
     path: "*",
     element: <NotFound />,

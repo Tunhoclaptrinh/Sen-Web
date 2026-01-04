@@ -1,0 +1,157 @@
+.quests-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    .page-header {
+        margin-bottom: 32px;
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-description {
+            color: #8c8c8c;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+    }
+
+    .quests-stats {
+        margin-bottom: 32px;
+
+        .stat-card {
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+
+            &:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                transform: translateY(-4px);
+            }
+
+            &.gradient-1 {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            &.gradient-2 {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            &.gradient-3 {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            &.gradient-4 {
+                background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            }
+
+            .ant-statistic-title {
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            .ant-statistic-content {
+                color: white;
+                font-size: 32px;
+                font-weight: 700;
+            }
+        }
+    }
+
+    .quests-content {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+        .quests-grid {
+            margin-top: 24px;
+
+            .quest-card {
+                border-radius: 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                height: 100%;
+
+                &:hover {
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                    transform: translateY(-4px);
+                }
+
+                .quest-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 16px;
+
+                    .quest-icon {
+                        font-size: 32px;
+                        color: #1890ff;
+                    }
+                }
+
+                .quest-description {
+                    color: #595959;
+                    margin-bottom: 16px;
+                    min-height: 44px;
+                }
+
+                .quest-progress {
+                    margin: 16px 0;
+                    padding: 12px;
+                    background: #fafafa;
+                    border-radius: 8px;
+                }
+
+                .quest-rewards {
+                    margin-top: 16px;
+                    padding-top: 16px;
+                    border-top: 1px solid #f0f0f0;
+
+                    .rewards-list {
+                        margin-top: 8px;
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                    }
+                }
+
+                .ant-card-actions {
+                    background: #fafafa;
+                }
+            }
+        }
+    }
+
+    .quest-detail {
+        .ant-progress {
+            margin: 12px 0;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .quests-page {
+        padding: 16px;
+
+        .page-header {
+            .page-title {
+                font-size: 24px;
+            }
+        }
+
+        .quests-stats {
+            .ant-col {
+                margin-bottom: 8px;
+            }
+        }
+    }
+}

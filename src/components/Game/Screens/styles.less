@@ -1,0 +1,180 @@
+.dialogue-screen,
+.quiz-screen,
+.hidden-object-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    overflow: hidden;
+    border-radius: 16px;
+
+    // Background
+    .dialogue-background,
+    .game-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+        transition: all 0.5s ease;
+    }
+
+    // Dialogue Content
+    .dialogue-content {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 800px;
+        z-index: 10;
+
+        .dialogue-box {
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+            .dialogue-header {
+                margin-bottom: 16px;
+
+                .character-avatar {
+                    border: 3px solid #667eea;
+                }
+
+                .character-name {
+                    font-size: 20px;
+                    color: #667eea;
+                }
+            }
+
+            .dialogue-text {
+                font-size: 18px;
+                line-height: 1.6;
+                color: #262626;
+                min-height: 80px;
+            }
+
+            .dialogue-actions {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 16px;
+            }
+        }
+    }
+
+    // Quiz Content
+    .screen-content-wrapper {
+        position: relative;
+        z-index: 10;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.4); // Dark overlay
+
+        .quiz-card {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+
+            .quiz-header {
+                text-align: center;
+                margin-bottom: 24px;
+
+                .question-text {
+                    color: #262626;
+                    font-size: 22px;
+                }
+            }
+
+            .quiz-option-btn {
+                height: auto;
+                padding: 16px;
+                font-size: 16px;
+                white-space: normal;
+                text-align: left;
+                border-radius: 12px;
+                border: 2px solid #d9d9d9;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                justify-content: flex-start;
+
+                &:hover {
+                    border-color: #667eea;
+                    color: #667eea;
+                }
+
+                &.selected {
+                    border-color: #667eea;
+                    background: rgba(102, 126, 234, 0.1);
+                    color: #667eea;
+                    font-weight: 600;
+                }
+
+                &.correct {
+                    border-color: #52c41a;
+                    background: #f6ffed;
+                    color: #52c41a;
+                }
+
+                &.wrong {
+                    border-color: #ff4d4f;
+                    background: #fff2f0;
+                    color: #ff4d4f;
+                }
+            }
+        }
+    }
+
+    // Hidden Object Styles
+    .hidden-object-container {
+        position: relative;
+        width: 100%;
+        height: 600px; // Fixed height map/scene
+
+        .hidden-item {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            opacity: 0; // Hidden logic, or maybe partially visible? Usually games keep it part of image, we simulate with button
+            // For this implement, we might use transparent clickable areas
+            cursor: crosshair;
+            border-radius: 50%;
+            transform: translate(-50%, -50%); // Center on x,y
+
+            &.found {
+                border: 3px solid #52c41a;
+                background: rgba(82, 196, 26, 0.3);
+                opacity: 1;
+                box-shadow: 0 0 15px #52c41a;
+                animation: pulse 1s infinite;
+            }
+
+            &:hover {
+                border: 1px dashed rgba(255, 255, 255, 0.5); // Hint on hover if easier mode
+            }
+        }
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}

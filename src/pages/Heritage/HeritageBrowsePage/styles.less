@@ -1,0 +1,168 @@
+.heritage-browse-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    .page-header {
+        margin-bottom: 24px;
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-description {
+            color: #8c8c8c;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+    }
+
+    .filter-card {
+        margin-bottom: 24px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .heritage-grid {
+        .heritage-card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+
+            &:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                transform: translateY(-4px);
+
+                .heritage-overlay {
+                    opacity: 1;
+                }
+
+                img {
+                    transform: scale(1.1);
+                }
+            }
+
+            .heritage-cover {
+                height: 240px;
+                position: relative;
+                overflow: hidden;
+                background: #f0f0f0;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.5s ease;
+                }
+
+                .heritage-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+
+                .unesco-tag {
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    font-weight: 600;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                }
+            }
+
+            .ant-card-body {
+                padding: 20px;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 8px;
+
+                .heritage-title {
+                    font-size: 18px;
+                    font-weight: 700;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    flex: 1;
+                }
+            }
+
+            .heritage-meta {
+                .description {
+                    color: #595959;
+                    margin-bottom: 16px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    min-height: 44px;
+                }
+
+                .footer {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding-top: 12px;
+                    border-top: 1px solid #f0f0f0;
+                    color: #8c8c8c;
+                    font-size: 13px;
+
+                    .location {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                    }
+
+                    .rating {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        font-weight: 600;
+                        color: #262626;
+                    }
+                }
+            }
+        }
+    }
+
+    .pagination-container {
+        margin-top: 32px;
+        text-align: center;
+
+        .ant-pagination {
+            display: inline-flex;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .heritage-browse-page {
+        padding: 16px;
+
+        .page-header {
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    }
+}

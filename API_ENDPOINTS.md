@@ -2,10 +2,10 @@
 
 > Backend API cho game giáo dục văn hóa Việt Nam - SEN (Sen)
 
-**Version:** 2.1.0  
+**Version:** 2.2.0  
 **Base URL:** `http://localhost:3000/api`  
 **Environment:** Development  
-**Last Updated:** December 28, 2025
+**Last Updated:** January 3, 2026
 
 ---
 
@@ -292,6 +292,63 @@ Authorization: Bearer <token>
 
 ---
 
+#### Create User (Admin Only)
+
+```http
+POST /api/users
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+```
+
+**Body:**
+
+```json
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "name": "New User",
+  "role": "customer",
+  "phone": "0123456789"
+}
+```
+
+**Response:** `201 Created`
+
+---
+
+#### Update User (Admin Only)
+
+```http
+PUT /api/users/:id
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+```
+
+**Body:**
+
+```json
+{
+  "name": "Updated Name",
+  "role": "researcher",
+  "isActive": true
+}
+```
+
+**Response:** `200 OK`
+
+---
+
+#### Delete User (Admin Only)
+
+```http
+DELETE /api/users/:id
+Authorization: Bearer <admin-token>
+```
+
+**Response:** `200 OK`
+
+---
+
 #### Update User Profile
 
 ```http
@@ -539,6 +596,17 @@ GET /api/heritage-sites/nearby
 
 ---
 
+#### Get Heritage Site Stats
+Returns a summary of statistics for heritage sites.
+
+```http
+GET /api/heritage-sites/stats/summary
+```
+
+**Response:** `200 OK`
+
+---
+
 #### Get Heritage Site by ID
 
 ```http
@@ -669,6 +737,17 @@ GET /api/artifacts/search
 - `q` - Search query
 - `category_id` - Filter by category
 - `heritage_site_id` - Filter by heritage site
+
+**Response:** `200 OK`
+
+---
+
+#### Get Artifact Stats
+Returns a summary of statistics for artifacts (on display, condition, etc).
+
+```http
+GET /api/artifacts/stats/summary
+```
 
 **Response:** `200 OK`
 
@@ -820,6 +899,46 @@ Authorization: Bearer <admin-token>
 ```
 
 **Response:** `200 OK`
+
+---
+
+#### Get Category Items
+
+```http
+GET /api/categories/:id/items
+```
+
+**Description:** Get all artifacts and heritage sites that belong to a specific category.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "category": {
+      "id": 1,
+      "name": "Kiến trúc cổ",
+      "icon": "🏯",
+      "description": "Công trình kiến trúc lịch sử"
+    },
+    "artifacts": [
+      {
+        "id": 1,
+        "name": "Artifact example",
+        "category_id": 1
+      }
+    ],
+    "heritage_sites": [
+      {
+        "id": 1,
+        "name": "Heritage Site example",
+        "category_id": 1
+      }
+    ]
+  }
+}
+```
 
 ---
 
@@ -2514,6 +2633,17 @@ Authorization: Bearer <token>
 
 ### 6.3 Reviews
 
+#### Get Review Stats
+Returns a summary of statistics for reviews (total, average rating, distribution).
+
+```http
+GET /api/reviews/stats/summary
+```
+
+**Response:** `200 OK`
+
+---
+
 #### Get All Reviews
 
 ```http
@@ -3003,6 +3133,57 @@ Authorization: Bearer <admin-token>
 
 ---
 
+#### Get Level Templates
+Retrieves available templates for creating new levels.
+
+```http
+GET /api/admin/levels/templates
+Authorization: Bearer <admin-token>
+```
+
+**Response:** `200 OK`
+
+---
+
+#### Get Level Stats
+Retrieves statistics about levels (total count, difficulty distribution, etc).
+
+```http
+GET /api/admin/levels/stats
+Authorization: Bearer <admin-token>
+```
+
+**Response:** `200 OK`
+
+---
+
+#### Validate Level Configuration
+Validates the level structure (screens, logic) before creation.
+
+```http
+POST /api/admin/levels/validate
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+```
+
+**Body:** Level configuration object (same as Create Level)
+
+**Response:** `200 OK` (Valid) or `400 Bad Request` (Invalid)
+
+---
+
+#### Preview Level
+Returns level data enriched with metadata for preview purposes.
+
+```http
+GET /api/admin/levels/:id/preview
+Authorization: Bearer <admin-token>
+```
+
+**Response:** `200 OK`
+
+---
+
 #### Create Level (Admin)
 
 ```http
@@ -3205,6 +3386,9 @@ Authorization: Bearer <admin-token>
 ```
 
 **Response:** `200 OK`
+
+**Error Response:**
+- `400 Bad Request` if chapter contains levels (must delete levels first).
 
 ---
 
@@ -3576,7 +3760,7 @@ const chapterData = await chapters.json();
 For issues or questions:
 
 - **GitHub:** [Sen-Web Repository](https://github.com/Tunhoclaptrinh/Sen-Web)
-- **Email:** support@sencom
+- **Email:** support@sen-game.com
 
 ---
 
