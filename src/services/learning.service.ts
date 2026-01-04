@@ -61,7 +61,7 @@ export interface LearningProgress {
     completed_at?: string;
 }
 
-class LearningService extends BaseService<LearningModule> {
+class LearningService extends BaseService {
     constructor() {
         super('/learning');
     }
