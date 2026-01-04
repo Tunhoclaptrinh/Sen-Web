@@ -25,6 +25,7 @@ import { fetchArtifacts } from '@store/slices/artifactSlice';
 import { RootState, AppDispatch } from '@/store';
 import Background from '@/components/Background';
 import logo from '@/assets/images/logo2.png';
+import { getImageUrl } from '@/utils/image.helper';
 import './styles.less';
 
 const { Title, Paragraph, Text } = Typography;
@@ -44,34 +45,34 @@ const Home: React.FC = () => {
     {
       icon: <CompassOutlined />,
       title: 'Khám Phá Di Sản',
-      description: 'Tìm hiểu hàng ngàn di tích lịch sử và văn hóa Việt Nam',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      description: 'Hành trình tìm về cội nguồn qua các di tích lịch sử',
+      gradient: 'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)',
       link: '/heritage-sites',
-      image: 'https://images.unsplash.com/photo-1591018653668-48e8ccc6f163?w=400',
+      image: 'https://images.unsplash.com/photo-1555169062-013468b47731?w=800',
     },
     {
       icon: <BookOutlined />,
       title: 'Hiện Vật Lịch Sử',
-      description: 'Khám phá bộ sưu tập hiện vật quý giá qua các thời kỳ',
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      description: 'Chiêm ngưỡng tinh hoa văn hóa qua từng hiện vật',
+      gradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
       link: '/artifacts/browse',
-      image: 'https://images.unsplash.com/photo-1513735492246-483525079686?w=400',
+      image: 'https://images.unsplash.com/photo-1599368812674-325b591d3725?w=800',
     },
     {
       icon: <TrophyOutlined />,
-      title: 'Chơi Game Học Tập',
-      description: 'Trải nghiệm game hóa với màn chơi và nhiệm vụ thú vị',
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      title: 'Trò Chơi Dân Gian',
+      description: 'Học mà chơi với các thử thách văn hóa thú vị',
+      gradient: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)',
       link: '/game/chapters',
-      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400',
+      image: 'https://images.unsplash.com/photo-1533722744883-7c5b4b1a4574?w=800',
     },
     {
       icon: <HeartOutlined />,
-      title: 'Bộ Sưu Tập Của Tôi',
-      description: 'Tạo và quản lý bộ sưu tập các di sản yêu thích',
-      gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      title: 'Bộ Sưu Tập',
+      description: 'Lưu giữ những giá trị văn hóa bạn yêu thích',
+      gradient: 'linear-gradient(135deg, #fda085 0%, #f6d365 100%)',
       link: '/profile/collections',
-      image: 'https://images.unsplash.com/photo-1604537529428-15bcbeecfe4d?w=400',
+      image: 'https://images.unsplash.com/photo-1518998053901-5348d3969105?w=800',
     },
   ];
 
@@ -225,12 +226,15 @@ const Home: React.FC = () => {
                 cover={
                   <div className="content-cover">
                     <img
-                      src={
-                        (site.images && site.images.length > 0
-                          ? site.images[0]
-                          : site.main_image) || 'https://via.placeholder.com/400x300'
-                      }
+                      src={getImageUrl(
+                        site.image || (site.images && site.images.length > 0 ? site.images[0] : site.main_image),
+                        'https://via.placeholder.com/400x300?text=No+Image'
+                      )}
                       alt={site.name}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/400x300?text=Error';
+                      }}
                     />
                     <div className="content-overlay">
                       <Button
@@ -292,12 +296,15 @@ const Home: React.FC = () => {
                 cover={
                   <div className="content-cover">
                     <img
-                      src={
-                        (artifact.images && artifact.images.length > 0
-                          ? artifact.images[0]
-                          : null) || 'https://via.placeholder.com/400x300'
-                      }
+                      src={getImageUrl(
+                        artifact.images && artifact.images.length > 0 ? artifact.images[0] : null,
+                        'https://via.placeholder.com/400x300?text=No+Artifact'
+                      )}
                       alt={artifact.name}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/400x300?text=Error';
+                      }}
                     />
                     <div className="content-overlay">
                       <Button

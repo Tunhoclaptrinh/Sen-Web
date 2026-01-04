@@ -53,21 +53,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 999;
   height: 80px;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-
-  &.header-scrolled {
-    height: 64px;
-    background: rgba(255, 255, 255, 0.95) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  }
 }
 
 .logo-container {
@@ -193,6 +185,35 @@
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 15px rgba(244, 63, 94, 0.3);
+  }
+}
+
+
+.header-icon-btn {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: transparent !important;
+
+    .anticon {
+      color: @primary-color !important;
+    }
+  }
+}
+
+.notification-trigger {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: transparent !important;
+
+    .anticon {
+      color: @primary-color !important;
+    }
   }
 }
 

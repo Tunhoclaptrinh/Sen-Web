@@ -27,6 +27,7 @@ const ArtifactDetailPage = lazy(() => import("@/pages/Artifact/ArtifactDetailPag
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
 const CollectionsPage = lazy(() => import("@/pages/Profile/Collections/CollectionsPage"));
 const FavoritesPage = lazy(() => import("@/pages/Profile/FavoritesPage"));
+const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 // const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -217,10 +218,26 @@ const routes: RouteObject[] = [
         path: "favorites",
         element: <FavoritesPage />,
       },
-      // {
-      //   path: "reviews",
       //   element: <ReviewsPage />,
       // },
+    ],
+  },
+
+  // ============ NOTIFICATIONS ============
+  {
+    path: "/notifications",
+    element: (
+      <AuthGuard requireAuth={true}>
+        <LazyLoadWrapper>
+          <MainLayout />
+        </LazyLoadWrapper>
+      </AuthGuard>
+    ),
+    children: [
+      {
+        index: true,
+        element: <NotificationsPage />,
+      },
     ],
   },
 

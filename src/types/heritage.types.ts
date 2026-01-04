@@ -39,6 +39,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   entrance_fee?: number;
   contact_info?: string;
   website?: string;
+  image?: string;
   images?: string[];
   main_image?: string;
   rating?: number;

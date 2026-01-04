@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Badge, Drawer, Statistic, Card } from 'antd';
+import { Button, Drawer, Statistic, Card } from 'antd';
 import {
     TrophyOutlined,
     GiftOutlined,
     MessageOutlined,
-    BellOutlined,
     UserOutlined,
     BookOutlined,
 } from '@ant-design/icons';
@@ -15,6 +14,7 @@ import { RootState } from '@/store';
 import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
+import NotificationPopover from '@/components/common/NotificationPopover';
 
 const CustomerLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -83,12 +83,7 @@ const CustomerLayout: React.FC = () => {
                         icon={<MessageOutlined />}
                         onClick={() => setAiChatVisible(true)}
                     />,
-                    <Badge count={5} size="small" key="notifications">
-                        <Button
-                            type="text"
-                            icon={<BellOutlined />}
-                        />
-                    </Badge>
+                    <NotificationPopover key="notifications" />
                 ]}
             >
                 <Outlet />

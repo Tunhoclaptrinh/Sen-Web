@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles.less';
-import { Layout, Menu, Dropdown, Button, Badge, Input, Drawer, Avatar, MenuProps, Space, Typography } from 'antd';
 import {
-  BellOutlined,
   UserOutlined,
   LogoutOutlined,
   SearchOutlined,
@@ -12,12 +10,15 @@ import {
   MailOutlined,
   FacebookOutlined,
 } from '@ant-design/icons';
+import { Layout, Typography, Menu, Input, Dropdown, Avatar, Button, Drawer, Space } from 'antd';
+import type { MenuProps } from 'antd';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
 import logo from '@/assets/images/logo.png';
 import CustomFooter from '@/components/Footer';
+import NotificationPopover from '@/components/common/NotificationPopover';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -31,16 +32,6 @@ const MainLayout: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [scrolled, setScrolled] = useState(false);
-
-  // Handle scroll for premium transition
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Handle window resize
   useEffect(() => {
@@ -120,7 +111,7 @@ const MainLayout: React.FC = () => {
     <Layout style={{ minHeight: '100vh' }}>
       {/* TOP UTILITY BAR (Premium extra) */}
       {!isMobile && (
-        <div className={`top-utility-bar ${scrolled ? 'hidden' : ''}`}>
+        <div className="top-utility-bar">
           <div className="utility-content">
             <Space split={<span className="divider">|</span>}>
               <Text className="util-item"><MailOutlined /> support@sen.com</Text>
@@ -146,7 +137,7 @@ const MainLayout: React.FC = () => {
       )}
 
       <Header
-        className={`main-header ${scrolled ? 'header-scrolled' : ''}`}
+        className="main-header"
         style={{
           padding: isMobile ? '0 16px' : '0 40px',
         }}
@@ -191,16 +182,9 @@ const MainLayout: React.FC = () => {
         {/* Right Side Actions */}
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           {/* Notifications */}
+          {/* Notifications */}
           {!isMobile && (
-            <Badge count={0} dot offset={[-2, 4]}>
-              <BellOutlined
-                style={{
-                  fontSize: 22,
-                  cursor: 'pointer',
-                  color: '#666',
-                }}
-              />
-            </Badge>
+            <NotificationPopover />
           )}
 
           {/* User Menu / Auth Buttons */}

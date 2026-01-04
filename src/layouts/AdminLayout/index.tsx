@@ -1,18 +1,16 @@
 import {
   UserOutlined,
   DashboardOutlined,
-  BellOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/slices/authSlice";
 import { AppDispatch, RootState } from "../../store";
 import UnifiedLayout from "../UnifiedLayout";
-import { Badge } from "antd";
 import "./styles.less";
 
 import { adminMenu } from "@/config/menu.config";
+import NotificationPopover from "@/components/common/NotificationPopover";
 
 const AdminLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -52,15 +50,7 @@ const AdminLayout = () => {
       userMenuExtraItems={userMenuExtraItems}
       navTheme="light"
       actionsRender={() => [
-        <Badge count={0} key="notifications" style={{ marginTop: 5 }}>
-          <BellOutlined
-            style={{
-              fontSize: 18,
-              cursor: "pointer",
-              padding: '0 8px',
-            }}
-          />
-        </Badge>
+        <NotificationPopover key="notifications" />
       ]}
     >
       <Outlet />

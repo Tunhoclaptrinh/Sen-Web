@@ -13,9 +13,39 @@ interface Props {
 
 const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [displayedText, setDisplayedText] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+
     const currentDialogue = data.content?.[currentIndex];
 
+    React.useEffect(() => {
+        if (currentDialogue) {
+            setDisplayedText('');
+            setIsTyping(true);
+            let index = 0;
+            const text = currentDialogue.text;
+
+            const timer = setInterval(() => {
+                setDisplayedText(text.slice(0, index + 1));
+                index++;
+                if (index >= text.length) {
+                    clearInterval(timer);
+                    setIsTyping(false);
+                }
+            }, 30); // Speed: 30ms per char
+
+            return () => clearInterval(timer);
+        }
+    }, [currentIndex, currentDialogue]);
+
     const handleNextDialogue = () => {
+        if (isTyping) {
+            // Finish typing immediately
+            setDisplayedText(currentDialogue?.text || '');
+            setIsTyping(false);
+            return;
+        }
+
         if (currentIndex < (data.content?.length || 0) - 1) {
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -33,26 +63,28 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
             />
 
             <div className="dialogue-content">
-                <Card className="dialogue-box">
+                <Card className="dialogue-box" onClick={handleNextDialogue} hoverable={false}>
                     <div className="dialogue-header">
                         <Space align="center" size="middle">
                             <Avatar
                                 size={64}
-                                src={currentDialogue.avatar}
+                                src={currentDialogue.avatar || (currentDialogue.speaker === 'USER' ? undefined : 'https://api.dicebear.com/7.x/bottts/svg?seed=SenBot')}
                                 icon={<UserOutlined />}
                                 className="character-avatar"
+                                style={{ backgroundColor: currentDialogue.speaker === 'USER' ? '#1890ff' : '#ffc107' }}
                             />
                             <div className="character-info">
-                                <Text strong className="character-name">
-                                    {currentDialogue.speaker === 'USER' ? 'Bạn' : currentDialogue.speaker}
+                                <Text strong className="character-name" style={{ fontSize: 18, color: '#1f1f1f' }}>
+                                    {currentDialogue.speaker === 'USER' ? 'Bạn' : (currentDialogue.speaker === 'AI' ? 'Trợ lý Sen' : currentDialogue.speaker)}
                                 </Text>
                             </div>
                         </Space>
                     </div>
 
                     <div className="dialogue-body">
-                        <Paragraph className="dialogue-text">
-                            {currentDialogue.text}
+                        <Paragraph className="dialogue-text" style={{ fontSize: 16, minHeight: 60 }}>
+                            {displayedText}
+                            {isTyping && <span className="typing-cursor">|</span>}
                         </Paragraph>
                     </div>
 
@@ -61,9 +93,12 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
                             type="primary"
                             size="large"
                             icon={<StepForwardOutlined />}
-                            onClick={handleNextDialogue}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleNextDialogue();
+                            }}
                         >
-                            {currentIndex < (data.content?.length || 0) - 1 ? 'Tiếp tục' : 'Hoàn thành'}
+                            {isTyping ? 'Bỏ qua hiệu ứng' : (currentIndex < (data.content?.length || 0) - 1 ? 'Tiếp tục' : 'Hoàn thành')}
                         </Button>
                     </div>
                 </Card>
