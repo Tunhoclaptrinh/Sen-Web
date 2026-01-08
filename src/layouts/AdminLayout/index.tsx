@@ -1,6 +1,7 @@
 import {
   UserOutlined,
   DashboardOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";

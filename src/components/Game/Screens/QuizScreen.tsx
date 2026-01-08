@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, Typography, message, Space, Alert } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { QuizScreen as QuizScreenType } from '@/types/game.types';
@@ -13,18 +13,20 @@ interface Props {
 }
 
 const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer }) => {
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [result, setResult] = useState<{ is_correct: boolean; explanation?: string } | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
-    // Since actual API might need an ID but types only have text/is_correct in QuizScreen options according to type def
-    // We'll simulate using index or assume options have IDs in real response. 
-    // Based on game.types.ts: options: Array<{ text: string, is_correct: boolean }>
-    // We'll use index as ID for now or check if data coming in has ids.
+    // Reset state when question changes
+    useEffect(() => {
+        setSelectedOption(null);
+        setResult(null);
+        setSubmitting(false);
+    }, [data]);
 
     const handleOptionClick = (index: number) => {
         if (result) return; // Prevent changing after submission
-        setSelectedOption(index.toString());
+        setSelectedOption(index);
     };
 
     const handleSubmit = async () => {
@@ -35,7 +37,9 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer }) => {
 
         setSubmitting(true);
         try {
-            const response = await onSubmitAnswer(selectedOption);
+            // Gửi text của đáp án thay vì index
+            const answerText = data.options[selectedOption].text;
+            const response = await onSubmitAnswer(answerText);
             setResult(response);
             if (response.is_correct) {
                 message.success('Chính xác! + điểm');
@@ -59,13 +63,13 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer }) => {
             <div className="screen-content-wrapper">
                 <Card className="quiz-card">
                     <div className="quiz-header">
-                        <Title level={3} className="question-text">{data.question}</Title>
+                        <Title level={3} className="question-text">{data.question || data.description}</Title>
                     </div>
 
                     <div className="quiz-options">
                         <Space direction="vertical" style={{ width: '100%' }} size="middle">
                             {data.options?.map((option, index) => {
-                                const isSelected = selectedOption === index.toString();
+                                const isSelected = selectedOption === index;
                                 let btnClass = 'quiz-option-btn';
                                 let icon = null;
 
@@ -78,9 +82,6 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer }) => {
                                             btnClass += ' wrong';
                                             icon = <CloseCircleOutlined />;
                                         }
-                                    } else if (option.is_correct && !result.is_correct) {
-                                        // Show correct answer if user was wrong (client side check if available, or just rely on backend)
-                                        // If backend doesnt return correct answer index, we might rely on UI showing explanation
                                     }
                                 } else if (isSelected) {
                                     btnClass += ' selected';

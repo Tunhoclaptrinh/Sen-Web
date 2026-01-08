@@ -26,10 +26,18 @@ export default defineConfig({
     },
     server: {
         port: 3001,
-        open: true,
+        open: false, // Disabled for Docker compatibility
+        host: true,  // Listen on all interfaces for Docker
+        watch: {
+            usePolling: true,  // Required for Docker on Windows/WSL
+            interval: 1000,    // Check for changes every second
+        },
+        hmr: {
+            overlay: true,
+        },
         proxy: {
             '/api': {
-                target: 'http://localhost:3000',
+                target: 'http://host.docker.internal:3000',
                 changeOrigin: true,
                 secure: false,
             },

@@ -1,0 +1,28 @@
+# ============================================
+# SEN Frontend - Docker Compose (Development)
+# Hot-reload with Vite
+# ============================================
+
+services:
+  sen-frontend:
+    build:
+      context: ../..
+      dockerfile: Docker/Dev/Dockerfile
+    container_name: sen-frontend-dev
+    restart: unless-stopped
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000/api
+      - VITE_API_TIMEOUT=30000
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../..:/app
+      - /app/node_modules
+    networks:
+      - sen-network-dev
+    command: npm run dev -- --host 0.0.0.0
+
+networks:
+  sen-network-dev:
+    name: sen-network-dev
+    external: true

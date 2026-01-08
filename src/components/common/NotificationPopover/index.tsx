@@ -8,9 +8,7 @@ import {
     TrophyOutlined,
     InfoCircleOutlined,
     MessageOutlined,
-    RocketOutlined,
-    ClockCircleOutlined,
-    ReadOutlined
+    RocketOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { notificationService } from '@/services/notification.service';

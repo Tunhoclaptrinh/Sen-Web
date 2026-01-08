@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
-import { Card, Typography, message, Modal, Tooltip, Progress } from 'antd';
-import { SearchOutlined, CheckCircleFilled } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Card, Typography, message, Modal, Button, List, Tag, Progress } from 'antd';
+import { CheckCircleFilled, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import type { HiddenObjectScreen as HiddenObjectScreenType } from '@/types/game.types';
 import './styles.less';
 
-const { Text } = Typography;
+const { Title, Text } = Typography;
+
+interface HiddenItem {
+    id: string;
+    name: string;
+    fact_popup: string;
+}
+
+// Transform backend data to frontend format
+const transformItems = (rawItems: any[]): HiddenItem[] => {
+    if (!rawItems || !Array.isArray(rawItems)) return [];
+    
+    return rawItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        fact_popup: item.fact_popup || item.content || item.description || 'Thông tin thú vị!',
+    }));
+};
 
 interface HiddenObjectScreenProps {
     data: HiddenObjectScreenType;
@@ -16,106 +33,116 @@ interface HiddenObjectScreenProps {
 }
 
 const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, onCollect }) => {
+    const items: HiddenItem[] = transformItems(data.items);
+    const requiredItems = data.required_items || items.length;
+    
     const [foundItems, setFoundItems] = useState<string[]>([]);
-    const [progress, setProgress] = useState({ collected: 0, required: data.required_items });
-    const handleItemClick = async (item: { id: string; name: string; fact_popup: string }) => {
-        if (foundItems.includes(item.id)) return;
+    const [progress, setProgress] = useState({ collected: 0, required: requiredItems });
+    const [loading, setLoading] = useState<string | null>(null);
 
+    // Reset state when data changes
+    useEffect(() => {
+        setFoundItems([]);
+        setProgress({ collected: 0, required: data.required_items || data.items?.length || 0 });
+    }, [data]);
+
+    const handleItemClick = async (item: HiddenItem) => {
+        if (foundItems.includes(item.id) || loading) return;
+
+        setLoading(item.id);
         try {
             const result = await onCollect(item.id);
 
             setFoundItems(prev => [...prev, item.id]);
             setProgress(result.progress);
 
-            // Show Fact Popup
-            Modal.info({
-                title: `Bạn đã tìm thấy: ${result.item.name}`,
-                content: (
-                    <div>
-                        <div style={{ textAlign: 'center', marginBottom: 12 }}>
-                            <CheckCircleFilled style={{ fontSize: 40, color: '#52c41a' }} />
-                        </div>
-                        <p>{result.item.fact_popup}</p>
-                    </div>
-                ),
-                okText: 'Tuyệt vời',
+            Modal.success({
+                title: `🎉 Tìm thấy: ${result.item.name}`,
+                content: <p>{result.item.fact_popup}</p>,
+                okText: 'OK',
                 onOk: () => {
                     if (result.progress.all_collected) {
                         Modal.success({
-                            title: 'Hoàn thành màn chơi!',
-                            content: 'Bạn đã tìm thấy tất cả các vật phẩm yêu cầu.',
+                            title: '🏆 Hoàn thành!',
+                            content: 'Bạn đã tìm thấy tất cả!',
                             onOk: onNext,
                             okText: 'Tiếp tục'
                         });
                     }
                 }
             });
-
         } catch (error) {
             message.error('Có lỗi xảy ra');
+        } finally {
+            setLoading(null);
         }
     };
 
-    return (
-        <div className="hidden-object-screen">
-            <div className="hidden-object-header">
-                <Card size="small" className="status-bar">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text strong>Tìm vật phẩm: {progress.collected}/{progress.required}</Text>
-                        <Progress
-                            percent={Math.round((progress.collected / progress.required) * 100)}
-                            size="small"
-                            style={{ width: 150 }}
-                        />
-                    </div>
+    // No items - show error
+    if (!items || items.length === 0) {
+        return (
+            <Card style={{ margin: 20, textAlign: 'center' }}>
+                <Title level={4}>Không có dữ liệu</Title>
+                <Button type="primary" onClick={onNext}>Bỏ qua</Button>
+            </Card>
+        );
+    }
 
-                    <div className="items-list" style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-                        {data.items.slice(0, data.required_items).map((item, idx) => (
-                            <Tooltip key={idx} title={foundItems.includes(item.id) ? item.name : '???'}>
-                                <div
-                                    style={{
-                                        width: 32,
-                                        height: 32,
-                                        borderRadius: '50%',
-                                        background: foundItems.includes(item.id) ? '#52c41a' : '#d9d9d9',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: 'white'
+    return (
+        <div style={{ padding: 20 }}>
+            {/* Progress */}
+            <Card size="small" style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text strong>
+                        <EyeOutlined /> Tìm vật phẩm: {progress.collected}/{progress.required}
+                    </Text>
+                    <Progress 
+                        percent={Math.round((progress.collected / progress.required) * 100)} 
+                        size="small" 
+                        style={{ width: 120 }} 
+                    />
+                </div>
+            </Card>
+
+            {/* Simple list of items to find */}
+            <Card title="Click vào vật phẩm để tìm:" style={{ marginBottom: 16 }}>
+                <List
+                    grid={{ gutter: 16, column: 2 }}
+                    dataSource={items}
+                    renderItem={(item) => {
+                        const isFound = foundItems.includes(item.id);
+                        const isLoading = loading === item.id;
+                        
+                        return (
+                            <List.Item>
+                                <Button
+                                    block
+                                    size="large"
+                                    type={isFound ? 'primary' : 'default'}
+                                    icon={isFound ? <CheckCircleFilled /> : <SearchOutlined />}
+                                    disabled={isFound}
+                                    loading={isLoading}
+                                    onClick={() => handleItemClick(item)}
+                                    style={{ 
+                                        height: 60,
+                                        background: isFound ? '#52c41a' : undefined,
+                                        borderColor: isFound ? '#52c41a' : undefined,
                                     }}
                                 >
-                                    {foundItems.includes(item.id) ? <CheckCircleFilled /> : <SearchOutlined />}
-                                </div>
-                            </Tooltip>
-                        ))}
-                    </div>
-                </Card>
-            </div>
+                                    {isFound ? item.name : '???'}
+                                </Button>
+                            </List.Item>
+                        );
+                    }}
+                />
+            </Card>
 
-            <div
-                className="hidden-object-container"
-                style={{
-                    backgroundImage: `url(${data.background_image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    height: '600px', // Fixed height for coordinate wrapper
-                    position: 'relative'
-                }}
-            >
-                {data.items.map((item) => (
-                    <div
-                        key={item.id}
-                        className={`hidden-item ${foundItems.includes(item.id) ? 'found' : ''}`}
-                        style={{
-                            left: `${item.x}%`, // Logic coordinates 0-100%
-                            top: `${item.y}%`,
-                        }}
-                        onClick={() => handleItemClick({ id: item.id, name: item.name, fact_popup: item.fact_popup })}
-                    >
-                        {/* Invisible click area unless debugging */}
-                    </div>
-                ))}
-            </div>
+            {/* Description */}
+            {data.description && (
+                <Card size="small">
+                    <Text type="secondary">{data.description}</Text>
+                </Card>
+            )}
         </div>
     );
 };

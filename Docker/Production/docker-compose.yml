@@ -1,0 +1,29 @@
+# ============================================
+# SEN Frontend - Docker Compose (Production)
+# ============================================
+
+services:
+  sen-frontend:
+    build:
+      context: ../..
+      dockerfile: Docker/Production/Dockerfile
+      args:
+        - VITE_API_BASE_URL=/api
+        - VITE_API_TIMEOUT=30000
+    container_name: sen-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - sen-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  sen-network:
+    name: sen-network
+    external: true
