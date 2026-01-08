@@ -17,31 +17,129 @@ SEN là một ứng dụng web kết hợp giữa hệ thống quản lý di s�
 
 ## 🚀 Bắt Đầu
 
-### Yêu Cầu Hệ Thống
+### 📦 Yêu Cầu Hệ Thống
+
+**Cách 1: Docker (Khuyến Nghị)**
+
+- Docker Desktop (Windows/Mac) hoặc Docker Engine (Linux)
+- Docker Compose v2+
+- Git Bash hoặc WSL (cho Windows)
+
+**Cách 2: Local Development**
 
 - Node.js >= 18.0.0
 - npm >= 9.0.0
 - Backend API đang chạy tại `http://localhost:3000`
 
-### Cài Đặt
+---
+
+### 🐳 Cách 1: Chạy Với Docker (Khuyến Nghị)
+
+Docker giúp bạn chạy frontend **không cần cài đặt Node.js**.
+
+#### Quick Start (Lần Đầu Chạy)
+
+**Cách 1: Sử dụng Menu Tương Tác (Dễ nhất)**
 
 ```bash
 # Clone repository
 git clone https://github.com/Tunhoclaptrinh/Sen-Web.git
-cd Sen-Web
+cd Sen-Web/Frontend
+
+# Chạy menu tương tác
+bash run.sh
+```
+
+Menu sẽ hiện ra:
+
+```
+==========================================
+     SEN Frontend - Docker Runner
+==========================================
+
+  Select mode:
+
+  [1] Build Images   (First time / Rebuild only)
+  [2] Start Dev      (docker-compose up)
+  [3] Start Prod     (docker-compose up -d)
+  [4] View Logs
+  [5] Stop All       (docker-compose down)
+  [6] Exit
+
+Select [1-6]:
+```
+
+**Lần đầu chạy:**
+
+1. Gõ `bash run.sh`
+2. Chọn **[1]** Build Images
+3. Chọn **[2]** Start Dev
+4. Browser tự động mở: `http://localhost:3001`
+
+#### Tất Cả Lệnh Docker
+
+```bash
+# === MENU TƯƠNG TÁC ===
+bash run.sh                # Hiện menu, chọn số [1-6]
+
+# === CHẠY TRỰC TIẾP ===
+bash run.sh build          # [1] Build Docker images
+bash run.sh dev            # [2] Start dev server (Vite hot-reload)
+bash run.sh prod           # [3] Start production (Nginx)
+bash run.sh logs           # [4] View logs
+bash run.sh down           # [5] Stop containers
+
+# === TRỢ GIÚP ===
+bash run.sh help           # Xem hướng dẫn
+```
+
+#### Docker Compose Modes
+
+- **dev**: Development server với Vite hot-reload (port 3001)
+- **prod**: Production build với Nginx (port 80)
+
+#### Cấu Trúc Docker
+
+```
+Frontend/
+├── Docker/
+│   ├── Dev/
+│   │   ├── docker-compose.yml    # Dev environment
+│   │   └── Dockerfile            # Dev image with Vite
+│   └── Production/
+│       ├── docker-compose.yml    # Prod environment
+│       ├── Dockerfile            # Multi-stage build
+│       └── nginx.conf            # Nginx config
+└── run.sh                         # Docker runner script
+```
+
+---
+
+### 💻 Cách 2: Chạy Local (Không Dùng Docker)
+
+#### Cài Đặt
+
+```bash
+# Clone repository
+git clone https://github.com/Tunhoclaptrinh/Sen-Web.git
+cd Sen-Web/Frontend
 
 # Cài đặt dependencies
 npm install
 
-# Tạo file .env
-cp .env.example .env
+# Tạo file .env (optional)
+nano .env
+```
 
-# Chỉnh sửa .env với thông tin của bạn
+**Cấu hình .env (optional):**
+
+```env
+# API Configuration
 VITE_API_BASE_URL=http://localhost:3000/api
 VITE_API_TIMEOUT=30000
 ```
 
-### Chạy Development Server
+#### Chạy Development Server
 
 ```bash
 npm run dev
@@ -49,17 +147,35 @@ npm run dev
 
 Ứng dụng sẽ chạy tại: `http://localhost:3001`
 
-### Build Production
+#### Build Production
 
 ```bash
 npm run build
 ```
 
-### Preview Production Build
+Build output trong folder `dist/`
+
+#### Preview Production Build
 
 ```bash
 npm run preview
 ```
+
+---
+
+### 🛠️ Scripts NPM
+
+| Command              | Mô tả                                     |
+| -------------------- | ----------------------------------------- |
+| `npm run dev`        | Chạy Vite development server (hot-reload) |
+| `npm run build`      | Build production (TypeScript + Vite)      |
+| `npm run preview`    | Preview production build locally          |
+| `npm run lint`       | Lint code với ESLint                      |
+| `npm run format`     | Format code với Prettier                  |
+| `npm run type-check` | TypeScript type checking                  |
+| `npm test`           | Chạy tests với Vitest                     |
+
+---
 
 ## 📁 Cấu Trúc Thư Mục
 
