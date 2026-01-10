@@ -2,12 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Card, Button, Typography, Space } from "antd";
-import { RightOutlined } from "@ant-design/icons";
+import {
+  EnvironmentOutlined,
+  RightOutlined,
+  CalendarOutlined,
+  UserOutlined,
+  CommentOutlined,
+} from "@ant-design/icons";
 import { fetchHeritageSites } from "@store/slices/heritageSlice";
 import { fetchArtifacts } from "@store/slices/artifactSlice";
 import { RootState, AppDispatch } from "@/store";
 import { getImageUrl } from "@/utils/image.helper";
-import HeritageCard from "@/components/common/cards/HeritageCard";
+import FeatureCard from "@/components/common/cards/FeatureCard";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 
@@ -78,10 +84,10 @@ const Home: React.FC = () => {
           className="bg-drum"
         />
         <div className="mission-bg-container">
-          <img 
-            src="/images/hoatiettrongdong.png" 
-            alt="" 
-            className={`mission-drum-img ${isShaking ? "shaking" : ""}`} 
+          <img
+            src="/images/hoatiettrongdong.png"
+            alt=""
+            className={`mission-drum-img ${isShaking ? "shaking" : ""}`}
           />
         </div>
         <div className="mission-container">
@@ -94,7 +100,9 @@ const Home: React.FC = () => {
           </div>
           <div className="mission-text-col">
             <span className="sub-header">Sứ mệnh của Sen</span>
-            <Title level={2}>Khám phá lịch sử - văn hóa</Title>
+            <Title level={2} className="header-title">
+              Khám phá lịch sử - văn hóa
+            </Title>
             <Paragraph className="mission-desc">
               Qua lịch sử Việt Nam đầy hào hùng được người kể những câu chuyện
               chưa quen tương tác, sinh động và dễ tiếp cận. Bằng việc kết hợp
@@ -138,11 +146,13 @@ const Home: React.FC = () => {
 
       {/* 3. Featured Heritage Section */}
       <section className="featured-heritage-section">
-        <Title level={2}>Di sản nổi bật</Title>
+        <Title level={2} className="header-title">
+          Di sản & địa điểm nổi bật
+        </Title>
         <Row gutter={[24, 24]} justify="center">
           {sites?.slice(0, 4).map((site) => (
             <Col xs={24} sm={12} md={6} key={site.id}>
-              <HeritageCard site={site} variant="portrait" />
+              <FeatureCard data={site} variant="portrait" cardType="heritage" />
             </Col>
           ))}
         </Row>
@@ -151,7 +161,9 @@ const Home: React.FC = () => {
       {/* 4. Featured Artifacts Section */}
       <section className="featured-artifacts-section">
         <div className="section-content">
-          <Title level={2}>Hiện vật tiêu biểu</Title>
+          <Title level={2} className="header-title">
+            Hiện vật tiêu biểu
+          </Title>
           <Paragraph className="section-subtitle">
             Tìm và khám phá những bộ sưu tập hiện vật lịch sử, mỹ thuật giá trị
             của các bảo tàng trên thế giới
@@ -159,31 +171,70 @@ const Home: React.FC = () => {
 
           <Row gutter={[24, 24]}>
             {artifacts?.slice(0, 4).map((artifact) => (
-              <Col xs={24} sm={12} lg={6} key={artifact.id}>
-                <Card
-                  hoverable
-                  className="artifact-card"
-                  onClick={() => navigate(`/artifacts/${artifact.id}`)}
-                >
-                  <div className="artifact-img-wrapper">
-                    <img
-                      alt={artifact.name}
-                      src={getImageUrl(
-                        artifact.images && artifact.images.length > 0
-                          ? artifact.images[0]
-                          : null,
-                        "https://via.placeholder.com/300x300",
-                      )}
-                    />
-                  </div>
-
-                  <Text strong style={{ fontSize: 16 }}>
-                    {artifact.name}
-                  </Text>
-                </Card>
+              <Col xs={24} sm={12} md={6} lg={6} xl={6} key={artifact.id}>
+                <FeatureCard
+                  data={artifact}
+                  variant="portrait"
+                  cardType="artifact"
+                />
               </Col>
             ))}
           </Row>
+        </div>
+         <div className="artifacts-bg-container" >
+          <img
+            src="/images/hoatiettrongdong.png"
+            alt=""
+            className={`artifacts-drum-img ${isShaking ? "shaking" : ""}`}
+          />
+        </div>
+      </section>
+
+      {/* 5. Game Integration Section */}
+      <section className="game-section">
+        <Title level={2} className="header-title">
+          Trải nghiệm Gamification
+        </Title>
+        <div className="game-container">
+          <div className="game-image-wrapper">
+            <img src="/images/Game.png" alt="Game World" />
+          </div>
+
+          <div className="game-info-card">
+            <div className="card-meta">
+              <span className="meta-item">
+                <CalendarOutlined /> Aug 1, 2025
+              </span>
+              <span className="meta-item">
+                <UserOutlined /> Admin
+              </span>
+              <span className="meta-item">
+                <CommentOutlined /> No comments
+              </span>
+            </div>
+            <h3 className="card-title">
+              Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi
+            </h3>
+            <Paragraph className="card-desc">
+              Chào mừng người chơi bước vào một hành trình khám phá mới. Trong
+              trò chơi này, bạn sẽ hóa thân thành người lữ hành thời gian, lần
+              theo những dấu tích lịch sử và văn hóa để giải mã các câu chuyện,
+              nhân vật và sự kiện đã từng in dấu trong quá khứ.
+            </Paragraph>
+            <Paragraph className="card-desc">
+              Bên cạnh đó việc tích hợp các bài tập và câu hỏi trắc nghiệm được
+              thiết kế phù hợp với nội dung, giúp người chơi củng cố kiến thức,
+              tăng khả năng ghi nhớ và hiểu sâu hơn những giá trị lịch sử - văn
+              hóa đã trải nghiệm.
+            </Paragraph>
+
+            <button
+              className="experience-btn"
+              onClick={() => navigate("/game")}
+            >
+              Trải nghiệm
+            </button>
+          </div>
         </div>
       </section>
 
@@ -192,7 +243,7 @@ const Home: React.FC = () => {
         <img
           src="/images/hoatiettrongdong.png"
           alt="drum"
-          className="bg-drum-bottom"
+          className={`bg-drum-bottom ${isShaking ? "shaking" : ""}`}
         />
         <div className="bg-circle-images">
           {/* Using dummy images or reusing specific heritage/artifact images for the circle collage */}
@@ -223,7 +274,9 @@ const Home: React.FC = () => {
         </div>
 
         <div className="cta-content">
-          <Title level={2}>Sẵn sàng khám phá?</Title>
+          <Title level={2} className="header-title">
+            Sẵn sàng khám phá?
+          </Title>
           <Paragraph>
             Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay
           </Paragraph>

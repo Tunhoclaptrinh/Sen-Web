@@ -26,15 +26,17 @@
     width: 100%;
   }
 
-  // ==========================================
-  // Hero Section
-  // ==========================================
+  .header-title {
+    color: var(--primary-color) !important;
+  }
 
+  
+  // Hero Section
   .hero-section {
     position: relative;
     width: 100%;
-    min-height: 800px;
-    // min-height: 100vh;
+    // min-height: 800px;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -45,6 +47,18 @@
     background: url("/images/Zero_home.png") no-repeat bottom center;
     background-size: cover;
     margin-bottom: 0;
+
+    // Fading border at the bottom
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -36px;
+      left: 0;
+      width: 100%;
+      height: 36px; 
+      background: linear-gradient(to bottom, #e232325e, rgba(255, 250, 226, 0));
+      z-index: 10;
+    }
 
     .hero-content {
       position: relative;
@@ -101,9 +115,7 @@
     }
   }
 
-  // ==========================================
   // Mission Section (Sứ mệnh của Sen)
-  // ==========================================
   .mission-section {
     padding: 160px 0;
     background: transparent;
@@ -122,7 +134,7 @@
     }
 
     .mission-container {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
       gap: 60px;
@@ -237,21 +249,33 @@
   }
 
   @keyframes wobble {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(3deg); } // Slightly more visible rotation
-    50% { transform: rotate(0deg); }
-    75% { transform: rotate(-3deg); }
-    100% { transform: rotate(0deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(3deg);
+    } // Slightly more visible rotation
+    50% {
+      transform: rotate(0deg);
+    }
+    75% {
+      transform: rotate(-3deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
   }
 
-  // ==========================================
   // Featured Heritage Overlay Section
-  // ==========================================
   .featured-heritage-section {
     padding: 80px 0;
     text-align: center;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 5;
+
+    
 
     h2 {
       font-size: 36px;
@@ -264,7 +288,7 @@
         display: block;
         width: 100%;
         height: 3px;
-        background: #2d5a27;
+        background: var(--primary-color);
         margin: 16px auto 0;
       }
     }
@@ -303,20 +327,43 @@
     }
   }
 
-  // ==========================================
   // Featured Artifacts Section (Drum Background)
-  // ==========================================
   .featured-artifacts-section {
     padding: 100px 0;
     position: relative;
-    background: url("/images/hoatiettrongdong.png") no-repeat center center;
-    background-size: contain;
-    opacity: 0.9;
+    z-index: 1;
+
+
+    .artifacts-bg-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: visible; // Allow overlapping upwards
+    }
+
+    .artifacts-drum-img {
+      position: absolute;
+      top: -250px; // Strong overlap to previous section
+      right: -100px; // Position on right
+      left: auto;
+      width: 800px; 
+      opacity: 0.5; // Increased visibility
+      transition: transform 1s ease-out;
+      transform-origin: center center;
+
+      &.shaking {
+        animation: wobble 4s ease-in-out infinite;
+      }
+    }
 
     .section-content {
       position: relative;
       z-index: 2;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
       text-align: center;
 
@@ -329,6 +376,7 @@
         max-width: 600px;
         margin: 0 auto 60px;
         color: #666;
+        font-size: 16px;
       }
 
       .artifact-card {
@@ -352,8 +400,104 @@
     }
   }
 
-  // ==========================================
   // CTA / Footer Pre-section
+  // ==========================================
+  // Game Integration Section
+  // ==========================================
+  .game-section {
+    padding: 60px 20px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+
+    .header-title {
+        margin-bottom: 40px;
+    }
+
+    .game-container {
+        position: relative;
+        text-align: left;
+    }
+
+    .game-image-wrapper {
+        position: relative;
+        width: 100%;
+        border-radius: 20px 20px 0 0; // Top corners only
+        overflow: hidden;
+        // box-shadow: 0 10px 30px rgba(0,0,0,0.1); // Shadow handled by valid container if needed, or remove
+        
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+    }
+
+    .game-info-card {
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 0 0 20px 20px; // Bottom corners only
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        margin: 0; // Full width aligned with image
+        position: relative;
+        z-index: 2;
+        border: 1px solid #f0f0f0;
+        border-top: none; // Seamless connection
+
+        .card-meta {
+            display: flex;
+            gap: 20px;
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+
+            .meta-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+        }
+
+        .card-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        .card-desc {
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .experience-btn {
+            background: #6ABE45; // Green
+            color: #fff;
+            border: none;
+            padding: 10px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+
+            &:hover {
+                background: #5aa63a;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(90, 166, 58, 0.4);
+            }
+        }
+    }
+  }
+
+  // ==========================================
+  // CTA Section
   // ==========================================
   .bottom-cta-section {
     position: relative;
@@ -361,38 +505,60 @@
     text-align: center;
     overflow: hidden;
 
+    // Divider
+    &::before {
+      content: "";
+      display: block;
+      width: 60%;
+      height: 4px;
+      background: var(--primary-color);
+      margin: 0 auto 60px;
+      border-radius: 2px;
+    }
+
     .bg-circle-images {
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      gap: -40px;
       margin-bottom: 40px;
+      position: relative;
+      height: 460px;
 
       .circle-img-wrapper {
-        width: 200px;
-        height: 200px;
         border-radius: 50%;
         overflow: hidden;
         border: 4px solid #fff;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         position: relative;
-
-        &.center {
-          width: 280px;
-          height: 280px;
-          z-index: 2;
-          margin-bottom: 20px;
-        }
-
-        &.side {
-          z-index: 1;
-          filter: brightness(0.9);
-        }
+        transition: transform 0.4s ease;
 
         img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+        }
+
+        &.center {
+          width: 460px;
+          height: 460px;
+          z-index: 10;
+          border: 6px solid #fff;
+          margin-bottom: 0;
+        }
+
+        &.side {
+          width: 260px;
+          height: 260px;
+          z-index: 1;
+          filter: brightness(0.95);
+          margin: 0 -60px;
+          margin-bottom: 0;
+        }
+
+        &:hover {
+          transform: scale(1.05);
+          z-index: 11;
+          filter: brightness(1);
         }
       }
     }
@@ -403,7 +569,8 @@
 
       h2 {
         font-size: 32px;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
+        position: relative;
       }
 
       p {
@@ -423,22 +590,32 @@
         font-weight: 700;
         cursor: pointer;
         box-shadow: 0 4px 12px rgba(45, 90, 39, 0.2);
+        transition: all 0.3s ease;
 
         &:hover {
           background: #b0e08a;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(45, 90, 39, 0.3);
         }
       }
     }
 
     // Drum decoration background
+    // Drum decoration background
     .bg-drum-bottom {
       position: absolute;
-      bottom: -200px;
+      bottom: -160px;
       left: 50%;
-      transform: translateX(-50%);
+      margin-left: -500px; // Center (half of 1000px) instead of transform to allow animation
       width: 1000px;
-      opacity: 0.1;
+      opacity: 0.3;
       z-index: 0;
+      transition: transform 1s ease-out;
+      transform-origin: center center;
+
+      &.shaking {
+        animation: wobble 4s ease-in-out infinite;
+      }
     }
   }
 }
