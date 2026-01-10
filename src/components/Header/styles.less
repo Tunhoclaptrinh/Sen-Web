@@ -1,0 +1,282 @@
+@primary-color: var(--primary-color);
+@secondary-color: var(--secondary-color);
+@gold: #d4a574;
+
+// 1. TOP BAR (Red)
+.top-utility-bar {
+  background: var(--primary-color);
+  height: 40px; // Slightly taller for search input
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  position: relative;
+
+  .utility-content {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between; // Space out Left, Center, Right
+    align-items: center;
+    gap: 20px;
+
+    .util-item {
+      color: rgba(255, 255, 255, 0.8) !important;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .divider {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .social-icon {
+      color: rgba(255, 255, 255, 0.8) !important;
+      cursor: pointer;
+      transition: color 0.3s;
+
+      &:hover {
+        color: @gold !important;
+      }
+    }
+  }
+
+  .top-search-wrapper {
+    flex: 0 1 400px; // Allow shrink/grow but max out
+
+    .top-bar-search {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-radius: 20px; // More rounded
+      color: #fff;
+      padding: 0 12px !important;
+      height: 28px; // Slimmer
+
+      input {
+        color: #fff;
+        font-size: 13px;
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+      &:hover,
+      &:focus,
+      &:focus-within {
+        background: rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+  }
+
+  .language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 10px;
+    border-radius: 12px;
+
+    .lang-item {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s;
+
+      .flag-icon {
+        width: 16px;
+        height: 11px;
+        object-fit: cover;
+        border-radius: 2px;
+      }
+
+      &.active {
+        color: #fff;
+        font-weight: 700;
+      }
+
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    .lang-divider {
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 10px;
+    }
+  }
+}
+
+// 2. MAIN HEADER
+.main-header {
+  display: flex;
+  align-items: center;
+  background: #ffffff !important;
+  // border-bottom: none; // Removed as per request
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  height: 66px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding: 0 40px;
+
+  .header-left {
+    flex: 0 0 auto;
+    margin-right: 48px;
+  }
+
+  .header-center {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .header-right {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.3s;
+
+  &:hover {
+    transform: scale(1.05); // Changed from translateY to scale
+  }
+
+  .logo-img {
+    width: 66px; // Larger logo
+    height: 36px;
+    object-fit: contain;
+  }
+}
+
+// MENU STYLES
+.desktopMenu {
+  border: none !important;
+  background: transparent !important;
+  line-height: 64px !important; // Match header height
+  width: 100%;
+
+  .ant-menu-item {
+    font-size: 16px;
+    font-weight: 600; // Medium weight
+    padding: 0 24px !important;
+    transition: all 0.2s !important;
+    top: 0; // Fix alignment
+
+    &::after {
+      content: none !important; // Remove default underline if desired, or keep generic
+    }
+
+    &-selected {
+      color: @secondary-color !important;
+      background: transparent !important;
+    }
+  }
+}
+
+// USER PROFILE TRIGGER (Simple Text)
+.user-profile-trigger-simple,
+.login-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #1a1a1a;
+  transition: color 0.3s;
+  font-size: 16px;
+
+  .user-text {
+    font-weight: 500;
+  }
+
+  &:hover {
+    color: @primary-color;
+  }
+}
+
+// NOTIFICATION
+.notification-trigger {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #1a1a1a;
+  font-size: 20px;
+
+  &:hover {
+    color: @primary-color;
+  }
+}
+
+/* Mobile Drawer Premium Styling */
+.mobile-drawer-premium {
+  :global(.ant-drawer-content-wrapper) {
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  :global(.ant-drawer-header) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    padding: 24px !important;
+
+    :global(.ant-drawer-title) {
+      font-size: 20px !important;
+      font-weight: 700 !important;
+      color: @primary-color !important;
+      letter-spacing: 1px !important;
+    }
+  }
+
+  :global(.ant-drawer-body) {
+    padding: 24px !important;
+  }
+
+  .mobile-nav-menu {
+    border: none !important;
+
+    :global(.ant-menu-item) {
+      height: 50px !important;
+      line-height: 50px !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      margin-bottom: 8px !important;
+      border-radius: 12px !important;
+      color: #555 !important;
+
+      &:hover,
+      &-selected {
+        color: @secondary-color !important;
+        background: rgba(244, 63, 94, 0.05) !important;
+      }
+    }
+  }
+
+  .mobile-auth-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* Responsive fixes */
+@media (max-width: 1024px) {
+  .main-header {
+    height: 70px;
+    padding: 0 16px;
+  }
+
+  .desktopMenu {
+    display: none;
+  }
+}

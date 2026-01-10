@@ -1,7 +1,7 @@
 /* Ant Design Custom Overrides */
 // Ant Design Custom Theme
-@primary-color: #F43F5E; // Lotus Pink
-@link-color: #F43F5E;
+@primary-color: var(--primary-color); // Lotus Pink
+@link-color: var(--primary-color);
 @success-color: #22C55E;
 @warning-color: #F97316;
 
@@ -19,12 +19,12 @@
 }
 
 .ant-menu-item-selected::after {
-    border-right-color: #F43F5E !important;
+    border-right-color: var(--primary-color) !important;
 }
 
 .ant-menu-item:hover,
 .ant-menu-item-selected {
-    color: #F43F5E !important;
+    color: var(--primary-color) !important;
     background-color: transparent !important;
 }
 
@@ -38,8 +38,9 @@
 
     &:hover,
     &:focus {
-        background-color: darken(@primary-color, 10%);
-        border-color: darken(@primary-color, 10%);
+        // background-color: darken(@primary-color, 10%); // Cannot use darken with css var
+        // border-color: darken(@primary-color, 10%);
+        filter: brightness(90%);
     }
 }
 

@@ -7,6 +7,7 @@ import store from "./store";
 import { injectStore } from "./config/axios.config";
 
 // Import CSS
+import "./assets/styles/variables.css";
 import "./styles/global.less";
 import "./styles/antd-custom.less";
 

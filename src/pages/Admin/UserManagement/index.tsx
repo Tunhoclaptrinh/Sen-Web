@@ -1,17 +1,9 @@
-import {
-  Space,
-  Tag,
-  Avatar,
-  Switch,
-  Tooltip,
-  Button,
-  Popconfirm
-} from "antd";
+import { Space, Tag, Avatar, Switch, Tooltip, Button, Popconfirm } from "antd";
 import {
   UserOutlined,
   EditOutlined,
   DeleteOutlined,
-  EyeOutlined
+  EyeOutlined,
 } from "@ant-design/icons";
 import { User } from "@/types";
 import DataTable from "@/components/common/DataTable";
@@ -57,7 +49,7 @@ const UserManagement = () => {
     openEdit,
     openDetail,
     closeForm,
-    closeDetail
+    closeDetail,
   } = useUserModel();
 
   // Filter handlers
@@ -108,7 +100,11 @@ const UserManagement = () => {
         { text: "Researcher", value: "researcher" },
         { text: "Curator", value: "curator" },
       ],
-      filteredValue: filters.role ? (Array.isArray(filters.role) ? filters.role : [filters.role]) : null,
+      filteredValue: filters.role
+        ? Array.isArray(filters.role)
+          ? filters.role
+          : [filters.role]
+        : null,
       render: (role: string) => {
         let color = "geekblue";
         if (role === "admin") color = "red";
@@ -129,7 +125,11 @@ const UserManagement = () => {
         { text: "Hoạt động", value: true },
         { text: "Bị khóa", value: false },
       ],
-      filteredValue: filters.isActive ? (Array.isArray(filters.isActive) ? filters.isActive : [filters.isActive]) : null,
+      filteredValue: filters.isActive
+        ? Array.isArray(filters.isActive)
+          ? filters.isActive
+          : [filters.isActive]
+        : null,
       render: (isActive: boolean, record: User) => (
         <Switch
           checked={isActive}
@@ -174,16 +174,12 @@ const UserManagement = () => {
             okButtonProps={{ danger: true }}
           >
             <Tooltip title="Xóa">
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-              />
+              <Button type="text" danger icon={<DeleteOutlined />} />
             </Tooltip>
           </Popconfirm>
         </Space>
       ),
-    }
+    },
   ];
 
   return (
@@ -227,8 +223,8 @@ const UserManagement = () => {
               { label: "Customer", value: "customer" },
               { label: "Researcher", value: "researcher" },
             ],
-            operators: ['eq', 'in', 'ne'], // Support Equals, In, Not Equals
-            defaultOperator: 'in'
+            operators: ["eq", "in", "ne"], // Support Equals, In, Not Equals
+            defaultOperator: "in",
           },
           {
             key: "isActive",
@@ -237,23 +233,23 @@ const UserManagement = () => {
               { label: "Hoạt động", value: true },
               { label: "Bị khóa", value: false },
             ],
-            operators: ['eq'],
-            defaultOperator: 'eq'
+            operators: ["eq"],
+            defaultOperator: "eq",
           },
           {
             key: "name",
             placeholder: "Tên người dùng",
-            type: 'input',
-            operators: ['like', 'eq', 'ne'],
-            defaultOperator: 'like'
+            type: "input",
+            operators: ["like", "eq", "ne"],
+            defaultOperator: "like",
           },
           {
             key: "email",
             placeholder: "Email",
-            type: 'input',
-            operators: ['like', 'eq'],
-            defaultOperator: 'like'
-          }
+            type: "input",
+            operators: ["like", "eq"],
+            defaultOperator: "like",
+          },
         ]}
         filterValues={filters}
         onFilterChange={onFilterChange}

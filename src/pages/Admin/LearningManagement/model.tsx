@@ -27,7 +27,11 @@ export const useLearningModel = () => {
     };
 
     const openEdit = (record: any) => {
-        setCurrentRecord(record);
+        const formValues = { ...record };
+        if (formValues.quiz && typeof formValues.quiz === 'object') {
+            formValues.quiz = JSON.stringify(formValues.quiz, null, 2);
+        }
+        setCurrentRecord(formValues);
         setFormVisible(true);
     };
 
@@ -37,11 +41,24 @@ export const useLearningModel = () => {
     };
 
     const handleSubmit = async (values: any) => {
+        // Transform quiz string to object if needed
+        const submissionData = { ...values };
+        if (typeof submissionData.quiz === 'string' && submissionData.quiz.trim()) {
+            try {
+                submissionData.quiz = JSON.parse(submissionData.quiz);
+            } catch (e) {
+                message.error('Cấu trúc Quiz JSON không hợp lệ');
+                return false;
+            }
+        } else if (!submissionData.quiz) {
+            submissionData.quiz = undefined;
+        }
+
         let success = false;
         if (currentRecord) {
-            success = await crud.update(currentRecord.id, values);
+            success = await crud.update(currentRecord.id, submissionData);
         } else {
-            success = await crud.create(values);
+            success = await crud.create(submissionData);
         }
 
         if (success) {
