@@ -1,97 +1,97 @@
 @import (reference) "../../../../styles/antd-custom.less";
 
 .feature-card {
-    border-radius: 16px;
-    overflow: hidden;
-    background: #fff;
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); // Soft premium shadow
-    transition: all 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); // Soft premium shadow
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+
+    .card-image-bg {
+      transform: scale(1.08); // Smooth zoom
+    }
+  }
+
+  // VARIANT: Portrait (Home - Transparent with Details)
+  &.portrait {
+    background: transparent;
+    box-shadow: none !important;
+
+    .card-cover {
+      height: 380px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+    }
 
     &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-
-        .card-image-bg {
-            transform: scale(1.08); // Smooth zoom
-        }
+      transform: translateY(-5px);
+      .card-cover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      }
     }
 
-    // VARIANT: Portrait (Home - Transparent with Details)
-    &.portrait {
-        background: transparent;
-        box-shadow: none !important;
-        
-        .card-cover {
-            height: 380px; 
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: all 0.4s ease;
-        }
-        
-        &:hover {
-            transform: translateY(-5px);
-            .card-cover {
-                box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            }
-        }
-
-        .card-content {
-            padding: 16px 4px 0;
-            text-align: center; // Center text
-            background: transparent;
-            align-items: center; // Center flex items
-        }
-        
-        .card-title {
-            font-size: 20px;
-            color: #1a1a1a;
-            width: 100%;
-            text-align: center; // Explicit center
-        }
-        
-        .card-location {
-            justify-content: center; // Center location icon/text
-        }
-        
-        // Custom footer for transparent look
-        .card-footer {
-            border-top: none;
-            padding-top: 8px;
-            margin-top: 8px;
-            justify-content: center; // Center Tag and Rating
-        }
+    .card-content {
+      padding: 16px 4px 0;
+      text-align: center; // Center text
+      background: transparent;
+      align-items: center; // Center flex items
     }
 
-    // VARIANT: Landscape (Default)
-    &.landscape {
-        .card-cover {
-            height: 220px;
-        }
-        .card-content {
-            padding: 16px;
-        }
-        .card-title {
-            font-size: 18px;
-        }
+    .card-title {
+      font-size: 20px;
+      color: #1a1a1a;
+      width: 100%;
+      text-align: center; // Explicit center
     }
+
+    .card-location {
+      justify-content: center; // Center location icon/text
+    }
+
+    // Custom footer for transparent look
+    .card-footer {
+      border-top: none;
+      padding-top: 8px;
+      margin-top: 8px;
+      justify-content: center; // Center Tag and Rating
+    }
+  }
+
+  // VARIANT: Landscape (Default)
+  &.landscape {
+    .card-cover {
+      height: 220px;
+    }
+    .card-content {
+      padding: 16px;
+    }
+    .card-title {
+      font-size: 18px;
+    }
+  }
 }
 
 .card-cover {
-    position: relative;
-    overflow: hidden;
-    // IMAGE BACKGROUND
-    .card-image-bg {
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
+  position: relative;
+  overflow: hidden;
+  // IMAGE BACKGROUND
+  .card-image-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
 }
 
 // Previously .card-image, now unused so we can remove or leave empty if needed for safety, but better to remove.
@@ -99,124 +99,124 @@
 
 // Overlays
 .overlay-badges {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    z-index: 5;
-    
-    .unesco-tag {
-        border: none;
-        background: #a5e3a7; // User requested Green
-        color: rgba(0, 0, 0, 0.45); // "Transparent" text effect
-        font-weight: 700;
-        box-shadow: none; // Removed shadow
-    }
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+
+  .unesco-tag {
+    border: none;
+    background: #a5e3a7; // User requested Green
+    color: rgba(0, 0, 0, 0.45); // "Transparent" text effect
+    font-weight: 700;
+    box-shadow: none; // Removed shadow
+  }
 }
 
 // New Bottom Overlay for Info
 .card-info-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px 16px 16px;
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 16px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5;
+
+  .type-tag {
+    border: 1px solid rgba(255, 255, 255, 0.034); // Subtle liquid edge
+    background: rgba(255, 255, 255, 0.4); // Highly transparent for liquid feel
+    color: var(--primary-color); // Keep Primary Color distinct
+    font-weight: 700;
+    margin: 0;
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px;
+    text-transform: lowercase;
+    backdrop-filter: blur(12px) saturate(180%); // Stronger blur + saturation for "liquid" look
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  // Rating inside overlay needs to be light
+  .card-rating {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    z-index: 5;
-    
-    .type-tag {
-        border: 1px solid rgba(255, 255, 255, 0.034); // Subtle liquid edge
-        background: rgba(255, 255, 255, 0.4); // Highly transparent for liquid feel
-        color: #8b1d1d; // Keep Primary Color distinct
-        font-weight: 700;
-        margin: 0;
-        border-radius: 100px;
-        padding: 4px 12px;
-        font-size: 12px;
-        text-transform: lowercase;
-        backdrop-filter: blur(12px) saturate(180%); // Stronger blur + saturation for "liquid" look
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    gap: 4px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+
+    .rating-value {
+      font-weight: 700;
+      color: #fff;
+      font-size: 14px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
-    
-    // Rating inside overlay needs to be light
-    .card-rating {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.9);
-        
-        .rating-value {
-            font-weight: 700;
-            color: #fff;
-            font-size: 14px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .rating-count {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 12px;
-        }
+    .rating-count {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
     }
+  }
 }
 
 // Content
 .card-content {
-    background: transparent; // Ensure transparent for portrait variant
-    flex: 1;
+  background: transparent; // Ensure transparent for portrait variant
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  .card-title {
+    font-family: "Aleo", serif;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+    line-height: 1.3;
+
+    // Single line truncation
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    width: 100%;
+  }
+
+  .card-location {
     display: flex;
-    flex-direction: column;
-    text-align: left; 
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 0; // Removed bottom margin as footer is gone
+    font-weight: 500;
+  }
 
-    .card-title {
-        font-family: "Aleo", serif; 
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 4px;
-        line-height: 1.3;
-        
-        // Single line truncation
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-        width: 100%;
-    }
+  .card-description {
+    display: none;
+  }
 
-    .card-location {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 0; // Removed bottom margin as footer is gone
-        font-weight: 500;
-    }
-    
-    .card-description {
-        display: none; 
-    }
-
-    // Footer removed, handling legacy if present
-    .card-footer {
-        display: none;
-    }
+  // Footer removed, handling legacy if present
+  .card-footer {
+    display: none;
+  }
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .card-cover {
-        height: 180px;
-    }
+  .card-cover {
+    height: 180px;
+  }
 
-    .card-title {
-        font-size: 16px;
-        min-height: 44px;
-    }
+  .card-title {
+    font-size: 16px;
+    min-height: 44px;
+  }
 
-    .card-description {
-        font-size: 13px;
-        min-height: 40px;
-    }
+  .card-description {
+    font-size: 13px;
+    min-height: 40px;
+  }
 }

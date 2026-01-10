@@ -22,6 +22,10 @@ export interface CommonCardData {
     region?: string;
     dynasty?: string;
     description?: string;
+    author?: string;
+    publishDate?: string;
+    shortDescription?: string;
+    commentCount?: number;
     [key: string]: any;
 }
 

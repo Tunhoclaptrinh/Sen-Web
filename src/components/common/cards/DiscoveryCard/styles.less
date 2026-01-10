@@ -1,0 +1,230 @@
+@import "../../../../styles/variables.less";
+
+.discovery-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08); // Deep, premium shadow
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: 1px solid rgba(0,0,0,0.02);
+
+  &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  }
+
+  // DESKTOP LAYOUT (Horizontal)
+  @media (min-width: 992px) {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 480px;
+
+    .image-wrapper {
+      flex: 1.5; // Takes up 60%
+      position: relative;
+      margin-bottom: 0;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 0; // Reset radius for split layout
+        object-fit: cover;
+        transition: transform 0.8s ease;
+      }
+      
+      // Subtle overlay on image to make text pop if we ever overlay, 
+      // but here it adds depth.
+      &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+      }
+    }
+
+    .info-card {
+      flex: 1; // Takes up 40%
+      padding: 48px 40px;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-left: 1px solid rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; // Push button to bottom
+      background: #fff;
+      
+      .card-content-top {
+          width: 100%;
+      }
+    }
+  }
+
+  // MOBILE LAYOUT (Default/Fallback override)
+  .image-wrapper {
+    position: relative;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 300px; // Shorter on mobile
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .info-card {
+    padding: 24px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+      
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #888;
+        font-size: 14px;
+        font-weight: 500;
+        // background: #f5f5f5; // Removed to match ArticleCard
+        // padding: 4px 10px; // Removed
+        // border-radius: 20px; // Removed
+        
+        .anticon {
+          color: #6ABE45; // Match brand green
+          font-size: 16px;
+        }
+      }
+    }
+
+    .card-title {
+      font-family: "Aleo", serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      line-height: 1.25;
+      
+      @media (max-width: 768px) {
+          font-size: 24px;
+      }
+    }
+
+    .card-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 24px;
+      // Removed flex-grow to prevent whitespace gaps
+      
+      display: -webkit-box;
+      -webkit-line-clamp: 3; // User requested 3 lines
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 78px; // Approx 3 lines to keep alignment consistent if desired, or remove for auto height
+    }
+
+    // Text Link Style to match ArticleCard
+    .action-btn {
+      background: transparent;
+      color: #6ABE45;
+      padding: 6px 0;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: none;
+      text-transform: none; // Reset uppercase
+      letter-spacing: normal;
+      align-self: flex-end;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #6ABE45;
+        transition: width 0.3s ease;
+      }
+
+      &:hover {
+        background: transparent;
+        color: #5aa63a;
+        transform: translateX(4px);
+        box-shadow: none;
+        
+        &::after {
+            width: 100%;
+        }
+      }
+
+      &:active {
+        transform: translateX(2px);
+      }
+    }
+  }
+
+  // DESKTOP LAYOUT (Horizontal) - Moved to bottom for precedence
+  @media (min-width: 992px) {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 480px;
+
+    .image-wrapper {
+      flex: 1.5; // Takes up 60%
+      position: relative;
+      margin-bottom: 0;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 0; // Reset radius for split layout
+        object-fit: cover;
+        transition: transform 0.8s ease;
+      }
+      
+      &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+      }
+    }
+
+    .info-card {
+      flex: 1; // Takes up 40%
+      padding: 48px 40px;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-left: 1px solid rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #fff;
+      
+      .card-content-top {
+          width: 100%;
+      }
+    }
+  }
+}

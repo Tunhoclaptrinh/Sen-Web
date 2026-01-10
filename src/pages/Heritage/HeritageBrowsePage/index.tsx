@@ -1,54 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import {
     Row,
     Col,
-    Card,
     Input,
     Select,
     Button,
     Spin,
     Empty,
-    Tag,
-    Pagination,
-    Space,
-    message,
-    Tooltip,
+    Typography,
+    Pagination
 } from 'antd';
 import {
     SearchOutlined,
     FilterOutlined,
-    HeartOutlined,
-    HeartFilled,
-    StarFilled,
-    EnvironmentOutlined,
-    EyeOutlined,
-    GlobalOutlined,
 } from '@ant-design/icons';
 import heritageService from '@services/heritage.service';
-import favoriteService from '@services/favorite.service';
 import type { HeritageSite } from '@/types';
+import ArticleCard from '@/components/common/cards/ArticleCard';
+import DiscoveryCard from '@/components/common/cards/DiscoveryCard'; // Import
 import './styles.less';
 
+const { Title } = Typography;
+
 const HeritageBrowsePage: React.FC = () => {
-    const navigate = useNavigate();
     const [sites, setSites] = useState<HeritageSite[]>([]);
     const [loading, setLoading] = useState(true);
-    const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
     const [filters, setFilters] = useState({
         q: '',
         region: undefined,
         unesco_listed: undefined,
     });
+    // Random featured site
+    const [randomFeatured, setRandomFeatured] = useState<HeritageSite | null>(null);
+
     const [pagination, setPagination] = useState({
         current: 1,
-        pageSize: 9,
+        pageSize: 12,
         total: 0,
     });
 
     useEffect(() => {
         fetchSites();
-        fetchFavoriteIds();
     }, [pagination.current, filters]);
 
     const fetchSites = async () => {
@@ -59,45 +52,26 @@ const HeritageBrowsePage: React.FC = () => {
                 limit: pagination.pageSize,
                 ...filters,
             });
-            setSites(response.data || []);
+            
+            const fetchedSites = response.data || [];
+            setSites(fetchedSites);
             setPagination((prev) => ({
                 ...prev,
                 total: response.pagination?.total || 0,
             }));
+
+            // Logic: Randomly pick one
+            if (fetchedSites.length > 0) {
+                 const newRandom = fetchedSites[Math.floor(Math.random() * fetchedSites.length)];
+                 setRandomFeatured(newRandom);
+            } else {
+                setRandomFeatured(null);
+            }
+
         } catch (error) {
-            message.error('Không thể tải danh sách di sản');
+            console.error('Cannot fetch heritage sites');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchFavoriteIds = async () => {
-        try {
-            const response = await favoriteService.getIdsByType('heritage_site');
-            setFavoriteIds(new Set(response.data || []));
-        } catch (error) {
-            console.error('Cannot fetch favorite IDs');
-        }
-    };
-
-    const handleToggleFavorite = async (id: number, e: React.MouseEvent) => {
-        e.stopPropagation();
-        try {
-            if (favoriteIds.has(id)) {
-                await favoriteService.remove('heritage_site', id.toString());
-                setFavoriteIds((prev) => {
-                    const newSet = new Set(prev);
-                    newSet.delete(id);
-                    return newSet;
-                });
-                message.success('Đã xóa khỏi yêu thích');
-            } else {
-                await favoriteService.add('heritage_site', id.toString());
-                setFavoriteIds((prev) => new Set(prev).add(id));
-                message.success('Đã thêm vào yêu thích');
-            }
-        } catch (error) {
-            message.error('Thao tác thất bại');
         }
     };
 
@@ -108,16 +82,19 @@ const HeritageBrowsePage: React.FC = () => {
 
     return (
         <div className="heritage-browse-page">
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title">Khám Phá Di Sản</h1>
-                    <p className="page-description">
-                        Hành trình tìm về cội nguồn văn hóa Việt Nam
+            {/* 1. Hero Section */}
+            <section className="hero-section">
+                <div className="hero-content">
+                    <Title level={1}>Hành Trình Di Sản</Title>
+                    <p className="hero-subtitle">
+                        Kết nối quá khứ và hiện tại, khám phá vẻ đẹp bất tận của danh lam thắng cảnh
+                        và di tích lịch sử Việt Nam.
                     </p>
                 </div>
-            </div>
+            </section>
 
-            <Card className="filter-card">
+             {/* 2. Filter Section */}
+             <div className="filter-container">
                 <Row gutter={[16, 16]} align="middle">
                     <Col xs={24} md={10} lg={8}>
                         <Input
@@ -132,7 +109,7 @@ const HeritageBrowsePage: React.FC = () => {
                         />
                     </Col>
                     <Col xs={12} md={6} lg={4}>
-                        <Select
+                         <Select
                             size="large"
                             placeholder="Vùng miền"
                             style={{ width: '100%' }}
@@ -147,7 +124,7 @@ const HeritageBrowsePage: React.FC = () => {
                         </Select>
                     </Col>
                     <Col xs={12} md={4} lg={4}>
-                        <Select
+                         <Select
                             size="large"
                             placeholder="UNESCO"
                             style={{ width: '100%' }}
@@ -177,122 +154,61 @@ const HeritageBrowsePage: React.FC = () => {
                         </Button>
                     </Col>
                 </Row>
-            </Card>
+            </div>
 
             {loading ? (
                 <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                    <Spin size="large" tip="Đang tải di sản..." />
+                    <Spin size="large" tip="Đang tải dữ liệu..." />
                 </div>
-            ) : sites.length === 0 ? (
-                <Card>
-                    <Empty description="Không tìm thấy di sản nào" />
-                </Card>
             ) : (
                 <>
-                    <Row gutter={[24, 24]} className="heritage-grid">
-                        {sites.map((site) => (
-                            <Col xs={24} sm={12} lg={8} key={site.id}>
-                                <Card
-                                    hoverable
-                                    className="heritage-card"
-                                    cover={
-                                        <div className="heritage-cover">
-                                            <img
-                                                src={
-                                                    site.main_image ||
-                                                    (site.images && site.images[0]) ||
-                                                    'https://via.placeholder.com/400x300'
-                                                }
-                                                alt={site.name}
-                                            />
-                                            <div className="heritage-overlay">
-                                                <Space size="middle">
-                                                    <Button
-                                                        type="primary"
-                                                        shape="circle"
-                                                        icon={<EyeOutlined />}
-                                                        size="large"
-                                                        onClick={() => navigate(`/heritage-sites/${site.id}`)}
-                                                    />
-                                                    <Tooltip
-                                                        title={
-                                                            favoriteIds.has(site.id)
-                                                                ? 'Bỏ yêu thích'
-                                                                : 'Yêu thích'
-                                                        }
-                                                    >
-                                                        <Button
-                                                            type={
-                                                                favoriteIds.has(site.id) ? 'primary' : 'default'
-                                                            }
-                                                            shape="circle"
-                                                            icon={
-                                                                favoriteIds.has(site.id) ? (
-                                                                    <HeartFilled />
-                                                                ) : (
-                                                                    <HeartOutlined />
-                                                                )
-                                                            }
-                                                            danger={favoriteIds.has(site.id)}
-                                                            size="large"
-                                                            onClick={(e) => handleToggleFavorite(site.id, e)}
-                                                        />
-                                                    </Tooltip>
-                                                </Space>
-                                            </div>
-                                            {site.unesco_listed && (
-                                                <Tooltip title="Di sản UNESCO">
-                                                    <Tag className="unesco-tag" color="blue" icon={<GlobalOutlined />}>
-                                                        UNESCO
-                                                    </Tag>
-                                                </Tooltip>
-                                            )}
-                                        </div>
-                                    }
-                                >
-                                    <Card.Meta
-                                        title={
-                                            <div className="card-header">
-                                                <Tooltip title={site.name}>
-                                                    <div className="heritage-title">{site.name}</div>
-                                                </Tooltip>
-                                                <Tag color="gold">{site.region}</Tag>
-                                            </div>
-                                        }
-                                        description={
-                                            <div className="heritage-meta">
-                                                <div className="description">
-                                                    {site.description}
-                                                </div>
-                                                <div className="footer">
-                                                    <div className="location">
-                                                        <EnvironmentOutlined /> {site.address}
-                                                    </div>
-                                                    <div className="rating">
-                                                        <StarFilled style={{ color: '#faad14' }} />
-                                                        <span>{(site.rating || 0).toFixed(1)}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                    />
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
+                     {/* 3. Discovered Section (Random/Featured Item) */}
+                    {randomFeatured && (
+                         <section className="discovered-section">
+                            <Title level={2} className="header-title">Nổi bật</Title>
+                            <DiscoveryCard data={randomFeatured} type="heritage" />
+                        </section>
+                    )}
 
-                    <div className="pagination-container">
-                        <Pagination
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={pagination.total}
-                            onChange={(page) =>
-                                setPagination((prev) => ({ ...prev, current: page }))
-                            }
-                            showSizeChanger={false}
-                            showTotal={(total) => `Tổng ${total} di sản`}
-                        />
-                    </div>
+                    {/* 4. Undiscovered Section (Grid) */}
+                    <section className="undiscovered-section">
+                         <div className="bg-drum-container">
+                            <img
+                                src="/images/hoatiettrongdong.png"
+                                alt="drum"
+                                className="bg-drum"
+                            />
+                        </div>
+                        <div className="section-content">
+                             <Title level={2} className="header-title">Khám phá</Title>
+
+                             {sites.length === 0 ? (
+                                <Empty description="Không tìm thấy di sản nào khác" />
+                            ) : (
+                                <Row gutter={[24, 24]}>
+                                    {sites.map((site) => (
+                                         <Col xs={24} sm={12} lg={8} key={site.id}>
+                                            <ArticleCard
+                                                data={site}
+                                                type="heritage"
+                                            />
+                                        </Col>
+                                    ))}
+                                </Row>
+                            )}
+                            <div style={{ marginTop: 40, textAlign: 'center' }}>
+                                <Pagination
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={pagination.total}
+                                    onChange={(page) =>
+                                        setPagination((prev) => ({ ...prev, current: page }))
+                                    }
+                                    showSizeChanger={false}
+                                />
+                            </div>
+                        </div>
+                    </section>
                 </>
             )}
         </div>

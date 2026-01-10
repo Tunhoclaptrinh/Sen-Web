@@ -60,6 +60,7 @@ const Header: React.FC = () => {
   const getActiveKey = () => {
     if (location.pathname === '/') return 'home';
     if (location.pathname.startsWith('/heritage')) return 'heritage';
+    if (location.pathname.startsWith('/artifacts')) return 'artifacts'; // Added
     if (location.pathname.startsWith('/learn')) return 'learn';
     if (location.pathname.startsWith('/game')) return 'game';
     if (location.pathname.startsWith('/support')) return 'support';
@@ -102,6 +103,10 @@ const Header: React.FC = () => {
     {
       key: 'heritage',
       label: <Link to="/heritage-sites">Di sản</Link>,
+    },
+    {
+        key: 'artifacts',
+        label: <Link to="/artifacts">Hiện vật</Link>,
     },
     {
       key: 'learn',

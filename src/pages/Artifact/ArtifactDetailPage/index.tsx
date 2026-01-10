@@ -1,23 +1,23 @@
-import {
-  Card,
-  Button,
-  Spin,
-  message,
-  Empty,
-  Row,
-  Col,
-  Statistic,
-  Tabs,
-  Image,
-} from "antd";
-import { RootState } from "@/types";
-import { AppDispatch } from "@/store";
-import { HeartOutlined, HeartFilled } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Spin, message, Row, Col, Typography, Empty } from "antd";
+import {
+  CalendarOutlined,
+  UserOutlined,
+  HeartOutlined,
+  HeartFilled,
+  ShareAltOutlined,
+} from "@ant-design/icons";
 import { fetchArtifactById } from "@store/slices/artifactSlice";
 import favoriteService from "@/services/favorite.service";
+import artifactService from "@/services/artifact.service";
+import { RootState, AppDispatch } from "@/store";
+import ArticleCard from "@/components/common/cards/ArticleCard";
+import type { Artifact } from "@/types";
+import "./styles.less";
+
+const { Paragraph } = Typography;
 
 const ArtifactDetailPage = () => {
   const { id } = useParams();
@@ -29,11 +29,28 @@ const ArtifactDetailPage = () => {
     error,
   } = useSelector((state: RootState) => state.artifact);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
+
   useEffect(() => {
     if (id) {
       dispatch(fetchArtifactById(id));
+      // Fetch related (using getAll for simplified demo, in real app use proper related endpoint)
+      fetchRelated(id);
+      window.scrollTo(0, 0);
     }
   }, [dispatch, id]);
+
+   const fetchRelated = async (currentId: string) => {
+        try {
+            const res = await artifactService.getAll({ limit: 3 });
+            if (res.data) {
+                // Filter out current if logic allows, or just show top 3
+                setRelatedArtifacts(res.data.filter(a => a.id !== currentId).slice(0, 3));
+            }
+        } catch (e) {
+            console.error("Failed to fetch related");
+        }
+   }
 
   useEffect(() => {
     if (error) {
@@ -45,12 +62,9 @@ const ArtifactDetailPage = () => {
   const handleToggleFavorite = async () => {
     try {
       if (isFavorite) {
-        message.info("Feature updating...");
         setIsFavorite(false);
         message.success("Đã xóa khỏi yêu thích");
       } else {
-        // Updated to pass two arguments if required, assuming second arg is itemType 'artifact' if needed separately or fixed in service
-        // Service expects (type, id)
         await favoriteService.add('artifact', Number(id));
         setIsFavorite(true);
         message.success("Đã thêm vào yêu thích");
@@ -60,113 +74,98 @@ const ArtifactDetailPage = () => {
     }
   };
 
-  if (loading) return <Spin />;
+  if (loading) return <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><Spin size="large"/></div>;
 
   if (!artifact) return <Empty description="Không tìm thấy hiện vật" />;
 
+  const mainImage = artifact.main_image || artifact.image || (artifact.images && artifact.images[0]) || 'https://via.placeholder.com/1200x600';
+
   return (
-    <div>
-      <Button onClick={() => navigate(-1)} style={{ marginBottom: 16 }}>
-        ← Quay Lại
-      </Button>
-
-      <Card>
-        <Row gutter={24}>
-          <Col xs={24} md={12}>
-            {artifact.image && (
-              <Image
-                src={artifact.image}
-                alt={artifact.name}
-                style={{ width: "100%", borderRadius: 8 }}
-              />
-            )}
-          </Col>
-          <Col xs={24} md={12}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "start",
-                marginBottom: 16,
-              }}
-            >
-              <div>
+    <div className="artifact-detail-page">
+      {/* 1. Hero Section */}
+      <section className="detail-hero">
+        <img src={mainImage} alt={artifact.name} className="hero-bg" />
+        <div className="hero-overlay">
+            <div className="container">
                 <h1>{artifact.name}</h1>
-                <p style={{ color: "#8c8c8c" }}>{artifact.artifact_type}</p>
-              </div>
-              <Button
-                icon={isFavorite ? <HeartFilled /> : <HeartOutlined />}
-                onClick={handleToggleFavorite}
-                style={{ fontSize: 20 }}
-              />
-            </div>
-
-            <Row gutter={[16, 16]}>
-              <Col xs={12}>
-                <Statistic title="Đánh Giá" value={artifact.rating || "N/A"} />
-              </Col>
-              <Col xs={12}>
-                <Statistic
-                  title="Số Đánh Giá"
-                  value={artifact.total_reviews || 0}
-                />
-              </Col>
-            </Row>
-
-            <div style={{ marginTop: 24 }}>
-              <h3>Thông Tin</h3>
-              <p>
-                <strong>Loại:</strong> {artifact.artifact_type}
-              </p>
-              <p>
-                <strong>Tình Trạng:</strong> {artifact.condition}
-              </p>
-              <p>
-                <strong>Năm Tạo Tác:</strong> {artifact.year_created}
-              </p>
-              <p>
-                <strong>Tác Giả:</strong> {artifact.creator || "N/A"}
-              </p>
-              <p>
-                <strong>Chất Liệu:</strong> {artifact.material || "N/A"}
-              </p>
-              <p>
-                <strong>Kích Thước:</strong> {artifact.dimensions || "N/A"}
-              </p>
-            </div>
-          </Col>
-        </Row>
-
-        <Tabs
-          style={{ marginTop: 32 }}
-          items={[
-            {
-              key: "1",
-              label: "Mô Tả",
-              children: <p>{artifact.description}</p>,
-            },
-            {
-              key: "2",
-              label: "Chi Tiết",
-              children: (
-                <div>
-                  <p>
-                    <strong>Ngữ Cảnh Lịch Sử:</strong>{" "}
-                    {artifact.historical_context}
-                  </p>
-                  <p>
-                    <strong>Ý Nghĩa Văn Hóa:</strong>{" "}
-                    {artifact.cultural_significance}
-                  </p>
-                  <p>
-                    <strong>Câu Chuyện:</strong> {artifact.story}
-                  </p>
+                <div className="hero-meta">
+                    <span><CalendarOutlined /> {artifact.year_created}</span>
+                    <span><UserOutlined /> {(artifact as any).dynasty}</span>
                 </div>
-              ),
-            },
-          ]}
-        />
-      </Card>
+            </div>
+        </div>
+      </section>
+
+      {/* 2. Main Content */}
+      <section className="main-content">
+          <div className="content-wrapper">
+              <div className="left-col">
+                  <h3 className="section-title">Câu Chuyện & Ý Nghĩa</h3>
+                  <div className="description-text">
+                        <Paragraph>{artifact.description}</Paragraph>
+                        <Paragraph><strong>Ngữ Cảnh Lịch Sử:</strong> {artifact.historical_context}</Paragraph>
+                        <Paragraph><strong>Ý Nghĩa Văn Hóa:</strong> {artifact.cultural_significance}</Paragraph>
+                  </div>
+
+                  {artifact.images && artifact.images.length > 0 && (
+                      <>
+                        <h3 className="section-title">Hình Ảnh Chi Tiết</h3>
+                        <div className="image-gallery">
+                            {artifact.images.map((img, idx) => (
+                                <img key={idx} src={img} alt={`Detail ${idx}`} />
+                            ))}
+                        </div>
+                      </>
+                  )}
+              </div>
+
+              <div className="right-col">
+                  <div className="info-box">
+                      <div className="info-row">
+                          <span className="label">Loại hiện vật</span>
+                          <span className="value">{artifact.artifact_type}</span>
+                      </div>
+                      <div className="info-row">
+                          <span className="label">Tình trạng</span>
+                          <span className="value">{artifact.condition}</span>
+                      </div>
+                      <div className="info-row">
+                          <span className="label">Chất liệu</span>
+                          <span className="value">{artifact.material}</span>
+                      </div>
+                       <div className="info-row">
+                          <span className="label">Kích thước</span>
+                          <span className="value">{artifact.dimensions}</span>
+                      </div>
+                      <div className="info-row">
+                           <span className="label">Đánh giá</span>
+                           <span className="value">{artifact.rating}/5 ({artifact.total_reviews} reviews)</span>
+                      </div>
+
+                      <div className="action-buttons">
+                          <button className="btn-fav" onClick={handleToggleFavorite}>
+                              {isFavorite ? <><HeartFilled /> Đã Thích</> : <><HeartOutlined /> Yêu Thích</>}
+                          </button>
+                          <button className="btn-share">
+                              <ShareAltOutlined /> Chia Sẻ
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      {/* 3. Related Section */}
+      <section className="related-section">
+          <h2 className="related-title">Hiện Vật Liên Quan</h2>
+          <Row gutter={[24, 24]}>
+              {relatedArtifacts.map(item => (
+                  <Col xs={24} sm={12} lg={8} key={item.id}>
+                      <ArticleCard data={item} type="artifact" />
+                  </Col>
+              ))}
+          </Row>
+      </section>
     </div>
   );
 };
