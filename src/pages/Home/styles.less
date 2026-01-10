@@ -1,405 +1,429 @@
+@import "../../styles/variables.less";
+
 .home-page {
   min-height: 100vh;
+  background: linear-gradient(
+    357.93deg,
+    #fff4ec 1.72%,
+    #f6f5f3
+  ); // Light beige background for the whole page
+  overflow-x: hidden;
 
-  // Hero Section
-  .hero-section {
-    text-align: center;
-    padding: 60px 20px 40px;
+  // General Typography
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family:
+      "Aleo", serif; // Use a serif font for headings if available, or fallback
+  }
+
+  // Section specific
+  section {
     position: relative;
-    z-index: 10;
+    width: 100%;
+  }
+
+  // ==========================================
+  // Hero Section
+  // ==========================================
+
+  .hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 800px;
+    // min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding: 100px 20px 180px;
+    background: url("/images/Zero_home.png") no-repeat bottom center;
+    background-size: cover;
+    margin-bottom: 0;
 
     .hero-content {
-      max-width: 800px;
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
       margin: 0 auto;
 
-      .logo-container {
-        margin-bottom: 24px;
-
-        .hero-logo {
-          width: 360px;
-          height: 180px;
-          object-fit: contain;
-          filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.3));
-
-          @media (max-width: 768px) {
-            width: 280px;
-            height: 140px;
-          }
+      .brand-title {
+        img {
+          height: 240px;
+          object-fit: cover;
         }
       }
 
-      .hero-title {
-        font-size: 48px !important;
-        font-weight: 800 !important;
-        color: #fff !important;
-        margin-bottom: 16px !important;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-
-        @media (max-width: 768px) {
-          font-size: 32px !important;
-        }
+      .hero-subtitle {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 48px;
+        color: #e1ac66;
+        text-shadow: 0 2px 4px rgba(245, 243, 243, 0.3);
       }
 
-      .hero-description {
-        font-size: 20px;
-        color: #d4a574;
-        font-weight: 500;
-        margin-bottom: 32px;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-
-        @media (max-width: 768px) {
-          font-size: 16px;
-        }
-      }
-
-      .hero-actions {
-        @media (max-width: 576px) {
-          flex-direction: column;
-          width: 100%;
-
-          button {
-            width: 100%;
-          }
-        }
-      }
-
-      .hero-btn-primary {
-        background: white;
-        color: #f43f5e;
+      .cta-button {
+        height: 56px;
+        padding: 0 48px;
+        font-size: 18px;
+        border-radius: 28px;
+        background: #c4efa1; // Light green from design
+        color: #2d5a27; // Dark green text
         border: none;
         font-weight: 700;
-        height: 48px;
-        padding: 0 32px;
-        font-size: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
 
         &:hover {
-          background: #fff;
-          color: #e11d48;
           transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+          background: #d4f5ba;
+        }
+      }
+    }
+
+    // Lotus decorations at bottom
+    .hero-decor-bottom {
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      z-index: 3;
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+
+  // ==========================================
+  // Mission Section (Sứ mệnh của Sen)
+  // ==========================================
+  .mission-section {
+    padding: 160px 0;
+    background: transparent;
+    z-index: 10;
+
+    // Decorative spinning drum background
+    .bg-drum {
+      position: absolute;
+      top: -100px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      opacity: 0.1;
+      animation: spin 60s linear infinite;
+      z-index: -1;
+    }
+
+    .mission-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 60px;
+
+      @media (max-width: 992px) {
+        flex-direction: column;
+      }
+
+      .mission-image-col {
+        flex: 1;
+        position: relative;
+
+        .mission-main-img {
+          width: 100%;
+          border-radius: 20px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+          border: 2px solid #fff;
         }
       }
 
-      .hero-btn-secondary {
-        border-color: white;
-        color: white;
-        font-weight: 700;
-        height: 48px;
-        padding: 0 32px;
-        font-size: 16px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
+      .mission-text-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
 
-        &:hover {
-          border-color: #fff;
-          color: #fff;
-          transform: translateY(-2px);
-          background: rgba(255, 255, 255, 0.2);
+        .sub-header {
+          color: #2d5a27;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          margin-bottom: 16px;
+          display: block;
+        }
+
+        h2 {
+          font-size: 42px;
+          color: #333;
+          margin-bottom: 24px;
+          font-weight: 700;
+
+          @media (max-width: 768px) {
+            font-size: 32px;
+          }
+        }
+
+        .mission-desc {
+          font-size: 16px;
+          line-height: 1.8;
+          color: #666;
+          margin-bottom: 32px;
+        }
+
+        .mission-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+
+          .action-btn {
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+
+            &.green-btn {
+              background: #c4efa1;
+              color: #2d5a27;
+              &:hover {
+                background: #b0e08a;
+              }
+            }
+
+            &.light-green-btn {
+              background: #b8f2ba; // Slightly different shade or same
+              color: #2d5a27;
+              &:hover {
+                background: #a5e3a7;
+              }
+            }
+          }
         }
       }
     }
   }
 
-  // Stats Section
-  .stats-section {
-    margin-top: -60px;
-    padding: 0 20px;
-    position: relative;
-    z-index: 20;
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-4px);
-      }
-
-      .ant-statistic-title {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 14px;
-        font-weight: 500;
-      }
-    }
+  .mission-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("/images/hoatiettrongdong.png") no-repeat;
+    background-position: -50% -50%;
+    z-index: -1;
   }
 
-  // Features Section
-  .features-section {
-    padding: 80px 20px;
+  // ==========================================
+  // Featured Heritage Overlay Section
+  // ==========================================
+  .featured-heritage-section {
+    padding: 80px 0;
+    text-align: center;
     max-width: 1400px;
     margin: 0 auto;
 
-    .section-header {
+    h2 {
+      font-size: 36px;
+      margin-bottom: 48px;
+      position: relative;
+      display: inline-block;
+
+      &::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 3px;
+        background: #2d5a27;
+        margin: 16px auto 0;
+      }
+    }
+
+    .heritage-card {
+      border: none;
+      background: transparent;
+
+      .ant-card-cover {
+        border-radius: 16px;
+        overflow: hidden;
+        img {
+          height: 300px;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+      }
+
+      &:hover {
+        .ant-card-cover img {
+          transform: scale(1.1);
+        }
+      }
+
+      .ant-card-body {
+        padding: 16px 0 0;
+        text-align: center;
+      }
+
+      .heritage-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin-top: 12px;
+      }
+    }
+  }
+
+  // ==========================================
+  // Featured Artifacts Section (Drum Background)
+  // ==========================================
+  .featured-artifacts-section {
+    padding: 100px 0;
+    position: relative;
+    background: url("/images/hoatiettrongdong.png") no-repeat center center;
+    background-size: contain;
+    opacity: 0.9;
+
+    .section-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1400px;
+      margin: 0 auto;
       text-align: center;
-      margin-bottom: 64px;
 
       h2 {
-        font-size: 42px;
-        font-weight: 800;
+        font-size: 36px;
         margin-bottom: 16px;
-        background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%) !important;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
+      }
+
+      .section-subtitle {
+        max-width: 600px;
+        margin: 0 auto 60px;
+        color: #666;
+      }
+
+      .artifact-card {
+        background: transparent;
+        border: none;
+
+        .artifact-img-wrapper {
+          border-radius: 12px;
+          overflow: hidden;
+          margin-bottom: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          aspect-ratio: 1;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+      }
+    }
+  }
+
+  // ==========================================
+  // CTA / Footer Pre-section
+  // ==========================================
+  .bottom-cta-section {
+    position: relative;
+    padding: 100px 0;
+    text-align: center;
+    overflow: hidden;
+
+    .bg-circle-images {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: -40px;
+      margin-bottom: 40px;
+
+      .circle-img-wrapper {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid #fff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+
+        &.center {
+          width: 280px;
+          height: 280px;
+          z-index: 2;
+          margin-bottom: 20px;
+        }
+
+        &.side {
+          z-index: 1;
+          filter: brightness(0.9);
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 10;
+
+      h2 {
+        font-size: 32px;
+        margin-bottom: 12px;
       }
 
       p {
         font-size: 18px;
-        color: #666;
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.6;
-      }
-    }
-
-    .feature-card {
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      height: 100%;
-
-      &:hover {
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-        transform: translateY(-8px);
-
-        .feature-image {
-          transform: scale(1.1);
-        }
-
-        .feature-overlay {
-          opacity: 1;
-        }
+        color: #555;
+        margin-bottom: 32px;
       }
 
-      .feature-cover {
-        height: 200px;
-        position: relative;
-        overflow: hidden;
-
-        .feature-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.5s ease;
-          opacity: 0.3;
-        }
-
-        .feature-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(0, 0, 0, 0.2);
-          opacity: 0.8;
-          transition: opacity 0.3s ease;
-
-          .feature-icon {
-            font-size: 64px;
-            color: white;
-          }
-        }
-      }
-
-      .ant-card-body {
-        padding: 20px;
-      }
-
-      .feature-desc {
-        color: #595959;
-        margin: 12px 0;
-        min-height: 44px;
-      }
-
-      .feature-link {
-        padding: 0;
-        font-weight: 600;
+      .main-cta-btn {
+        height: 56px;
+        padding: 0 48px;
+        font-size: 18px;
+        border-radius: 8px;
+        background: #c4efa1;
+        color: #2d5a27;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(45, 90, 39, 0.2);
 
         &:hover {
-          color: #1890ff;
+          background: #b0e08a;
         }
       }
     }
-  }
 
-  // Featured Section
-  .featured-section {
-    padding: 40px 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-      gap: 16px;
-
-      h2 {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-
-      p {
-        font-size: 16px;
-        color: #8c8c8c;
-      }
-    }
-
-    .content-card {
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      height: 100%;
-
-      &:hover {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        transform: translateY(-4px);
-
-        img {
-          transform: scale(1.1);
-        }
-
-        .content-overlay {
-          opacity: 1;
-        }
-      }
-
-      .content-cover {
-        height: 250px;
-        position: relative;
-        overflow: hidden;
-        background: #f0f0f0;
-
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.5s ease;
-        }
-
-        .content-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-      }
-
-      .ant-card-body {
-        padding: 20px;
-      }
-
-      .content-desc {
-        color: #595959;
-        margin: 12px 0;
-      }
-
-      .content-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #f0f0f0;
-      }
-    }
-  }
-
-  // CTA Section
-  .cta-section {
-    padding: 60px 20px;
-    max-width: 900px;
-    margin: 0 auto;
-
-    .cta-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      border-radius: 24px;
-      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.3);
-      padding: 40px;
-
-      h2 {
-        color: white !important;
-        margin-bottom: 16px;
-      }
-
-      p {
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      button {
-        height: 48px;
-        padding: 0 32px;
-        font-size: 16px;
-        font-weight: 600;
-
-        &.ant-btn-primary {
-          background: white;
-          color: #667eea;
-          border: none;
-
-          &:hover {
-            background: #f0f0f0;
-            color: #764ba2;
-          }
-        }
-
-        &:not(.ant-btn-primary) {
-          background: transparent;
-          color: white;
-          border-color: white;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: white;
-            color: white;
-          }
-        }
-      }
+    // Drum decoration background
+    .bg-drum-bottom {
+      position: absolute;
+      bottom: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      opacity: 0.1;
+      z-index: 0;
     }
   }
 }
 
-@media (max-width: 768px) {
-  .home-page {
-
-    .features-section,
-    .featured-section {
-      padding: 40px 16px;
-
-      .section-header h2 {
-        font-size: 24px;
-      }
-    }
-
-    .cta-section {
-      padding: 40px 16px;
-
-      .cta-card {
-        padding: 32px 20px;
-      }
-    }
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
