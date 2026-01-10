@@ -43,6 +43,8 @@ export { default as CardGrid } from './CardGrid';
 
 // Chat
 export { default as ChatOverlay } from './ChatOverlay';
+export { default as AIChatPanel } from './AIChatPanel';
+export { default as AIChatFloatingButton } from './AIChatFloatingButton';
 
 // Guards
 export { default as AuthGuard } from './guards/AuthGuard';

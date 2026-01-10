@@ -8,6 +8,7 @@ services:
     build:
       context: ../..
       dockerfile: Docker/Dev/Dockerfile
+    image: dev-sen-frontend
     container_name: sen-frontend-dev
     restart: unless-stopped
     environment:
@@ -21,8 +22,17 @@ services:
     networks:
       - sen-network-dev
     command: npm run dev -- --host 0.0.0.0
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "com.sen.service=frontend"
+      - "com.sen.environment=development"
 
 networks:
   sen-network-dev:
     name: sen-network-dev
-    external: true
+    driver: bridge

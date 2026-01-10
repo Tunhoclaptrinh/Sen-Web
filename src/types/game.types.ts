@@ -124,6 +124,7 @@ export interface TimelineScreen extends Screen {
 export interface HiddenObjectScreen extends Screen {
     type: 'HIDDEN_OBJECT';
     background_image: string;
+    description?: string;
     items: Array<{
         id: string;
         name: string;

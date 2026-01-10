@@ -137,5 +137,10 @@ while true; do
             echo "[Error] Invalid choice!"
             sleep 1
             ;;
-    esac
+    esac    
+    # Wait before showing menu again
+    if [ "$choice" != "6" ]; then
+        echo ""
+        read -p "Press Enter to continue..."
+    fi
 done

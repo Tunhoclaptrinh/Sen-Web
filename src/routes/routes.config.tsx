@@ -32,6 +32,7 @@ const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
+const AIChatDemoPage = lazy(() => import("@/pages/AIChatDemo"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
@@ -126,6 +127,10 @@ const routes: RouteObject[] = [
       {
         path: "character-showcase",
         element: <CharacterShowcase />,
+      },
+      {
+        path: "ai-chat-demo",
+        element: <AIChatDemoPage />,
       },
     ],
   },

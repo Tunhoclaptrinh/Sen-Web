@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, message, Modal, Button, List, Tag, Progress } from 'antd';
+import { Card, Typography, message, Modal, Button, List, Progress } from 'antd';
 import { CheckCircleFilled, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import type { HiddenObjectScreen as HiddenObjectScreenType } from '@/types/game.types';
 import './styles.less';

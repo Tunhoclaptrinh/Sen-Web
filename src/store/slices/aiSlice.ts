@@ -46,7 +46,7 @@ export const fetchCharacters = createAsyncThunk(
 // Fetch chat history
 export const fetchChatHistory = createAsyncThunk(
     'ai/fetchChatHistory',
-    async (params: { characterId: number; limit?: number }, { rejectWithValue }) => {
+    async (params: { characterId?: number; limit?: number }, { rejectWithValue }) => {
         try {
             const data = await aiService.getChatHistory(params.characterId, params.limit);
             return data;
@@ -61,7 +61,7 @@ export const sendChatMessage = createAsyncThunk(
     'ai/sendChatMessage',
     async (
         params: {
-            character_id: number;
+            character_id?: number;
             message: string;
             context?: {
                 level_id?: number;
