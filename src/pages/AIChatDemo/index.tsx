@@ -1,20 +1,9 @@
 import React from 'react';
 import { Typography, Card, Space, Divider } from 'antd';
-import type { AICharacter } from '@/services/ai.service';
 
 const { Title, Paragraph, Text } = Typography;
 
 const AIChatDemoPage: React.FC = () => {
-    // Mock character (in real app, fetch from API)
-    const defaultCharacter: AICharacter = {
-        id: 1,
-        name: 'Minh',
-        avatar: '/images/characters/minh-avatar.png',
-        personality: 'Thân thiện, nhiệt tình, giàu kiến thức về văn hóa Việt Nam',
-        state: 'restored',
-        description: 'Hướng dẫn viên AI chuyên gia về di sản văn hóa Việt Nam',
-    };
-
     return (
         <div style={{ padding: '40px', maxWidth: 1200, margin: '0 auto' }}>
             <Space direction="vertical" size="large" style={{ width: '100%' }}>

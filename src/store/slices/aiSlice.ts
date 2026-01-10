@@ -111,7 +111,7 @@ export const clearChatHistory = createAsyncThunk(
     'ai/clearChatHistory',
     async (characterId: number, { rejectWithValue }) => {
         try {
-            await aiService.clearHistory(characterId);
+            await aiService.clearHistory();
             return characterId;
         } catch (error: any) {
             return rejectWithValue(error.message || 'Failed to clear chat history');

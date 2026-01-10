@@ -115,7 +115,7 @@ class AIService extends BaseService {
     }
 
     // Clear chat history
-    async clearHistory(characterId: number): Promise<{ success: boolean }> {
+    async clearHistory(): Promise<{ success: boolean }> {
         const response = await this.deleteRequest('/history');
         return response.data || { success: true };
     }
