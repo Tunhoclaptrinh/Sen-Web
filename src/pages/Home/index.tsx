@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, Card, Button, Typography, Space } from "antd";
+import { Row, Col, Typography } from "antd";
 import {
-  EnvironmentOutlined,
-  RightOutlined,
   CalendarOutlined,
   UserOutlined,
   CommentOutlined,
@@ -17,7 +15,7 @@ import FeatureCard from "@/components/common/cards/FeatureCard";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
