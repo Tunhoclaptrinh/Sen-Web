@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Card, Button, Typography, Space } from "antd";
@@ -7,6 +7,7 @@ import { fetchHeritageSites } from "@store/slices/heritageSlice";
 import { fetchArtifacts } from "@store/slices/artifactSlice";
 import { RootState, AppDispatch } from "@/store";
 import { getImageUrl } from "@/utils/image.helper";
+import HeritageCard from "@/components/common/cards/HeritageCard";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 
@@ -20,8 +21,31 @@ const Home: React.FC = () => {
     (state: RootState) => state.artifact,
   );
 
+  // State for background animation
+  const [isShaking, setIsShaking] = useState(false);
+  const shakeTimer = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    dispatch(fetchHeritageSites({ _limit: 3 }));
+    const handleInteraction = () => {
+      setIsShaking(true);
+      if (shakeTimer.current) clearTimeout(shakeTimer.current);
+      shakeTimer.current = setTimeout(() => {
+        setIsShaking(false);
+      }, 3000);
+    };
+
+    window.addEventListener("scroll", handleInteraction);
+    window.addEventListener("mousemove", handleInteraction);
+
+    return () => {
+      window.removeEventListener("scroll", handleInteraction);
+      window.removeEventListener("mousemove", handleInteraction);
+      if (shakeTimer.current) clearTimeout(shakeTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchHeritageSites({ _limit: 4 }));
     dispatch(fetchArtifacts({ _limit: 4 }));
   }, [dispatch]);
 
@@ -53,7 +77,13 @@ const Home: React.FC = () => {
           alt="drum"
           className="bg-drum"
         />
-        <div className="mission-bg"></div>
+        <div className="mission-bg-container">
+          <img 
+            src="/images/hoatiettrongdong.png" 
+            alt="" 
+            className={`mission-drum-img ${isShaking ? "shaking" : ""}`} 
+          />
+        </div>
         <div className="mission-container">
           <div className="mission-image-col">
             <img
@@ -112,25 +142,7 @@ const Home: React.FC = () => {
         <Row gutter={[24, 24]} justify="center">
           {sites?.slice(0, 4).map((site) => (
             <Col xs={24} sm={12} md={6} key={site.id}>
-              <Card
-                hoverable
-                className="heritage-card"
-                onClick={() => navigate(`/heritage-sites/${site.id}`)}
-                cover={
-                  <img
-                    alt={site.name}
-                    src={getImageUrl(
-                      site.image ||
-                        (site.images && site.images.length > 0
-                          ? site.images[0]
-                          : site.main_image),
-                      "https://via.placeholder.com/300x400",
-                    )}
-                  />
-                }
-              >
-                <div className="heritage-name">{site.name}</div>
-              </Card>
+              <HeritageCard site={site} variant="portrait" />
             </Col>
           ))}
         </Row>

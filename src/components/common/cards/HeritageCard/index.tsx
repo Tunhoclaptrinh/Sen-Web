@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import { Card, Tag, Button, Tooltip, Image } from "antd";
+// Removed unused imports
+import React from "react"; 
+import { Tag, Tooltip } from "antd"; 
 import {
-  HeartOutlined,
-  HeartFilled,
-  EyeOutlined,
   EnvironmentOutlined,
   StarFilled,
 } from "@ant-design/icons";
@@ -13,40 +11,22 @@ import { HeritageCardProps } from "./types";
 
 const HeritageCard: React.FC<HeritageCardProps> = ({
   site,
-  onFavoriteToggle,
-  isFavorite = false,
-  loading = false,
-}) => {
-  const [localFavorite, setLocalFavorite] = useState(isFavorite);
-
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const newState = !localFavorite;
-    setLocalFavorite(newState);
-    onFavoriteToggle?.(site.id, newState);
-  };
+  variant = 'landscape',
+}) => { 
 
   return (
-    <Link to={`/heritage-sites/${site.id}`}>
-      <Card
-        hoverable
-        loading={loading}
-        className="heritage-card"
-        cover={
-          <div className="card-cover">
-            <Image
-              src={
-                site.image ||
-                "https://via.placeholder.com/300x200?text=No+Image"
-              }
-              alt={site.name}
-              preview={false}
-              className="card-image"
-              fallback="https://via.placeholder.com/300x200?text=No+Image"
+    <Link to={`/heritage-sites/${site.id}`} style={{ display: 'block', height: '100%' }}>
+      <div className={`heritage-card ${variant}`}>
+        {/* Cover Image Area */}
+        <div className="card-cover">
+            <div 
+              className="card-image-bg"
+              style={{ 
+                backgroundImage: `url(${site.image || "https://via.placeholder.com/300x400?text=No+Image"})` 
+              }}
             />
 
-            {/* Overlay Badges */}
+            {/* Top Overlay: UNESCO Badge */}
             <div className="overlay-badges">
               {site.unesco_listed && (
                 <Tag color="gold" className="unesco-tag">
@@ -54,33 +34,31 @@ const HeritageCard: React.FC<HeritageCardProps> = ({
                 </Tag>
               )}
             </div>
+            
+            {/* Bottom Overlay: Type & Rating */}
+            <div className="card-info-overlay">
+                <Tag color="blue" className="type-tag">{site.type}</Tag>
+                
+                {site.rating && (
+                  <div className="card-rating">
+                    <StarFilled style={{ color: "#faad14" }} />
+                    <span className="rating-value">
+                      {site.rating.toFixed(1)}
+                    </span>
+                    <span className="rating-count">
+                      ({site.total_reviews || 0})
+                    </span>
+                  </div>
+                )}
+            </div>
+        </div>
 
-            {/* Favorite Button */}
-            <Tooltip
-              title={
-                localFavorite ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"
-              }
-            >
-              <Button
-                type="text"
-                shape="circle"
-                icon={
-                  localFavorite ? (
-                    <HeartFilled style={{ color: "#ff4d4f" }} />
-                  ) : (
-                    <HeartOutlined />
-                  )
-                }
-                onClick={handleFavoriteClick}
-                className="favorite-button"
-              />
-            </Tooltip>
-          </div>
-        }
-      >
+        {/* Content Area */}
         <div className="card-content">
           {/* Title */}
-          <h3 className="card-title">{site.name}</h3>
+          <Tooltip title={site.name} placement="topLeft">
+             <h3 className="card-title">{site.name}</h3>
+          </Tooltip>
 
           {/* Location */}
           <div className="card-location">
@@ -88,31 +66,10 @@ const HeritageCard: React.FC<HeritageCardProps> = ({
             <span>{site.region}</span>
           </div>
 
-          {/* Rating */}
-          {site.rating && (
-            <div className="card-rating">
-              <StarFilled style={{ color: "#faad14" }} />
-              <span className="rating-value">
-                {site.rating.toFixed(1)}
-              </span>
-              <span className="rating-count">
-                ({site.total_reviews || 0} đánh giá)
-              </span>
-            </div>
-          )}
-
           {/* Description */}
           <p className="card-description">{site.description}</p>
-
-          {/* Footer */}
-          <div className="card-footer">
-            <Tag color="blue">{site.type}</Tag>
-            <Button type="link" size="small" icon={<EyeOutlined />}>
-              Chi tiết
-            </Button>
-          </div>
         </div>
-      </Card>
+      </div>
     </Link>
   );
 };

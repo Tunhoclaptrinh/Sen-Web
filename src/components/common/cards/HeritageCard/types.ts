@@ -15,4 +15,5 @@ export interface HeritageCardProps {
     onFavoriteToggle?: (id: number, isFavorite: boolean) => void;
     isFavorite?: boolean;
     loading?: boolean;
+    variant?: 'portrait' | 'landscape';
 }
