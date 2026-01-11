@@ -98,7 +98,8 @@ export interface DialogueScreen extends Screen {
 // Quiz Screen
 export interface QuizScreen extends Screen {
     type: 'QUIZ';
-    question: string;
+    question?: string;
+    description?: string;
     options: Array<{
         text: string;
         is_correct: boolean;
@@ -123,6 +124,7 @@ export interface TimelineScreen extends Screen {
 export interface HiddenObjectScreen extends Screen {
     type: 'HIDDEN_OBJECT';
     background_image: string;
+    description?: string;
     items: Array<{
         id: string;
         name: string;

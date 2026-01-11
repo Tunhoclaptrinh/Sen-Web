@@ -57,12 +57,7 @@ class AuthService {
         throw new Error(response.message || "Đăng ký thất bại");
       }
 
-      const { user, token } = response.data;
-
-      if (!user || !token) {
-        throw new Error("Dữ liệu phản hồi không hợp lệ");
-      }
-
+      // Backend no longer returns token after registration
       return response;
     } catch (error: any) {
       logger.error("[Auth] register error:", error);

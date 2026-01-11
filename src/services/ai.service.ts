@@ -39,7 +39,7 @@ class AIService extends BaseService {
 
     // Chat
     async chat(data: {
-        character_id: number;
+        character_id?: number;
         message: string;
         context?: {
             level_id?: number;
@@ -47,13 +47,38 @@ class AIService extends BaseService {
             heritage_site_id?: number;
         };
     }): Promise<ChatResponse> {
-        const response = await this.post('/chat', data);
-        return response.data;
+        const response = await this.post('/chat', {
+            message: data.message,
+            context: {
+                characterId: data.character_id,
+                levelId: data.context?.level_id,
+                artifactId: data.context?.artifact_id,
+                heritageSiteId: data.context?.heritage_site_id,
+            }
+        });
+        // Backend returns: { success: true, data: { message, character, timestamp, route } }
+        return {
+            message: {
+                id: Date.now(),
+                character_id: data.character_id || response.data.character?.id || 1,
+                user_id: 0, // Will be set from auth
+                role: 'assistant',
+                content: response.data.message,
+                timestamp: response.data.timestamp || new Date().toISOString(),
+                context: data.context,
+            },
+            character: response.data.character,
+            suggestions: [], // Can be added later
+        };
     }
 
     // Get chat history
-    async getChatHistory(characterId: number, limit: number = 50): Promise<ChatMessage[]> {
-        const response = await this.get('/history', { character_id: characterId, limit });
+    async getChatHistory(characterId?: number, limit: number = 50): Promise<ChatMessage[]> {
+        const params: any = { limit };
+        if (characterId) params.character_id = characterId;
+        
+        const response = await this.get('/history', params);
+        // Backend now returns properly formatted ChatMessage[] with role user/assistant
         return response.data;
     }
 
@@ -90,8 +115,8 @@ class AIService extends BaseService {
     }
 
     // Clear chat history
-    async clearHistory(characterId: number): Promise<{ success: boolean }> {
-        const response = await this.deleteRequest(`/history/${characterId}`);
+    async clearHistory(): Promise<{ success: boolean }> {
+        const response = await this.deleteRequest('/history');
         return response.data || { success: true };
     }
 

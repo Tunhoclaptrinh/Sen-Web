@@ -200,7 +200,13 @@ apiClient.interceptors.response.use(
 const handleForceLogout = () => {
   localStorage.removeItem(STORAGE_KEYS.TOKEN);
   localStorage.removeItem(STORAGE_KEYS.USER);
-  if (window.location.pathname !== "/login") {
+  
+  // Only redirect to login if on protected routes
+  const protectedPaths = ['/profile', '/game', '/admin', '/researcher', '/collections', '/notifications'];
+  const currentPath = window.location.pathname;
+  const isProtectedRoute = protectedPaths.some(path => currentPath.startsWith(path));
+  
+  if (isProtectedRoute && currentPath !== "/login") {
     message.error("Phiên đăng nhập hết hạn.");
     window.location.href = "/login";
   }

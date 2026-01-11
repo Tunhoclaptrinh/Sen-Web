@@ -1,0 +1,46 @@
+# ============================================
+# SEN Frontend - Docker Compose (Production)
+# ============================================
+
+services:
+  sen-frontend:
+    build:
+      context: ../..
+      dockerfile: Docker/Production/Dockerfile
+      args:
+        - VITE_API_BASE_URL=/api
+        - VITE_API_TIMEOUT=30000
+    image: production-sen-frontend
+    container_name: sen-frontend
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - sen-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "com.sen.service=frontend"
+      - "com.sen.environment=production"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  sen-network:
+    name: sen-network
+    driver: bridge
