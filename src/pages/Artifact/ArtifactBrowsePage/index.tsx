@@ -1,46 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import {
     Row,
     Col,
-    Card,
-    Input,
-    Select,
     Button,
+    Input,
     Spin,
     Empty,
-    Tag,
-    Pagination,
-    Space,
-    Dropdown,
-    message,
-    Tooltip,
+    Typography,
+    Pagination
 } from 'antd';
 import {
     SearchOutlined,
+    CalendarOutlined,
+    UserOutlined,
     FilterOutlined,
-    HeartOutlined,
-    HeartFilled,
-    PlusOutlined,
-    EyeOutlined,
 } from '@ant-design/icons';
 import artifactService from '@services/artifact.service';
-import favoriteService from '@services/favorite.service';
-import collectionService from '@services/collection.service';
 import type { Artifact } from '@/types';
+import ArticleCard from '@/components/common/cards/ArticleCard';
+import DiscoveryCard from '@/components/common/cards/DiscoveryCard'; // Import
 import './styles.less';
 
+const { Title } = Typography;
+
 const ArtifactBrowsePage: React.FC = () => {
-    const navigate = useNavigate();
     const [artifacts, setArtifacts] = useState<Artifact[]>([]);
     const [loading, setLoading] = useState(true);
-    const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
-    const [collections, setCollections] = useState<any[]>([]);
     const [filters, setFilters] = useState({
         q: '',
-        artifact_type: undefined,
-        condition: undefined,
+        year_created: undefined,
+        dynasty: undefined,
     });
+    // Random artifact state
+    const [randomFeatured, setRandomFeatured] = useState<Artifact | null>(null);
+
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 12,
@@ -49,8 +43,6 @@ const ArtifactBrowsePage: React.FC = () => {
 
     useEffect(() => {
         fetchArtifacts();
-        fetchFavoriteIds();
-        fetchCollections();
     }, [pagination.current, filters]);
 
     const fetchArtifacts = async () => {
@@ -61,63 +53,28 @@ const ArtifactBrowsePage: React.FC = () => {
                 limit: pagination.pageSize,
                 ...filters,
             });
-            setArtifacts(response.data || []);
+            
+            const fetchedArtifacts = response.data || [];
+            setArtifacts(fetchedArtifacts);
             setPagination((prev) => ({
                 ...prev,
                 total: response.pagination?.total || 0,
             }));
+
+            // Logic: Randomly pick one from the fetched list to be "Discovered" 
+            // Only set if we don't have one or if filters changed drastically (optional)
+            // For now, let's pick a random one from the current page to display at top
+            if (fetchedArtifacts.length > 0) {
+                 const newRandom = fetchedArtifacts[Math.floor(Math.random() * fetchedArtifacts.length)];
+                 setRandomFeatured(newRandom);
+            } else {
+                setRandomFeatured(null);
+            }
+
         } catch (error) {
-            message.error('Không thể tải danh sách hiện vật');
+            console.error('Cannot fetch artifacts');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchFavoriteIds = async () => {
-        try {
-            const response = await favoriteService.getIdsByType('artifact');
-            setFavoriteIds(new Set(response.data || []));
-        } catch (error) {
-            console.error('Cannot fetch favorite IDs');
-        }
-    };
-
-    const fetchCollections = async () => {
-        try {
-            const response = await collectionService.getAll();
-            setCollections(response.data || []);
-        } catch (error) {
-            console.error('Cannot fetch collections');
-        }
-    };
-
-    const handleToggleFavorite = async (id: number, e: React.MouseEvent) => {
-        e.stopPropagation();
-        try {
-            if (favoriteIds.has(id)) {
-                await favoriteService.remove('artifact', id.toString());
-                setFavoriteIds((prev) => {
-                    const newSet = new Set(prev);
-                    newSet.delete(id);
-                    return newSet;
-                });
-                message.success('Đã xóa khỏi yêu thích');
-            } else {
-                await favoriteService.add('artifact', id.toString());
-                setFavoriteIds((prev) => new Set(prev).add(id));
-                message.success('Đã thêm vào yêu thích');
-            }
-        } catch (error) {
-            message.error('Thao tác thất bại');
-        }
-    };
-
-    const handleAddToCollection = async (artifactId: number, collectionId: number) => {
-        try {
-            await collectionService.addArtifact(collectionId, artifactId);
-            message.success('Đã thêm vào bộ sưu tập');
-        } catch (error) {
-            message.error('Không thể thêm vào bộ sưu tập');
         }
     };
 
@@ -126,239 +83,147 @@ const ArtifactBrowsePage: React.FC = () => {
         setPagination((prev) => ({ ...prev, current: 1 }));
     };
 
-    const getConditionColor = (condition: string) => {
-        const colors: Record<string, string> = {
-            excellent: 'green',
-            good: 'blue',
-            fair: 'orange',
-            poor: 'red',
-        };
-        return colors[condition] || 'default';
-    };
-
-    const getConditionLabel = (condition: string) => {
-        const labels: Record<string, string> = {
-            excellent: 'Xuất sắc',
-            good: 'Tốt',
-            fair: 'Khá',
-            poor: 'Kém',
-        };
-        return labels[condition] || condition;
-    };
-
     return (
         <div className="artifact-browse-page">
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title">Khám Phá Hiện Vật</h1>
-                    <p className="page-description">
-                        Khám phá những hiện vật quý giá của nền văn hóa Việt Nam
+            {/* 1. Hero Section */}
+            <section className="hero-section">
+                <div className="hero-content">
+                    <h1 className="hero-title">Kho tàng Hiện Vật</h1>
+                    <p className="hero-subtitle">
+                        Lưu giữ những giá trị văn hóa, lịch sử qua từng hiện vật cổ xưa
                     </p>
                 </div>
-            </div>
+            </section>
 
-            <Card className="filter-card">
-                <Row gutter={[16, 16]} align="middle">
-                    <Col xs={24} md={12} lg={8}>
+             {/* 2. Filter Section */}
+            <div className="filter-container">
+                <div className="unified-filter-bar">
+                    
+                    {/* Search */}
+                    <div className="filter-item search-item">
+                        <SearchOutlined />
                         <Input
-                            size="large"
+                            bordered={false}
                             placeholder="Tìm kiếm hiện vật..."
-                            prefix={<SearchOutlined />}
                             allowClear
+                            value={filters.q}
                             onPressEnter={(e) => handleSearch(e.currentTarget.value)}
                             onChange={(e) => {
-                                if (!e.target.value) handleSearch('');
+                                setFilters((prev) => ({ ...prev, q: e.target.value }));
+                                if (!e.target.value) setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         />
-                    </Col>
-                    <Col xs={12} md={6} lg={4}>
-                        <Select
-                            size="large"
-                            placeholder="Loại hiện vật"
-                            style={{ width: '100%' }}
+                    </div>
+                    
+                    <div className="filter-divider" />
+
+                    {/* Year Created */}
+                    <div className="filter-item">
+                        <CalendarOutlined />
+                        <Input
+                            bordered={false}
+                            placeholder="Năm tạo tác"
                             allowClear
-                            onChange={(value) =>
-                                setFilters((prev) => ({ ...prev, artifact_type: value }))
+                            value={filters.year_created}
+                            onPressEnter={(e) =>
+                                setFilters((prev) => ({ ...prev, year_created: e.currentTarget.value as any }))
                             }
-                        >
-                            <Select.Option value="sculpture">Điêu khắc</Select.Option>
-                            <Select.Option value="painting">Hội họa</Select.Option>
-                            <Select.Option value="pottery">Gốm sứ</Select.Option>
-                            <Select.Option value="textile">Dệt may</Select.Option>
-                            <Select.Option value="document">Tài liệu</Select.Option>
-                            <Select.Option value="weapon">Vũ khí</Select.Option>
-                            <Select.Option value="jewelry">Trang sức</Select.Option>
-                        </Select>
-                    </Col>
-                    <Col xs={12} md={6} lg={4}>
-                        <Select
-                            size="large"
-                            placeholder="Tình trạng"
-                            style={{ width: '100%' }}
+                            onChange={(e) => setFilters((prev) => ({ ...prev, year_created: e.target.value as any }))}
+                        />
+                    </div>
+
+                    <div className="filter-divider" />
+
+                    {/* Dynasty */}
+                    <div className="filter-item">
+                        <UserOutlined />
+                        <Input
+                             bordered={false}
+                            placeholder="Triều đại"
                             allowClear
-                            onChange={(value) =>
-                                setFilters((prev) => ({ ...prev, condition: value }))
+                             value={filters.dynasty}
+                            onPressEnter={(e) =>
+                                setFilters((prev) => ({ ...prev, dynasty: e.currentTarget.value as any }))
                             }
-                        >
-                            <Select.Option value="excellent">Xuất sắc</Select.Option>
-                            <Select.Option value="good">Tốt</Select.Option>
-                            <Select.Option value="fair">Khá</Select.Option>
-                            <Select.Option value="poor">Kém</Select.Option>
-                        </Select>
-                    </Col>
-                    <Col xs={24} md={12} lg={8}>
+                             onChange={(e) => setFilters((prev) => ({ ...prev, dynasty: e.target.value as any }))}
+                        />
+                    </div>
+
+                    {/* Reset Btn */}
+                    <div className="filter-action">
                         <Button
-                            size="large"
+                            className="delete-filter-btn"
                             icon={<FilterOutlined />}
                             onClick={() => {
                                 setFilters({
                                     q: '',
-                                    artifact_type: undefined,
-                                    condition: undefined,
+                                    year_created: undefined,
+                                    dynasty: undefined,
                                 });
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         >
-                            Xóa Bộ Lọc
+                            Xóa Lọc
                         </Button>
-                    </Col>
-                </Row>
-            </Card>
+                    </div>
+                </div>
+            </div>
 
             {loading ? (
-                <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                    <Spin size="large" tip="Đang tải hiện vật..." />
+                 <div style={{ textAlign: 'center', padding: '100px 0' }}>
+                    <Spin size="large" tip="Đang tải dữ liệu..." />
                 </div>
-            ) : artifacts.length === 0 ? (
-                <Card>
-                    <Empty description="Không tìm thấy hiện vật nào" />
-                </Card>
             ) : (
                 <>
-                    <Row gutter={[24, 24]} className="artifact-grid">
-                        {artifacts.map((artifact) => (
-                            <Col xs={24} sm={12} lg={8} xl={6} key={artifact.id}>
-                                <Card
-                                    hoverable
-                                    className="artifact-card"
-                                    cover={
-                                        <div className="artifact-cover">
-                                            <img
-                                                src={
-                                                    artifact.images?.[0] ||
-                                                    'https://via.placeholder.com/300x200'
-                                                }
-                                                alt={artifact.name}
-                                            />
-                                            <div className="artifact-overlay">
-                                                <Space size="middle">
-                                                    <Tooltip title="Xem chi tiết">
-                                                        <Button
-                                                            type="primary"
-                                                            shape="circle"
-                                                            icon={<EyeOutlined />}
-                                                            size="large"
-                                                            onClick={() => navigate(`/artifacts/${artifact.id}`)}
-                                                        />
-                                                    </Tooltip>
-                                                    <Tooltip
-                                                        title={
-                                                            favoriteIds.has(artifact.id)
-                                                                ? 'Bỏ yêu thích'
-                                                                : 'Yêu thích'
-                                                        }
-                                                    >
-                                                        <Button
-                                                            type={
-                                                                favoriteIds.has(artifact.id) ? 'primary' : 'default'
-                                                            }
-                                                            shape="circle"
-                                                            icon={
-                                                                favoriteIds.has(artifact.id) ? (
-                                                                    <HeartFilled />
-                                                                ) : (
-                                                                    <HeartOutlined />
-                                                                )
-                                                            }
-                                                            danger={favoriteIds.has(artifact.id)}
-                                                            size="large"
-                                                            onClick={(e) => handleToggleFavorite(artifact.id, e)}
-                                                        />
-                                                    </Tooltip>
-                                                </Space>
-                                            </div>
-                                            {artifact.is_on_display && (
-                                                <Tag className="display-tag" color="green">
-                                                    Đang trưng bày
-                                                </Tag>
-                                            )}
-                                        </div>
-                                    }
-                                    actions={
-                                        collections.length > 0
-                                            ? [
-                                                <Dropdown
-                                                    key="collection"
-                                                    menu={{
-                                                        items: collections.map((col) => ({
-                                                            key: col.id,
-                                                            label: col.name,
-                                                            onClick: () =>
-                                                                handleAddToCollection(artifact.id, col.id),
-                                                        })),
-                                                    }}
-                                                >
-                                                    <Button type="text" icon={<PlusOutlined />}>
-                                                        Thêm vào bộ sưu tập
-                                                    </Button>
-                                                </Dropdown>,
-                                            ]
-                                            : undefined
-                                    }
-                                >
-                                    <Card.Meta
-                                        title={
-                                            <Tooltip title={artifact.name}>
-                                                <div className="artifact-title">{artifact.name}</div>
-                                            </Tooltip>
-                                        }
-                                        description={
-                                            <div className="artifact-meta">
-                                                <div className="tags">
-                                                    <Tag color={getConditionColor(artifact.condition || '')}>
-                                                        {getConditionLabel(artifact.condition || '')}
-                                                    </Tag>
-                                                    {artifact.year_created && (
-                                                        <Tag>{artifact.year_created}</Tag>
-                                                    )}
-                                                </div>
-                                                {/* 
-                                                {artifact.heritage_site && (
-                                                    <div className="location">
-                                                        📍 {artifact.heritage_site.name}
-                                                    </div>
-                                                )}
-                                                */}
-                                            </div>
-                                        }
-                                    />
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
+                    {/* 3. Discovered Section (Random/Featured Item) */}
+                    {randomFeatured && (
+                        <section className="discovered-section">
+                             <Title level={2} className="header-title">Nổi bật</Title>
+                            <DiscoveryCard data={randomFeatured} type="artifact" />
+                        </section>
+                    )}
 
-                    <div className="pagination-container">
-                        <Pagination
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={pagination.total}
-                            onChange={(page) =>
-                                setPagination((prev) => ({ ...prev, current: page }))
-                            }
-                            showSizeChanger={false}
-                            showTotal={(total) => `Tổng ${total} hiện vật`}
-                        />
-                    </div>
+                    {/* 4. Undiscovered Section (Grid) */}
+                    <section className="undiscovered-section">
+                         <div className="bg-drum-container">
+                             <img
+                                src="/images/hoatiettrongdong.png"
+                                alt="drum"
+                                className="bg-drum"
+                            />
+                        </div>
+                        <div className="section-content">
+                             <Title level={2} className="header-title">Khám phá</Title>
+                             
+                             {artifacts.length === 0 ? (
+                                <Empty description="Không tìm thấy hiện vật nào khác" />
+                            ) : (
+                                <Row gutter={[24, 24]}>
+                                    {artifacts.map((artifact) => (
+                                         <Col xs={24} sm={12} lg={8} key={artifact.id}>
+                                            <ArticleCard
+                                                data={artifact}
+                                                type="artifact"
+                                            />
+                                        </Col>
+                                    ))}
+                                </Row>
+                            )}
+
+                            <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center', width: '100%' }}>
+                                <Pagination
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={pagination.total}
+                                    showTotal={(total) => `Tổng số: ${total}`}
+                                    onChange={(page) =>
+                                        setPagination((prev) => ({ ...prev, current: page }))
+                                    }
+                                    showSizeChanger={false}
+                                />
+                            </div>
+                        </div>
+                    </section>
                 </>
             )}
         </div>

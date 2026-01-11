@@ -46,6 +46,9 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   total_reviews?: number;
   view_count?: number;
   is_active?: boolean;
+  author?: string;
+  publishDate?: string;
+  commentCount?: number;
 }
 
 // Heritage Site Create/Update DTO

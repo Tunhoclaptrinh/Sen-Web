@@ -1,168 +1,325 @@
+@import "../../../styles/variables.less";
+
 .heritage-browse-page {
-    padding: 24px;
-    max-width: 1400px;
+  min-height: 100vh;
+  background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3);
+  overflow-x: hidden;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Aleo", serif;
+  }
+
+  section {
+    position: relative;
+    width: 100%;
+  }
+
+
+
+  /* Hero Section */
+  .hero-section {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding: 100px 20px;
+    background: url("/images/Zero_home.png") no-repeat bottom center;
+    background-size: cover;
+    margin-bottom: 0;
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -36px;
+      left: 0;
+      width: 100%;
+      height: 36px;
+      background: linear-gradient(to bottom, #e232325e, rgba(255, 250, 226, 0));
+      z-index: 10;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+
+      h1 {
+        font-size: 48px;
+        color: #fff;
+        margin-bottom: 24px;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      }
+
+      .hero-subtitle {
+        font-size: 20px;
+        font-weight: 500;
+        margin-bottom: 48px;
+        color: #e1ac66;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      }
+    }
+  }
+
+  .filter-container {
+    margin-top: -50px; /* Overlap hero */
+    margin-bottom: 80px;
+    position: relative;
+    z-index: 20;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
+
+    .unified-filter-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(24px);
+      padding: 8px;
+      border-radius: 100px; 
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); // Premium shadow
+      border: 1px solid rgba(255, 255, 255, 0.8);
+
+      /* Responsive wrapper */
+      @media (max-width: 992px) {
+        flex-direction: column;
+        border-radius: 24px;
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+      }
+
+      .filter-item {
+        flex: 1;
+        position: relative;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+
+        /* Special sizing for search to make it bigger */
+        &.search-item {
+            flex: 1.8; 
+        }
+
+        /* Icon styling */
+        .anticon {
+          color: var(--primary-color);
+          font-size: 18px;
+          margin-right: 12px;
+          opacity: 0.8;
+        }
+
+        /* Ant Input/Select overrides for seamless look */
+        .ant-input-affix-wrapper,
+        .ant-select-selector {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          height: auto !important;
+          
+          input {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            &::placeholder { color: #999; font-weight: 400; }
+          }
+
+          .ant-select-selection-item {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 24px !important;
+          }
+          .ant-select-selection-placeholder {
+            font-size: 16px;
+            color: #999;
+          }
+        }
+        
+        /* Remove default clear/arrow icons if needed or style them */
+      }
+
+      .filter-divider {
+        width: 1px;
+        height: 40px;
+        background: #eee;
+        margin: 0 8px;
+
+        @media (max-width: 992px) {
+          display: none;
+        }
+      }
+
+      .filter-action {
+        padding-left: 8px;
+        
+        @media (max-width: 992px) {
+          padding-left: 0;
+          margin-top: 8px;
+        }
+      }
+
+      .delete-filter-btn {
+        height: 56px;
+        border-radius: 100px; /* Circle/Pill */
+        background: var(--primary-color); 
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 16px;
+        padding: 0 32px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+
+        &:hover {
+          background: #e1ac66; /* Slightly lighter/gold */
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+            transform: scale(0.98);
+        }
+      }
+    }
+  }
+
+
+  /* Discovered Section (Featured) */
+  .discovered-section {
+    padding: 36px 20px;
+    max-width: 1200px;
     margin: 0 auto;
 
-    .page-header {
-        margin-bottom: 24px;
-
-        .page-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .page-description {
-            color: #8c8c8c;
-            margin-top: 8px;
-            font-size: 16px;
-        }
+    .header-title {
+      font-size: 36px;
+      margin-bottom: 40px;
+      text-align: center;
+      color: var(--primary-color) !important;
     }
 
-    .filter-card {
-        margin-bottom: 24px;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .heritage-grid {
-        .heritage-card {
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
-
-            &:hover {
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-                transform: translateY(-4px);
-
-                .heritage-overlay {
-                    opacity: 1;
-                }
-
-                img {
-                    transform: scale(1.1);
-                }
-            }
-
-            .heritage-cover {
-                height: 240px;
-                position: relative;
-                overflow: hidden;
-                background: #f0f0f0;
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    transition: transform 0.5s ease;
-                }
-
-                .heritage-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(0, 0, 0, 0.5);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                }
-
-                .unesco-tag {
-                    position: absolute;
-                    top: 12px;
-                    right: 12px;
-                    font-weight: 600;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-                }
-            }
-
-            .ant-card-body {
-                padding: 20px;
-            }
-
-            .card-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                gap: 12px;
-                margin-bottom: 8px;
-
-                .heritage-title {
-                    font-size: 18px;
-                    font-weight: 700;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    flex: 1;
-                }
-            }
-
-            .heritage-meta {
-                .description {
-                    color: #595959;
-                    margin-bottom: 16px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    min-height: 44px;
-                }
-
-                .footer {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding-top: 12px;
-                    border-top: 1px solid #f0f0f0;
-                    color: #8c8c8c;
-                    font-size: 13px;
-
-                    .location {
-                        display: flex;
-                        align-items: center;
-                        gap: 4px;
-                    }
-
-                    .rating {
-                        display: flex;
-                        align-items: center;
-                        gap: 4px;
-                        font-weight: 600;
-                        color: #262626;
-                    }
-                }
-            }
+    .featured-container {
+      display: flex;
+      flex-direction: column;
+      
+      .image-wrapper {
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        overflow: hidden;
+        img {
+          width: 100%;
+          height: auto;
+          display: block;
+          max-height: 500px;
+          object-fit: cover;
         }
-    }
+      }
 
-    .pagination-container {
-        margin-top: 32px;
+      .info-card {
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 1px solid #f0f0f0;
+        border-top: none;
+        
+        .card-meta {
+          display: flex;
+          gap: 20px;
+          color: #999;
+          font-size: 13px;
+          margin-bottom: 12px;
+          border-bottom: 1px solid #eee;
+          padding-bottom: 12px;
+        }
+
+        .card-title {
+          font-size: 26px;
+          font-weight: 800;
+          color: #2c3e50;
+          margin-bottom: 16px;
+        }
+
+        .card-desc {
+          color: #666;
+          margin-bottom: 16px;
+          line-height: 1.6;
+          font-size: 15px;
+        }
+
+        .action-btn {
+          background: #6ABE45; // Green
+          color: #fff;
+          border: none;
+          padding: 10px 32px;
+          border-radius: 6px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s;
+          
+          &:hover {
+            background: #5aa63a;
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+
+  /* Undiscovered Section (Grid) */
+  .undiscovered-section {
+    padding: 80px 0;
+    position: relative;
+    z-index: 1;
+
+    .section-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+
+      .header-title {
+        font-size: 36px;
         text-align: center;
-
-        .ant-pagination {
-            display: inline-flex;
-        }
+        margin-bottom: 60px;
+        color: var(--primary-color) !important;
+      }
     }
-}
 
-@media (max-width: 768px) {
-    .heritage-browse-page {
-        padding: 16px;
-
-        .page-header {
-            .page-title {
-                font-size: 24px;
-            }
-        }
+    /* Drum Background */
+    .bg-drum-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
     }
+
+    .bg-drum {
+      position: absolute;
+      top: -100px;
+      right: -200px;
+      width: 800px;
+      opacity: 0.15;
+      animation: spin 60s linear infinite;
+    }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 }
