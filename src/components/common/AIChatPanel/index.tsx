@@ -58,9 +58,9 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
         }
     }, [defaultCharacter, currentCharacter, dispatch]);
 
-    // Load chat history when character changes
+    // Load chat history when character changes (only if user is logged in)
     useEffect(() => {
-        if (currentCharacter) {
+        if (currentCharacter && user) {
             dispatch(
                 fetchChatHistory({
                     characterId: currentCharacter.id,
@@ -68,7 +68,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
                 })
             );
         }
-    }, [currentCharacter, dispatch]);
+    }, [currentCharacter, user, dispatch]);
 
     // Auto scroll to bottom
     useEffect(() => {
@@ -84,6 +84,12 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
 
     const handleSendMessage = async () => {
         if (!inputMessage.trim() || !currentCharacter || chatLoading) return;
+        
+        // Check if user is logged in
+        if (!user) {
+            antdMessage.warning('Vui lòng đăng nhập để sử dụng chat');
+            return;
+        }
 
         const messageText = inputMessage.trim();
         setInputMessage('');
@@ -107,6 +113,12 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
 
     const handleClearHistory = async () => {
         if (!currentCharacter) return;
+        
+        // Check if user is logged in
+        if (!user) {
+            antdMessage.warning('Vui lòng đăng nhập để xóa lịch sử chat');
+            return;
+        }
 
         try {
             await dispatch(clearChatHistory(currentCharacter.id)).unwrap();
@@ -274,16 +286,20 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Nhập tin nhắn... (Enter để gửi, Shift+Enter để xuống dòng)"
+                    placeholder={
+                        !user 
+                            ? "Vui lòng đăng nhập để sử dụng chat..." 
+                            : "Nhập tin nhắn... (Enter để gửi, Shift+Enter để xuống dòng)"
+                    }
                     autoSize={{ minRows: 1, maxRows: 4 }}
-                    disabled={chatLoading || !currentCharacter}
+                    disabled={chatLoading || !currentCharacter || !user}
                 />
                 <Button
                     type="primary"
                     icon={<SendOutlined />}
                     onClick={handleSendMessage}
                     loading={chatLoading}
-                    disabled={!inputMessage.trim() || !currentCharacter}
+                    disabled={!inputMessage.trim() || !currentCharacter || !user}
                 >
                     Gửi
                 </Button>

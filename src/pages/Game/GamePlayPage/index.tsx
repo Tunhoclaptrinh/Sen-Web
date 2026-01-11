@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Button, Typography, Spin, Modal, Result, message, Progress } from 'antd';
-import { ArrowLeftOutlined, TrophyTwoTone, RedoOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, TrophyTwoTone, RedoOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons';
 import gameService from '@/services/game.service';
 import type { Screen, Level } from '@/types/game.types';
 import { SCREEN_TYPES } from '@/types/game.types';
@@ -32,6 +32,7 @@ const GamePlayPage: React.FC = () => {
     const [startTime, setStartTime] = useState<number>(Date.now());
     const [gameCompleted, setGameCompleted] = useState(false);
     const [completionData, setCompletionData] = useState<any>(null);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     useEffect(() => {
         if (levelId) {
@@ -231,43 +232,53 @@ const GamePlayPage: React.FC = () => {
     }
 
     return (
-        <div className="gameplay-page">
-            <div className="game-overlay-ui">
+        <div className={`gameplay-page ${isFullscreen ? 'fullscreen-mode' : ''}`}>
+            <div className="game-container">
+                <div className="game-overlay-ui">
+                    <Button
+                        icon={<ArrowLeftOutlined />}
+                        onClick={() => {
+                            Modal.confirm({
+                                title: 'Thoát màn chơi?',
+                                content: 'Tiến độ hiện tại của bạn sẽ bị mất.',
+                                okText: 'Thoát',
+                                cancelText: 'Ở lại',
+                                onOk: () => navigate('/game/chapters')
+                            });
+                        }}
+                        className="back-button"
+                    >
+                        Thoát
+                    </Button>
+
+                    <div className="level-info">
+                        <Title level={5} style={{ margin: 0, color: 'white' }}>{levelInfo?.name}</Title>
+                        <Progress
+                            percent={Math.round(((progress.completed) / (progress.total || 1)) * 100)}
+                            size="small"
+                            status="active"
+                            strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
+                            showInfo={false}
+                            style={{ width: 150 }}
+                        />
+                    </div>
+
+                    <div className="score-display">
+                        Điểm: {score}
+                    </div>
+                </div>
+
+                <div className="game-viewport">
+                    {renderScreen()}
+                </div>
+
                 <Button
-                    icon={<ArrowLeftOutlined />}
-                    onClick={() => {
-                        Modal.confirm({
-                            title: 'Thoát màn chơi?',
-                            content: 'Tiến độ hiện tại của bạn sẽ bị mất.',
-                            okText: 'Thoát',
-                            cancelText: 'Ở lại',
-                            onOk: () => navigate('/game/chapters')
-                        });
-                    }}
-                    className="back-button"
-                >
-                    Thoát
-                </Button>
-
-                <div className="level-info">
-                    <Title level={5} style={{ margin: 0, color: 'white' }}>{levelInfo?.name}</Title>
-                    <Progress
-                        percent={Math.round(((progress.completed) / (progress.total || 1)) * 100)}
-                        size="small"
-                        status="active"
-                        strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
-                        showInfo={false}
-                        style={{ width: 150 }}
-                    />
-                </div>
-
-                <div className="score-display">
-                    Điểm: {score}
-                </div>
-            </div>
-
-            <div className="game-viewport">
-                {renderScreen()}
+                    icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    className="fullscreen-button"
+                    size="large"
+                    title={isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
+                />
             </div>
         </div>
     );
