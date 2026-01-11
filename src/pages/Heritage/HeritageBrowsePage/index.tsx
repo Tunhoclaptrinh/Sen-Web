@@ -196,11 +196,12 @@ const HeritageBrowsePage: React.FC = () => {
                                     ))}
                                 </Row>
                             )}
-                            <div style={{ marginTop: 40, textAlign: 'center' }}>
+                            <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center', width: '100%' }}>
                                 <Pagination
                                     current={pagination.current}
                                     pageSize={pagination.pageSize}
                                     total={pagination.total}
+                                    showTotal={(total) => `Tổng số: ${total}`}
                                     onChange={(page) =>
                                         setPagination((prev) => ({ ...prev, current: page }))
                                     }
