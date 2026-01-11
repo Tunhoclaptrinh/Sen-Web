@@ -83,12 +83,20 @@ const ArtifactDetailPage = () => {
   return (
     <div className="artifact-detail-page">
       {/* 1. Hero Section */}
-      <section className="detail-hero">
-        <img src={mainImage} alt={artifact.name} className="hero-bg" />
-        <div className="hero-overlay">
-            <div className="container">
+      <section className="artifact-detail-hero" style={{ backgroundColor: '#1a1a1a' }}>
+        <img 
+            src={mainImage} 
+            alt={artifact.name} 
+            className="artifact-hero-img" 
+            style={{ backgroundColor: '#1a1a1a', objectFit: 'cover' }}
+            onError={(e) => {
+                e.currentTarget.src = 'https://via.placeholder.com/1200x600/1a1a1a/ffffff?text=No+Image';
+            }}
+        />
+        <div className="artifact-hero-overlay">
+            <div className="artifact-hero-container">
                 <h1>{artifact.name}</h1>
-                <div className="hero-meta">
+                <div className="artifact-hero-meta">
                     <span><CalendarOutlined /> {artifact.year_created}</span>
                     <span><UserOutlined /> {(artifact as any).dynasty}</span>
                 </div>
