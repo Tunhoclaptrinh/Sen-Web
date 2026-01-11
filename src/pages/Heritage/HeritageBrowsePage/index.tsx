@@ -95,25 +95,34 @@ const HeritageBrowsePage: React.FC = () => {
 
              {/* 2. Filter Section */}
              <div className="filter-container">
-                <Row gutter={[16, 16]} align="middle">
-                    <Col xs={24} md={10} lg={8}>
+                <div className="unified-filter-bar">
+                    {/* Search Item */}
+                    <div className="filter-item search-item">
+                        <SearchOutlined />
                         <Input
-                            size="large"
+                            bordered={false}
                             placeholder="Tìm kiếm di sản..."
-                            prefix={<SearchOutlined />}
                             allowClear
+                            value={filters.q}
                             onPressEnter={(e) => handleSearch(e.currentTarget.value)}
                             onChange={(e) => {
-                                if (!e.target.value) handleSearch('');
+                                // If clearing manually or typing
+                                setFilters((prev) => ({ ...prev, q: e.target.value }));
+                                if (!e.target.value) setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         />
-                    </Col>
-                    <Col xs={12} md={6} lg={4}>
-                         <Select
-                            size="large"
+                    </div>
+                    
+                    <div className="filter-divider" />
+
+                    {/* Region Select */}
+                    <div className="filter-item">
+                        <Select
+                            bordered={false}
                             placeholder="Vùng miền"
                             style={{ width: '100%' }}
                             allowClear
+                            value={filters.region}
                             onChange={(value) =>
                                 setFilters((prev) => ({ ...prev, region: value }))
                             }
@@ -122,24 +131,31 @@ const HeritageBrowsePage: React.FC = () => {
                             <Select.Option value="Central">Miền Trung</Select.Option>
                             <Select.Option value="South">Miền Nam</Select.Option>
                         </Select>
-                    </Col>
-                    <Col xs={12} md={4} lg={4}>
-                         <Select
-                            size="large"
+                    </div>
+
+                    <div className="filter-divider" />
+
+                    {/* Unesco Select */}
+                    <div className="filter-item">
+                        <Select
+                            bordered={false}
                             placeholder="UNESCO"
                             style={{ width: '100%' }}
                             allowClear
+                            value={filters.unesco_listed}
                             onChange={(value) =>
                                 setFilters((prev) => ({ ...prev, unesco_listed: value }))
                             }
                         >
-                            <Select.Option value={true}>Có</Select.Option>
+                            <Select.Option value={true}>Có UNESCO</Select.Option>
                             <Select.Option value={false}>Không</Select.Option>
                         </Select>
-                    </Col>
-                    <Col xs={24} md={4} lg={8}>
+                    </div>
+
+                    {/* Reset Button */}
+                    <div className="filter-action">
                         <Button
-                            size="large"
+                            className="delete-filter-btn"
                             icon={<FilterOutlined />}
                             onClick={() => {
                                 setFilters({
@@ -150,10 +166,10 @@ const HeritageBrowsePage: React.FC = () => {
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         >
-                            Xóa Bộ Lọc
+                            Xóa Lọc
                         </Button>
-                    </Col>
-                </Row>
+                    </div>
+                </div>
             </div>
 
             {loading ? (

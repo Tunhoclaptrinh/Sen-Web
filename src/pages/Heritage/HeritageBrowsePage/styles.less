@@ -66,24 +66,137 @@
   }
 
   .filter-container {
-    padding: 24px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    margin-top: -60px; /* Overlap hero */
-    margin-bottom: 60px;
+    margin-top: -50px; /* Overlap hero */
+    margin-bottom: 80px;
     position: relative;
     z-index: 20;
-    max-width: 1200px;
+    max-width: 1100px;
     margin-left: auto;
     margin-right: auto;
+    padding: 0 20px;
+
+    .unified-filter-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(24px);
+      padding: 8px;
+      border-radius: 100px; 
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); // Premium shadow
+      border: 1px solid rgba(255, 255, 255, 0.8);
+
+      /* Responsive wrapper */
+      @media (max-width: 992px) {
+        flex-direction: column;
+        border-radius: 24px;
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+      }
+
+      .filter-item {
+        flex: 1;
+        position: relative;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+
+        /* Special sizing for search to make it bigger */
+        &.search-item {
+            flex: 1.8; 
+        }
+
+        /* Icon styling */
+        .anticon {
+          color: var(--primary-color);
+          font-size: 18px;
+          margin-right: 12px;
+          opacity: 0.8;
+        }
+
+        /* Ant Input/Select overrides for seamless look */
+        .ant-input-affix-wrapper,
+        .ant-select-selector {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          height: auto !important;
+          
+          input {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            &::placeholder { color: #999; font-weight: 400; }
+          }
+
+          .ant-select-selection-item {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 24px !important;
+          }
+          .ant-select-selection-placeholder {
+            font-size: 16px;
+            color: #999;
+          }
+        }
+        
+        /* Remove default clear/arrow icons if needed or style them */
+      }
+
+      .filter-divider {
+        width: 1px;
+        height: 40px;
+        background: #eee;
+        margin: 0 8px;
+
+        @media (max-width: 992px) {
+          display: none;
+        }
+      }
+
+      .filter-action {
+        padding-left: 8px;
+        
+        @media (max-width: 992px) {
+          padding-left: 0;
+          margin-top: 8px;
+        }
+      }
+
+      .delete-filter-btn {
+        height: 56px;
+        border-radius: 100px; /* Circle/Pill */
+        background: var(--primary-color); 
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 16px;
+        padding: 0 32px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+
+        &:hover {
+          background: #e1ac66; /* Slightly lighter/gold */
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+            transform: scale(0.98);
+        }
+      }
+    }
   }
 
 
   /* Discovered Section (Featured) */
   .discovered-section {
-    padding: 60px 20px;
+    padding: 36px 20px;
     max-width: 1200px;
     margin: 0 auto;
 

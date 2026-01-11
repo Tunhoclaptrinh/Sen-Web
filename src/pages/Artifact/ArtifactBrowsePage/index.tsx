@@ -97,44 +97,62 @@ const ArtifactBrowsePage: React.FC = () => {
 
              {/* 2. Filter Section */}
             <div className="filter-container">
-                <Row gutter={[16, 16]} align="middle">
-                    <Col xs={24} md={10} lg={8}>
+                <div className="unified-filter-bar">
+                    
+                    {/* Search */}
+                    <div className="filter-item search-item">
+                        <SearchOutlined />
                         <Input
-                            size="large"
+                            bordered={false}
                             placeholder="Tìm kiếm hiện vật..."
-                            prefix={<SearchOutlined />}
                             allowClear
+                            value={filters.q}
                             onPressEnter={(e) => handleSearch(e.currentTarget.value)}
                             onChange={(e) => {
-                                if (!e.target.value) handleSearch('');
+                                setFilters((prev) => ({ ...prev, q: e.target.value }));
+                                if (!e.target.value) setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         />
-                    </Col>
-                    <Col xs={12} md={6} lg={4}>
+                    </div>
+                    
+                    <div className="filter-divider" />
+
+                    {/* Year Created */}
+                    <div className="filter-item">
+                        <CalendarOutlined />
                         <Input
-                            size="large"
+                            bordered={false}
                             placeholder="Năm tạo tác"
-                            prefix={<CalendarOutlined />}
                             allowClear
+                            value={filters.year_created}
                             onPressEnter={(e) =>
                                 setFilters((prev) => ({ ...prev, year_created: e.currentTarget.value as any }))
                             }
+                            onChange={(e) => setFilters((prev) => ({ ...prev, year_created: e.target.value as any }))}
                         />
-                    </Col>
-                    <Col xs={12} md={4} lg={4}>
-                         <Input
-                            size="large"
+                    </div>
+
+                    <div className="filter-divider" />
+
+                    {/* Dynasty */}
+                    <div className="filter-item">
+                        <UserOutlined />
+                        <Input
+                             bordered={false}
                             placeholder="Triều đại"
-                            prefix={<UserOutlined />}
                             allowClear
+                             value={filters.dynasty}
                             onPressEnter={(e) =>
                                 setFilters((prev) => ({ ...prev, dynasty: e.currentTarget.value as any }))
                             }
+                             onChange={(e) => setFilters((prev) => ({ ...prev, dynasty: e.target.value as any }))}
                         />
-                    </Col>
-                    <Col xs={24} md={4} lg={8}>
+                    </div>
+
+                    {/* Reset Btn */}
+                    <div className="filter-action">
                         <Button
-                            size="large"
+                            className="delete-filter-btn"
                             icon={<FilterOutlined />}
                             onClick={() => {
                                 setFilters({
@@ -145,10 +163,10 @@ const ArtifactBrowsePage: React.FC = () => {
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         >
-                            Xóa Bộ Lọc
+                            Xóa Lọc
                         </Button>
-                    </Col>
-                </Row>
+                    </div>
+                </div>
             </div>
 
             {loading ? (
