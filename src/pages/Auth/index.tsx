@@ -49,7 +49,8 @@ const AuthPage = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePhone = (phone: string) => /^[0-9]{10,11}$/.test(phone);
 
   const formVariants = {
@@ -84,7 +85,7 @@ const AuthPage = () => {
         login({ email: loginEmail, password: loginPassword }),
       ).unwrap();
 
-      message.success("✅ Đăng nhập thành công!");
+      message.success("Đăng nhập thành công!");
       navigate("/"); // tự chuyển trang
     } catch (error: any) {
       message.error(`❌ ${error || "Đăng nhập thất bại"}`);

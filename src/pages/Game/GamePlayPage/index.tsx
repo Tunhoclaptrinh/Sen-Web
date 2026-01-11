@@ -237,23 +237,34 @@ const GamePlayPage: React.FC = () => {
               </Button>,
             ]}
           >
-            <div className="rewards-summary">
-              <Title level={4}>Phần thưởng nhận được:</Title>
-              <div className="rewards-grid">
-                <div className="reward-item">
-                  <span className="reward-icon">🪙</span>
-                  <span className="reward-value">
-                    +{completionData.rewards.coins} Xu
-                  </span>
-                </div>
-                <div className="reward-item">
-                  <span className="reward-icon">🌸</span>
-                  <span className="reward-value">
-                    +{completionData.rewards.petals} Cánh Sen
-                  </span>
+            {completionData.rewards ? (
+              <div className="rewards-summary">
+                <Title level={4}>Phần thưởng nhận được:</Title>
+                <div className="rewards-grid">
+                  <div className="reward-item">
+                    <span className="reward-icon">🪙</span>
+                    <span className="reward-value">
+                      +{completionData.rewards.coins} Xu
+                    </span>
+                  </div>
+                  <div className="reward-item">
+                    <span className="reward-icon">🌸</span>
+                    <span className="reward-value">
+                      +{completionData.rewards.petals} Cánh Sen
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="rewards-summary">
+                <Title level={4} style={{ color: "#faad14" }}>
+                  🔄 Chế độ ôn tập
+                </Title>
+                <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>
+                  Bạn đã hoàn thành màn chơi này rồi! Lần chơi này không nhận thêm phần thưởng.
+                </Paragraph>
+              </div>
+            )}
           </Result>
         </Card>
       </div>
