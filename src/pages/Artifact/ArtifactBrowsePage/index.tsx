@@ -27,7 +27,12 @@ const { Title } = Typography;
 const ArtifactBrowsePage: React.FC = () => {
     const [artifacts, setArtifacts] = useState<Artifact[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filters, setFilters] = useState({
+    interface FilterState {
+        q: string;
+        year_created?: string;
+        dynasty?: string;
+    }
+    const [filters, setFilters] = useState<FilterState>({
         q: '',
         year_created: undefined,
         dynasty: undefined,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Spin, message, Row, Col, Typography, Empty } from "antd";
@@ -45,7 +45,7 @@ const ArtifactDetailPage = () => {
             const res = await artifactService.getAll({ limit: 3 });
             if (res.data) {
                 // Filter out current if logic allows, or just show top 3
-                setRelatedArtifacts(res.data.filter(a => a.id !== currentId).slice(0, 3));
+                setRelatedArtifacts(res.data.filter(a => a.id !== Number(currentId)).slice(0, 3));
             }
         } catch (e) {
             console.error("Failed to fetch related");

@@ -26,7 +26,12 @@ const { Title } = Typography;
 const HeritageBrowsePage: React.FC = () => {
     const [sites, setSites] = useState<HeritageSite[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filters, setFilters] = useState({
+    interface FilterState {
+        q: string;
+        region?: string;
+        unesco_listed?: boolean;
+    }
+    const [filters, setFilters] = useState<FilterState>({
         q: '',
         region: undefined,
         unesco_listed: undefined,
