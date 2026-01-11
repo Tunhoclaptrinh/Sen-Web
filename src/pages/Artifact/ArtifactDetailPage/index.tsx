@@ -45,7 +45,7 @@ const ArtifactDetailPage = () => {
             const res = await artifactService.getAll({ limit: 3 });
             if (res.data) {
                 // Filter out current if logic allows, or just show top 3
-                setRelatedArtifacts(res.data.filter(a => String(a.id) !== currentId).slice(0, 3));
+                setRelatedArtifacts(res.data.filter(a => a.id !== Number(currentId)).slice(0, 3));
             }
         } catch (e) {
             console.error("Failed to fetch related");
