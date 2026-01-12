@@ -57,6 +57,11 @@ export const adminMenu: IMenuItem[] = [
                 path: '/admin/exhibitions',
                 name: 'Triển lãm ảo',
             },
+            {
+                key: 'history',
+                path: '/admin/history',
+                name: 'Lịch sử',
+            },
         ]
     },
     {

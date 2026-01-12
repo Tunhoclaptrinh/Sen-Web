@@ -18,10 +18,12 @@ const Login = lazy(() => import("@/pages/Auth"));
 // Public Browse Pages (User Friendly)
 const HeritageBrowsePage = lazy(() => import("@/pages/Heritage/HeritageBrowsePage"));
 const ArtifactBrowsePage = lazy(() => import("@/pages/Artifact/ArtifactBrowsePage"));
+const HistoryListPage = lazy(() => import("@/pages/History/HistoryListPage"));
 
 // Detail Pages
 const HeritageDetailPage = lazy(() => import("@/pages/Heritage/HeritageDetailPage"));
 const ArtifactDetailPage = lazy(() => import("@/pages/Artifact/ArtifactDetailPage"));
+const HistoryDetailPage = lazy(() => import("@/pages/History/HistoryDetailPage"));
 
 // Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
@@ -36,7 +38,8 @@ const AIChatDemoPage = lazy(() => import("@/pages/AIChatDemo"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageListPage = lazy(() => import("@/pages/Heritage/HeritageListPage")); // Admin view
+const HeritageListPage = lazy(() => import("@/pages/Heritage/HeritageListPage"));
+const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
 const ArtifactListPage = lazy(() => import("@/pages/Artifact/ArtifactListPage")); // Admin view
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
@@ -123,6 +126,19 @@ const routes: RouteObject[] = [
             element: <ArtifactDetailPage />,
           },
         ],
+      },
+      {
+        path: "history",
+        children: [
+           {
+              index: true,
+              element: <HistoryListPage />,
+           },
+           {
+              path: ":id",
+              element: <HistoryDetailPage />,
+           }
+        ]
       },
       {
         path: "character-showcase",
@@ -284,6 +300,10 @@ const routes: RouteObject[] = [
       {
         path: "exhibitions",
         element: <ExhibitionManagement />,
+      },
+      {
+        path: "history",
+        element: <HistoryManagement />,
       },
       {
         path: "chapters",
