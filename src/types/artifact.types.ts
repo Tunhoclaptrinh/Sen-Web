@@ -19,6 +19,21 @@ export enum ArtifactType {
   OTHER = "other",
 }
 
+// Artifact Type Labels (Vietnamese)
+export const ArtifactTypeLabels: Record<ArtifactType, string> = {
+  [ArtifactType.SCULPTURE]: "Điều khắc",
+  [ArtifactType.PAINTING]: "Hội họa",
+  [ArtifactType.DOCUMENT]: "Văn bản",
+  [ArtifactType.POTTERY]: "Gốm sứ",
+  [ArtifactType.TEXTILE]: "Dệt may",
+  [ArtifactType.TOOL]: "Công cụ",
+  [ArtifactType.WEAPON]: "Vũ khí",
+  [ArtifactType.JEWELRY]: "Trang sức",
+  [ArtifactType.MANUSCRIPT]: "Bản thảo",
+  [ArtifactType.PHOTOGRAPH]: "Ảnh",
+  [ArtifactType.OTHER]: "Khác",
+};
+
 // Artifact Condition
 export enum ArtifactCondition {
   EXCELLENT = "excellent",
@@ -26,6 +41,14 @@ export enum ArtifactCondition {
   FAIR = "fair",
   POOR = "poor",
 }
+
+// Artifact Condition Labels (Vietnamese)
+export const ArtifactConditionLabels: Record<ArtifactCondition, string> = {
+  [ArtifactCondition.EXCELLENT]: "Xuất sắc",
+  [ArtifactCondition.GOOD]: "Tốt",
+  [ArtifactCondition.FAIR]: "Khá",
+  [ArtifactCondition.POOR]: "Kém",
+};
 
 // Artifact
 export interface Artifact extends BaseEntity, TimestampEntity {

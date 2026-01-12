@@ -186,9 +186,13 @@ const HeritageSiteManagement = () => {
                         key: "type",
                         placeholder: "Loại hình",
                         options: [
-                            { label: "Monument", value: "monument" },
-                            { label: "Temple", value: "temple" },
-                            { label: "Museum", value: "museum" },
+                            { label: "Di tích", value: "monument" },
+                            { label: "Đền chùa", value: "temple" },
+                            { label: "Bảo tàng", value: "museum" },
+                            { label: "Địa điểm khảo cổ", value: "archaeological_site" },
+                            { label: "Công trình lịch sử", value: "historic_building" },
+                            { label: "Di sản thiên nhiên", value: "natural_heritage" },
+                            { label: "Di sản phi vật thể", value: "intangible_heritage" },
                         ],
                     },
                     {
@@ -198,6 +202,14 @@ const HeritageSiteManagement = () => {
                             { label: "Miền Bắc", value: "Bắc" },
                             { label: "Miền Trung", value: "Trung" },
                             { label: "Miền Nam", value: "Nam" },
+                        ],
+                    },
+                    {
+                        key: "unesco_listed",
+                        placeholder: "UNESCO",
+                        options: [
+                            { label: "Có", value: true },
+                            { label: "Không", value: false },
                         ],
                     }
                 ]}

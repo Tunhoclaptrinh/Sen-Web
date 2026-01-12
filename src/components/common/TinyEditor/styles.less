@@ -1,0 +1,81 @@
+.tiny-editor-wrapper {
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: #1f5f25;
+  }
+
+  &:focus-within {
+    border-color: #1f5f25;
+    box-shadow: 0 0 0 2px rgba(31, 95, 37, 0.1);
+  }
+
+  :global {
+    // Remove TinyMCE default border
+    .tox-tinymce {
+      border: none !important;
+    }
+
+    // Toolbar styling with Sen theme
+    .tox .tox-toolbar,
+    .tox .tox-toolbar__overflow,
+    .tox .tox-toolbar__primary {
+      background: #fafafa !important;
+    }
+
+    .tox .tox-tbtn {
+      &:hover {
+        background: #e8f5e9 !important;
+      }
+
+      &.tox-tbtn--enabled {
+        background: #c8e6c9 !important;
+      }
+    }
+
+    .tox .tox-statusbar {
+      border-top: 1px solid #e0e0e0 !important;
+    }
+
+    // Sen theme buttons
+    .tox .tox-button--secondary {
+      background-color: #1f5f25 !important;
+      border-color: #1f5f25 !important;
+      color: #fff !important;
+
+      &:hover {
+        background-color: #2d7a35 !important;
+      }
+    }
+
+    .tox .tox-button--primary {
+      background-color: #d4b070 !important;
+      border-color: #d4b070 !important;
+
+      &:hover {
+        background-color: #c49a4f !important;
+      }
+    }
+
+    // Menu hover state
+    .tox .tox-collection__item--active {
+      background-color: #e8f5e9 !important;
+    }
+
+    // Loading spinner
+    .tox .tox-spinner div {
+      border-color: #1f5f25 !important;
+      border-top-color: transparent !important;
+    }
+
+    // Disabled state
+    .tox-tinymce.tox-tinymce--disabled {
+      opacity: 0.6;
+      pointer-events: none;
+      background: #f5f5f5;
+    }
+  }
+}

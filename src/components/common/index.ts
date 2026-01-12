@@ -6,6 +6,7 @@
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ProtectedRoute, ProtectedRouteLoading } from './ProtectedRoute';
 export { default as PublicRoute } from './PublicRoute';
+export { default as TinyEditor } from './TinyEditor';
 
 // Toast & Notifications
 export { default as toast, ToastProvider, useToast } from './Toast';

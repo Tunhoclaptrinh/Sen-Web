@@ -184,9 +184,9 @@ const LevelsPage: React.FC = () => {
                           style={{
                             color:
                               i <=
-                              (level.player_best_score > 80
+                              ((level.player_best_score ?? 0) > 80
                                 ? 3
-                                : level.player_best_score > 50
+                                : (level.player_best_score ?? 0) > 50
                                   ? 2
                                   : 1)
                                 ? "#ffd700"

@@ -15,12 +15,30 @@ export enum HeritageType {
   INTANGIBLE_HERITAGE = "intangible_heritage",
 }
 
+// Heritage Type Labels (Vietnamese)
+export const HeritageTypeLabels: Record<HeritageType, string> = {
+  [HeritageType.MONUMENT]: "Di tích lịch sử",
+  [HeritageType.TEMPLE]: "Đền, chùa, miếu",
+  [HeritageType.MUSEUM]: "Bảo tàng",
+  [HeritageType.ARCHAEOLOGICAL_SITE]: "Khu khảo cổ",
+  [HeritageType.HISTORIC_BUILDING]: "Công trình kiến trúc lịch sử",
+  [HeritageType.NATURAL_HERITAGE]: "Di sản thiên nhiên",
+  [HeritageType.INTANGIBLE_HERITAGE]: "Di sản phi vật thể",
+};
+
 // Significance Level
 export enum SignificanceLevel {
   LOCAL = "local",
   NATIONAL = "national",
   INTERNATIONAL = "international",
 }
+
+// Significance Level Labels (Vietnamese)
+export const SignificanceLevelLabels: Record<SignificanceLevel, string> = {
+  [SignificanceLevel.LOCAL]: "Cấp địa phương",
+  [SignificanceLevel.NATIONAL]: "Cấp quốc gia",
+  [SignificanceLevel.INTERNATIONAL]: "Cấp quốc tế",
+};
 
 // Heritage Site
 export interface HeritageSite extends BaseEntity, TimestampEntity {
