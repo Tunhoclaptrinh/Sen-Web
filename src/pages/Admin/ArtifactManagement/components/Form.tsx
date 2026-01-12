@@ -1,6 +1,11 @@
 import { Input, InputNumber, Select, Switch, Row, Col, Form } from "antd";
 import { FormModal, TinyEditor } from "@/components/common";
-import { ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLabels } from "@/types";
+import {
+  ArtifactType,
+  ArtifactCondition,
+  ArtifactTypeLabels,
+  ArtifactConditionLabels,
+} from "@/types";
 import { useEffect, useState } from "react";
 import heritageService from "@/services/heritage.service";
 

@@ -1,6 +1,11 @@
 import { Input, InputNumber, Select, Switch, Row, Col, Form } from "antd";
 import { FormModal, TinyEditor } from "@/components/common";
-import { HeritageType, SignificanceLevel, HeritageTypeLabels, SignificanceLevelLabels } from "@/types";
+import {
+  HeritageType,
+  SignificanceLevel,
+  HeritageTypeLabels,
+  SignificanceLevelLabels,
+} from "@/types";
 import { useEffect } from "react";
 
 interface HeritageFormProps {

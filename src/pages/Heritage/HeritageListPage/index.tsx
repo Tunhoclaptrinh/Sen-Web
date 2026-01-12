@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  Modal,
-  Space,
-  Tag,
-} from "antd";
+import { Modal, Space, Tag } from "antd";
 import { useCRUD } from "@hooks/useCRUD";
 import heritageService from "@services/heritage.service";
 import DataTable from "@components/common/DataTable";
@@ -137,7 +133,8 @@ const HeritageListPage = () => {
       key: "entrance_fee",
       width: 120,
       sorter: true,
-      render: (fee: any) => (fee ? `${fee.toLocaleString("vi-VN")} đ` : "Miễn phí"),
+      render: (fee: any) =>
+        fee ? `${fee.toLocaleString("vi-VN")} đ` : "Miễn phí",
     },
     {
       title: "Đánh Giá",
