@@ -15,16 +15,18 @@ const { Paragraph } = Typography;
 
 interface ArticleCardProps {
     data: any; // Using any for shared convenience
-    type: 'artifact' | 'heritage';
+    type: 'artifact' | 'heritage' | 'history';
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ data, type }) => {
     const navigate = useNavigate();
 
     const handleNavigate = () => {
-        const path = type === 'artifact' 
-            ? `/artifacts/${data.id}` 
-            : `/heritage-sites/${data.id}`;
+        let path = '';
+        if (type === 'artifact') path = `/artifacts/${data.id}`;
+        else if (type === 'heritage') path = `/heritage-sites/${data.id}`;
+        else if (type === 'history') path = `/history/${data.id}`;
+        
         navigate(path);
     };
 

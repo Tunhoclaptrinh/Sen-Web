@@ -15,7 +15,7 @@ const { Paragraph } = Typography;
 
 interface DiscoveryCardProps {
     data: any; // Using any for flexibility or shared interface
-    type: 'artifact' | 'heritage';
+    type: 'artifact' | 'heritage' | 'history';
 }
 
 const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
@@ -24,9 +24,11 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
     if (!data) return null;
 
     const handleNavigate = () => {
-        const path = type === 'artifact' 
-            ? `/artifacts/${data.id}` 
-            : `/heritage-sites/${data.id}`;
+        let path = '';
+        if (type === 'artifact') path = `/artifacts/${data.id}`;
+        else if (type === 'heritage') path = `/heritage-sites/${data.id}`;
+        else if (type === 'history') path = `/history/${data.id}`;
+        
         navigate(path);
     };
 
@@ -79,7 +81,9 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                 </div>
 
                 <button className="action-btn" onClick={handleNavigate}>
-                    {type === 'artifact' ? 'Xem chi tiết hiện vật' : 'Khám phá di sản'} <ArrowRightOutlined />
+                    {type === 'artifact' ? 'Xem chi tiết hiện vật' : 
+                     type === 'history' ? 'Đọc bài viết' :
+                     'Khám phá di sản'} <ArrowRightOutlined />
                 </button>
             </div>
         </div>

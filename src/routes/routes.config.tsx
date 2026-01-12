@@ -10,6 +10,8 @@ import AuthLayout from "@/layouts/AuthLayout";
 import Loading from "@/components/common/Loading";
 import AuthGuard from "@/components/common/guards/AuthGuard";
 import { RoleGuard } from "./RouteGuards";
+import ArtifactManagement from "@/pages/Admin/ArtifactManagement";
+import HeritageSiteManagement from "@/pages/Admin/HeritageSiteManagement";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/Home"));
@@ -22,6 +24,7 @@ const HeritageBrowsePage = lazy(
 const ArtifactBrowsePage = lazy(
   () => import("@/pages/Artifact/ArtifactBrowsePage"),
 );
+const HistoryListPage = lazy(() => import("@/pages/History/HistoryListPage"));
 
 // Detail Pages
 const HeritageDetailPage = lazy(
@@ -29,6 +32,9 @@ const HeritageDetailPage = lazy(
 );
 const ArtifactDetailPage = lazy(
   () => import("@/pages/Artifact/ArtifactDetailPage"),
+);
+const HistoryDetailPage = lazy(
+  () => import("@/pages/History/HistoryDetailPage"),
 );
 
 // Profile Pages
@@ -45,18 +51,13 @@ const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageSiteManagement = lazy(
-  () => import("@/pages/Admin/HeritageSiteManagement"),
-); // Admin
-const ArtifactManagement = lazy(
-  () => import("@/pages/Admin/ArtifactManagement"),
-); // Admin
 const HeritageListPage = lazy(
   () => import("@/pages/Heritage/HeritageListPage"),
-); // User view
+);
+const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
 const ArtifactListPage = lazy(
   () => import("@/pages/Artifact/ArtifactListPage"),
-); // User view
+); // Admin view
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
 const CategoryManagement = lazy(
@@ -154,6 +155,19 @@ const routes: RouteObject[] = [
           {
             path: ":id",
             element: <ArtifactDetailPage />,
+          },
+        ],
+      },
+      {
+        path: "history",
+        children: [
+          {
+            index: true,
+            element: <HistoryListPage />,
+          },
+          {
+            path: ":id",
+            element: <HistoryDetailPage />,
           },
         ],
       },
@@ -313,6 +327,10 @@ const routes: RouteObject[] = [
       {
         path: "exhibitions",
         element: <ExhibitionManagement />,
+      },
+      {
+        path: "history",
+        element: <HistoryManagement />,
       },
       {
         path: "chapters",
