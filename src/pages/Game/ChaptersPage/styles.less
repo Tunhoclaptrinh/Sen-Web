@@ -2,6 +2,8 @@
     padding: 24px;
     max-width: 1400px;
     margin: 0 auto;
+    background-color: #f0e9e9;
+    min-height: 100vh;
 }
 
 .chapters-header {
@@ -9,15 +11,20 @@
     text-align: center;
 }
 
+.chapters-header .ant-typography {
+    color: #2c3e50;
+}
+
 .progress-card {
     margin-top: 24px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1f5f25 0%, #4f88dd 100%);
     border: none;
     color: white;
+    border-radius: 12px;
 }
 
 .progress-card .ant-card-body {
-    padding: 24px;
+    padding: 20px 24px;
 }
 
 .stat-item {
@@ -25,20 +32,37 @@
     align-items: center;
     gap: 12px;
     justify-content: center;
+    height: 100%;
 }
 
 .stat-item .ant-typography {
     color: white !important;
     margin: 0;
+    font-weight: 500;
 }
 
 .chapters-grid {
     margin-top: 32px;
 }
 
+.chapters-grid .ant-col {
+    display: flex;
+}
+
 .chapter-card {
     position: relative;
     transition: all 0.3s ease;
+    width: 100%;
+    height: 320px;
+    background-color: #f0e9e9;
+    border: 1px solid #d4c5c5;
+    border-radius: 10px;
+}
+
+.chapter-card .ant-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
     height: 100%;
 }
 
@@ -48,23 +72,25 @@
 }
 
 .chapter-card.locked {
-    opacity: 0.7;
+    opacity: 0.85;
     cursor: not-allowed;
 }
 
 .chapter-card.locked:hover {
-    transform: none;
+    transform: translateY(-2px);
 }
 
 .chapter-header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .chapter-icon {
     flex-shrink: 0;
+    font-size: 48px;
+    line-height: 1;
 }
 
 .chapter-info {
@@ -73,14 +99,85 @@
 
 .chapter-info .ant-typography {
     margin: 0;
+    color: #2c3e50;
+}
+
+.chapter-info h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 0 !important;
+    line-height: 1.2;
+}
+
+.chapter-info .ant-tag {
+    display: none;
+}
+
+.chapter-card .ant-typography-paragraph {
+    color: #5a5a5a;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 0;
+    height: 58px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.chapter-description-wrapper {
+    position: relative;
+    margin-bottom: 8px;
+    height: 75px;
+}
+
+.chapter-read-more {
+    color: #4f88dd;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 2px;
+    display: inline-block;
+}
+
+.chapter-read-more:hover {
+    color: #1f5f25;
+    text-decoration: underline;
 }
 
 .chapter-stats {
-    margin-top: 16px;
+    margin-bottom: 12px;
 }
 
 .chapter-stats .stat {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+}
+
+.chapter-stats .ant-typography-secondary {
+    color: #7a7a7a;
+    font-size: 13px;
+}
+
+.chapter-stats .ant-progress {
+    margin-top: 4px;
+}
+
+.chapter-stats .ant-progress-bg {
+    background: linear-gradient(90deg, #1f5f25 0%, #4f88dd 100%);
+}
+
+.chapter-card .ant-btn {
+    background: linear-gradient(90deg, #c49a4f 0%, #d4b070 100%);
+    border: none;
+    border-radius: 8px;
+    height: 40px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.chapter-card .ant-btn:hover {
+    background: linear-gradient(90deg, #d4b070 0%, #c49a4f 100%);
+    transform: translateY(-1px);
 }
 
 .locked-overlay {
@@ -89,22 +186,44 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(44, 62, 80, 0.75);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: white;
-    border-radius: 8px;
+    border-radius: 10px;
+    backdrop-filter: blur(2px);
 }
 
 .locked-overlay .ant-typography {
     color: white !important;
 }
 
+.locked-overlay .anticon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    color: #ffd700;
+}
+
+.locked-overlay .ant-btn {
+    background: linear-gradient(90deg, #1f5f25 0%, #4f88dd 100%);
+    border: none;
+    color: white;
+    margin-top: 16px;
+}
+
+.locked-overlay .ant-btn:hover {
+    background: linear-gradient(90deg, #4f88dd 0%, #1f5f25 100%);
+}
+
 @media (max-width: 768px) {
     .chapters-page {
         padding: 16px;
+    }
+
+    .chapters-grid {
+        gap: 16px;
     }
 
     .stat-item {

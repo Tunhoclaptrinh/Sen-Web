@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters, fetchProgress } from '@/store/slices/gameSlice';
-import { Card, Row, Col, Progress, Button, Spin, Typography, Tag } from 'antd';
+import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal } from 'antd';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined } from '@ant-design/icons';
 import type { Chapter } from '@/types';
 import "./styles.less";
@@ -13,6 +13,8 @@ const ChaptersPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { chapters, chaptersLoading, progress, progressLoading } = useAppSelector((state) => state.game);
+    const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         dispatch(fetchChapters());
@@ -23,6 +25,12 @@ const ChaptersPage: React.FC = () => {
         if (chapter.is_unlocked) {
             navigate(`/game/chapters/${chapter.id}/levels`);
         }
+    };
+
+    const handleShowDetail = (chapter: Chapter, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedChapter(chapter);
+        setModalVisible(true);
     };
 
     const handleUnlockChapter = async (chapterId: number) => {
@@ -138,9 +146,19 @@ const ChaptersPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <Paragraph ellipsis={{ rows: 2 }}>
-                                {chapter.description}
-                            </Paragraph>
+                            <div className="chapter-description-wrapper">
+                                <Paragraph ellipsis={{ rows: 3 }}>
+                                    {chapter.description}
+                                </Paragraph>
+                                {chapter.description && chapter.description.length > 80 && (
+                                    <span 
+                                        className="chapter-read-more"
+                                        onClick={(e) => handleShowDetail(chapter, e)}
+                                    >
+                                        Xem thêm
+                                    </span>
+                                )}
+                            </div>
 
                             <div className="chapter-stats">
                                 <div className="stat">
@@ -178,7 +196,7 @@ const ChaptersPage: React.FC = () => {
                             )}
 
                             {chapter.is_unlocked && (
-                                <Button type="primary" block style={{ marginTop: 16 }}>
+                                <Button type="primary" block>
                                     Chơi ngay
                                 </Button>
                             )}
@@ -186,6 +204,62 @@ const ChaptersPage: React.FC = () => {
                     </Col>
                 ))}
             </Row>
+
+            <Modal
+                title={
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <span style={{ fontSize: 32 }}>
+                            {selectedChapter && getPetalStateIcon(selectedChapter.petal_state)}
+                        </span>
+                        <span>{selectedChapter?.name}</span>
+                    </div>
+                }
+                open={modalVisible}
+                onCancel={() => setModalVisible(false)}
+                footer={[
+                    <Button key="close" onClick={() => setModalVisible(false)}>
+                        Đóng
+                    </Button>,
+                    selectedChapter?.is_unlocked && (
+                        <Button 
+                            key="play" 
+                            type="primary" 
+                            onClick={() => {
+                                if (selectedChapter) {
+                                    navigate(`/game/chapters/${selectedChapter.id}/levels`);
+                                }
+                            }}
+                        >
+                            Chơi ngay
+                        </Button>
+                    ),
+                ]}
+                width={600}
+            >
+                {selectedChapter && (
+                    <>
+                        <Tag 
+                            color={getChapterColor(selectedChapter.theme)}
+                            style={{ marginBottom: 16 }}
+                        >
+                            {selectedChapter.theme}
+                        </Tag>
+                        <Paragraph style={{ fontSize: 15, lineHeight: 1.8, color: '#2c3e50' }}>
+                            {selectedChapter.description}
+                        </Paragraph>
+                        <div style={{ marginTop: 24 }}>
+                            <Text strong>Tiến độ: </Text>
+                            <Progress 
+                                percent={selectedChapter.completion_rate} 
+                                status={selectedChapter.completion_rate === 100 ? 'success' : 'active'}
+                            />
+                            <Text type="secondary">
+                                {selectedChapter.completed_levels}/{selectedChapter.total_levels} màn đã hoàn thành
+                            </Text>
+                        </div>
+                    </>
+                )}
+            </Modal>
         </div>
     );
 };

@@ -1,156 +1,209 @@
-import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchLevelsByChapter, setCurrentLevel } from '@/store/slices/gameSlice';
-import { Card, Row, Col, Button, Spin, Typography, Tag, Progress, Empty } from 'antd';
-import { PlayCircleOutlined, LockOutlined, StarFilled, ClockCircleOutlined } from '@ant-design/icons';
-import type { Level } from '@/types';
+import React, { useEffect, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import {
+  fetchLevelsByChapter,
+  setCurrentLevel,
+} from "@/store/slices/gameSlice";
+import { Button, Spin, Typography, Progress, Tooltip } from "antd";
+import { CheckOutlined, LockFilled, StarFilled } from "@ant-design/icons";
+import type { Level } from "@/types";
 import "./styles.less";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title } = Typography;
+
+// CẤU HÌNH BẢN ĐỒ
+const MAP_CONFIG = {
+  CONTAINER_WIDTH: 380, // Chiều rộng cố định của bản đồ để dễ căn SVG
+  ITEM_SIZE: 75, // Nút to hơn
+  VERTICAL_SPACING: 120, // Khoảng cách thưa hơn
+  AMPLITUDE: 80, // Độ rộng uốn lượn
+  FREQUENCY: 1.5, // Tần số sóng
+};
 
 const LevelsPage: React.FC = () => {
-    const { chapterId } = useParams<{ chapterId: string }>();
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const { levels, levelsLoading, currentChapter } = useAppSelector((state) => state.game);
+  const { chapterId } = useParams<{ chapterId: string }>();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { levels, levelsLoading, currentChapter } = useAppSelector(
+    (state) => state.game,
+  );
 
-    useEffect(() => {
-        if (chapterId) {
-            dispatch(fetchLevelsByChapter(Number(chapterId)));
-        }
-    }, [dispatch, chapterId]);
-
-    const handleStartLevel = (level: Level) => {
-        if (!level.is_locked) {
-            dispatch(setCurrentLevel(level));
-            navigate(`/game/play/${level.id}`);
-        }
-    };
-
-    const getDifficultyColor = (difficulty: string) => {
-        const colors: Record<string, string> = {
-            easy: 'green',
-            medium: 'orange',
-            hard: 'red',
-        };
-        return colors[difficulty] || 'blue';
-    };
-
-    const getTypeIcon = (type: string) => {
-        const icons: Record<string, string> = {
-            story: '📖',
-            quiz: '❓',
-            mixed: '🎮',
-        };
-        return icons[type] || '🎯';
-    };
-
-    if (levelsLoading) {
-        return (
-            <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                <Spin size="large" tip="Đang tải màn chơi..." />
-            </div>
-        );
+  useEffect(() => {
+    if (chapterId) {
+      dispatch(fetchLevelsByChapter(Number(chapterId)));
     }
+  }, [dispatch, chapterId]);
 
-    if (!levels || levels.length === 0) {
-        return (
-            <div style={{ padding: '24px' }}>
-                <Button onClick={() => navigate('/game/chapters')} style={{ marginBottom: 16 }}>
-                    ← Quay lại
-                </Button>
-                <Empty description="Chưa có màn chơi nào" />
-            </div>
-        );
+  // --- CORE LOGIC: TÍNH TOÁN TOẠ ĐỘ TUYỆT ĐỐI (PIXEL) ---
+  const levelsWithPos = useMemo(() => {
+    if (!levels) return [];
+    const centerX = MAP_CONFIG.CONTAINER_WIDTH / 2;
+
+    return levels.map((level, index) => {
+      // Offset từ tâm (-80 đến +80)
+      const xOffset =
+        Math.sin(index / MAP_CONFIG.FREQUENCY) * MAP_CONFIG.AMPLITUDE;
+
+      return {
+        ...level,
+        // Toạ độ tuyệt đối trong khung 380px
+        x: centerX + xOffset,
+        y: index * MAP_CONFIG.VERTICAL_SPACING + 180, // Padding top 60px
+      };
+    });
+  }, [levels]);
+
+  const handleStartLevel = (level: Level) => {
+    if (!level.is_locked) {
+      dispatch(setCurrentLevel(level));
+      navigate(`/game/play/${level.id}`);
     }
+  };
 
+  const currentActiveLevelId = levels?.find(
+    (l) => !l.is_completed && !l.is_locked,
+  )?.id;
+
+  if (levelsLoading)
     return (
-        <div className="levels-page">
-            <div className="levels-header">
-                <Button onClick={() => navigate('/game/chapters')} style={{ marginBottom: 16 }}>
-                    ← Quay lại Sen Hoa
-                </Button>
-
-                {currentChapter && (
-                    <>
-                        <Title level={2}>{currentChapter.name}</Title>
-                        <Paragraph>{currentChapter.description}</Paragraph>
-                        <Progress
-                            percent={currentChapter.completion_rate}
-                            status={currentChapter.completion_rate === 100 ? 'success' : 'active'}
-                            strokeColor={{
-                                '0%': '#108ee9',
-                                '100%': '#87d068',
-                            }}
-                        />
-                    </>
-                )}
-            </div>
-
-            <Row gutter={[16, 16]} className="levels-grid">
-                {levels.map((level, index) => (
-                    <Col xs={24} sm={12} md={8} lg={6} key={level.id}>
-                        <Card
-                            hoverable={!level.is_locked}
-                            className={`level-card ${level.is_locked ? 'locked' : ''} ${level.is_completed ? 'completed' : ''}`}
-                            onClick={() => handleStartLevel(level)}
-                        >
-                            <div className="level-number">
-                                <span>{index + 1}</span>
-                            </div>
-
-                            <div className="level-icon">
-                                <span style={{ fontSize: 32 }}>{getTypeIcon(level.type)}</span>
-                            </div>
-
-                            <Title level={5} ellipsis={{ rows: 1 }}>
-                                {level.name}
-                            </Title>
-
-                            <Paragraph ellipsis={{ rows: 2 }} className="level-description">
-                                {level.description}
-                            </Paragraph>
-
-                            <div className="level-meta">
-                                <Tag color={getDifficultyColor(level.difficulty)}>
-                                    {level.difficulty === 'easy' ? 'Dễ' : level.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
-                                </Tag>
-                                {level.time_limit && (
-                                    <Tag icon={<ClockCircleOutlined />}>
-                                        {level.time_limit}p
-                                    </Tag>
-                                )}
-                            </div>
-
-                            {level.is_completed && level.player_best_score !== undefined && (
-                                <div className="level-score">
-                                    <StarFilled style={{ color: '#ffd700' }} />
-                                    <Text strong> {level.player_best_score} điểm</Text>
-                                </div>
-                            )}
-
-                            {level.is_locked ? (
-                                <div className="locked-overlay">
-                                    <LockOutlined style={{ fontSize: 24 }} />
-                                    <Text>Hoàn thành màn trước</Text>
-                                </div>
-                            ) : (
-                                <Button
-                                    type={level.is_completed ? 'default' : 'primary'}
-                                    icon={<PlayCircleOutlined />}
-                                    block
-                                    style={{ marginTop: 12 }}
-                                >
-                                    {level.is_completed ? 'Chơi lại' : 'Bắt đầu'}
-                                </Button>
-                            )}
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-        </div>
+      <div className="loading-container">
+        <Spin size="large" />
+      </div>
     );
+  if (!levels || levels.length === 0) return null;
+
+  const mapHeight = levels.length * MAP_CONFIG.VERTICAL_SPACING + 200;
+
+  return (
+    <div className="levels-page-container">
+      {/* HEADER */}
+      <div className="fixed-header">
+        <Button
+          type="text"
+          icon={<span>←</span>}
+          onClick={() => navigate("/game/chapters")}
+        >
+          Trở về
+        </Button>
+        {currentChapter && (
+          <div className="chapter-info">
+            <Title level={5} style={{ margin: 0 }}>
+              {currentChapter.name}
+            </Title>
+            <Progress
+              percent={currentChapter.completion_rate}
+              showInfo={false}
+              strokeColor="#1f5f25"
+              trailColor="#e5e5e5"
+              size="small"
+              style={{ width: 100 }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* MAP AREA */}
+      <div className="map-scroll-area">
+        <div
+          className="map-content"
+          style={{ height: mapHeight, width: MAP_CONFIG.CONTAINER_WIDTH }}
+        >
+          {/* LỚP 1: ĐƯỜNG CONG (SVG BEZIER CURVE) */}
+          <svg className="connector-svg">
+            {levelsWithPos.map((level, index) => {
+              if (index === levelsWithPos.length - 1) return null;
+              const nextLevel = levelsWithPos[index + 1];
+
+              // Logic Bezier Curve: M(start) C(control1) (control2) (end)
+              const startX = level.x;
+              const startY = level.y + MAP_CONFIG.ITEM_SIZE / 2; // Nối từ tâm dưới nút trên
+              const endX = nextLevel.x;
+              const endY = nextLevel.y - MAP_CONFIG.ITEM_SIZE / 2; // Đến tâm trên nút dưới (để ẩn dây sau nút)
+
+              const controlY1 = startY + 50; // Điểm uốn 1 đi xuống
+              const controlY2 = endY - 50; // Điểm uốn 2 đi lên
+
+              return (
+                <path
+                  key={`path-${level.id}`}
+                  d={`M ${startX} ${level.y} C ${startX} ${controlY1}, ${endX} ${controlY2}, ${endX} ${nextLevel.y}`}
+                  stroke={nextLevel.is_locked ? "#e5e5e5" : "#1f5f25"}
+                  strokeWidth="10"
+                  fill="none"
+                  strokeLinecap="round"
+                  className="path-line"
+                  // Vẽ nét đứt nếu bị khóa
+                  strokeDasharray={nextLevel.is_locked ? "10 10" : "0"}
+                />
+              );
+            })}
+          </svg>
+
+          {/* LỚP 2: CÁC NÚT LEVEL (HTML) */}
+          {levelsWithPos.map((level) => {
+            const isCurrent = level.id === currentActiveLevelId;
+            return (
+              <div
+                key={level.id}
+                className={`level-node-wrapper ${level.is_locked ? "locked" : ""} ${isCurrent ? "current" : ""} ${level.is_completed ? "completed" : ""}`}
+                style={{ left: level.x, top: level.y }}
+                onClick={() => handleStartLevel(level)}
+              >
+                {/* Tooltip START */}
+                {isCurrent && (
+                  <div className="start-tooltip">
+                    BẮT ĐẦU
+                    <div className="tooltip-arrow" />
+                  </div>
+                )}
+
+                {/* Main Button */}
+                <Tooltip title={level.name} placement="top">
+                  <div className="level-circle">
+                    {level.is_locked ? (
+                      <LockFilled className="icon-locked" />
+                    ) : level.is_completed ? (
+                      <CheckOutlined className="icon-completed" />
+                    ) : (
+                      <StarFilled className="icon-active" />
+                    )}
+
+                    {/* Hiệu ứng bóng sáng trên nút (Highlight) */}
+                    <div className="shine-effect"></div>
+                  </div>
+                </Tooltip>
+
+                {/* Stars / Score */}
+                {level.is_completed &&
+                  level.player_best_score !== undefined && (
+                    <div className="level-stars-container">
+                      {[1, 2, 3].map((i) => (
+                        <StarFilled
+                          key={i}
+                          style={{
+                            color:
+                              i <=
+                              ((level.player_best_score ?? 0) > 80
+                                ? 3
+                                : (level.player_best_score ?? 0) > 50
+                                  ? 2
+                                  : 1)
+                                ? "#ffd700"
+                                : "#e0e0e0",
+                            fontSize: 10,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default LevelsPage;

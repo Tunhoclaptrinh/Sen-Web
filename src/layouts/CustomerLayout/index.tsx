@@ -15,6 +15,7 @@ import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
 import NotificationPopover from '@/components/common/NotificationPopover';
+import AIChat from '@/components/AIChat';
 
 const CustomerLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -115,12 +116,10 @@ const CustomerLayout: React.FC = () => {
                 placement="right"
                 onClose={() => setAiChatVisible(false)}
                 open={aiChatVisible}
-                width={400}
+                width={480}
+                styles={{ body: { padding: 0 } }}
             >
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                    <p>Chat với nhân vật lịch sử</p>
-                    <p style={{ color: '#999' }}>Tính năng đang phát triển...</p>
-                </div>
+                <AIChat />
             </Drawer>
         </>
     );

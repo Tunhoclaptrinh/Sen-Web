@@ -1,105 +1,224 @@
-.levels-page {
-    padding: 24px;
-    max-width: 1400px;
-    margin: 0 auto;
+// Variables Colors - THEME SEN VIỆT NAM
+@color-active: #1f5f25; // Xanh Sen đậm thay cho xanh Duolingo
+@shadow-active: #0f3f15; // Bóng xanh đậm hơn
+@color-locked: #e5e5e5; // Xám khóa (giữ nguyên)
+@shadow-locked: #afafaf;
+@color-completed: #d4b070; // Vàng đồng Sen thay cho vàng Duolingo
+@shadow-completed: #b89850;
+@bg-color: #f0e9e9; // Nền màu Sen nhạt thay cho trắng
+
+.levels-page-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: @bg-color;
+  overflow: hidden;
 }
 
-.levels-header {
-    margin-bottom: 32px;
-}
-
-.levels-grid {
-    margin-top: 24px;
-}
-
-.level-card {
-    position: relative;
-    transition: all 0.3s ease;
-    height: 100%;
-    text-align: center;
-}
-
-.level-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.level-card.locked {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.level-card.locked:hover {
-    transform: none;
-}
-
-.level-card.completed {
-    border-color: #52c41a;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
-}
-
-.level-number {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #1890ff;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.level-icon {
-    margin: 16px 0;
-}
-
-.level-description {
-    min-height: 44px;
-    color: rgba(0, 0, 0, 0.65);
-}
-
-.level-meta {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin: 12px 0;
-    flex-wrap: wrap;
-}
-
-.level-score {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 8px;
-}
-
-.locked-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
+// --- HEADER ---
+.fixed-header {
+  flex-shrink: 0;
+  height: 56px;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: transparent;
+  z-index: 1000;
+  position: relative;
+  
+  .ant-btn {
+    border: 2px solid rgba(0, 0, 0, 0.4);
     border-radius: 8px;
-    gap: 8px;
-}
-
-.locked-overlay .ant-typography {
-    color: white !important;
-}
-
-@media (max-width: 768px) {
-    .levels-page {
-        padding: 16px;
+    position: relative;
+    z-index: 1001;
+    
+    &:hover {
+      border-color: rgba(0, 0, 0, 0.6);
     }
+  }
+}
+
+// --- MAP SCROLL ---
+.map-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  // Nền Sen: gradient nhẹ từ màu Sen
+  background: linear-gradient(180deg, #f0e9e9 0%, #faf6f6 100%);
+
+  &::-webkit-scrollbar {
+    width: 0px;
+  } // Ẩn scrollbar cho giống app
+}
+
+.map-content {
+  margin: 0 auto; // Căn giữa container cố định
+  position: relative;
+  padding-bottom: 150px;
+}
+
+// --- SVG ---
+.connector-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+
+  .path-line {
+    transition: stroke 0.3s;
+  }
+}
+
+// --- NODE BUTTON (QUAN TRỌNG NHẤT) ---
+.level-node-wrapper {
+  position: absolute;
+  width: 75px; // Kích thước nút
+  height: 75px;
+  transform: translate(-50%, -50%); // Tâm nút trùng toạ độ x,y
+  z-index: 2;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  // 1. Tạo hình tròn và khối 3D
+  .level-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: @color-active;
+    // Shadow này tạo độ dày (đế nút)
+    box-shadow:
+      0 8px 0 @shadow-active,
+      0 15px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 4px solid #fff; // Viền trắng tách biệt khỏi dây
+  }
+
+  // 2. Icon bên trong
+  .icon-active,
+  .icon-completed,
+  .icon-locked {
+    font-size: 32px;
+    color: #fff;
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.2)); // Bóng đổ nhẹ cho icon
+  }
+
+  // 3. Hiệu ứng ánh sáng (Highlight) ở góc trên
+  .shine-effect {
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 25%;
+    height: 15%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: rotate(-45deg);
+  }
+
+  // --- STATES ---
+
+  // Trạng thái nhấn (Lún xuống)
+  &:active:not(.locked) {
+    transform: translate(-50%, calc(-50% + 8px)); // Dịch xuống 8px
+    .level-circle {
+      box-shadow: 0 0 0 @shadow-active; // Mất bóng đế
+    }
+  }
+
+  // Trạng thái KHÓA
+  &.locked {
+    cursor: default;
+    filter: grayscale(100%);
+    opacity: 0.8;
+    .level-circle {
+      background-color: @color-locked;
+      box-shadow: 0 8px 0 @shadow-locked;
+    }
+    &:active {
+      transform: translate(-50%, -50%);
+    } // Không lún
+  }
+
+  // Trạng thái HOÀN THÀNH
+  &.completed {
+    .level-circle {
+      background-color: @color-completed;
+      box-shadow:
+        0 8px 0 @shadow-completed,
+        0 15px 20px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // Trạng thái HIỆN TẠI (Đang chơi)
+  &.current {
+    z-index: 3; // Nổi lên trên cùng
+    .level-circle {
+      // Có thể thêm viền phát sáng nếu muốn
+    }
+  }
+
+  // --- SCORE STARS ---
+  .level-stars-container {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// --- TOOLTIP ---
+.start-tooltip {
+  position: absolute;
+  top: -55px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #1f5f25;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border: 2px solid #e0d5d5;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  animation: float 2s infinite ease-in-out;
+  z-index: 10;
+
+  .tooltip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    margin-left: -7px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-bottom: 2px solid #e0d5d5;
+    border-right: 2px solid #e0d5d5;
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-8px);
+  }
 }

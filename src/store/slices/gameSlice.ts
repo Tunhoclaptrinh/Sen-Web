@@ -170,8 +170,9 @@ export const completeLevel = createAsyncThunk(
     async (payload: { levelId: number; score: number; timeSpent: number }, { rejectWithValue, dispatch }) => {
         try {
             const result = await gameService.completeLevel(payload.levelId, payload.score, payload.timeSpent);
-            // Refresh progress after completing level
+            // Refresh progress and chapters after completing level
             dispatch(fetchProgress());
+            dispatch(fetchChapters());
             return result;
         } catch (error: any) {
             return rejectWithValue(error.message || 'Failed to complete level');

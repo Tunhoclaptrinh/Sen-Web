@@ -10,48 +10,79 @@ import AuthLayout from "@/layouts/AuthLayout";
 import Loading from "@/components/common/Loading";
 import AuthGuard from "@/components/common/guards/AuthGuard";
 import { RoleGuard } from "./RouteGuards";
+import ArtifactManagement from "@/pages/Admin/ArtifactManagement";
+import HeritageSiteManagement from "@/pages/Admin/HeritageSiteManagement";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/Home"));
 const Login = lazy(() => import("@/pages/Auth"));
 
 // Public Browse Pages (User Friendly)
-const HeritageBrowsePage = lazy(() => import("@/pages/Heritage/HeritageBrowsePage"));
-const ArtifactBrowsePage = lazy(() => import("@/pages/Artifact/ArtifactBrowsePage"));
+const HeritageBrowsePage = lazy(
+  () => import("@/pages/Heritage/HeritageBrowsePage"),
+);
+const ArtifactBrowsePage = lazy(
+  () => import("@/pages/Artifact/ArtifactBrowsePage"),
+);
 const HistoryListPage = lazy(() => import("@/pages/History/HistoryListPage"));
 
 // Detail Pages
-const HeritageDetailPage = lazy(() => import("@/pages/Heritage/HeritageDetailPage"));
-const ArtifactDetailPage = lazy(() => import("@/pages/Artifact/ArtifactDetailPage"));
-const HistoryDetailPage = lazy(() => import("@/pages/History/HistoryDetailPage"));
+const HeritageDetailPage = lazy(
+  () => import("@/pages/Heritage/HeritageDetailPage"),
+);
+const ArtifactDetailPage = lazy(
+  () => import("@/pages/Artifact/ArtifactDetailPage"),
+);
+const HistoryDetailPage = lazy(
+  () => import("@/pages/History/HistoryDetailPage"),
+);
 
 // Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
-const CollectionsPage = lazy(() => import("@/pages/Profile/Collections/CollectionsPage"));
+const CollectionsPage = lazy(
+  () => import("@/pages/Profile/Collections/CollectionsPage"),
+);
 const FavoritesPage = lazy(() => import("@/pages/Profile/FavoritesPage"));
 const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 // const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
-const AIChatDemoPage = lazy(() => import("@/pages/AIChatDemo"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageListPage = lazy(() => import("@/pages/Heritage/HeritageListPage"));
+const HeritageListPage = lazy(
+  () => import("@/pages/Heritage/HeritageListPage"),
+);
 const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
-const ArtifactListPage = lazy(() => import("@/pages/Artifact/ArtifactListPage")); // Admin view
+const ArtifactListPage = lazy(
+  () => import("@/pages/Artifact/ArtifactListPage"),
+); // Admin view
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
-const CategoryManagement = lazy(() => import("@/pages/Admin/CategoryManagement"));
-const CharacterManagement = lazy(() => import("@/pages/Admin/GameManagement/CharacterManagement"));
+const CategoryManagement = lazy(
+  () => import("@/pages/Admin/CategoryManagement"),
+);
+const CharacterManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/CharacterManagement"),
+);
 const AssetManagement = lazy(() => import("@/pages/Admin/AssetManagement"));
 const QuestManagement = lazy(() => import("@/pages/Admin/QuestManagement"));
-const LearningManagement = lazy(() => import("@/pages/Admin/LearningManagement"));
-const ExhibitionManagement = lazy(() => import("@/pages/Admin/ExhibitionManagement"));
-const BadgeManagement = lazy(() => import("@/pages/Admin/GameManagement/BadgeManagement"));
-const ShopManagement = lazy(() => import("@/pages/Admin/GameManagement/ShopManagement"));
-const ChapterManagement = lazy(() => import("@/pages/Admin/GameManagement/ChapterManagement"));
+const LearningManagement = lazy(
+  () => import("@/pages/Admin/LearningManagement"),
+);
+const ExhibitionManagement = lazy(
+  () => import("@/pages/Admin/ExhibitionManagement"),
+);
+const BadgeManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/BadgeManagement"),
+);
+const ShopManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/ShopManagement"),
+);
+const ChapterManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/ChapterManagement"),
+);
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -130,23 +161,19 @@ const routes: RouteObject[] = [
       {
         path: "history",
         children: [
-           {
-              index: true,
-              element: <HistoryListPage />,
-           },
-           {
-              path: ":id",
-              element: <HistoryDetailPage />,
-           }
-        ]
+          {
+            index: true,
+            element: <HistoryListPage />,
+          },
+          {
+            path: ":id",
+            element: <HistoryDetailPage />,
+          },
+        ],
       },
       {
         path: "character-showcase",
         element: <CharacterShowcase />,
-      },
-      {
-        path: "ai-chat-demo",
-        element: <AIChatDemoPage />,
       },
     ],
   },
@@ -201,7 +228,7 @@ const routes: RouteObject[] = [
             <LearningPathPage />
           </LazyLoadWrapper>
         ),
-      }
+      },
     ],
   },
 
@@ -287,11 +314,11 @@ const routes: RouteObject[] = [
       },
       {
         path: "heritage-sites",
-        element: <HeritageListPage />,
+        element: <HeritageSiteManagement />,
       },
       {
         path: "artifacts",
-        element: <ArtifactListPage />,
+        element: <ArtifactManagement />,
       },
       {
         path: "categories",
