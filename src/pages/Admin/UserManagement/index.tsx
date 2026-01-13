@@ -1,9 +1,6 @@
-import { Space, Tag, Avatar, Switch, Tooltip, Button, Popconfirm } from "antd";
+import { Space, Tag, Avatar, Switch } from "antd";
 import {
   UserOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
 } from "@ant-design/icons";
 import { User } from "@/types";
 import DataTable from "@/components/common/DataTable";
@@ -143,42 +140,6 @@ const UserManagement = () => {
       dataIndex: "created_at",
       width: 150,
       render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
-    },
-    {
-      title: "Thao tác",
-      key: "actions",
-      width: 90,
-      fixed: "right" as const,
-      align: "center" as const,
-      render: (_: any, record: User) => (
-        <Space size="middle" style={{ gap: 4 }}>
-          <Tooltip title="Xem chi tiết">
-            <Button
-              type="text"
-              icon={<EyeOutlined />}
-              onClick={() => openDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "orange" }} />}
-              onClick={() => openEdit(record)}
-            />
-          </Tooltip>
-          <Popconfirm
-            title="Bạn có chắc chắn muốn xóa?"
-            onConfirm={() => deleteUser(record.id)}
-            okText="Đồng ý"
-            cancelText="Hủy"
-            okButtonProps={{ danger: true }}
-          >
-            <Tooltip title="Xóa">
-              <Button type="text" danger icon={<DeleteOutlined />} />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
     },
   ];
 

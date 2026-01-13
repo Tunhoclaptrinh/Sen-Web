@@ -16,9 +16,10 @@ const { Paragraph } = Typography;
 interface ArticleCardProps {
     data: any; // Using any for shared convenience
     type: 'artifact' | 'heritage' | 'history';
+    variant?: 'default' | 'portrait'; // Added variant support
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ data, type }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'default' }) => {
     const navigate = useNavigate();
 
     const handleNavigate = () => {
@@ -30,10 +31,15 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type }) => {
         navigate(path);
     };
 
-    const imageUrl = data.image || data.main_image || (data.images && data.images[0]) || 'https://via.placeholder.com/800x600';
+    const rawImage = data.image || data.main_image || (data.images && data.images[0]);
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+    const apiHost = apiBase.replace(/\/api$/, '');
+    const imageUrl = rawImage 
+        ? (rawImage.startsWith('http') ? rawImage : `${apiHost}${rawImage}`)
+        : 'https://via.placeholder.com/800x600';
 
     return (
-        <div className={`article-card ${type}`} onClick={handleNavigate} style={{ cursor: 'pointer' }}>
+        <div className={`article-card ${type} ${variant}`} onClick={handleNavigate} style={{ cursor: 'pointer' }}>
             <div className="card-image-wrapper">
                  <div className="card-image" style={{ backgroundImage: `url('${imageUrl}')` }} />
                  {/* Optional: Add Region/Location badge if Heritage */}
@@ -64,12 +70,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type }) => {
 
                 {/* Short Description or Truncated Description */}
                 <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
-                    {data.shortDescription || "Chưa có mô tả ngắn."}
+                    {data.short_description || data.shortDescription || "Chưa có mô tả ngắn."}
                 </Paragraph>
                 
                 <div className="card-footer">
                     <button className="read-more-btn">
-                        {data.shortDescription ? 'Đọc thêm' : 'Khám phá'} <ArrowRightOutlined />
+                        {data.short_description || data.shortDescription ? 'Đọc thêm' : 'Khám phá'} <ArrowRightOutlined />
                     </button>
                 </div>
             </div>

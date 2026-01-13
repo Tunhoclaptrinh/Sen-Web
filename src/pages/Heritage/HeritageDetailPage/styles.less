@@ -106,6 +106,35 @@
                     }
                 }
             }
+
+            .gallery-btn {
+                background: rgba(255, 255, 255, 0.15) !important;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                color: #fff !important;
+                border-radius: 30px !important;
+                padding: 8px 24px !important;
+                height: auto !important;
+                font-size: 14px !important;
+                font-weight: 500 !important;
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.25) !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.3);
+                    border-color: rgba(255, 255, 255, 0.5) !important;
+                }
+
+                .anticon {
+                    font-size: 18px;
+                }
+            }
         }
     }
 
@@ -209,142 +238,8 @@
             font-size: 20px;
             margin-bottom: 16px;
             color: #1a1a1a;
-            border-left: 4px solid #6ABE45;
+            border-left: 4px solid @primary-color;
             padding-left: 12px;
-        }
-
-        // Info Card Widget
-        .info-card-widget {
-            background: #fff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-
-            // Default sidebar style elements...
-            
-            &.large-format {
-                padding: 40px;
-                border: 1px solid rgba(0,0,0,0.04);
-                box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-
-                .info-section-title {
-                    font-family: 'Aleo', serif;
-                    font-size: 20px;
-                    color: #1a1a1a;
-                    margin-bottom: 24px;
-                    padding-left: 12px;
-                    border-left: 3px solid #6ABE45;
-                }
-
-                .info-grid-list {
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-
-                    li {
-                        display: flex;
-                        align-items: flex-start;
-                        margin-bottom: 24px;
-                        
-                        .icon-wrapper {
-                            width: 40px;
-                            height: 40px;
-                            background: #F0F9EB; // Light green bg
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            margin-right: 16px;
-                            color: #6ABE45;
-                            font-size: 18px;
-                            flex-shrink: 0;
-                        }
-
-                        .info-text {
-                            display: flex;
-                            flex-direction: column;
-                            
-                            .label {
-                                font-size: 13px;
-                                color: #888;
-                                text-transform: uppercase;
-                                letter-spacing: 0.5px;
-                                margin-bottom: 4px;
-                            }
-
-                            .value {
-                                font-size: 16px;
-                                font-weight: 500;
-                                color: #333;
-                                
-                                &.highlight {
-                                    color: #d32f2f;
-                                    font-weight: 700;
-                                    font-size: 18px;
-                                }
-
-                                .sub {
-                                    font-size: 13px;
-                                    color: #999;
-                                    font-weight: 400;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                .info-footer-actions {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    flex-wrap: wrap;
-                    gap: 20px;
-                    margin-top: 24px;
-
-                    .booking-note {
-                        font-size: 13px;
-                        color: #888;
-                        font-style: italic;
-                        flex: 1;
-                        min-width: 250px;
-                    }
-
-                    .action-buttons {
-                        display: flex;
-                        gap: 16px;
-                        
-                        .booking-btn-large {
-                             background: linear-gradient(90deg, #6ABE45 0%, #4CAF50 100%);
-                             border: none;
-                             height: 50px;
-                             padding: 0 40px;
-                             font-size: 16px;
-                             font-weight: 600;
-                             border-radius: 8px;
-                             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-                             
-                             &:hover {
-                                 transform: translateY(-2px);
-                                 box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-                             }
-                        }
-
-                        .direction-btn {
-                            height: 50px;
-                             border-radius: 8px;
-                             color: #555;
-                             border-color: #ddd;
-                        }
-                    }
-                }
-            }
-            // End large-format
-
-            // Original Sidebar style support if needed (kept for safety if we revert usage else where)
-            .meta-list {
-                list-style: none;
-                // ... (Original styles implicit or we just overwrite large-format for this block)
-            }
         }
 
         // Sidebar List (Related)
@@ -395,8 +290,8 @@
 
                 .sidebar-read-btn {
                     background: transparent;
-                    color: #6ABE45;
-                    border: 1px solid #6ABE45;
+                    color: @primary-color;
+                    border: 1px solid @primary-color;
                     padding: 4px 12px;
                     border-radius: 20px;
                     font-size: 12px;
@@ -405,12 +300,206 @@
                     transition: all 0.3s;
 
                     &:hover {
-                        background: #6ABE45;
+                        background: @primary-color;
                         color: #fff;
                     }
                 }
             }
         }
+    }
+
+    // --- INFO CARD WIDGET (Shared) ---
+    .info-card-widget {
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+
+        // Sidebar uses smaller padding/layout by default
+        .meta-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        &.large-format {
+            padding: 24px 0; // Vertical spacing only
+            border: none;
+            box-shadow: none;
+
+            .info-section-title {
+                font-family: 'Aleo', serif;
+                font-size: 22px; // Slightly larger
+                color: #2c2c2c;
+                margin-bottom: 24px;
+                padding-left: 12px;
+                border-left: 3px solid @primary-color; // Use Heritage Red
+                display: flex;
+                align-items: center;
+            }
+
+            .info-grid-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+
+                li {
+                    display: flex;
+                    align-items: flex-start;
+                    margin-bottom: 24px;
+                    
+                    .icon-wrapper {
+                        width: 44px; // Slightly larger for better breathing
+                        height: 44px;
+                        background: fade(@primary-color, 8%); // Soft red/orange bg
+                        border-radius: 12px; // Soft square instead of full circle for premium feel
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-right: 16px;
+                        color: @primary-color;
+                        font-size: 20px;
+                        flex-shrink: 0;
+                        transition: all 0.3s;
+
+                        &.star-icon {
+                            color: #fadb14;
+                            background: fade(#fadb14, 10%);
+                        }
+
+                        &.unesco-icon {
+                            color: @primary-color;
+                            background: fade(@primary-color, 10%);
+                        }
+                    }
+
+                    &:hover .icon-wrapper {
+                        background: @primary-color;
+                        color: #fff;
+                        box-shadow: 0 4px 12px fade(@primary-color, 30%);
+
+                        &.star-icon {
+                            background: #fadb14;
+                        }
+                    }
+
+                    .info-text {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        min-height: 44px; // Align with icon height
+                        
+                        .label {
+                            font-size: 12px;
+                            color: #888;
+                            text-transform: uppercase;
+                            letter-spacing: 0.8px; // More air
+                            margin-bottom: 4px;
+                            font-weight: 600;
+                        }
+
+                        .value {
+                            font-size: 16px;
+                            font-weight: 500;
+                            color: #1a1a1a;
+                            line-height: 1.4;
+                            
+                            &.highlight {
+                                color: @primary-color; // Match theme
+                                font-weight: 700;
+                                font-size: 18px;
+                            }
+
+                            .sub {
+                                font-size: 13px;
+                                color: #999;
+                                font-weight: 400;
+                                margin-left: 6px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .info-footer-actions {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 20px;
+                margin-top: 24px;
+                padding-top: 24px;
+                border-top: 1px dashed rgba(0,0,0,0.06); // Keep faint separator or remove? User wants no card. 
+                // Let's keep a very subtle separator for hierarchy given the content floating.
+
+                .booking-note {
+                    font-size: 14px;
+                    color: #555;
+                    font-style: italic;
+                    flex: 1;
+                    min-width: 250px;
+                    display: flex;
+                    flex-direction: column; // Stack for multiple lines
+                    gap: 4px;
+                    
+                    .promo-text {
+                        color: @primary-color;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+
+                        &::before {
+                           content: '\1F381'; // Gift icon unicode or similar
+                           font-size: 16px;
+                        }
+                    }
+                }
+
+                .action-buttons {
+                    display: flex;
+                    gap: 16px;
+                    
+                    .booking-btn-large {
+                            background: linear-gradient(135deg, @primary-color 0%, darken(@primary-color, 10%) 100%);
+                            border: none;
+                            height: 52px;
+                            padding: 0 32px;
+                            font-size: 16px;
+                            font-weight: 600;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 15px fade(@primary-color, 30%);
+                            color: #fff;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            transition: all 0.3s;
+                            
+                            &:hover {
+                                transform: translateY(-2px);
+                                box-shadow: 0 6px 20px fade(@primary-color, 40%);
+                            }
+                    }
+
+                    .direction-btn {
+                        height: 52px;
+                        border-radius: 8px;
+                        color: #555;
+                        border: 1px solid #ddd;
+                        background: #fff;
+                        font-weight: 500;
+                        padding: 0 24px;
+                        
+                        &:hover {
+                            border-color: @primary-color;
+                            color: @primary-color;
+                            background: fade(@primary-color, 5%);
+                        }
+                    }
+                }
+            }
+        }
+        // End large-format
     }
 }
 

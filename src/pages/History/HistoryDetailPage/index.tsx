@@ -105,7 +105,7 @@ const HistoryDetailPage = () => {
                 <div className="hero-bg" style={{backgroundImage: `url('${mainImage}')`}} />
                 <div className="hero-overlay">
                     <div className="hero-content">
-                        <Tag color="#F43F5E" style={{border: 'none', marginBottom: 16}}>LỊCH SỬ VIỆT NAM</Tag>
+                        <Tag color="var(--primary-color)" style={{border: 'none', marginBottom: 16}}>LỊCH SỬ VIỆT NAM</Tag>
                         <h1>{article.title}</h1>
                         <div className="hero-meta">
                              <span><CalendarOutlined /> {dayjs(publishDate).format('DD/MM/YYYY')}</span>

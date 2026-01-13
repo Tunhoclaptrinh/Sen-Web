@@ -74,7 +74,7 @@ const Collections = () => {
           icon={<PlusOutlined />}
           onClick={() => setIsModalVisible(true)}
           style={{
-            background: 'linear-gradient(45deg, #F43F5E, #E11D48)',
+            background: 'linear-gradient(45deg, var(--primary-color), #E11D48)',
             border: 'none',
             height: '40px'
           }}

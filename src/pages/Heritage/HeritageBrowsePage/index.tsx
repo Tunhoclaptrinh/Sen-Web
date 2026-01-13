@@ -55,6 +55,7 @@ const HeritageBrowsePage: React.FC = () => {
             const response = await heritageService.getAll({
                 page: pagination.current,
                 limit: pagination.pageSize,
+                is_active: true,
                 ...filters,
             });
             

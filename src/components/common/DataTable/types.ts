@@ -26,10 +26,11 @@ export interface DataTableProps {
     onDelete?: (id: any) => void;
     onRefresh?: () => void;
     pagination?: {
-        current: number;
-        pageSize: number;
-        total: number;
-    };
+        current?: number;
+        pageSize?: number;
+        total?: number;
+        [key: string]: any;
+    } | false;
     onPaginationChange?: (pagination: any, filters: any, sorter: any) => void;
     searchable?: boolean;
     searchPlaceholder?: string;

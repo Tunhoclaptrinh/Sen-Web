@@ -1,11 +1,16 @@
-import { Space, Tag, Tooltip, Button, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { HeritageSite } from "@/types";
+import { Tag } from "antd";
+
 import DataTable from "@/components/common/DataTable";
 
 import HeritageDetailModal from "./components/DetailModal";
 import HeritageForm from "./components/Form";
 import HeritageStats from "./components/Stats";
+import {
+  HeritageType,
+  HeritageRegion,
+  HeritageTypeLabels,
+  HeritageRegionLabels
+} from "@/types";
 import { useHeritageModel } from "./model";
 
 const HeritageSiteManagement = () => {
@@ -54,6 +59,31 @@ const HeritageSiteManagement = () => {
       width: 80,
     },
     {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: 100,
+      render: (image: string) => {
+        if (!image) return null;
+        const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+        const apiHost = apiBase.replace(/\/api$/, '');
+        const src = image.startsWith('http') ? image : `${apiHost}${image}`;
+        return (
+          <img 
+            src={src} 
+            alt="Heritage" 
+            style={{ 
+              width: 80, 
+              height: 50, 
+              objectFit: 'cover', 
+              borderRadius: 4,
+              border: '1px solid #f0f0f0' 
+            }} 
+          />
+        );
+      },
+    },
+    {
       title: "Tên Di Sản",
       dataIndex: "name",
       key: "name_like",
@@ -66,33 +96,34 @@ const HeritageSiteManagement = () => {
       dataIndex: "type",
       key: "type",
       width: 150,
-      filters: [
-        { text: "Monument", value: "monument" },
-        { text: "Temple", value: "temple" },
-        { text: "Museum", value: "museum" },
-      ],
+      filters: Object.values(HeritageType).map((type) => ({
+        text: HeritageTypeLabels[type],
+        value: type,
+      })),
       filteredValue: filters.type
         ? Array.isArray(filters.type)
           ? filters.type
           : [filters.type]
         : null,
-      render: (type: string) => <Tag color="blue">{type.toUpperCase()}</Tag>,
+      render: (type: HeritageType) => (
+        <Tag color="blue">{HeritageTypeLabels[type]?.toUpperCase() || type}</Tag>
+      ),
     },
     {
       title: "Khu vực",
       dataIndex: "region",
       key: "region",
       width: 120,
-      filters: [
-        { text: "Bắc", value: "Bắc" },
-        { text: "Trung", value: "Trung" },
-        { text: "Nam", value: "Nam" },
-      ],
+      filters: Object.values(HeritageRegion).map((region) => ({
+        text: HeritageRegionLabels[region],
+        value: region,
+      })),
       filteredValue: filters.region
         ? Array.isArray(filters.region)
           ? filters.region
           : [filters.region]
         : null,
+      render: (region: HeritageRegion) => HeritageRegionLabels[region] || region,
     },
     {
       title: "UNESCO",
@@ -107,42 +138,6 @@ const HeritageSiteManagement = () => {
       dataIndex: "entrance_fee",
       width: 120,
       render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Free"),
-    },
-    {
-      title: "Thao tác",
-      key: "actions",
-      width: 120,
-      fixed: "right" as const,
-      align: "center" as const,
-      render: (_: any, record: HeritageSite) => (
-        <Space size="middle">
-          <Tooltip title="Xem chi tiết">
-            <Button
-              type="text"
-              icon={<EyeOutlined />}
-              onClick={() => openDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "orange" }} />}
-              onClick={() => openEdit(record)}
-            />
-          </Tooltip>
-          <Popconfirm
-            title="Bạn có chắc chắn muốn xóa?"
-            onConfirm={() => deleteHeritage(record.id)}
-            okText="Đồng ý"
-            cancelText="Hủy"
-            okButtonProps={{ danger: true }}
-          >
-            <Tooltip title="Xóa">
-              <Button type="text" danger icon={<DeleteOutlined />} />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
     },
   ];
 
@@ -180,24 +175,18 @@ const HeritageSiteManagement = () => {
           {
             key: "type",
             placeholder: "Loại hình",
-            options: [
-              { label: "Di tích", value: "monument" },
-              { label: "Đền chùa", value: "temple" },
-              { label: "Bảo tàng", value: "museum" },
-              { label: "Địa điểm khảo cổ", value: "archaeological_site" },
-              { label: "Công trình lịch sử", value: "historic_building" },
-              { label: "Di sản thiên nhiên", value: "natural_heritage" },
-              { label: "Di sản phi vật thể", value: "intangible_heritage" },
-            ],
+            options: Object.values(HeritageType).map((type) => ({
+              label: HeritageTypeLabels[type],
+              value: type,
+            })),
           },
           {
             key: "region",
             placeholder: "Khu vực",
-            options: [
-              { label: "Miền Bắc", value: "Bắc" },
-              { label: "Miền Trung", value: "Trung" },
-              { label: "Miền Nam", value: "Nam" },
-            ],
+            options: Object.values(HeritageRegion).map((region) => ({
+              label: HeritageRegionLabels[region],
+              value: region,
+            })),
           },
           {
             key: "unesco_listed",

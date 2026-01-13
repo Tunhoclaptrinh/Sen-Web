@@ -82,7 +82,7 @@ const TinyEditor: React.FC<TinyEditorProps> = ({
     <div className="tiny-editor-wrapper">
       <TinyMCEEditor
         apiKey="8y0blqjtkro9sr4z2ewp3qjek46si59f47d3ys5rscdwpxbe"
-        onInit={(_, editor) => {
+        onInit={(_evt: any, editor: any) => {
           editorRef.current = editor;
         }}
         value={value}
