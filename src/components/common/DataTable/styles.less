@@ -215,7 +215,7 @@
 .filter-builder-footer {
     display: flex;
     gap: 12px;
-    justify-content: flex-end;
+    justify-content: center; /* Centered alignment */
     padding: 16px 24px;
     border-top: 1px solid #e8e8e8;
     background: white;
@@ -280,7 +280,6 @@
 }
 
 .filter-search-input {
-    margin-bottom: 8px;
     display: block;
 }
 
@@ -322,4 +321,13 @@
 .action-buttons-container {
     justify-content: center;
     width: 100%;
+}
+
+/* Fix "Horrible" Dark Selection Color */
+.data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
+    background-color: #fff1f2 !important; /* Lighter shade of primary #F43F5E */
+}
+
+.data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected:hover > td {
+    background-color: #ffe4e6 !important;
 }

@@ -135,7 +135,7 @@ const HistoryManagement = () => {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
+    <div>
       <DataTable
         title="Quản lý Bài viết Lịch sử"
         headerContent={<HistoryStats stats={stats} loading={statsLoading} />}

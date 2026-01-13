@@ -169,41 +169,74 @@ const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+
+  const ColumnSearch = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, label }: any) => {
+      const [value, setValue] = useState(selectedKeys[0]);
+
+      // Handle input change: update local value and trigger search
+      const onChange = (e: any) => {
+          const val = e.target.value;
+          setValue(val);
+          setSelectedKeys(val ? [val] : []);
+      };
+
+      // Re-implement Debounce Auto-Search
+      React.useEffect(() => {
+          const timer = setTimeout(() => {
+              if (value !== selectedKeys[0]) {
+                  confirm({ closeDropdown: false });
+              }
+          }, 600);
+          return () => clearTimeout(timer);
+      }, [value, selectedKeys, confirm]);
+
+      const handleClear = () => {
+          setValue('');
+          setSelectedKeys([]);
+          clearFilters && clearFilters();
+          confirm();
+      };
+
+      return (
+          <div className="filter-dropdown-container" style={{ padding: 12, minWidth: 350, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'nowrap' }} onKeyDown={(e) => e.stopPropagation()}>
+              <Input
+                  placeholder={`Tìm kiếm...`}
+                  value={value}
+                  onChange={onChange}
+                  onPressEnter={() => confirm()}
+                  className="filter-search-input"
+                  containerStyle={{ marginBottom: 0, flex: 1, width: 'auto' }}
+                  fullWidth={false}
+                  // inputSize defaults to middle (32px)
+              />
+              <Button
+                  variant="primary"
+                  onClick={() => confirm()}
+                  // buttonSize defaults to middle (32px)
+                  style={{ boxShadow: 'none', whiteSpace: 'nowrap', flex: '0 0 auto' }}
+              >
+                  Tìm
+              </Button>
+              <Button
+                  variant="outline"
+                  onClick={handleClear}
+                  // buttonSize defaults to middle (32px)
+                  style={{ 
+                      borderColor: '#d9d9d9', 
+                      color: '#595959',
+                      fontWeight: 400,
+                      whiteSpace: 'nowrap',
+                      flex: '0 0 auto'
+                  }}
+              >
+                  Xóa
+              </Button>
+          </div>
+      );
+  };
+
   const getColumnSearchProps = (_dataIndex: string, label: string) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
-      <div className="filter-dropdown-container" onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          placeholder={`Tìm kiếm ${label} `}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => confirm()}
-          className="filter-search-input"
-          containerStyle={{ marginBottom: 8 }} // Maintain the intended 8px margin here
-          fullWidth={false}
-        />
-        <Space>
-          <Button
-            variant="primary" // Fixed: type -> variant
-            onClick={() => confirm()}
-            icon={<SearchOutlined />}
-            buttonSize="small" // Fixed: size -> buttonSize
-            className="filter-action-button"
-          >
-            Tìm
-          </Button>
-          <Button
-            onClick={() => {
-              clearFilters && clearFilters();
-              confirm();
-            }}
-            buttonSize="small" // Fixed: size -> buttonSize
-            className="filter-action-button"
-          >
-            Xóa
-          </Button>
-        </Space>
-      </div>
-    ),
+    filterDropdown: (props: any) => <ColumnSearch {...props} label={label} />,
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
@@ -494,7 +527,12 @@ const DataTable: React.FC<DataTableProps> = ({
               <Input
                 placeholder={searchPlaceholder}
                 value={internalSearchText}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleSearch(val);
+                  // Instant clear: if empty, force immediate search (bypass debounce)
+                  if (!val && onSearch) onSearch(''); 
+                }}
                 style={{ width: 220, height: 32 }}
                 allowClear
                 prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
@@ -715,13 +753,13 @@ const DataTable: React.FC<DataTableProps> = ({
             </div>
 
             <div className="filter-builder-footer">
-              <Button variant="outline" onClick={() => setFilterModalOpen(false)}>
+              <Button variant="outline" onClick={() => setFilterModalOpen(false)} buttonSize="small">
                 Hủy
               </Button>
-              <Button variant="outline" onClick={handleClearFilters}>
+              <Button variant="outline" onClick={handleClearFilters} buttonSize="small">
                 Bỏ lọc
               </Button>
-              <Button variant="primary" onClick={() => setFilterModalOpen(false)}>
+              <Button variant="primary" onClick={() => setFilterModalOpen(false)} buttonSize="small">
                 Áp dụng bộ lọc
               </Button>
             </div>
