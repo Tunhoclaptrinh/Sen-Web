@@ -55,9 +55,6 @@ const HeritageListPage = lazy(
   () => import("@/pages/Heritage/HeritageListPage"),
 );
 const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
-const ArtifactListPage = lazy(
-  () => import("@/pages/Artifact/ArtifactListPage"),
-); // Admin view
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
 const CategoryManagement = lazy(

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Input,
   Button,
-  Avatar,
   Space,
   Typography,
   Tooltip,
@@ -58,6 +57,40 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
   const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [streamingMessage, setStreamingMessage] = useState<{
+    id: number;
+    text: string;
+  } | null>(null);
+  const lastStreamedIdRef = useRef<number | null>(null);
+  const streamIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Stream text character by character
+  const streamText = (fullText: string, messageId: number) => {
+    // Clear any existing interval
+    if (streamIntervalRef.current) {
+      clearInterval(streamIntervalRef.current);
+    }
+
+    let index = 0;
+    setStreamingMessage({ id: messageId, text: "" });
+    lastStreamedIdRef.current = messageId;
+    
+    streamIntervalRef.current = setInterval(() => {
+      if (index < fullText.length) {
+        setStreamingMessage((prev) => ({
+          id: messageId,
+          text: prev ? prev.text + fullText[index] : fullText[index],
+        }));
+        index++;
+      } else {
+        if (streamIntervalRef.current) {
+          clearInterval(streamIntervalRef.current);
+          streamIntervalRef.current = null;
+        }
+        setStreamingMessage(null);
+      }
+    }, 30); // 30ms per character
+  };
 
   // Set default character on mount
   useEffect(() => {
@@ -81,7 +114,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory]);
+  }, [chatHistory, streamingMessage]);
 
   // Show error
   useEffect(() => {
@@ -89,6 +122,29 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
       antdMessage.error(error);
     }
   }, [error]);
+
+  // Handle streaming when new AI message arrives
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      const lastMessage = chatHistory[chatHistory.length - 1];
+      if (
+        lastMessage.role === "assistant" &&
+        lastMessage.content &&
+        lastStreamedIdRef.current !== lastMessage.id
+      ) {
+        streamText(lastMessage.content, lastMessage.id);
+      }
+    }
+  }, [chatHistory]);
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (streamIntervalRef.current) {
+        clearInterval(streamIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || !currentCharacter || chatLoading) return;
@@ -237,18 +293,25 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
             </Text>
           </div>
         ) : (
-          chatHistory.map((msg) => (
+          chatHistory.map((msg) => {
+            const isStreaming = streamingMessage && streamingMessage.id === msg.id;
+            const displayText = isStreaming ? streamingMessage.text : msg.content;
+            
+            return (
             <div
               key={msg.id}
               className={`ai-chat-panel__message ${
                 msg.role === "user" ? "user" : "assistant"
               }`}
             >
-              {msg.role === "assistant" && currentCharacter && (
-                <Avatar src={currentCharacter.avatar} size="small" />
-              )}
               <div className="ai-chat-panel__message-content">
-                <div className="ai-chat-panel__message-text">{msg.content}</div>
+                <div className="ai-chat-panel__message-name">
+                  {msg.role === "assistant" ? currentCharacter?.name || "Sen" : "Bạn"}
+                </div>
+                <div className="ai-chat-panel__message-text">
+                  {displayText}
+                  {isStreaming && <span className="cursor">|</span>}
+                </div>
                 <div className="ai-chat-panel__message-meta">
                   <Text type="secondary" style={{ fontSize: 11 }}>
                     {new Date(msg.timestamp).toLocaleTimeString("vi-VN")}
@@ -271,22 +334,14 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
                   )}
                 </div>
               </div>
-              {msg.role === "user" && user && (
-                <Avatar size="small">
-                  {user.name.charAt(0).toUpperCase()}
-                </Avatar>
-              )}
             </div>
-          ))
+            );
+          })
         )}
         {isTyping && (
           <div className="ai-chat-panel__message assistant">
-            <Avatar src={currentCharacter?.avatar} size="small" />
             <div className="ai-chat-panel__typing">
               <Spin size="small" />
-              <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
-                {currentCharacter?.name} đang trả lời...
-              </Text>
             </div>
           </div>
         )}

@@ -124,6 +124,17 @@
     max-width: 75%;
     padding: 10px 14px;
     word-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__message-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f5f25;
+    opacity: 0.8;
+    margin-bottom: 2px;
   }
 
   &__message-text {
@@ -193,6 +204,22 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+.cursor {
+  display: inline-block;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+  font-weight: bold;
 }
 
 // Responsive
