@@ -29,6 +29,7 @@ const FormModal: React.FC<FormModalProps> = ({
   centered = true,
   destroyOnClose = true,
   maskClosable = false,
+  preserve = true,
 
   // Footer
   footer,
@@ -74,7 +75,7 @@ const FormModal: React.FC<FormModalProps> = ({
           form={form}
           layout={layout}
           initialValues={initialValues}
-          preserve={false}
+          preserve={preserve}
         >
           {children}
         </Form>

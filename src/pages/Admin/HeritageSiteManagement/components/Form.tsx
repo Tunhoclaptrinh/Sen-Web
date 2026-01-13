@@ -1,4 +1,4 @@
-import { Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs, DatePicker } from "antd";
+import { Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs, DatePicker, message } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { FormModal, TinyEditor, Button as StyledButton } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
@@ -13,7 +13,7 @@ import {
   TimelineCategory,
   TimelineCategoryLabels,
 } from "@/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
@@ -54,31 +54,46 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
     const initData = async () => {
         if (open && initialValues && initialValues.id) {
             try {
-                // Fetch additional details that might be missing from the list view
-                const [timelineRes, artifactsRes] = await Promise.all([
+                // Fetch labels for related IDs to show in DebounceSelect
+                const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] = await Promise.all([
                     heritageService.getTimeline(initialValues.id),
-                    heritageService.getArtifacts(initialValues.id)
+                    heritageService.getArtifacts(initialValues.id),
+                    initialValues.related_artifact_ids?.length > 0 
+                      ? artifactService.getAll({ ids: initialValues.related_artifact_ids.join(',') })
+                      : Promise.resolve({ success: true, data: [] }),
+                    initialValues.related_history_ids?.length > 0
+                      ? historyService.getAll({ ids: initialValues.related_history_ids.join(',') })
+                      : Promise.resolve({ success: true, data: [] })
                 ]);
 
                 let timeline = timelineRes.success ? timelineRes.data : (initialValues.timeline || []);
-                let relatedArtifacts: any[] = [];
-
+                
+                // Map related artifacts to {label, value}
+                const artifactMap = new Map();
                 if (artifactsRes.success && artifactsRes.data) {
-                     relatedArtifacts = artifactsRes.data.map((art: any) => ({
-                         label: art.name,
-                         value: art.id
-                     }));
-                } else if (initialValues.related_artifact_ids && initialValues.related_artifact_ids.length > 0) {
-                     // Fallback to previous logic if getArtifacts fails but IDs exist
-                     // ... (omitted for brevity, preferring the API fetch)
-                     // Actually, let's just use what we have.
+                    artifactsRes.data.forEach((art: any) => artifactMap.set(art.id, art));
                 }
+                if (relArtifactsRes.success && relArtifactsRes.data) {
+                    relArtifactsRes.data.forEach((art: any) => artifactMap.set(art.id, art));
+                }
+
+                const relatedArtifacts = (initialValues.related_artifact_ids || []).map((id: any) => {
+                    const art = artifactMap.get(typeof id === 'object' ? id.value : id);
+                    return art ? { label: art.name, value: art.id } : (typeof id === 'object' ? id : { label: `ID: ${id}`, value: id });
+                });
+
+                // Map related history to {label, value}
+                const relatedHistory = (initialValues.related_history_ids || []).map((id: any) => {
+                    const hist = relHistoryRes.success ? relHistoryRes.data.find((h: any) => h.id === (typeof id === 'object' ? id.value : id)) : null;
+                    return hist ? { label: hist.title, value: hist.id } : (typeof id === 'object' ? id : { label: `ID: ${id}`, value: id });
+                });
 
                 const formattedValues = {
                     ...initialValues,
                     short_description: initialValues.short_description || initialValues.shortDescription,
                     timeline: timeline,
                     related_artifact_ids: relatedArtifacts,
+                    related_history_ids: relatedHistory,
                     year_established: initialValues.year_established
                       ? dayjs(String(initialValues.year_established), "YYYY")
                       : null,
@@ -109,13 +124,56 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   }, [open, initialValues, form]);
 
 
+  const [activeTab, setActiveTab] = useState("1");
+
+  useEffect(() => {
+    if (open) setActiveTab("1");
+  }, [open]);
+
+  const handleSubmitClick = async () => {
+    try {
+      const values = await form.validateFields();
+      await handleOk(values);
+    } catch (error: any) {
+      console.error("Validation failed:", error);
+      
+      if (error.errorFields && error.errorFields.length > 0) {
+        const firstErrorField = error.errorFields[0].name[0];
+        
+        // Map fields to tabs
+        const tab1Fields = [
+          'image', 'gallery', 'short_description', 'name', 'type', 
+          'address', 'region', 'cultural_period', 'significance', 
+          'visit_hours', 'year_established', 'entrance_fee', 
+          'unesco_listed', 'is_active'
+        ];
+        const tab2Fields = ['description'];
+        const tab3Fields = ['related_artifact_ids', 'related_history_ids', 'timeline'];
+
+        if (tab1Fields.includes(firstErrorField)) {
+          setActiveTab("1");
+        } else if (tab2Fields.includes(firstErrorField)) {
+          setActiveTab("2");
+        } else if (tab3Fields.includes(firstErrorField)) {
+          setActiveTab("3");
+        }
+        
+        message.warning("Vui lòng kiểm tra lại thông tin trong các tab");
+      }
+    }
+  };
+
   const handleOk = async (values: any) => {
-      // Transform values before submit if needed
-      // Extract IDs from labelInValue objects for artifacts
+      // Transform values before submit
       const submitData = {
           ...values,
-          related_artifact_ids: values.related_artifact_ids?.map((item: any) => item.value),
-          related_history_ids: values.related_history_ids?.map((item: any) => item.value),
+          shortDescription: values.short_description, // Sync for compatibility
+          related_artifact_ids: values.related_artifact_ids?.map((item: any) => 
+            typeof item === 'object' ? item.value : item
+          ),
+          related_history_ids: values.related_history_ids?.map((item: any) => 
+            typeof item === 'object' ? item.value : item
+          ),
           year_established: values.year_established ? values.year_established.year() : null,
       };
     await onSubmit(submitData);
@@ -124,9 +182,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   // Fetch function for Artifact Search
   const fetchArtifactList = async (search: string) => {
     try {
-        const response = await artifactService.search(search);
+        const response = await artifactService.getAll({ q: search, limit: 10 });
         if (response.success && response.data) {
-            return response.data.map((item) => ({
+            return response.data.map((item: any) => ({
                 label: item.name,
                 value: item.id
             }));
@@ -141,9 +199,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   // Fetch function for History Articles Search
   const fetchHistoryList = async (search: string) => {
     try {
-        const response = await historyService.search(search);
+        const response = await historyService.getAll({ q: search, limit: 10 });
         if (response.success && response.data) {
-            return response.data.map((item) => ({
+            return response.data.map((item: any) => ({
                 label: item.title,
                 value: item.id
             }));
@@ -155,23 +213,25 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
     }
   }
 
-
-  
   return (
-
-
     <FormModal
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
       title={title}
-      width={1000} // Resized to 1000 as requested
+      width={1000}
       form={form}
       loading={loading}
       initialValues={{
+<<<<<<< HEAD
         is_active: true,
         unesco_listed: false,
         ...(preparedInitialValues || {}),
+=======
+          is_active: true,
+          unesco_listed: false,
+          ...initialValues,
+>>>>>>> bc6ee2b0defe7d1c1d0541c9bb38284535b4571e
       }}
 
       footer={
@@ -179,12 +239,13 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             <StyledButton variant="outline" onClick={onCancel} style={{ minWidth: '120px' }}>
                 Hủy
             </StyledButton>
-            <StyledButton variant="primary" loading={loading} onClick={() => form.submit()} style={{ minWidth: '120px' }}>
+            <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{ minWidth: '120px' }}>
                 Lưu lại
             </StyledButton>
         </div>
       }
     >
+<<<<<<< HEAD
         <Form
          form={form}
          layout="vertical"
@@ -196,6 +257,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
          }}
         >
           <Tabs defaultActiveKey="1" items={[
+=======
+          <Tabs activeKey={activeTab} onChange={setActiveTab} items={[
+>>>>>>> bc6ee2b0defe7d1c1d0541c9bb38284535b4571e
             {
               key: '1',
               label: 'Thông tin chung',
@@ -220,7 +284,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                             label="Mô tả ngắn"
                             rules={[{ required: true, message: "Vui lòng nhập mô tả ngắn" }]}
                         >
-                            <Input.TextArea rows={3} placeholder="Mô tả ngắn gọn về di sản (hiện trên thẻ tin và đầu trang chi tiết)..." />
+                            <Input.TextArea rows={2} placeholder="Mô tả ngắn gọn về di sản (hiện trên thẻ tin và đầu trang chi tiết)..." />
                         </Form.Item>
                     </Col>
                   </Row>
@@ -249,33 +313,21 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                        </Select>
                      </Form.Item>
                    </Col>
-                 </Row>
+                  </Row>
 
-                 <Row gutter={16}>
-                   <Col span={12}>
-                     <Form.Item name="region" label="Khu vực" rules={[{ required: true }]}>
-                        <Select placeholder="Chọn khu vực">
-                            {Object.values(HeritageRegion).map(region => (
-                                <Select.Option key={region} value={region}>
-                                    {HeritageRegionLabels[region]}
-                                </Select.Option>
-                            ))}
-                       </Select>
-                     </Form.Item>
-                   </Col>
-                   <Col span={12}>
-                     <Form.Item name="significance" label="Tầm quan trọng">
-                       <Select placeholder="Chọn quy mô">
-                         {Object.values(SignificanceLevel).map((level) => (
-                           <Select.Option key={level} value={level}>
-                             {SignificanceLevelLabels[level]}
-                           </Select.Option>
-                         ))}
-                       </Select>
-                     </Form.Item>
-                   </Col>
-                 </Row>
+                  <Row gutter={16}>
+                    <Col span={24}>
+                        <Form.Item
+                            name="address"
+                            label="Địa chỉ"
+                            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+                        >
+                            <Input placeholder="Nhập địa chỉ cụ thể" />
+                        </Form.Item>
+                    </Col>
+                  </Row>
 
+<<<<<<< HEAD
                  <Row gutter={16}>
                     <Col span={8}>
                       <Form.Item name="year_established" label="Năm thành lập">
@@ -285,86 +337,122 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                           placeholder="Chọn năm"
                           style={{ width: "100%" }}
                         />
+=======
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item name="region" label="Khu vực" rules={[{ required: true }]}>
+                         <Select placeholder="Chọn khu vực">
+                             {Object.values(HeritageRegion).map(region => (
+                                 <Select.Option key={region} value={region}>
+                                     {HeritageRegionLabels[region]}
+                                 </Select.Option>
+                             ))}
+                        </Select>
+>>>>>>> bc6ee2b0defe7d1c1d0541c9bb38284535b4571e
                       </Form.Item>
                     </Col>
+                    <Col span={12}>
+                      <Form.Item name="cultural_period" label="Thời kỳ văn hóa">
+                        <Input placeholder="VD: Triều Nguyễn, Thời Lý..." />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+
+                  <Row gutter={16}>
+                    <Col span={12}>
+                       <Form.Item name="significance" label="Tầm quan trọng">
+                        <Select placeholder="Chọn quy mô">
+                          {Object.values(SignificanceLevel).map((level) => (
+                            <Select.Option key={level} value={level}>
+                              {SignificanceLevelLabels[level]}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="visit_hours" label="Giờ mở cửa">
+                            <Input placeholder="VD: 08:30 - 17:00 hàng ngày" />
+                        </Form.Item>
+                    </Col>
+                  </Row>
+
+                  <Row gutter={16}>
+                     <Col span={8}>
+                       <Form.Item name="year_established" label="Năm thành lập">
+                         <InputNumber style={{ width: "100%" }} />
+                       </Form.Item>
+                     </Col>
+                     <Col span={8}>
+                       <Form.Item name="entrance_fee" label="Giá vé">
+                         <InputNumber
+                           style={{ width: "100%" }}
+                           formatter={(value) =>
+                             `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                           }
+                           parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
+                         />
+                       </Form.Item>
+                     </Col>
                     <Col span={8}>
-                      <Form.Item name="entrance_fee" label="Giá vé">
-                        <InputNumber
-                          style={{ width: "100%" }}
-                          formatter={(value) =>
-                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                          }
-                          parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
-                        />
-                      </Form.Item>
-                    </Col>
-                   <Col span={8}>
-                     <Row gutter={16}>
-                         <Col span={12}>
-                           <Form.Item
-                            name="unesco_listed"
-                            label="UNESCO"
-                            valuePropName="checked"
-                          >
-                            <Switch checkedChildren="Có" unCheckedChildren="Không" />
-                          </Form.Item>
-                         </Col>
-                         <Col span={12}>
-                             <Form.Item
-                                name="is_active"
-                                label="Trạng thái"
-                                valuePropName="checked"
-                              >
-                                <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
-                              </Form.Item>
-                         </Col>
-                     </Row>
-                    </Col>
-                 </Row>
-               </>
-             )
-           },
-           {
-             key: '2',
-             label: 'Mô tả chi tiết',
-             children: (
-                <Form.Item
-                  name="description"
-                  label="Mô tả"
-                  rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
-                >
-                  <TinyEditor
-                    height={400}
-                    placeholder="Nhập mô tả chi tiết về di sản..."
-                    enableImageUpload={true}
-                    enableVideoEmbed={true}
-                  />
-                </Form.Item>
-             )
-           },
-           {
-             key: '3',
-             label: 'Dòng thời gian & Hiện vật',
-             children: (
-               <>
-                  <Form.Item label="Hiện vật liên quan" name="related_artifact_ids">
-                     <DebounceSelect
-                        mode="multiple"
-                        placeholder="Tìm kiếm và chọn hiện vật..."
-                        fetchOptions={fetchArtifactList}
-                        style={{ width: '100%' }}
-                     />
-                  </Form.Item>
+                      <Row gutter={16}>
+                          <Col span={12}>
+                            <Form.Item
+                             name="unesco_listed"
+                             label="UNESCO"
+                             valuePropName="checked"
+                           >
+                             <Switch checkedChildren="Có" unCheckedChildren="Không" />
+                           </Form.Item>
+                          </Col>
+                          <Col span={12}>
+                              <Form.Item
+                                 name="is_active"
+                                 label="Trạng thái"
+                                 valuePropName="checked"
+                               >
+                                 <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
+                               </Form.Item>
+                          </Col>
+                      </Row>
+                     </Col>
+                  </Row>
+                </>
+              )
+            },
+            {
+              key: '2',
+              label: 'Mô tả chi tiết',
+              children: (
+                 <Form.Item
+                   name="description"
+                   label="Mô tả"
+                   rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+                 >
+                   <TinyEditor
+                     height={400}
+                     placeholder="Nhập mô tả chi tiết về di sản..."
+                     enableImageUpload={true}
+                     enableVideoEmbed={true}
+                   />
+                 </Form.Item>
+              )
+            },
+            {
+              key: '3',
+              label: 'Dòng thời gian & Hiện vật',
+              children: (
+                <>
+                   <Form.Item label="Hiện vật liên quan" name="related_artifact_ids">
+                      <DebounceSelect
+                         mode="multiple"
+                         placeholder="Tìm kiếm và chọn hiện vật..."
+                         fetchOptions={fetchArtifactList}
+                         style={{ width: '100%' }}
+                      />
+                   </Form.Item>
 
-                  <Form.Item label="Lịch sử liên quan" name="related_history_ids">
-                     <DebounceSelect
-                        mode="multiple"
-                        placeholder="Tìm kiếm và chọn bài viết lịch sử..."
-                        fetchOptions={fetchHistoryList}
-                        style={{ width: '100%' }}
-                     />
-                  </Form.Item>
-
+<<<<<<< HEAD
                   <Form.Item label="Dòng thời gian" style={{ marginTop: 16 }}>
                     <Form.List name="timeline">
                         {(fields, { add, remove }) => (
@@ -429,6 +517,76 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
            }
          ]} />
       </Form>
+=======
+                   <Form.Item label="Lịch sử liên quan" name="related_history_ids">
+                      <DebounceSelect
+                         mode="multiple"
+                         placeholder="Tìm kiếm và chọn bài viết lịch sử..."
+                         fetchOptions={fetchHistoryList}
+                         style={{ width: '100%' }}
+                      />
+                   </Form.Item>
+
+                   <Form.Item label="Dòng thời gian" style={{ marginTop: 16 }}>
+                     <Form.List name="timeline">
+                         {(fields, { add, remove }) => (
+                         <>
+                             {fields.map(({ key, name, ...restField }) => (
+                             <div key={key} style={{ display: 'flex', marginBottom: 8, alignItems: 'baseline', gap: '8px' }}>
+                                 <Form.Item
+                                 {...restField}
+                                 name={[name, 'year']}
+                                 rules={[{ required: true, message: 'Nhập năm' }]}
+                                 style={{ margin: 0 }}
+                                 >
+                                 <InputNumber placeholder="Năm" style={{ width: 80 }} />
+                                 </Form.Item>
+                                 <Form.Item
+                                 {...restField}
+                                 name={[name, 'title']}
+                                 rules={[{ required: true, message: 'Nhập tiêu đề' }]}
+                                 style={{ margin: 0 }}
+                                 >
+                                 <Input placeholder="Tiêu đề sự kiện" style={{ width: 200 }} />
+                                 </Form.Item>
+                                 <Form.Item
+                                 {...restField}
+                                 name={[name, 'category']}
+                                 rules={[{ required: true, message: 'Chọn loại' }]}
+                                 style={{ margin: 0 }}
+                                 >
+                                  <Select placeholder="Loại" style={{ width: 150 }}>
+                                      {Object.values(TimelineCategory).map(cat => (
+                                          <Select.Option key={cat} value={cat}>
+                                              {TimelineCategoryLabels[cat]}
+                                          </Select.Option>
+                                      ))}
+                                  </Select>
+                                 </Form.Item>
+                                 <Form.Item
+                                 {...restField}
+                                 name={[name, 'description']}
+                                 style={{ flex: 1, margin: 0 }}
+                                 >
+                                 <Input placeholder="Mô tả sự kiện" style={{ width: '100%' }} />
+                                 </Form.Item>
+                                 <MinusCircleOutlined onClick={() => remove(name)} style={{ color: 'red' }} />
+                             </div>
+                             ))}
+                             <Form.Item>
+                             <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                 Thêm sự kiện
+                             </Button>
+                             </Form.Item>
+                         </>
+                         )}
+                     </Form.List>
+                   </Form.Item>
+                </>
+              )
+            }
+          ]} />
+>>>>>>> bc6ee2b0defe7d1c1d0541c9bb38284535b4571e
     </FormModal>
   );
 };

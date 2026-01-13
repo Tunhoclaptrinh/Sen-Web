@@ -25,6 +25,8 @@ import dayjs from 'dayjs';
 import { fetchHeritageSiteById } from "@store/slices/heritageSlice";
 import favoriteService from "@/services/favorite.service";
 import heritageService from "@/services/heritage.service";
+import artifactService from "@/services/artifact.service";
+import historyService from "@/services/history.service";
 import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { HeritageSite, TimelineEvent } from "@/types";
@@ -47,32 +49,61 @@ const HeritageDetailPage = () => {
     const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
     const [siteArtifacts, setSiteArtifacts] = useState<any[]>([]);
     const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+    const [relatedHistoryArr, setRelatedHistoryArr] = useState<any[]>([]);
     const [previewVisible, setPreviewVisible] = useState(false);
 
     useEffect(() => {
         if (id) {
             dispatch(fetchHeritageSiteById(id));
-            fetchRelatedData(id);
             window.scrollTo(0, 0);
         }
     }, [dispatch, id]);
 
-     const fetchRelatedData = async (currentId: string) => {
+    useEffect(() => {
+        if (site && site.id) {
+            fetchRelatedData(site);
+        }
+    }, [site]);
+
+     const fetchRelatedData = async (currentItem: HeritageSite) => {
         try {
+            const currentId = currentItem.id.toString();
+            
+            // 1. Fetch nearby/related sites
             const resRelated = await heritageService.getAll({ limit: 4 });
             if (resRelated.data) {
-                // Fetch 4 to ensure we have 3 after filtering current one
                 setRelatedSites(resRelated.data.filter(s => s.id !== Number(currentId)).slice(0, 3));
             }
 
-            const resArtifacts = await heritageService.getArtifacts(currentId);
-            if (resArtifacts.success && resArtifacts.data) setSiteArtifacts(resArtifacts.data);
+            // 2. Fetch artifacts (from backlink AND related_artifact_ids)
+            const resBackArtifacts = await heritageService.getArtifacts(currentId);
+            const relArtIds = currentItem.related_artifact_ids || [];
+            
+            let allArtifacts = resBackArtifacts.data || [];
+            if (relArtIds.length > 0) {
+                const resRelArt = await artifactService.getAll({ ids: relArtIds.join(',') });
+                if (resRelArt.data) {
+                    const existingIds = new Set(allArtifacts.map(a => a.id));
+                    resRelArt.data.forEach(a => {
+                        if (!existingIds.has(a.id)) allArtifacts.push(a);
+                    });
+                }
+            }
+            setSiteArtifacts(allArtifacts);
 
+            // 3. Fetch History (from related_history_ids)
+            const relHistIds = currentItem.related_history_ids || [];
+            if (relHistIds.length > 0) {
+                const resHist = await historyService.getAll({ ids: relHistIds.join(',') });
+                if (resHist.data) setRelatedHistoryArr(resHist.data);
+            }
+
+            // 4. Fetch Timeline
             const resTimeline = await heritageService.getTimeline(currentId);
             if(resTimeline.success && resTimeline.data) setTimelineEvents(resTimeline.data);
 
         } catch (e) {
-            console.error("Failed to fetch related data");
+            console.error("Failed to fetch related data", e);
         }
     }
 
@@ -106,16 +137,14 @@ const HeritageDetailPage = () => {
     // const siteArtifacts = site.related_artifacts || []; // Use state-managed siteArtifacts instead
     const siteLevels = site.related_levels || [];
     const siteProducts = site.related_products || [];
-    const relatedHistory = site.related_history || [];
+    const relatedHistory = relatedHistoryArr.length > 0 ? relatedHistoryArr : (site.related_history || []);
 
-    // MOCK DATA for demonstration - Always show for heritage site ID 2
-    const useMockData = id === '2' || siteLevels.length === 0;
+    // MOCK DATA for demonstration - only show if NO real data exists
+    const useMockData = relatedHistory.length === 0 && siteArtifacts.length === 0 && siteLevels.length === 0;
     
     // Debug: Log what backend returns
-    console.log('[Heritage Detail] Backend data:', {
+    console.log('[Heritage Detail] Real data loaded:', {
         id,
-        siteLevels,
-        siteProducts,
         relatedHistory,
         siteArtifacts,
         useMockData
@@ -142,7 +171,7 @@ const HeritageDetailPage = () => {
         }
     ] : siteLevels;
 
-    const mockHistory = useMockData ? [
+    const mockHistory = (useMockData && relatedHistory.length === 0) ? [
         {
             id: 1,
             title: "Lý Thái Tổ dời đô ra Thăng Long",

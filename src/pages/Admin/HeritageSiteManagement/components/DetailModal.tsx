@@ -2,6 +2,8 @@ import { Modal, Descriptions, Tabs, Tag, Image, Space, List, Timeline, Typograph
 import { HeritageSite, HeritageTypeLabels, HeritageType } from "@/types/heritage.types";
 import { EnvironmentOutlined, StarOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
+import artifactService from "@/services/artifact.service";
+import historyService from "@/services/history.service";
 import { useEffect, useState } from "react";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 
@@ -18,6 +20,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
 }) => {
     const [timeline, setTimeline] = useState<any[]>([]);
     const [artifacts, setArtifacts] = useState<any[]>([]);
+    const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [previewVisible, setPreviewVisible] = useState(false);
 
@@ -26,12 +29,29 @@ const DetailModal: React.FC<DetailModalProps> = ({
             if (open && record?.id) {
                 setLoading(true);
                 try {
-                    const [timelineRes, artifactsRes] = await Promise.all([
+                    const artifactsIds = record.related_artifact_ids || [];
+                    const historyIds = record.related_history_ids || [];
+
+                    const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] = await Promise.all([
                         heritageService.getTimeline(record.id),
-                        heritageService.getArtifacts(record.id)
+                        heritageService.getArtifacts(record.id),
+                        artifactsIds.length > 0 
+                            ? artifactService.getAll({ ids: artifactsIds.join(',') })
+                            : Promise.resolve({ success: true, data: [] }),
+                        historyIds.length > 0
+                            ? historyService.getAll({ ids: historyIds.join(',') })
+                            : Promise.resolve({ success: true, data: [] })
                     ]);
+                    
                     setTimeline(timelineRes.data || []);
-                    setArtifacts(artifactsRes.data || []);
+                    
+                    // Merge artifacts from backlink and explicit relates
+                    const artifactMap = new Map();
+                    if (artifactsRes.data) artifactsRes.data.forEach((a: any) => artifactMap.set(a.id, a));
+                    if (relArtifactsRes.data) relArtifactsRes.data.forEach((a: any) => artifactMap.set(a.id, a));
+                    setArtifacts(Array.from(artifactMap.values()));
+
+                    setRelatedHistory(relHistoryRes.data || []);
                 } catch (error) {
                     console.error("Failed to load details", error);
                 } finally {
@@ -221,6 +241,21 @@ const DetailModal: React.FC<DetailModalProps> = ({
                             </div>
                         )}
                     </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={`Lịch sử liên quan (${relatedHistory.length})`} key="history">
+                    <List
+                        grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 2, xl: 2, xxl: 2 }}
+                        dataSource={relatedHistory}
+                        renderItem={(item) => (
+                            <List.Item>
+                                <ArticleCard 
+                                    data={item} 
+                                    type="history" 
+                                />
+                            </List.Item>
+                        )}
+                        loading={loading}
+                    />
                 </Tabs.TabPane>
             </Tabs>
         </Modal>

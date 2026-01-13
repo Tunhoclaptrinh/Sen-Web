@@ -53,6 +53,8 @@ export const ArtifactConditionLabels: Record<ArtifactCondition, string> = {
 // Artifact
 export interface Artifact extends BaseEntity, TimestampEntity {
   name: string;
+  short_description?: string;
+  shortDescription?: string;
   description: string;
   artifact_type: ArtifactType;
   category_id?: number;
@@ -79,6 +81,9 @@ export interface Artifact extends BaseEntity, TimestampEntity {
   total_reviews?: number;
   view_count?: number;
   is_active?: boolean;
+  // Related items (admin-managed)
+  related_heritage_ids?: number[];
+  related_history_ids?: number[];
 }
 
 // Artifact DTO
@@ -104,6 +109,9 @@ export interface ArtifactDTO {
   historical_context?: string;
   cultural_significance?: string;
   story?: string;
+  // Related items (admin-managed)
+  related_heritage_ids?: number[];
+  related_history_ids?: number[];
 }
 
 // Category

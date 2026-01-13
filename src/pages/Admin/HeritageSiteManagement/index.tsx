@@ -139,6 +139,22 @@ const HeritageSiteManagement = () => {
       width: 120,
       render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Free"),
     },
+    {
+      title: "Hiện vật",
+      key: "artifacts_count",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color="cyan">{(record.related_artifact_ids || []).length} HV</Tag>
+      ),
+    },
+    {
+      title: "Lịch sử",
+      key: "history_count",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
+      ),
+    },
   ];
 
   return (
