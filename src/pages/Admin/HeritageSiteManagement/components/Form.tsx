@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
-import { fontWeight } from "@/styles/theme";
 
 interface HeritageFormProps {
   open: boolean;
@@ -72,7 +71,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
                 // Map related history to {label, value}
                 const relatedHistory = (initialValues.related_history_ids || []).map((id: any) => {
-                    const hist = relHistoryRes.success ? relHistoryRes.data.find((h: any) => h.id === (typeof id === 'object' ? id.value : id)) : null;
+                    const hist = relHistoryRes.success ? relHistoryRes.data?.find((h: any) => h.id === (typeof id === 'object' ? id.value : id)) : null;
                     return hist ? { label: hist.title, value: hist.id } : (typeof id === 'object' ? id : { label: `ID: ${id}`, value: id });
                 });
 

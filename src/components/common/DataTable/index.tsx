@@ -170,7 +170,7 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
 
-  const ColumnSearch = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, label }: any) => {
+  const ColumnSearch = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, label: _label }: any) => {
       const [value, setValue] = useState(selectedKeys[0]);
 
       // Handle input change: update local value and trigger search
@@ -207,12 +207,11 @@ const DataTable: React.FC<DataTableProps> = ({
                   className="filter-search-input"
                   containerStyle={{ marginBottom: 0, flex: 1, width: 'auto' }}
                   fullWidth={false}
-                  // inputSize defaults to middle (32px)
               />
               <Button
                   variant="primary"
                   onClick={() => confirm()}
-                  // buttonSize defaults to middle (32px)
+                  buttonSize="small"
                   style={{ boxShadow: 'none', whiteSpace: 'nowrap', flex: '0 0 auto' }}
               >
                   Tìm
@@ -220,7 +219,7 @@ const DataTable: React.FC<DataTableProps> = ({
               <Button
                   variant="outline"
                   onClick={handleClear}
-                  // buttonSize defaults to middle (32px)
+                  buttonSize="small"
                   style={{ 
                       borderColor: '#d9d9d9', 
                       color: '#595959',
@@ -571,7 +570,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
             {/* Total Count Display */}
             <div className="total-count-badge">
-              Tổng số: <span>{pagination.total || 0}</span>
+              Tổng số: <span>{(pagination && pagination.total) || 0}</span>
             </div>
           </Space>
         </div>
