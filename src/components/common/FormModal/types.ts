@@ -10,4 +10,5 @@ export interface FormModalProps extends ModalProps {
     loading?: boolean;
     layout?: FormLayout;
     children?: ReactNode;
+    preserve?: boolean;
 }

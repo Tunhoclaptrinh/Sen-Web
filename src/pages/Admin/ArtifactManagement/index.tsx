@@ -104,6 +104,22 @@ const ArtifactManagement = () => {
       render: (onDisplay: boolean) => onDisplay ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>,
     },
     {
+      title: "Di sản",
+      key: "heritage_count",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
+      ),
+    },
+    {
+      title: "Lịch sử",
+      key: "history_count",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
+      ),
+    },
+    {
       title: "Thao tác",
       key: "actions",
       width: 120,

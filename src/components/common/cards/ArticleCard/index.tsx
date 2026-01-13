@@ -66,7 +66,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
                     )}
                 </div>
 
-                <h3 className="card-title" title={data.name}>{data.name}</h3>
+                <h3 className="card-title" title={data.name || data.title}>{data.name || data.title}</h3>
 
                 {/* Short Description or Truncated Description */}
                 <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>

@@ -85,6 +85,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   commentCount?: number;
   timeline?: TimelineEvent[];
   related_artifact_ids?: number[];
+  related_history_ids?: number[];
   related_artifacts?: any[]; // Full objects if needed
   related_levels?: any[];
   related_products?: any[];
