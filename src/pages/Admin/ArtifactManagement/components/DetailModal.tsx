@@ -1,6 +1,6 @@
-import { Modal, Descriptions, Tag, Image, Space, Tabs, List } from "antd";
+import { Modal, Descriptions, Tag, Image, Space, Tabs, List, Typography, Button } from "antd";
 import { Artifact } from "@/types";
-import { StarOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import { StarOutlined, EnvironmentOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
@@ -20,6 +20,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
     const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
     const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [previewVisible, setPreviewVisible] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,6 +53,16 @@ const DetailModal: React.FC<DetailModalProps> = ({
 
     if (!record) return null;
 
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+    const apiHost = apiBase.replace(/\/api$/, '');
+    const mainImg = record.image || (record.images && record.images[0]);
+    const mainSrc = mainImg ? (mainImg.startsWith('http') ? mainImg : `${apiHost}${mainImg}`) : "";
+
+    const gallery = Array.from(new Set([
+        ...(record.gallery || []),
+        ...(record.images || [])
+    ])).filter(Boolean);
+
     return (
         <Modal
             open={open}
@@ -64,40 +75,88 @@ const DetailModal: React.FC<DetailModalProps> = ({
                 <Tabs.TabPane tab="Thông tin chung" key="info">
                     <Descriptions bordered column={2}>
                         <Descriptions.Item label="Tên gọi">{record.name}</Descriptions.Item>
+                        <Descriptions.Item label="Hình ảnh">
+                             {mainSrc ? (
+                                <Image 
+                                    width={100}
+                                    src={mainSrc}
+                                    style={{ borderRadius: 4, objectFit: 'cover' }}
+                                />
+                             ) : <span style={{color: '#999', fontStyle: 'italic'}}>Chưa có ảnh</span>}
+                        </Descriptions.Item>
+
                         <Descriptions.Item label="Loại hình">
                             <Tag color="purple">{record.artifact_type?.toUpperCase()}</Tag>
                         </Descriptions.Item>
                         <Descriptions.Item label="Chất liệu">{record.material || "N/A"}</Descriptions.Item>
                         <Descriptions.Item label="Tình trạng">
-                            <Tag color={record.condition === 'excellent' ? 'green' : 'orange'}>
+                            <Tag color={['excellent', 'EXCELLENT', 'good', 'GOOD'].includes(record.condition || "") ? 'green' : 'orange'}>
                                 {record.condition?.toUpperCase()}
                             </Tag>
                         </Descriptions.Item>
                         <Descriptions.Item label="Trưng bày">
                             {record.is_on_display ? <Tag color="green">Đang trưng bày</Tag> : <Tag>Trong kho</Tag>}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Vị trí">
+                        <Descriptions.Item label="Vị trí" span={record.year_created ? 1 : 2}>
                             <Space>
                                 <EnvironmentOutlined />
                                 {record.location_in_site || "Chưa rõ"}
                             </Space>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Năm sáng tạo">{record.year_created || "N/A"}</Descriptions.Item>
+                        {record.year_created && <Descriptions.Item label="Năm sáng tạo">{record.year_created}</Descriptions.Item>}
                         <Descriptions.Item label="Đánh giá">
                             <Space><StarOutlined style={{ color: "#faad14" }} /> {record.rating || 0}</Space>
                         </Descriptions.Item>
                         <Descriptions.Item label="Mô tả ngắn" span={2}>
-                            {record.short_description || "Chưa có mô tả ngắn."}
+                            <Typography.Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
+                                {record.short_description || "Chưa có mô tả ngắn."}
+                            </Typography.Paragraph>
                         </Descriptions.Item>
                     </Descriptions>
 
-                    {record.images && record.images.length > 0 && (
+                    {gallery.length > 0 && (
                         <div style={{ marginTop: 20 }}>
-                            <h4>Hình ảnh</h4>
-                            <Space wrap>
-                                {record.images.map((img, idx) => (
-                                    <Image key={idx} width={200} src={img} alt={`${record.name}-${idx}`} />
-                                ))}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                <h4 style={{ margin: 0 }}>Thư viện ảnh</h4>
+                                <Button size="small" type="text" icon={<EyeOutlined />} style={{ color: 'var(--primary-color)' }} onClick={() => setPreviewVisible(true)}>
+                                    Xem tất cả
+                                </Button>
+                            </div>
+                            
+                            <div style={{ display: 'none' }}>
+                                <Image.PreviewGroup preview={{ visible: previewVisible, onVisibleChange: (vis) => setPreviewVisible(vis) }}>
+                                    {gallery.map((img, idx) => {
+                                         const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                         return <Image key={idx} src={src} />;
+                                    })}
+                                </Image.PreviewGroup>
+                            </div>
+
+                            <Space wrap size="middle">
+                                {gallery.slice(0, 5).map((img, idx) => {
+                                     const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                     return (
+                                        <div key={idx} onClick={() => setPreviewVisible(true)} style={{ cursor: 'pointer' }}>
+                                            <Image 
+                                                width={120} height={120} src={src} preview={false}
+                                                style={{ objectFit: 'cover', borderRadius: 8, border: '1px solid #eee' }}
+                                            />
+                                        </div>
+                                     );
+                                })}
+                                {gallery.length > 5 && (
+                                     <div 
+                                        style={{ 
+                                            width: 120, height: 120, borderRadius: 8, background: '#f5f5f5', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            cursor: 'pointer', border: '1px solid #eee', flexDirection: 'column', color: '#666'
+                                        }}
+                                        onClick={() => setPreviewVisible(true)}
+                                     >
+                                         <PlusOutlined style={{ fontSize: 24, marginBottom: 4 }} />
+                                         <span>Xem thêm</span>
+                                     </div>
+                                )}
                             </Space>
                         </div>
                     )}
@@ -120,10 +179,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         dataSource={relatedHeritage}
                         renderItem={(item) => (
                             <List.Item>
-                                <ArticleCard 
-                                    data={item} 
-                                    type="heritage" 
-                                />
+                                <ArticleCard data={item} type="heritage" />
                             </List.Item>
                         )}
                         loading={loading}
@@ -136,10 +192,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         dataSource={relatedHistory}
                         renderItem={(item) => (
                             <List.Item>
-                                <ArticleCard 
-                                    data={item} 
-                                    type="history" 
-                                />
+                                <ArticleCard data={item} type="history" />
                             </List.Item>
                         )}
                         loading={loading}

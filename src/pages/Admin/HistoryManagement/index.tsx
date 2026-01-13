@@ -1,72 +1,49 @@
-import { useState } from "react";
-import {
-  Form,
-  Input,
-  Row,
-  Col,
-  Modal,
-  Space,
-  Tag,
-  DatePicker,
-  Switch,
-  Image
-} from "antd";
-import { useCRUD } from "@hooks/useCRUD";
-import historyService from "@/services/history.service";
+import { Tag } from "antd";
 import DataTable from "@components/common/DataTable";
-import FormModal from "@components/common/FormModal";
 import dayjs from 'dayjs';
 
-const { TextArea } = Input;
+import HistoryForm from "./components/Form";
+import HistoryDetailModal from "./components/DetailModal";
+import HistoryStats from "./components/Stats";
+import { useHistoryModel } from "./model";
 
 const HistoryManagement = () => {
-  const [form] = Form.useForm();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingId, setEditingId] = useState<number | string | null>(null);
-  const [viewModalVisible, setViewModalVisible] = useState(false);
-  const [viewingRecord, setViewingRecord] = useState<any | null>(null);
+    const {
+        data,
+        loading,
+        pagination,
+        handleTableChange,
+        search,
+        selectedIds,
+        setSelectedIds,
+        refresh,
+        updateFilters,
+        filters,
+        clearFilters,
+        stats,
+        statsLoading,
+        deleteHistory,
+        batchDeleteHistories,
+        exportData,
+        importData,
+        downloadTemplate,
+        importLoading,
+        exportLoading,
+        handleSubmit,
+        // UI State & Handlers
+        currentRecord,
+        formVisible,
+        detailVisible,
+        openCreate,
+        openEdit,
+        openDetail,
+        closeForm,
+        closeDetail,
+    } = useHistoryModel();
 
-  const {
-    data,
-    loading,
-    pagination,
-    filters,
-    searchTerm,
-    selectedIds,
-    fetchAll,
-    create,
-    update,
-    remove,
-    handleTableChange,
-    updateFilters,
-    clearFilters,
-    search,
-    batchDelete,
-    setSelectedIds,
-  } = useCRUD(historyService, {
-    pageSize: 10,
-    autoFetch: true,
-    initialFilters: {},
-    defaultSort: "createdAt",
-    defaultOrder: "desc",
-    successMessage: {
-      create: "Thêm bài viết thành công",
-      update: "Cập nhật bài viết thành công",
-      delete: "Xóa bài viết thành công",
-    },
-  });
-
-  const filterDefinitions = [
-    {
-      key: "is_active",
-      placeholder: "Trạng thái",
-      width: 150,
-      options: [
-        { label: "Đang hiển thị", value: true },
-        { label: "Đã ẩn", value: false },
-      ],
-    },
-  ];
+  const onFilterChange = (key: string, value: any) => {
+    updateFilters({ [key]: value });
+  };
 
   const columns = [
     {
@@ -74,38 +51,52 @@ const HistoryManagement = () => {
       dataIndex: "id",
       key: "id",
       width: 80,
-      sorter: true,
-      fixed: "left" as const,
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       width: 100,
-      render: (src: string) => src ? <Image src={src} width={60} height={40} style={{objectFit: 'cover', borderRadius: 4}} /> : 'N/A'
+      render: (image: string) => {
+        if (!image) return null;
+        const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+        const apiHost = apiBase.replace(/\/api$/, '');
+        const src = image.startsWith('http') ? image : `${apiHost}${image}`;
+        return (
+          <img 
+            src={src} 
+            alt="History" 
+            style={{ 
+              width: 80, 
+              height: 50, 
+              objectFit: 'cover', 
+              borderRadius: 4,
+              border: '1px solid #f0f0f0' 
+            }} 
+          />
+        );
+      },
     },
     {
       title: "Tiêu đề",
       dataIndex: "title",
-      key: "title",
+      key: "title_like", // Align with searchable key
       width: 250,
       ellipsis: true,
-      sorter: true,
+      searchable: true,
     },
     {
       title: "Tác giả",
       dataIndex: "author",
       key: "author",
       width: 150,
-      sorter: true,
     },
     {
       title: "Ngày đăng",
       dataIndex: "publishDate",
       key: "publishDate",
       width: 150,
-      sorter: true,
-      render: (date: any) => date ? dayjs(date).format('DD/MM/YYYY') : 'N/A',
+      render: (date: string) => date ? dayjs(date).format('DD/MM/YYYY') : 'N/A',
     },
     {
       title: "Lượt xem",
@@ -121,167 +112,86 @@ const HistoryManagement = () => {
       width: 120,
       render: (isActive: boolean) => (
         <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Hiển thị" : "Ẩn"}
+          {isActive ? "HIỂN THỊ" : "ĐÃ ẨN"}
         </Tag>
+      ),
+    },
+    {
+      title: "Di sản",
+      key: "heritage_count",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
+      ),
+    },
+    {
+      title: "Hiện vật",
+      key: "artifact_count",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color="purple">{(record.related_artifact_ids || []).length} HV</Tag>
       ),
     },
   ];
 
-  const handleAdd = () => {
-    form.resetFields();
-    form.setFieldsValue({ is_active: true, publishDate: dayjs() });
-    setEditingId(null);
-    setModalVisible(true);
-  };
-
-  const handleEdit = (record: any) => {
-    form.setFieldsValue({
-        ...record,
-        publishDate: record.publishDate ? dayjs(record.publishDate) : null
-    });
-    setEditingId(record.id);
-    setModalVisible(true);
-  };
-
-  const handleView = (record: any) => {
-    setViewingRecord(record);
-    setViewModalVisible(true);
-  };
-
-  const handleModalOk = async (values: any) => {
-    const formattedValues = {
-        ...values,
-        publishDate: values.publishDate ? values.publishDate.toISOString() : null
-    };
-
-    const success = editingId
-      ? await update(editingId, formattedValues)
-      : await create(formattedValues);
-
-    if (success) {
-      setModalVisible(false);
-      form.resetFields();
-      setEditingId(null);
-    }
-  };
-
   return (
     <div style={{ padding: 24 }}>
       <DataTable
-        data={data}
+        title="Quản lý Bài viết Lịch sử"
+        headerContent={<HistoryStats stats={stats} loading={statsLoading} />}
         loading={loading}
         columns={columns}
+        dataSource={data}
         pagination={pagination}
-        onPaginationChange={handleTableChange}
-        onAdd={handleAdd}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={(id) => remove(id)}
-        onRefresh={fetchAll}
-        searchable={true}
-        searchPlaceholder="Tìm kiếm bài viết..."
-        searchValue={searchTerm}
-        onSearch={(val) => search(val)}
-        filters={filterDefinitions}
-        filterValues={filters}
-        onFilterChange={(key, val) => updateFilters({ [key]: val })}
-        onClearFilters={clearFilters}
+        onChange={handleTableChange}
+        searchable
+        onSearch={search}
+        onAdd={openCreate}
+        rowSelection={{
+          selectedRowKeys: selectedIds,
+          onChange: setSelectedIds,
+        }}
+        onView={openDetail}
+        onEdit={openEdit}
+        onDelete={deleteHistory}
+        onBatchDelete={batchDeleteHistories}
         batchOperations={true}
-        selectedRowKeys={selectedIds}
-        onSelectChange={setSelectedIds}
-        onBatchDelete={batchDelete}
-        title="Quản Lý Bài Viết Lịch Sử"
-        rowKey="id"
+        importable={true}
+        importLoading={importLoading}
+        exportable={true}
+        exportLoading={exportLoading}
+        onImport={importData}
+        onDownloadTemplate={downloadTemplate}
+        onExport={exportData}
+        onRefresh={refresh}
+        filters={[
+          {
+            key: "is_active",
+            placeholder: "Trạng thái",
+            options: [
+              { label: "Đang hiển thị", value: true },
+              { label: "Đã ẩn", value: false },
+            ],
+          }
+        ]}
+        filterValues={filters}
+        onFilterChange={onFilterChange}
+        onClearFilters={clearFilters}
       />
 
-      <FormModal
-        open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        onOk={handleModalOk}
-        form={form}
-        title={editingId ? "Chỉnh Sửa Bài Viết" : "Thêm Bài Viết Mới"}
+      <HistoryForm
+        open={formVisible}
+        onCancel={closeForm}
+        onSubmit={handleSubmit}
+        initialValues={currentRecord}
         loading={loading}
-        width={800}
-      >
-        <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item
-              name="title"
-              label="Tiêu đề"
-              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
-            >
-              <Input placeholder="Nhập tiêu đề bài viết" />
-            </Form.Item>
-          </Col>
+      />
 
-          <Col span={24}>
-            <Form.Item
-              name="shortDescription"
-              label="Mô tả ngắn"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả ngắn" }]}
-            >
-              <TextArea rows={2} placeholder="Nhập mô tả ngắn gọn" />
-            </Form.Item>
-          </Col>
-
-          <Col span={24}>
-            <Form.Item
-                name="image"
-                label="Link Hình Ảnh"
-            >
-                <Input placeholder="URL hình ảnh" />
-            </Form.Item>
-          </Col>
-
-          <Col span={24}>
-            <Form.Item
-              name="content"
-              label="Nội dung chi tiết (HTML)"
-            >
-              <TextArea rows={10} placeholder="Nhập nội dung bài viết (hỗ trợ HTML)" />
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
-            <Form.Item name="author" label="Tác giả">
-              <Input placeholder="Tên tác giả" />
-            </Form.Item>
-          </Col>
-
-          <Col span={8}>
-            <Form.Item name="publishDate" label="Ngày đăng">
-              <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" showTime />
-            </Form.Item>
-          </Col>
-
-          <Col span={4}>
-            <Form.Item name="is_active" label="Hiển thị" valuePropName="checked">
-              <Switch />
-            </Form.Item>
-          </Col>
-        </Row>
-      </FormModal>
-
-      <Modal
-        title="Chi Tiết Bài Viết"
-        open={viewModalVisible}
-        onCancel={() => setViewModalVisible(false)}
-        footer={null}
-        width={800}
-      >
-        {viewingRecord && (
-          <Space direction="vertical" style={{ width: "100%" }} size="middle">
-             {viewingRecord.image && <Image src={viewingRecord.image} style={{maxHeight: 300, width: '100%', objectFit: 'cover'}} />}
-            <div style={{fontSize: 24, fontWeight: 'bold'}}>{viewingRecord.title}</div>
-            <div><strong>Tác giả:</strong> {viewingRecord.author} | <strong>Ngày:</strong> {dayjs(viewingRecord.publishDate).format('DD/MM/YYYY HH:mm')}</div>
-             <div><strong>Mô tả ngắn:</strong> {viewingRecord.shortDescription}</div>
-             <div style={{borderTop: '1px solid #eee', paddingTop: 16}}>
-                 <strong>Nội dung:</strong>
-                 <div dangerouslySetInnerHTML={{__html: viewingRecord.content}} style={{marginTop: 8, padding: 16, background: '#f5f5f5', borderRadius: 8}} />
-             </div>
-          </Space>
-        )}
-      </Modal>
+      <HistoryDetailModal
+        record={currentRecord}
+        open={detailVisible}
+        onCancel={closeDetail}
+      />
     </div>
   );
 };
