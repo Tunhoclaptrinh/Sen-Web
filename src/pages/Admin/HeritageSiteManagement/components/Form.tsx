@@ -1,4 +1,4 @@
-import { Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs } from "antd";
+import { Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs, DatePicker } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { FormModal, TinyEditor, Button as StyledButton } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
-import { fontWeight } from "@/styles/theme";
+import dayjs from "dayjs";
 
 interface HeritageFormProps {
   open: boolean;
@@ -37,6 +37,18 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   title = "Thông tin Di sản",
 }) => {
   const [form] = Form.useForm();
+
+  // Ensure initialValues are safe for DatePicker (convert numeric years to dayjs)
+  const preparedInitialValues = (() => {
+    if (!initialValues) return undefined;
+    const prepared = { ...initialValues } as any;
+    const y = initialValues.year_established;
+    // If year is present but not already a dayjs-like object, convert to dayjs
+    if (y != null && !(typeof y === "object" && typeof (y as any).isValid === "function")) {
+      prepared.year_established = dayjs(String(y), "YYYY");
+    }
+    return prepared;
+  })();
 
   useEffect(() => {
     const initData = async () => {
@@ -66,20 +78,29 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     ...initialValues,
                     short_description: initialValues.short_description || initialValues.shortDescription,
                     timeline: timeline,
-                    related_artifact_ids: relatedArtifacts
+                    related_artifact_ids: relatedArtifacts,
+                    year_established: initialValues.year_established
+                      ? dayjs(String(initialValues.year_established), "YYYY")
+                      : null,
                 };
                 form.setFieldsValue(formattedValues);
             } catch (error) {
                 console.error("Failed to init heritage data", error);
-                // Fallback to initialValues if fetch fails
-                form.setFieldsValue(initialValues);
+                // Fallback to initialValues if fetch fails — ensure year is converted to dayjs if present
+                const fallbackValues = {
+                    ...initialValues,
+                    year_established: initialValues?.year_established
+                      ? dayjs(String(initialValues.year_established), "YYYY")
+                      : null,
+                };
+                form.setFieldsValue(fallbackValues);
             }
         } else if (open) {
             form.resetFields();
             form.setFieldsValue({
                 is_active: true,
                 unesco_listed: false,
-                year_established: new Date().getFullYear()
+                year_established: dayjs(String(new Date().getFullYear()), "YYYY")
             });
         }
     };
@@ -94,7 +115,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       const submitData = {
           ...values,
           related_artifact_ids: values.related_artifact_ids?.map((item: any) => item.value),
-          related_history_ids: values.related_history_ids?.map((item: any) => item.value)
+          related_history_ids: values.related_history_ids?.map((item: any) => item.value),
+          year_established: values.year_established ? values.year_established.year() : null,
       };
     await onSubmit(submitData);
   };
@@ -149,8 +171,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       initialValues={{
         is_active: true,
         unesco_listed: false,
-        ...initialValues,
+        ...(preparedInitialValues || {}),
       }}
+
       footer={
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
             <StyledButton variant="outline" onClick={onCancel} style={{ minWidth: '120px' }}>
@@ -169,7 +192,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
          initialValues={{
              is_active: true,
              unesco_listed: false,
-             ...initialValues,
+             ...(preparedInitialValues || {}),
          }}
         >
           <Tabs defaultActiveKey="1" items={[
@@ -256,7 +279,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                  <Row gutter={16}>
                     <Col span={8}>
                       <Form.Item name="year_established" label="Năm thành lập">
-                        <InputNumber style={{ width: "100%" }} />
+                        <DatePicker
+                          picker="year"
+                          format="YYYY"
+                          placeholder="Chọn năm"
+                          style={{ width: "100%" }}
+                        />
                       </Form.Item>
                     </Col>
                     <Col span={8}>
@@ -349,7 +377,11 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                                 rules={[{ required: true, message: 'Nhập năm' }]}
                                 style={{ margin: 0 }}
                                 >
-                                <InputNumber placeholder="Năm" style={{ width: 80 }} />
+                                <InputNumber 
+                                  placeholder="Năm" 
+                                  style={{ width: 120 }}
+                                  controls={false}
+                                />
                                 </Form.Item>
                                 <Form.Item
                                 {...restField}

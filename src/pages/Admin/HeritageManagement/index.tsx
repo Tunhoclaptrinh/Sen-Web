@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { message, Modal } from "antd"; // Import Modal for potential manual confirmation if needed, though DataTable handles it
+import { message } from "antd";
 import { fetchHeritageSites, deleteHeritageSite } from "@/store/slices/heritageSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import DataTable from "@/components/common/DataTable"; // Use the shared polished component

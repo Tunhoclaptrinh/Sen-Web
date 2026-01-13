@@ -1,4 +1,4 @@
-import { Input, InputNumber, Select, Switch, Row, Col, Form } from "antd";
+import { Input, InputNumber, Select, Switch, Row, Col, Form, DatePicker } from "antd";
 import { FormModal, TinyEditor } from "@/components/common";
 import {
   ArtifactType,
@@ -8,6 +8,7 @@ import {
 } from "@/types";
 import { useEffect, useState } from "react";
 import heritageService from "@/services/heritage.service";
+import dayjs from "dayjs";
 
 interface ArtifactFormProps {
   open: boolean;
@@ -31,7 +32,13 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
   useEffect(() => {
     if (open && initialValues) {
-      form.setFieldsValue(initialValues);
+      const formattedValues = {
+        ...initialValues,
+        year_created: initialValues.year_created
+          ? dayjs(String(initialValues.year_created), "YYYY")
+          : null,
+      };
+      form.setFieldsValue(formattedValues);
     } else if (open) {
       form.resetFields();
     }
@@ -52,7 +59,11 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   }, [open]);
 
   const handleOk = async (values: any) => {
-    await onSubmit(values);
+    const submitData = {
+      ...values,
+      year_created: values.year_created ? values.year_created.year() : null,
+    };
+    await onSubmit(submitData);
   };
 
   return (
@@ -152,7 +163,12 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       <Row gutter={16}>
         <Col span={8}>
           <Form.Item name="year_created" label="Năm sáng tạo">
-            <InputNumber style={{ width: "100%" }} />
+            <DatePicker
+              picker="year"
+              format="YYYY"
+              placeholder="Chọn năm"
+              style={{ width: "100%" }}
+            />
           </Form.Item>
         </Col>
         <Col span={8}>

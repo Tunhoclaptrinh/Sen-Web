@@ -533,7 +533,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
             {/* Total Count Display */}
             <div className="total-count-badge">
-              Tổng số: <span>{pagination.total || 0}</span>
+              Tổng số: <span>{pagination && typeof pagination !== 'boolean' ? pagination.total || 0 : 0}</span>
             </div>
           </Space>
         </div>
