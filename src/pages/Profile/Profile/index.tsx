@@ -251,8 +251,8 @@ const Profile = () => {
                             size="large"
                             icon={<SaveOutlined />}
                             style={{
-                              background: "#F43F5E",
-                              borderColor: "#F43F5E",
+                              background: "var(--primary-color)",
+                              borderColor: "var(--primary-color)",
                             }}
                             block
                           >

@@ -1,38 +1,47 @@
-import { Card, Button, Table, Spin, message, Modal } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
-import {
-  fetchHeritageSites,
-  deleteHeritageSite,
-} from "@store/slices/heritageSlice";
+import { useState, useEffect } from "react";
+import { message, Modal } from "antd"; // Import Modal for potential manual confirmation if needed, though DataTable handles it
+import { fetchHeritageSites, deleteHeritageSite } from "@/store/slices/heritageSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import DataTable from "@/components/common/DataTable"; // Use the shared polished component
 
-import { useAppDispatch, useAppSelector } from "@store/hooks";
 const HeritageManagement = () => {
   const dispatch = useAppDispatch();
   const {
     items: sites,
     loading,
     error,
-
   } = useAppSelector((state) => state.heritage);
+
+  // Pagination state (inherited from simple implementation)
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: sites.length, // Approximation
+  });
 
   useEffect(() => {
     dispatch(fetchHeritageSites());
   }, [dispatch]);
 
   useEffect(() => {
+    if (sites) {
+        setPagination(prev => ({ ...prev, total: sites.length }));
+    }
+  }, [sites]);
+
+  useEffect(() => {
     if (error) message.error(error);
   }, [error]);
 
   const handleDelete = async (id: number) => {
-    Modal.confirm({
-      title: "Xóa Di Sản",
-      content: "Bạn có chắc chắn muốn xóa?",
-      onOk() {
-        dispatch(deleteHeritageSite(id));
+    // DataTable's onDelete will trigger this. 
+    // We can directly dispatch. DataTable handles the confirmation UI.
+    try {
+        await dispatch(deleteHeritageSite(id)).unwrap();
         message.success("Xóa thành công");
-      },
-    });
+    } catch (err) {
+        message.error("Xóa thất bại");
+    }
   };
 
   const columns = [
@@ -41,47 +50,23 @@ const HeritageManagement = () => {
     { title: "Vùng", dataIndex: "region", key: "region" },
     { title: "Loại", dataIndex: "type", key: "type" },
     { title: "Đánh Giá", dataIndex: "rating", key: "rating", width: 80 },
-    {
-      title: "Thao Tác",
-      key: "action",
-      width: 120,
-      render: (_: any, record: any) => (
-        <>
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            style={{ marginRight: 8 }}
-          />
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            size="small"
-            onClick={() => handleDelete(record.id)}
-          />
-        </>
-      ),
-    },
   ];
 
   return (
     <div>
-      <Card
+      <DataTable
         title="Quản Lý Di Sản"
-        extra={
-          <Button type="primary" icon={<PlusOutlined />}>
-            Thêm Mới
-          </Button>
-        }
-      >
-        <Spin spinning={loading}>
-          <Table
-            columns={columns}
-            dataSource={sites}
-            rowKey="id"
-            pagination={{ pageSize: 10 }}
-          />
-        </Spin>
-      </Card>
+        loading={loading}
+        columns={columns}
+        dataSource={sites}
+        rowKey="id"
+        pagination={pagination}
+        onPaginationChange={(newPagination: any) => setPagination(newPagination)}
+        onDelete={handleDelete}
+        // Note: No 'onEdit' or 'onAdd' provided in original file, so we leave them empty for now.
+        // If 'Thêm Mới' button is needed, we can implement onAdd.
+        onAdd={() => message.info("Chức năng đang phát triển")} 
+      />
     </div>
   );
 };

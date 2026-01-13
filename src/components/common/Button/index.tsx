@@ -14,24 +14,24 @@ export interface CustomButtonProps extends Omit<AntButtonProps, 'type' | 'size' 
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
     primary: {
-        backgroundColor: '#F43F5E',
-        borderColor: '#F43F5E',
+        backgroundColor: 'var(--primary-color)',
+        borderColor: 'var(--primary-color)',
         color: '#FFFFFF',
     },
     secondary: {
-        backgroundColor: '#EC4899',
-        borderColor: '#EC4899',
+        backgroundColor: 'var(--secondary-color)',
+        borderColor: 'var(--secondary-color)',
         color: '#FFFFFF',
     },
     outline: {
         backgroundColor: 'transparent',
-        borderColor: '#F43F5E',
-        color: '#F43F5E',
+        borderColor: 'var(--primary-color)',
+        color: 'var(--primary-color)',
     },
     ghost: {
         backgroundColor: 'transparent',
         borderColor: 'transparent',
-        color: '#F43F5E',
+        color: 'var(--primary-color)',
     },
     danger: {
         backgroundColor: '#EF4444',

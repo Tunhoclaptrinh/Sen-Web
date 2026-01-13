@@ -97,7 +97,7 @@ class ErrorBoundary extends Component<Props, State> {
             <Result
               status="error"
               title={
-                <span style={{ color: '#F43F5E', fontSize: '24px', fontWeight: 600 }}>
+                <span style={{ color: 'var(--primary-color)', fontSize: '24px', fontWeight: 600 }}>
                   Oops! Có lỗi xảy ra
                 </span>
               }
@@ -106,7 +106,7 @@ class ErrorBoundary extends Component<Props, State> {
                   <p>Đã xảy ra lỗi không mong muốn. Chúng tôi rất xin lỗi về sự bất tiện này.</p>
                   {import.meta.env.DEV && this.state.error && (
                     <details style={{ marginTop: '16px', textAlign: 'left' }}>
-                      <summary style={{ cursor: 'pointer', color: '#F43F5E', fontWeight: 500 }}>
+                      <summary style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: 500 }}>
                         Chi tiết lỗi (Dev only)
                       </summary>
                       <pre
@@ -140,8 +140,8 @@ class ErrorBoundary extends Component<Props, State> {
                     icon={<ReloadOutlined />}
                     onClick={this.handleReset}
                     style={{
-                      background: '#F43F5E',
-                      borderColor: '#F43F5E',
+                      background: 'var(--primary-color)',
+                      borderColor: 'var(--primary-color)',
                       borderRadius: '8px',
                       height: '44px',
                       padding: '0 24px',
@@ -156,8 +156,8 @@ class ErrorBoundary extends Component<Props, State> {
                     icon={<HomeOutlined />}
                     onClick={this.handleGoHome}
                     style={{
-                      borderColor: '#F43F5E',
-                      color: '#F43F5E',
+                      borderColor: 'var(--primary-color)',
+                      color: 'var(--primary-color)',
                       borderRadius: '8px',
                       height: '44px',
                       padding: '0 24px',

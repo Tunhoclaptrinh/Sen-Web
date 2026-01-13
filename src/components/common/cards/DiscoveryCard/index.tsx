@@ -32,7 +32,12 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
         navigate(path);
     };
 
-    const imageUrl = data.main_image || data.image || (data.images && data.images[0]) || 'https://via.placeholder.com/1200x600';
+    const rawImage = data.main_image || data.image || (data.images && data.images[0]);
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+    const apiHost = apiBase.replace(/\/api$/, '');
+    const imageUrl = rawImage 
+        ? (rawImage.startsWith('http') ? rawImage : `${apiHost}${rawImage}`)
+        : 'https://via.placeholder.com/1200x600';
     
     return (
         <div className="discovery-card-wrapper">
@@ -76,7 +81,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                     <h3 className="card-title">{data.name}</h3>
                     
                     <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
-                        {data.shortDescription || data.description?.replace(/<[^>]+>/g, '') || "Chưa có mô tả ngắn."}
+                        {data.short_description || data.shortDescription || data.description?.replace(/<[^>]+>/g, '') || "Chưa có mô tả ngắn."}
                     </Paragraph>
                 </div>
 

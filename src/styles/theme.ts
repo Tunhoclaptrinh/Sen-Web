@@ -202,4 +202,14 @@ export default {
     transitions,
     breakpoints,
     getColor,
+    token: {
+        colorPrimary: "#8b1d1d", // Direct value needed for Ant Design token sometimes, but try var if supported or sync with variables.css. 
+        // Actually Ant Design token needs hex usually for calculation. Let's set it to #8b1d1d directly to match variables.css.
+        colorSuccess: "#52c41a",
+        colorWarning: "#faad14",
+        colorError: "#ff4d4f",
+        colorInfo: "#8b1d1d", // Sync with primary
+        wireframe: false,
+        borderRadius: 8,
+    },
 };

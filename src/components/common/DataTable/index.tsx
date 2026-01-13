@@ -58,7 +58,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onClearFilters,
   sortable = true,
   showActions = true,
-  actionsWidth = 180,
+  actionsWidth, // Removed default here to calculate dynamically
   customActions,
   actionPosition = "right",
   batchOperations = false,
@@ -246,39 +246,39 @@ const DataTable: React.FC<DataTableProps> = ({
   const userActionColumnIndex = columns.findIndex(col => col.key === 'actions');
   const userActionColumn = userActionColumnIndex !== -1 ? columns[userActionColumnIndex] : null;
 
+  // Dynamic Action Column Logic
+  const standardActionCount = (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0);
+  // Base width per button (32px + 8px gap) + padding (16px)
+  // If customActions exists, we add extra space or default to a safe width if not specified
+  const calculatedWidth = actionsWidth || (
+      (standardActionCount * 40) + (customActions ? 40 : 16)
+  );
+
   const mergedActionsColumn = (showActions || userActionColumn)
     ? {
       title: "Thao Tác",
       key: "actions",
-      width: actionsWidth,
+      width: calculatedWidth,
       fixed: actionPosition,
       align: "center" as const,
       // Merge user properties if defined
       ...userActionColumn,
       ...actionColumnProps, // Keep this for backward compat or explicit override
       render: (_: any, record: any) => {
-        // If user defined a render, use it? Or wrap it?
-        // Usually we want to Provide the standard buttons. 
-        // If user wants COMPLETE control, they might not use this key or we should allow them to render custom content + standard?
-        // For now, let's assume if they define render, they handle it, OR we append standard buttons?
-        // Current requirement: "configure from outside".
-        // Let's render standard buttons unless user explicitly overrides render.
-        // OR: Provide a way to inject standard buttons only?
-        // Let's stick to standard behavior: If user defines render, use theirs.
-        // But the user probably wants standard buttons + their config (width, title).
         if (userActionColumn && userActionColumn.render) {
           return userActionColumn.render(_, record);
         }
 
         return (
-          <Space size="small">
+          <Space size={4} className="action-buttons-container">
             {onView && (
               <Tooltip title="Xem chi tiết">
                 <Button
                   variant="ghost"
                   buttonSize="small"
                   onClick={() => onView(record)}
-                  style={{ padding: "4px 8px" }}
+                  className="action-btn-standard"
+                  style={{ color: "var(--primary-color)" }}
                 >
                   <EyeOutlined />
                 </Button>
@@ -291,7 +291,8 @@ const DataTable: React.FC<DataTableProps> = ({
                   variant="ghost"
                   buttonSize="small"
                   onClick={() => onEdit(record)}
-                  style={{ padding: "4px 8px" }}
+                  className="action-btn-standard action-btn-edit"
+                  style={{ color: "var(--primary-color)" }}
                 >
                   <EditOutlined />
                 </Button>
@@ -310,9 +311,10 @@ const DataTable: React.FC<DataTableProps> = ({
               >
                 <Tooltip title="Xóa">
                   <Button
-                    variant="danger"
+                    variant="ghost"
                     buttonSize="small"
-                    style={{ padding: "4px 8px" }}
+                    className="action-btn-standard action-btn-delete"
+                    style={{ color: "#ff4d4f" }}
                   >
                     <DeleteOutlined />
                   </Button>

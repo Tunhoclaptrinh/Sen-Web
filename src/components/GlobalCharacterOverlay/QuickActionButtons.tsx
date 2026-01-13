@@ -141,10 +141,10 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
             onClick={() => setAiChatVisible(!aiChatVisible)}
             style={{
               background: aiChatVisible
-                ? "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)"
+                ? "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)"
                 : "white",
-              border: aiChatVisible ? "none" : "2px solid #f43f5e",
-              color: aiChatVisible ? "white" : "#f43f5e",
+              border: aiChatVisible ? "none" : "2px solid var(--primary-color)",
+              color: aiChatVisible ? "white" : "var(--primary-color)",
             }}
           >
             <CommentOutlined />

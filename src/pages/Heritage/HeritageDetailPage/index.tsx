@@ -15,8 +15,10 @@ import {
   DollarOutlined,
   BankOutlined,
   GlobalOutlined,
-  SafetyCertificateFilled
+  SafetyCertificateFilled,
+  CameraOutlined
 } from "@ant-design/icons";
+import { Image } from "antd";
 import dayjs from 'dayjs';
 import { fetchHeritageSiteById } from "@store/slices/heritageSlice";
 import favoriteService from "@/services/favorite.service";
@@ -25,6 +27,8 @@ import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { HeritageSite, TimelineEvent } from "@/types";
 import "./styles.less";
+
+
 
 const { Title } = Typography;
 
@@ -41,6 +45,7 @@ const HeritageDetailPage = () => {
     const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
     const [siteArtifacts, setSiteArtifacts] = useState<any[]>([]);
     const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+    const [previewVisible, setPreviewVisible] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -96,7 +101,12 @@ const HeritageDetailPage = () => {
     if (loading) return <div className="loading-container"><Spin size="large"/></div>;
     if (!site) return <Empty description="Không tìm thấy di sản" />;
     
-    const mainImage = site.main_image || site.image || (site.images && site.images[0]) || 'https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200';
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+    const apiHost = apiBase.replace(/\/api$/, '');
+    const rawImage = site.main_image || site.image || (site.images && site.images[0]);
+    const mainImage = rawImage 
+        ? (rawImage.startsWith('http') ? rawImage : `${apiHost}${rawImage}`)
+        : 'https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200';
     const publishDate = site.publishDate || site.created_at || new Date().toISOString();
     const authorName = site.author || 'Admin';
 
@@ -107,12 +117,46 @@ const HeritageDetailPage = () => {
                 <div className="hero-bg" style={{backgroundImage: `url('${mainImage}')`}} />
                 <div className="hero-overlay">
                     <div className="hero-content">
-                        <Tag color="#F43F5E" style={{border: 'none', marginBottom: 16}}>{site.type?.toUpperCase().replace('_', ' ') || 'HERITAGE'}</Tag>
+                        <Tag color="var(--primary-color)" style={{border: 'none', marginBottom: 16}}>{site.type?.toUpperCase().replace('_', ' ') || 'HERITAGE'}</Tag>
                         <h1>{site.name}</h1>
                         <div className="hero-meta">
                             <span><EnvironmentOutlined /> {site.address || site.region}</span>
                             {site.unesco_listed && <span className="unesco-badge"><StarFilled style={{color: '#FFD700'}} /> UNESCO World Heritage</span>}
                         </div>
+                    </div>
+                    
+                    {/* Gallery Button */}
+                    <div style={{ position: 'absolute', bottom: 32, right: 32 }}>
+                        <Button 
+                            icon={<CameraOutlined />} 
+                            size="large" 
+                            className="gallery-btn"
+                            onClick={() => setPreviewVisible(true)}
+                        >
+                            Xem toàn bộ ảnh
+                        </Button>
+                    </div>
+
+                     {/* Hidden Preview Group */}
+                    <div style={{ display: 'none' }}>
+                        <Image.PreviewGroup
+                            preview={{
+                                visible: previewVisible,
+                                onVisibleChange: (vis) => setPreviewVisible(vis),
+                            }}
+                        >
+                             {[
+                                ...(site.main_image ? [site.main_image] : []),
+                                ...(site.image ? [site.image] : []),
+                                ...(site.gallery || []),
+                                ...(site.images || [])
+                             ].filter((v, i, a) => a.indexOf(v) === i).map((img, idx) => {
+                                 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+                                 const apiHost = apiBase.replace(/\/api$/, '');
+                                 const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                 return <Image key={idx} src={src} />;
+                            })}
+                        </Image.PreviewGroup>
                     </div>
                 </div>
             </section>
@@ -214,7 +258,7 @@ const HeritageDetailPage = () => {
                                                             </div>
                                                         </li>
                                                         <li>
-                                                            <div className="icon-wrapper"><StarFilled style={{color: '#fadb14'}} /></div>
+                                                            <div className="icon-wrapper star-icon"><StarFilled /></div>
                                                             <div className="info-text">
                                                                 <span className="label">Đánh giá du khách</span>
                                                                 <span className="value">{site.rating || 0}/5 <span className="sub">({site.total_reviews || 0} đánh giá)</span></span>
@@ -229,10 +273,10 @@ const HeritageDetailPage = () => {
                                                         </li>
                                                         {site.unesco_listed && (
                                                             <li>
-                                                                <div className="icon-wrapper" style={{background: '#FFF7E6', color: '#FA8C16'}}><SafetyCertificateFilled /></div>
+                                                                <div className="icon-wrapper unesco-icon"><SafetyCertificateFilled /></div>
                                                                 <div className="info-text">
                                                                     <span className="label">Danh hiệu</span>
-                                                                    <span className="value" style={{color: '#FA8C16'}}>Di sản văn hóa UNESCO</span>
+                                                                    <span className="value highlight-unesco">Di sản văn hóa UNESCO</span>
                                                                 </div>
                                                             </li>
                                                         )}
@@ -244,7 +288,8 @@ const HeritageDetailPage = () => {
                                             
                                             <div className="info-footer-actions">
                                                 <div className="booking-note">
-                                                    * Vé có thể được mua trực tiếp tại quầy hoặc đặt trước online để tránh xếp hàng.
+                                                    <span>* Vé có thể được mua trực tiếp tại quầy hoặc đặt trước online để tránh xếp hàng.</span>
+                                                    <span className="promo-text">Đặt vé với SEN để nhận ưu đãi đặc biệt!</span>
                                                 </div>
                                                 <div className="action-buttons">
                                                      <Button size="large" className="direction-btn" icon={<EnvironmentOutlined />}>Chỉ Đường</Button>

@@ -63,7 +63,7 @@ const Avatar: React.FC<CustomAvatarProps> = ({
     );
 
     const avatarStyle: CSSProperties = {
-        backgroundColor: src ? 'transparent' : '#F43F5E',
+        backgroundColor: src ? 'transparent' : 'var(--primary-color)',
         color: '#FFFFFF',
         fontWeight: 600,
         ...style,

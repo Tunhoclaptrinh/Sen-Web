@@ -1,3 +1,6 @@
+/* Using variables from variables.css */
+/* --primary-color and --secondary-color are defined there */
+
 .ant-layout {
   background: white;
 }
@@ -7,12 +10,12 @@
 }
 
 .ant-menu-item-selected::after {
-  border-right-color: #F43F5E !important;
+  border-right-color: var(--primary-color) !important;
 }
 
 .ant-menu-item:hover,
 .ant-menu-item-selected {
-  color: #F43F5E !important;
+  color: var(--primary-color) !important;
   background-color: transparent !important;
 }
 
@@ -21,14 +24,14 @@
 }
 
 .ant-btn-primary {
-  background-color: #F43F5E;
-  border-color: #F43F5E;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background-color: #E11D48;
-  border-color: #E11D48;
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
 .ant-card {
@@ -50,14 +53,14 @@
 .ant-input:hover,
 .ant-select-selector:hover,
 .ant-picker:hover {
-  border-color: #F43F5E !important;
+  border-color: var(--primary-color) !important;
 }
 
 .ant-input-focused,
 .ant-select-focused .ant-select-selector,
 .ant-picker-focused .ant-picker {
-  border-color: #F43F5E !important;
-  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(139, 29, 29, 0.2) !important; /* Approximation of alpha primary */
 }
 
 /* ==================== Layout Customizations ==================== */
@@ -83,16 +86,16 @@
 
 /* ==================== Form Customizations ==================== */
 .ant-form-item-required::before {
-  color: #F43F5E;
+  color: var(--primary-color);
 }
 
 .ant-checkbox-inner {
-  border-color: #F43F5E;
+  border-color: var(--primary-color);
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #F43F5E;
-  border-color: #F43F5E;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 /* ==================== Utilities ==================== */
@@ -137,4 +140,47 @@
   .ant-layout-header {
     padding: 0 16px;
   }
+}
+
+/* Heritage Detail Modal Tabs Override */
+.heritage-detail-modal-tabs .ant-tabs-nav .ant-tabs-tab:hover {
+    color: var(--primary-color) !important;
+}
+
+.heritage-detail-modal-tabs .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 0.5px currentColor;
+}
+
+.heritage-detail-modal-tabs .ant-tabs-nav .ant-tabs-ink-bar {
+    background: var(--primary-color) !important;
+}
+
+/* ==================== Switch ==================== */
+.ant-switch-checked {
+  background-color: var(--primary-color) !important;
+}
+
+/* ==================== Radio ==================== */
+.ant-radio-checked .ant-radio-inner {
+  border-color: var(--primary-color) !important;
+}
+
+.ant-radio-checked .ant-radio-inner::after {
+  background-color: var(--primary-color) !important;
+}
+
+/* ==================== Generic Tabs Override (Global) ==================== */
+/* Applying to all Tabs to ensure consistency across Forms and Modals */
+.ant-tabs-tab:hover {
+  color: var(--primary-color) !important;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-color) !important;
+  text-shadow: 0 0 0.5px currentColor;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--primary-color) !important;
 }

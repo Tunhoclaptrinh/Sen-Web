@@ -35,7 +35,7 @@ const AIChatFloatingButton: React.FC<AIChatFloatingButtonProps> = ({
                             <CommentOutlined
                                 style={{
                                     fontSize: 20,
-                                    color: visible ? '#fff' : '#f43f5e',
+                                    color: visible ? '#fff' : 'var(--primary-color)',
                                 }}
                             />
                         </Badge>
@@ -48,9 +48,9 @@ const AIChatFloatingButton: React.FC<AIChatFloatingButtonProps> = ({
                         height: 56,
                         zIndex: 9999,
                         background: visible
-                            ? 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)'
+                            ? 'linear-gradient(135deg, var(--primary-color) 0%, #e11d48 100%)'
                             : 'white',
-                        border: visible ? 'none' : '2px solid #f43f5e',
+                        border: visible ? 'none' : '2px solid var(--primary-color)',
                         boxShadow: visible
                             ? '0 4px 12px rgba(244, 63, 94, 0.4)'
                             : '0 4px 12px rgba(0, 0, 0, 0.15)',

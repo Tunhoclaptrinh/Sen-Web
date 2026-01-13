@@ -63,7 +63,7 @@ const Select: React.FC<CustomSelectProps> = ({
             {label && (
                 <label style={labelStyle}>
                     {label}
-                    {required && <span style={{ color: '#F43F5E', marginLeft: '4px' }}>*</span>}
+                    {required && <span style={{ color: 'var(--primary-color)', marginLeft: '4px' }}>*</span>}
                 </label>
             )}
             <AntSelect

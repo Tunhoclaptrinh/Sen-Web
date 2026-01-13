@@ -58,7 +58,7 @@ const App: React.FC = () => {
               : antdTheme.defaultAlgorithm,
           token: {
             // Lotus Pink Theme
-            colorPrimary: "#F43F5E",
+            colorPrimary: "var(--primary-color)",
             colorSuccess: "#22C55E",
             colorWarning: "#F97316",
             colorError: "#EF4444",

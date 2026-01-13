@@ -69,7 +69,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           {/* Subtitle: Region or Dynasty */}
           {subtitle && (
             <div className="card-location">
-                {cardType === 'heritage' && <EnvironmentOutlined style={{ color: "#F43F5E" }} />}
+                {cardType === 'heritage' && <EnvironmentOutlined style={{ color: "var(--primary-color)" }} />}
                 <span>{subtitle}</span>
             </div>
           )}

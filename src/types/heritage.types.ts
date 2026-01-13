@@ -40,13 +40,28 @@ export const SignificanceLevelLabels: Record<SignificanceLevel, string> = {
   [SignificanceLevel.INTERNATIONAL]: "Cấp quốc tế",
 };
 
+// Heritage Region
+export enum HeritageRegion {
+  NORTH = "Bắc",
+  CENTRAL = "Trung",
+  SOUTH = "Nam",
+}
+
+export const HeritageRegionLabels: Record<HeritageRegion, string> = {
+  [HeritageRegion.NORTH]: "Miền Bắc",
+  [HeritageRegion.CENTRAL]: "Miền Trung",
+  [HeritageRegion.SOUTH]: "Miền Nam",
+};
+
 // Heritage Site
 export interface HeritageSite extends BaseEntity, TimestampEntity {
   name: string;
+  short_description?: string;
+  shortDescription?: string; // Legacy field support
   description: string;
   type: HeritageType;
   cultural_period?: string;
-  region: string;
+  region: HeritageRegion | string; // Allow string for backward compat
   address?: string;
   latitude?: number;
   longitude?: number;
@@ -59,6 +74,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   website?: string;
   image?: string;
   images?: string[];
+  gallery?: string[];
   main_image?: string;
   rating?: number;
   total_reviews?: number;
@@ -67,15 +83,19 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   author?: string;
   publishDate?: string;
   commentCount?: number;
+  timeline?: TimelineEvent[];
+  related_artifact_ids?: number[];
+  related_artifacts?: any[]; // Full objects if needed
 }
 
 // Heritage Site Create/Update DTO
 export interface HeritageSiteDTO {
   name: string;
+  short_description?: string;
   description: string;
   type: HeritageType;
   cultural_period?: string;
-  region: string;
+  region: HeritageRegion | string;
   address?: string;
   latitude?: number;
   longitude?: number;
@@ -87,11 +107,14 @@ export interface HeritageSiteDTO {
   contact_info?: string;
   website?: string;
   images?: string[];
+  gallery?: string[];
+  timeline?: TimelineEvent[];
+  related_artifact_ids?: number[];
 }
 
 // Timeline Event
 export interface TimelineEvent extends BaseEntity {
-  heritage_site_id: number;
+  heritage_site_id?: number;
   title: string;
   description: string;
   year: number;
@@ -107,6 +130,15 @@ export enum TimelineCategory {
   EVENT = "event",
   RECOGNITION = "recognition",
 }
+
+export const TimelineCategoryLabels: Record<TimelineCategory, string> = {
+  [TimelineCategory.FOUNDED]: "Thành lập/Khởi công",
+  [TimelineCategory.DAMAGED]: "Bị phá hủy/Hư hại",
+  [TimelineCategory.RESTORED]: "Trùng tu/Tôn tạo",
+  [TimelineCategory.DISCOVERY]: "Phát hiện/Khai quật",
+  [TimelineCategory.EVENT]: "Sự kiện lịch sử",
+  [TimelineCategory.RECOGNITION]: "Được công nhận",
+};
 
 // Exhibition
 export interface Exhibition extends BaseEntity, TimestampEntity {
