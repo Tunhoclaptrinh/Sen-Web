@@ -16,6 +16,7 @@ import {
 import { useEffect } from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
+import historyService from "@/services/history.service";
 import { fontWeight } from "@/styles/theme";
 
 interface HeritageFormProps {
@@ -92,7 +93,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       // Extract IDs from labelInValue objects for artifacts
       const submitData = {
           ...values,
-          related_artifact_ids: values.related_artifact_ids?.map((item: any) => item.value)
+          related_artifact_ids: values.related_artifact_ids?.map((item: any) => item.value),
+          related_history_ids: values.related_history_ids?.map((item: any) => item.value)
       };
     await onSubmit(submitData);
   };
@@ -110,6 +112,23 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         return [];
     } catch (error) {
         console.error("Fetch artifacts failed", error);
+        return [];
+    }
+  }
+
+  // Fetch function for History Articles Search
+  const fetchHistoryList = async (search: string) => {
+    try {
+        const response = await historyService.search(search);
+        if (response.success && response.data) {
+            return response.data.map((item) => ({
+                label: item.title,
+                value: item.id
+            }));
+        }
+        return [];
+    } catch (error) {
+        console.error("Fetch history articles failed", error);
         return [];
     }
   }
@@ -305,6 +324,15 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                         mode="multiple"
                         placeholder="Tìm kiếm và chọn hiện vật..."
                         fetchOptions={fetchArtifactList}
+                        style={{ width: '100%' }}
+                     />
+                  </Form.Item>
+
+                  <Form.Item label="Lịch sử liên quan" name="related_history_ids">
+                     <DebounceSelect
+                        mode="multiple"
+                        placeholder="Tìm kiếm và chọn bài viết lịch sử..."
+                        fetchOptions={fetchHistoryList}
                         style={{ width: '100%' }}
                      />
                   </Form.Item>

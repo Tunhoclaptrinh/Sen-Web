@@ -16,7 +16,9 @@ import {
   BankOutlined,
   GlobalOutlined,
   SafetyCertificateFilled,
-  CameraOutlined
+  CameraOutlined,
+  RocketOutlined,
+  ShopOutlined
 } from "@ant-design/icons";
 import { Image } from "antd";
 import dayjs from 'dayjs';
@@ -101,6 +103,94 @@ const HeritageDetailPage = () => {
     if (loading) return <div className="loading-container"><Spin size="large"/></div>;
     if (!site) return <Empty description="Không tìm thấy di sản" />;
     
+    // const siteArtifacts = site.related_artifacts || []; // Use state-managed siteArtifacts instead
+    const siteLevels = site.related_levels || [];
+    const siteProducts = site.related_products || [];
+    const relatedHistory = site.related_history || [];
+
+    // MOCK DATA for demonstration - Always show for heritage site ID 2
+    const useMockData = id === '2' || siteLevels.length === 0;
+    
+    // Debug: Log what backend returns
+    console.log('[Heritage Detail] Backend data:', {
+        id,
+        siteLevels,
+        siteProducts,
+        relatedHistory,
+        siteArtifacts,
+        useMockData
+    });
+    
+    const mockLevels = useMockData ? [
+        {
+            id: 102,
+            name: "Khám phá Hoàng Thành",
+            description: "Giải mã các bí mật khảo cổ dưới lòng đất Thăng Long.",
+            background_image: "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=800"
+        },
+        {
+            id: 103,
+            name: "Bảo vệ Thăng Long",
+            description: "Tham gia chiến dịch bảo vệ kinh thành Thăng Long khỏi quân xâm lược.",
+            background_image: "https://images.unsplash.com/photo-1555921015-5532091f6026?w=800"
+        },
+        {
+            id: 104,
+            name: "Chiếu Thiên đô",
+            description: "Tìm hiểu về bản chiếu nổi tiếng của vua Lý Thái Tổ khi dời đô.",
+            background_image: "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=800"
+        }
+    ] : siteLevels;
+
+    const mockHistory = useMockData ? [
+        {
+            id: 1,
+            title: "Lý Thái Tổ dời đô ra Thăng Long",
+            name: "Lý Thái Tổ dời đô ra Thăng Long",
+            shortDescription: "Sự kiện lịch sử trọng đại đánh dấu sự hình thành kinh đô Thăng Long - trung tâm chính trị ngàn năm.",
+            image: "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=800",
+            author: "GS. Nguyễn Văn Sử",
+            publishDate: "2024-03-15T00:00:00Z"
+        },
+        {
+            id: 2,
+            title: "Kiến trúc Hoàng Thành qua các triều đại",
+            name: "Kiến trúc Hoàng Thành qua các triều đại",
+            shortDescription: "Sự biến đổi và phát triển của kiến trúc Hoàng Thành Thăng Long qua 13 thế kỷ lịch sử.",
+            image: "https://images.unsplash.com/photo-1555921015-5532091f6026?w=800",
+            author: "TS. Trần Văn Kiến",
+            publishDate: "2024-04-20T00:00:00Z"
+        }
+    ] : relatedHistory.map(h => ({...h, name: h.title || h.name}));
+
+    const mockProducts = useMockData ? [
+        {
+            id: 5,
+            name: "Mô hình Hoàng Thành Thăng Long",
+            price: 450000,
+            image: "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=400"
+        },
+        {
+            id: 6,
+            name: "Sách: Lịch sử Thăng Long - Hà Nội",
+            price: 220000,
+            image: "https://salt.tikicdn.com/cache/w1200/ts/product/23/67/68/73919242d992953284346028887e3871.jpg"
+        },
+        {
+            id: 7,
+            name: "Tranh in Điện Kính Thiên",
+            price: 180000,
+            image: "https://images.unsplash.com/photo-1555921015-5532091f6026?w=400"
+        },
+        {
+            id: 8,
+            name: "Móc khóa Rồng đá",
+            price: 45000,
+            image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400"
+        }
+    ] : siteProducts;
+
+
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
     const apiHost = apiBase.replace(/\/api$/, '');
     const rawImage = site.main_image || site.image || (site.images && site.images[0]);
@@ -320,6 +410,87 @@ const HeritageDetailPage = () => {
                                         </Row>
                                     ) : (
                                         <Empty description="Chưa có hiện vật nào được cập nhật" />
+                                    )}
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'discovery',
+                            label: 'Khám phá',
+                            children: (
+                                <div className="article-main-wrapper">
+                                    {/* 1. Related Games / Interactive */}
+                                    {mockLevels.length > 0 && (
+                                        <div className="discovery-block" style={{marginBottom: 48}}>
+                                            <Title level={3}><RocketOutlined /> Trải nghiệm Lịch sử</Title>
+                                            <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.</p>
+                                            <Row gutter={[16, 16]}>
+                                                {mockLevels.map((level: any) => (
+                                                    <Col xs={24} md={12} key={level.id}>
+                                                        <div className="game-card-mini" style={{border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'flex', gap: 16, alignItems: 'center'}}>
+                                                            <div className="game-thumb" style={{width: 80, height: 80, borderRadius: 8, background: '#eee', backgroundImage: `url(${level.background_image || level.thumbnail})`, backgroundSize: 'cover'}} />
+                                                            <div className="game-info" style={{flex: 1}}>
+                                                                <h4 style={{margin: 0, fontSize: 16}}>{level.name}</h4>
+                                                                <div style={{color: '#888', fontSize: 13}}>{level.description}</div>
+                                                            </div>
+                                                            <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi Ngay</Button>
+                                                        </div>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                            <Divider />
+                                        </div>
+                                    )}
+
+                                    {/* 2. References: Related History & Artifacts (Mirroring History Detail's layout) */}
+                                    {(mockHistory.length > 0 || siteArtifacts.length > 0) && (
+                                         <div className="discovery-block" style={{marginBottom: 48}}>
+                                             <Title level={3}><EnvironmentOutlined /> Lịch sử & Hiện vật liên quan</Title>
+                                            <Row gutter={[16, 16]}>
+                                                {/* Render History Articles first as 'Context' */}
+                                                {mockHistory.map((item: any) => (
+                                                    <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
+                                                        <ArticleCard data={item} type="history" />
+                                                    </Col>
+                                                ))}
+                                                {/* Render Artifacts */}
+                                                {siteArtifacts.map((artifact: any) => (
+                                                    <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
+                                                        <ArticleCard 
+                                                            data={artifact}
+                                                            type="artifact"
+                                                        />
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                            <Divider />
+                                         </div>
+                                     )}
+
+                                    {/* 3. Related Products */}
+                                    {mockProducts.length > 0 && (
+                                        <div className="discovery-block">
+                                            <Title level={3}><ShopOutlined /> Sản phẩm Văn hóa</Title>
+                                            <Row gutter={[16, 16]}>
+                                                {mockProducts.map((p: any) => (
+                                                    <Col xs={24} sm={12} md={6} key={p.id}>
+                                                         <div className="product-card" style={{textAlign: 'center'}}>
+                                                             <div className="prod-img" style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: 'hidden'}}>
+                                                                 <img src={p.image || p.thumbnail} alt={p.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                                             </div>
+                                                             <h4 style={{marginBottom: 8}}>{p.name}</h4>
+                                                             <div style={{color: '#d4380d', fontWeight: 'bold', marginBottom: 12}}>{p.price?.toLocaleString()} đ</div>
+                                                             <Button block>Xem chi tiết</Button>
+                                                         </div>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Empty State */}
+                                    {!mockLevels.length && !siteArtifacts.length && !mockHistory.length && !mockProducts.length && (
+                                        <Empty description="Đang cập nhật nội dung khám phá..." />
                                     )}
                                 </div>
                             )

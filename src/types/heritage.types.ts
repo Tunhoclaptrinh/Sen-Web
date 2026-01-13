@@ -86,6 +86,9 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   timeline?: TimelineEvent[];
   related_artifact_ids?: number[];
   related_artifacts?: any[]; // Full objects if needed
+  related_levels?: any[];
+  related_products?: any[];
+  related_history?: any[];
 }
 
 // Heritage Site Create/Update DTO
