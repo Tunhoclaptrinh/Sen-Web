@@ -401,7 +401,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 <Row gutter={16}>
                   <Col span={8}>
                     <Form.Item name="year_created" label="Năm sáng tạo">
-                      <InputNumber style={{ width: "100%" }} />
+                      <InputNumber style={{ width: "100%" }} controls={false} />
                     </Form.Item>
                   </Col>
                   <Col span={8}>

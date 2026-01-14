@@ -58,7 +58,7 @@ export const useUserModel = () => {
             crud.refresh();
             fetchStats();
         } catch (error) {
-            message.error("Lỗi cập nhật trạng thái");
+            // Let the backend error message be displayed by the service
         }
     };
 

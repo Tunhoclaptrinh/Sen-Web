@@ -90,6 +90,7 @@ const ChapterManagement = () => {
             />
 
             <ChapterForm
+                key={currentRecord ? `edit-${currentRecord.id}` : 'create'}
                 open={formVisible}
                 onCancel={closeForm}
                 onSubmit={handleSubmit}

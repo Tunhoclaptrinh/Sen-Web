@@ -25,7 +25,16 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
         if (open && initialValues) {
             form.setFieldsValue(initialValues);
         } else if (open) {
+            // Force reset all fields when opening create form
             form.resetFields();
+            // Explicitly set default values
+            form.setFieldsValue({
+                required_petals: 0,
+                order: undefined,
+                layer_index: undefined,
+                theme: undefined,
+                color: undefined
+            });
         }
     }, [open, initialValues, form]);
 
@@ -42,7 +51,7 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
             width={700}
             form={form}
             loading={loading}
-            initialValues={{ order: 1, required_petals: 0, ...initialValues }}
+            initialValues={{ required_petals: 0, ...initialValues }}
         >
             <Form.Item
                 name="name"
@@ -62,7 +71,11 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item name="theme" label="Chủ đề">
+                    <Form.Item 
+                        name="theme" 
+                        label="Chủ đề"
+                        rules={[{ required: true, message: "Vui lòng nhập chủ đề" }]}
+                    >
                         <Input placeholder="Chủ đề (VD: Văn hóa Đại Việt)" />
                     </Form.Item>
                 </Col>
@@ -74,17 +87,16 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
             </Row>
 
             <Row gutter={16}>
-                <Col span={8}>
-                    <Form.Item name="order" label="Thứ tự">
+                <Col span={12}>
+                    <Form.Item 
+                        name="layer_index" 
+                        label="Layer Index"
+                        rules={[{ required: true, message: "Vui lòng nhập layer index" }]}
+                    >
                         <InputNumber style={{ width: "100%" }} min={1} />
                     </Form.Item>
                 </Col>
-                <Col span={8}>
-                    <Form.Item name="layer_index" label="Layer Index">
-                        <InputNumber style={{ width: "100%" }} min={1} />
-                    </Form.Item>
-                </Col>
-                <Col span={8}>
+                <Col span={12}>
                     <Form.Item name="required_petals" label="Số cánh hoa yêu cầu">
                         <InputNumber style={{ width: "100%" }} min={0} />
                     </Form.Item>

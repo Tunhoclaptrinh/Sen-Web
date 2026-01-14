@@ -25,6 +25,9 @@ import {
   SignificanceLevelLabels,
   HeritageRegion,
   HeritageRegionLabels,
+  HeritageProvince,
+  HeritageProvinceLabels,
+  ProvincesByRegion,
   TimelineCategory,
   TimelineCategoryLabels,
 } from "@/types";
@@ -126,14 +129,51 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             related_artifact_ids: relatedArtifacts,
             related_history_ids: relatedHistory,
           };
+
+          // Set available provinces based on region
+          if (initialValues.region) {
+            // Find the label for the region (handle both enum value and label)
+            let regionLabel = initialValues.region;
+            const regionKey = Object.keys(HeritageRegionLabels).find(
+              key => key === initialValues.region || HeritageRegionLabels[key as HeritageRegion] === initialValues.region
+            ) as HeritageRegion;
+            if (regionKey) {
+              regionLabel = HeritageRegionLabels[regionKey];
+              formattedValues.region = regionLabel; // Update region to label for form display
+              setSelectedRegion(regionLabel);
+              setAvailableProvinces(ProvincesByRegion[regionKey]);
+            }
+          }
+
           form.setFieldsValue(formattedValues);
         } catch (error) {
           console.error("Failed to init heritage data", error);
           // Fallback to initialValues if fetch fails
-          form.setFieldsValue(initialValues);
+          const fallbackValues = {
+            ...initialValues,
+          };
+
+          // Set available provinces based on region for fallback
+          if (initialValues.region) {
+            // Find the label for the region (handle both enum value and label)
+            let regionLabel = initialValues.region;
+            const regionKey = Object.keys(HeritageRegionLabels).find(
+              key => key === initialValues.region || HeritageRegionLabels[key as HeritageRegion] === initialValues.region
+            ) as HeritageRegion;
+            if (regionKey) {
+              regionLabel = HeritageRegionLabels[regionKey];
+              fallbackValues.region = regionLabel; // Update region to label for form display
+              setSelectedRegion(regionLabel);
+              setAvailableProvinces(ProvincesByRegion[regionKey]);
+            }
+          }
+
+          form.setFieldsValue(fallbackValues);
         }
       } else if (open) {
         form.resetFields();
+        setSelectedRegion("");
+        setAvailableProvinces([]);
         form.setFieldsValue({
           is_active: true,
           unesco_listed: false,
@@ -146,10 +186,32 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   }, [open, initialValues, form]);
 
   const [activeTab, setActiveTab] = useState("1");
+  const [availableProvinces, setAvailableProvinces] = useState<HeritageProvince[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
 
   useEffect(() => {
     if (open) setActiveTab("1");
   }, [open]);
+
+  // Update available provinces when region changes
+  useEffect(() => {
+    if (selectedRegion) {
+      const regionKey = Object.keys(HeritageRegionLabels).find(
+        key => HeritageRegionLabels[key as HeritageRegion] === selectedRegion
+      ) as HeritageRegion;
+      if (regionKey && ProvincesByRegion[regionKey]) {
+        setAvailableProvinces(ProvincesByRegion[regionKey]);
+        // Clear province when region changes
+        form.setFieldsValue({ province: undefined });
+      } else {
+        setAvailableProvinces([]);
+        form.setFieldsValue({ province: undefined });
+      }
+    } else {
+      setAvailableProvinces([]);
+      form.setFieldsValue({ province: undefined });
+    }
+  }, [selectedRegion, form]);
 
   const handleSubmitClick = async () => {
     try {
@@ -170,6 +232,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           "type",
           "address",
           "region",
+          "province",
           "cultural_period",
           "significance",
           "visit_hours",
@@ -203,6 +266,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
     const submitData = {
       ...values,
       shortDescription: values.short_description, // Sync for compatibility
+      // Convert region label back to enum value
+      region: Object.keys(HeritageRegionLabels).find(
+        key => HeritageRegionLabels[key as HeritageRegion] === values.region
+      ) || values.region,
       related_artifact_ids: values.related_artifact_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ),
@@ -367,22 +434,36 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 </Row>
 
                 <Row gutter={16}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       name="region"
                       label="Khu vực"
                       rules={[{ required: true }]}
                     >
-                      <Select placeholder="Chọn khu vực">
+                      <Select
+                        placeholder="Chọn khu vực"
+                        onChange={(value) => setSelectedRegion(value)}
+                      >
                         {Object.values(HeritageRegion).map((region) => (
-                          <Select.Option key={region} value={region}>
+                          <Select.Option key={region} value={HeritageRegionLabels[region]}>
                             {HeritageRegionLabels[region]}
                           </Select.Option>
                         ))}
                       </Select>
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
+                    <Form.Item name="province" label="Tỉnh/Thành phố">
+                      <Select placeholder="Chọn tỉnh/thành phố" disabled={!availableProvinces.length}>
+                        {availableProvinces.map((province) => (
+                          <Select.Option key={province} value={province}>
+                            {HeritageProvinceLabels[province]}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
                     <Form.Item name="cultural_period" label="Thời kỳ văn hóa">
                       <Input placeholder="VD: Triều Nguyễn, Thời Lý..." />
                     </Form.Item>
@@ -411,7 +492,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 <Row gutter={16}>
                   <Col span={8}>
                     <Form.Item name="year_established" label="Năm thành lập">
-                      <InputNumber style={{ width: "100%" }} />
+                      <InputNumber style={{ width: "100%" }} controls={false} />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
@@ -524,6 +605,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                               <InputNumber
                                 placeholder="Năm"
                                 style={{ width: 80 }}
+                                controls={false}
                               />
                             </Form.Item>
                             <Form.Item
