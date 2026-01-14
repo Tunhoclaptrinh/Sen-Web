@@ -146,6 +146,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
     // Transform values before submit
     const submitData = {
         ...values,
+        image: Array.isArray(values.image) ? (values.image[0] || '') : values.image,
         shortDescription: values.short_description, // Sync for compatibility
         related_heritage_ids: values.related_heritage_ids?.map((item: any) => 
           typeof item === 'object' ? item.value : item

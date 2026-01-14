@@ -6,6 +6,7 @@ import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
 import { useEffect, useState } from "react";
 import ArticleCard from "@/components/common/cards/ArticleCard";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 
 interface DetailModalProps {
     open: boolean;
@@ -77,12 +78,10 @@ const DetailModal: React.FC<DetailModalProps> = ({
                     <Descriptions bordered column={2}>
                         <Descriptions.Item label="Tên gọi">{record.name}</Descriptions.Item>
                         <Descriptions.Item label="Hình ảnh">
-                             {record.image || record.main_image || (record.images && record.images[0]) ? (
+                             {resolveImage(record.image) || resolveImage(record.main_image) || resolveImage(record.images) ? (
                                 <Image 
                                     width={100}
-                                    src={(record.image || record.main_image || (record.images && record.images[0]) || "").startsWith('http') 
-                                        ? (record.image || record.main_image || (record.images && record.images[0]) || "") 
-                                        : `${(import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api').replace(/\/api$/, '')}${record.image || record.main_image || (record.images && record.images[0])}`}
+                                    src={getImageUrl(resolveImage(record.image) || resolveImage(record.main_image) || resolveImage(record.images) || "")}
                                     style={{ borderRadius: 4, objectFit: 'cover' }}
                                 />
                              ) : <span style={{color: '#999', fontStyle: 'italic'}}>Chưa có ảnh</span>}
@@ -130,7 +129,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         </Descriptions.Item>
                     </Descriptions>
 
-                    {(record.gallery && record.gallery.length > 0) || (record.images && record.images.length > 0) ? (
+                    {((record.gallery || []).length > 0) || ((record.images || []).length > 0) ? (
                         <div style={{ marginTop: 20 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                                 <h4 style={{ margin: 0 }}>Thư viện ảnh</h4>
@@ -152,20 +151,16 @@ const DetailModal: React.FC<DetailModalProps> = ({
                                         onVisibleChange: (vis) => setPreviewVisible(vis),
                                     }}
                                 >
-                                    {(record.gallery || record.images || []).map((img, idx) => {
-                                         const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-                                         const apiHost = apiBase.replace(/\/api$/, '');
-                                         const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                    {Array.from(new Set([...(record.gallery || []), ...(record.images || [])])).map((img: any, idx) => {
+                                         const src = getImageUrl(img);
                                          return <Image key={idx} src={src} />;
                                     })}
                                 </Image.PreviewGroup>
                             </div>
 
                             <Space wrap size="middle">
-                                {(record.gallery || record.images || []).slice(0, 5).map((img, idx) => {
-                                     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-                                     const apiHost = apiBase.replace(/\/api$/, '');
-                                     const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                {Array.from(new Set([...(record.gallery || []), ...(record.images || [])])).slice(0, 5).map((img, idx) => {
+                                     const src = getImageUrl(img as string);
                                      return (
                                         <div key={idx} onClick={() => setPreviewVisible(true)} style={{ cursor: 'pointer' }}>
                                             <Image 
@@ -179,7 +174,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                                         </div>
                                      );
                                 })}
-                                {(record.gallery || record.images || []).length > 5 && (
+                                {Array.from(new Set([...(record.gallery || []), ...(record.images || [])])).length > 5 && (
                                      <div 
                                         style={{ 
                                             width: 120, 

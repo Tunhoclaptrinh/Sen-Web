@@ -27,6 +27,7 @@ import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import type { Artifact } from "@/types";
 import "./styles.less";
 
@@ -122,18 +123,20 @@ const ArtifactDetailPage = () => {
 
   if (!artifact) return <Empty description="Không tìm thấy hiện vật" />;
 
-  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-  const apiHost = apiBase.replace(/\/api$/, '');
-  const rawImage = artifact.main_image || artifact.image || (artifact.images && artifact.images[0]);
-  const mainImage = rawImage 
-    ? (rawImage.startsWith('http') ? rawImage : `${apiHost}${rawImage}`)
-    : 'https://via.placeholder.com/1200x600/1a1a1a/ffffff?text=No+Image';
+  const rawMainImage = resolveImage(artifact.main_image) || resolveImage(artifact.image) || resolveImage(artifact.images);
+  const mainImage = getImageUrl(rawMainImage, 'https://via.placeholder.com/1200x600/1a1a1a/ffffff?text=No+Image');
   
-  const galleryImages = [
-    ...(artifact.main_image ? [artifact.main_image] : []),
-    ...(artifact.image ? [artifact.image] : []),
+  // Aggregate all potential images
+  const allRawImages = [
+    ...(artifact.main_image ? (Array.isArray(artifact.main_image) ? artifact.main_image : [artifact.main_image]) : []),
+    ...(artifact.image ? (Array.isArray(artifact.image) ? artifact.image : [artifact.image]) : []),
     ...(artifact.images || [])
-  ].filter((v, i, a) => a.indexOf(v) === i).map(img => img.startsWith('http') ? img : `${apiHost}${img}`);
+  ];
+
+  // Unique and resolved
+  const galleryImages = Array.from(new Set(allRawImages))
+      .filter(img => typeof img === 'string')
+      .map(img => getImageUrl(img));
 
   return (
     <div className="artifact-detail-page">

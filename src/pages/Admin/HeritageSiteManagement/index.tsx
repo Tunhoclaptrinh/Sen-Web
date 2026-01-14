@@ -1,4 +1,5 @@
 import { Tag } from "antd";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 
 import DataTable from "@/components/common/DataTable";
 
@@ -59,15 +60,10 @@ const HeritageSiteManagement = () => {
       width: 80,
     },
     {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      width: 100,
-      render: (image: string) => {
-        if (!image) return null;
-        const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-        const apiHost = apiBase.replace(/\/api$/, '');
-        const src = image.startsWith('http') ? image : `${apiHost}${image}`;
+      render: (image: string | string[]) => {
+        const srcRaw = resolveImage(image);
+        if (!srcRaw) return null;
+        const src = getImageUrl(srcRaw);
         return (
           <img 
             src={src} 

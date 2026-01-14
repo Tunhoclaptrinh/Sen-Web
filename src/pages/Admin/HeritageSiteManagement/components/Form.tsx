@@ -145,6 +145,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       // Transform values before submit
       const submitData = {
           ...values,
+          image: Array.isArray(values.image) ? (values.image[0] || '') : values.image,
           shortDescription: values.short_description, // Sync for compatibility
           related_artifact_ids: values.related_artifact_ids?.map((item: any) => 
             typeof item === 'object' ? item.value : item
