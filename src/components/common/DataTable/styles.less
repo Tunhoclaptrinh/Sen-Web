@@ -61,9 +61,10 @@
 /* Pagination Override */
 .data-table-wrapper .ant-pagination-item-active {
     border-color: @primary-color;
+    background-color: #fff; /* Outline Style as requested */
     
     a {
-        color: @primary-color;
+        color: @primary-color !important;
     }
 }
 
@@ -71,6 +72,36 @@
     border-color: @primary-color;
     a {
         color: @primary-color;
+    }
+}
+
+/* Badge Overrides (Strict Primary Color) */
+.batch-op-badge .ant-badge-count,
+.filter-badge .ant-badge-dot {
+    background-color: @primary-color !important; /* No Fade */
+    box-shadow: none;
+}
+
+/* Button Variants in Toolbar */
+.data-table-wrapper .right-tools .ant-btn-primary {
+    background-color: @primary-color !important;
+    border-color: @primary-color !important;
+    
+    &:hover {
+        background-color: lighten(@primary-color, 5%) !important;
+        border-color: lighten(@primary-color, 5%) !important;
+    }
+}
+
+/* Batch Action Button (Outline but Primary Color) */
+.batch-action-btn {
+    border-color: @primary-color !important;
+    color: @primary-color !important;
+    font-weight: 500;
+    
+    &:hover, &:focus {
+        border-color: lighten(@primary-color, 10%) !important;
+        color: lighten(@primary-color, 10%) !important;
     }
 }
 

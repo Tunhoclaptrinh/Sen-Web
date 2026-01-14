@@ -1,0 +1,50 @@
+@import "../../styles/variables.less";
+
+.ant-layout-sider {
+    background: #fff;
+    border-right: 1px solid #f0f0f0;
+
+    .ant-menu-light {
+        border-right: none;
+
+        /* Highlight Selected Item (Child) */
+        .ant-menu-item-selected {
+            background-color: fade(@primary-color, 8%) !important; /* Subtle tint */
+            color: @primary-color !important;
+            font-weight: 600;
+            border-right: none; // No strip
+            border-radius: 8px; // Rounded corners like screenshot
+            margin: 4px 8px; // Add spacing for 'floating' card look
+            width: auto;
+
+            /* Fix Icon Color */
+            .anticon {
+                color: @primary-color;
+            }
+
+            &::after {
+                display: none;
+            }
+        }
+
+        /* Highlight Parent Submenu Title (When child active) */
+        .ant-menu-submenu-selected > .ant-menu-submenu-title {
+            color: @primary-color !important;
+            
+            .anticon {
+                color: @primary-color;
+            }
+            
+            /* Ensure arrow/caret is also colored */
+            .ant-menu-submenu-arrow {
+                color: @primary-color;
+            }
+        }
+
+        /* Hover State */
+        .ant-menu-item:hover,
+        .ant-menu-submenu-title:hover {
+            color: @primary-color !important;
+        }
+    }
+}

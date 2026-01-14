@@ -1,4 +1,12 @@
 /* Global Styles */
+@import "./variables.less";
+
+:root {
+  /* BINDING: Map LESS variable to CSS variable */
+  /* This ensures that changing @primary-color in variables.less updates this CSS var automatically */
+  --primary-color: @primary-color;
+}
+
 @import "antd/dist/reset.css";
 
 * {

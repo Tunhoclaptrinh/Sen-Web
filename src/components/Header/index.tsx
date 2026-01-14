@@ -111,7 +111,7 @@ const Header: React.FC = () => {
     },
     {
         key: 'history',
-        label: <Link to="/history">Lịch sử</Link>,
+        label: <Link to="/history">Bài viết</Link>,
     },
     {
       key: 'learn',

@@ -510,9 +510,9 @@ const DataTable: React.FC<DataTableProps> = ({
             )}
 
             {batchOperations && activeSelectedRowKeys.length > 0 && (
-              <Badge count={activeSelectedRowKeys.length} color="#F43F5E">
+              <Badge count={activeSelectedRowKeys.length} className="batch-op-badge">
                 <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                  <Button variant="outline" buttonSize="small">Thao tác hàng loạt</Button>
+                  <Button variant="outline" buttonSize="small" className="batch-action-btn">Thao tác hàng loạt</Button>
                 </Dropdown>
               </Badge>
             )}
@@ -542,7 +542,7 @@ const DataTable: React.FC<DataTableProps> = ({
             )}
 
             {filters && filters.length > 0 && (
-              <Badge dot={hasActiveFilters} color="#F43F5E">
+              <Badge dot={hasActiveFilters} className="filter-badge">
                 <Button
                   variant="outline"
                   onClick={() => setFilterModalOpen(true)}

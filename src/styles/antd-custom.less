@@ -1,7 +1,11 @@
 /* Ant Design Custom Overrides */
+@import "./variables.less";
+
 // Ant Design Custom Theme
-@primary-color: var(--primary-color); // Lotus Pink
-@link-color: var(--primary-color);
+// @primary-color is now imported from variables.less, allowing functions like fade() to work correctly.
+// @primary-color: var(--primary-color); // REMOVED: This breaks LESS color functions.
+
+@link-color: @primary-color;
 @success-color: #22C55E;
 @warning-color: #F97316;
 
@@ -69,6 +73,17 @@
 .ant-picker-focused .ant-picker {
     border-color: @primary-color !important;
     box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* Global Select Option Overrides */
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: fade(@primary-color, 10%) !important;
+    color: @primary-color !important;
+    font-weight: 600;
+}
+
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background-color: fade(@primary-color, 5%) !important;
 }
 
 /* ==================== Layout Customizations ==================== */
