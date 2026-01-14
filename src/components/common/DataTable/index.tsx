@@ -657,12 +657,14 @@ const DataTable: React.FC<DataTableProps> = ({
                               disabled
                               options={[{ label: label, value: filter.key }]}
                               style={{ width: '100%' }}
+                              popupClassName="custom-filter-dropdown"
                             />
+
                           </div>
 
                           {filter.operators && (
                             <div className="condition-operator">
-                              <Select
+                                <Select
                                 value={currentOp}
                                 onChange={(val) => handleOperatorChange(filter.key, val)}
                                 options={[
@@ -676,7 +678,9 @@ const DataTable: React.FC<DataTableProps> = ({
                                   { label: 'Trong', value: 'in' },
                                 ].filter(op => filter.operators?.includes(op.value as any))}
                                 style={{ width: '100%' }}
+                                popupClassName="custom-filter-dropdown"
                               />
+
                             </div>
                           )}
 
@@ -690,7 +694,9 @@ const DataTable: React.FC<DataTableProps> = ({
                                 allowClear
                                 mode={currentOp === 'in' ? 'multiple' : undefined}
                                 style={{ width: '100%' }}
+                                popupClassName="custom-filter-dropdown"
                               />
+
                             )}
 
                             {(filter.type === 'input' || filter.type === 'number') && (

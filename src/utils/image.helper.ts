@@ -2,12 +2,13 @@
  * Resolves an image source which might be a string, an array of strings, or undefined.
  * Returns the first valid string or null.
  */
-export const resolveImage = (src: string | string[] | null | undefined): string | null => {
+export const resolveImage = (src: any): string | null => {
     if (!src) return null;
     if (Array.isArray(src)) {
-        return src.length > 0 ? src[0] : null;
+        const first = src[0];
+        return typeof first === 'string' ? first : null;
     }
-    return src as string;
+    return typeof src === 'string' ? src : null;
 };
 
 /**
