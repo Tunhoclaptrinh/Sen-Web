@@ -7,6 +7,8 @@ import {
 import { Link } from "react-router-dom";
 import "./styles.less";
 import { FeatureCardProps } from "./types";
+import { HERITAGE_TYPE_LABELS, ARTIFACT_TYPE_LABELS } from "@/config/constants";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
   data,
@@ -17,7 +19,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       ? `/heritage-sites/${data.id}` 
       : `/artifacts/${data.id}`;
 
-  const imageUrl = data.image || data.main_image || "https://via.placeholder.com/300x400?text=No+Image";
+  const rawImage = resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images);
+  const imageUrl = getImageUrl(rawImage, "https://via.placeholder.com/300x400?text=No+Image");
   const subtitle = cardType === 'heritage' ? data.region : data.dynasty;
 
   return (
@@ -43,7 +46,11 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             
             {/* Bottom Overlay: Type & Rating */}
             <div className="card-info-overlay">
-                <Tag className="type-tag">{data.type || (cardType === 'artifact' ? 'Artifact' : 'Heritage')}</Tag>
+                <Tag className="type-tag">
+                  {cardType === 'heritage' 
+                    ? HERITAGE_TYPE_LABELS[data.type as keyof typeof HERITAGE_TYPE_LABELS] || (data.type === 'heritage' ? 'Di sản' : data.type) || 'Di sản'
+                    : ARTIFACT_TYPE_LABELS[data.type as keyof typeof ARTIFACT_TYPE_LABELS] || (data.type === 'artifact' ? 'Hiện vật' : data.type) || 'Hiện vật'}
+                </Tag>
                 
                 {data.rating && (
                   <div className="card-rating">

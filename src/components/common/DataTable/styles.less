@@ -1,3 +1,5 @@
+@import "../../../styles/variables.less";
+
 .data-table-wrapper .ant-table-thead>tr>th {
     text-align: center !important;
     padding: 10px 8px !important;
@@ -44,16 +46,80 @@
     cursor: default;
 
     &:hover {
-        border-color: #F43F5E;
-        box-shadow: 0 2px 8px rgba(244, 63, 94, 0.1);
+        border-color: @primary-color;
+        box-shadow: 0 2px 8px fade(@primary-color, 10%);
     }
 
     span {
-        color: #F43F5E;
+        color: @primary-color;
         font-weight: 700;
         font-size: 16px;
         line-height: 1;
     }
+}
+
+/* Pagination Override */
+.data-table-wrapper .ant-pagination-item-active {
+    border-color: @primary-color;
+    background-color: #fff; /* Outline Style as requested */
+    
+    a {
+        color: @primary-color !important;
+    }
+}
+
+.data-table-wrapper .ant-pagination-item:hover {
+    border-color: @primary-color;
+    a {
+        color: @primary-color;
+    }
+}
+
+/* Badge Overrides (Strict Primary Color) */
+.batch-op-badge .ant-badge-count,
+.filter-badge .ant-badge-dot {
+    background-color: @primary-color !important; /* No Fade */
+    box-shadow: none;
+}
+
+/* Button Variants in Toolbar */
+.data-table-wrapper .right-tools .ant-btn-primary {
+    background-color: @primary-color !important;
+    border-color: @primary-color !important;
+    
+    &:hover {
+        background-color: lighten(@primary-color, 5%) !important;
+        border-color: lighten(@primary-color, 5%) !important;
+    }
+}
+
+/* Batch Action Button (Outline but Primary Color) */
+.batch-action-btn {
+    border-color: @primary-color !important;
+    color: @primary-color !important;
+    font-weight: 500;
+    
+    &:hover, &:focus {
+        border-color: lighten(@primary-color, 10%) !important;
+        color: lighten(@primary-color, 10%) !important;
+    }
+}
+
+/* Checkbox Override */
+.data-table-wrapper .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: @primary-color;
+    border-color: @primary-color;
+}
+
+.data-table-wrapper .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.data-table-wrapper .ant-checkbox:hover .ant-checkbox-inner,
+.data-table-wrapper .ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color: @primary-color;
+}
+
+/* Indeterminate Checkbox */
+.data-table-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner::after {
+    background-color: @primary-color;
 }
 
 .data-table-alert {
@@ -146,27 +212,39 @@
 }
 
 .condition-row {
-    display: grid;
-    grid-template-columns: auto 1.5fr 1.2fr 2fr auto;
-    gap: 8px;
+    display: flex;
+    gap: 12px;
     padding: 12px;
     align-items: center;
+    width: 100%;
 }
 
 .condition-checkbox {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.condition-field,
-.condition-operator,
-.condition-value {
+.condition-field {
+    flex: 1.5; /* Takes reasonable space */
     min-width: 0;
+}
 
-    >div {
-        margin-bottom: 0 !important;
-    }
+.condition-operator {
+    flex: 1;
+    min-width: 0;
+}
+
+.condition-value {
+    flex: 2; /* Value takes most space */
+    min-width: 0;
+}
+
+.condition-field > div,
+.condition-operator > div,
+.condition-value > div {
+    margin-bottom: 0 !important;
 }
 
 
@@ -224,23 +302,28 @@
 /* Responsive */
 @media (max-width: 768px) {
     .condition-row {
-        grid-template-columns: auto 1fr;
-        gap: 10px;
+        flex-wrap: wrap;
     }
 
     .condition-checkbox {
-        grid-row: 1 / span 4;
+        /* Keep checkbox on the left */
+        margin-right: 8px;
     }
 
     .condition-field,
     .condition-operator,
     .condition-value {
-        grid-column: 2;
+        /* On mobile, make them full width or share width */
+        flex: 1 1 100%; 
+        min-width: 100%;
+    }
+    
+    .condition-operator {
+         margin-bottom: 8px; /* Add spacing when stacked */
     }
 
     .condition-delete {
-        grid-column: 2;
-        width: 100%;
+        margin-left: auto; /* Push to right */
     }
 
     .filter-builder-footer {
@@ -261,17 +344,31 @@
         transition: all 0.2s ease;
 
         &:hover {
-            border-color: #f43f5e !important;
+            border-color: @primary-color !important;
         }
     }
 
     .ant-select-focused .ant-select-selector,
     .ant-input:focus {
-        border-color: #f43f5e !important;
-        box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.1) !important;
+        border-color: @primary-color !important;
+        box-shadow: 0 0 0 2px fade(@primary-color, 10%) !important;
     }
 
+    // Fix Dropdown Item Selected Color
+    // Note: This must be targeted via popupClassName or global override as it renders in body
+}
 
+/* GLOBAL OVERRIDE for Filter Dropdowns */
+.custom-filter-dropdown {
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+        background-color: fade(@primary-color, 10%) !important; // Light variant
+        color: @primary-color !important;
+        font-weight: 600;
+    }
+
+    .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+         background-color: fade(@primary-color, 15%) !important; // Hover variant
+    }
 }
 
 /* Column filter dropdowns */
@@ -295,8 +392,8 @@
     transition: all 0.3s ease;
 
     &:hover {
-        border-color: #F43F5E !important;
-        box-shadow: 0 2px 8px rgba(244, 63, 94, 0.1) !important;
+        border-color: @primary-color !important;
+        box-shadow: 0 2px 8px fade(@primary-color, 10%) !important;
     }
 }
 
@@ -324,10 +421,15 @@
 }
 
 /* Fix "Horrible" Dark Selection Color */
+/* Fix "Horrible" Dark Selection Color */
 .data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
-    background-color: #fff1f2 !important; /* Lighter shade of primary #F43F5E */
+    background-color: fade(@primary-color, 5%) !important; /* Lighter shade of primary */
 }
 
 .data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected:hover > td {
-    background-color: #ffe4e6 !important;
+    background-color: fade(@primary-color, 10%) !important;
+}
+
+.main-table {
+    padding: 16px;
 }

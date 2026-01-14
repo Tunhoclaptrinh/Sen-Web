@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 
 interface DetailModalProps {
     open: boolean;
@@ -53,15 +54,16 @@ const DetailModal: React.FC<DetailModalProps> = ({
 
     if (!record) return null;
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-    const apiHost = apiBase.replace(/\/api$/, '');
-    const mainImg = record.image || (record.images && record.images[0]);
-    const mainSrc = mainImg ? (mainImg.startsWith('http') ? mainImg : `${apiHost}${mainImg}`) : "";
+    const mainImg = resolveImage(record.image) || resolveImage(record.images && record.images[0]);
+    const mainSrc = getImageUrl(mainImg);
 
-    const gallery = Array.from(new Set([
+    const galleryRaw = [
         ...(record.gallery || []),
         ...(record.images || [])
-    ])).filter(Boolean);
+    ];
+    
+    // Flatten if needed (though usually likely strings), and unique
+    const gallery = Array.from(new Set(galleryRaw.flat())).filter(Boolean);
 
     return (
         <Modal
@@ -125,16 +127,16 @@ const DetailModal: React.FC<DetailModalProps> = ({
                             
                             <div style={{ display: 'none' }}>
                                 <Image.PreviewGroup preview={{ visible: previewVisible, onVisibleChange: (vis) => setPreviewVisible(vis) }}>
-                                    {gallery.map((img, idx) => {
-                                         const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                    {gallery.map((img: any, idx) => {
+                                         const src = getImageUrl(img);
                                          return <Image key={idx} src={src} />;
                                     })}
                                 </Image.PreviewGroup>
                             </div>
 
                             <Space wrap size="middle">
-                                {gallery.slice(0, 5).map((img, idx) => {
-                                     const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                                {gallery.slice(0, 5).map((img : any, idx) => {
+                                     const src = getImageUrl(img);
                                      return (
                                         <div key={idx} onClick={() => setPreviewVisible(true)} style={{ cursor: 'pointer' }}>
                                             <Image 

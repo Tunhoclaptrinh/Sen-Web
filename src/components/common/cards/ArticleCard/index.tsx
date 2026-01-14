@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { getImageUrl, resolveImage } from '@/utils/image.helper';
 import './styles.less';
 
 const { Paragraph } = Typography;
@@ -31,12 +32,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
         navigate(path);
     };
 
-    const rawImage = data.image || data.main_image || (data.images && data.images[0]);
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-    const apiHost = apiBase.replace(/\/api$/, '');
-    const imageUrl = rawImage 
-        ? (rawImage.startsWith('http') ? rawImage : `${apiHost}${rawImage}`)
-        : 'https://via.placeholder.com/800x600';
+    const rawImage = resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images);
+    const imageUrl = getImageUrl(rawImage, 'https://via.placeholder.com/800x600');
 
     return (
         <div className={`article-card ${type} ${variant}`} onClick={handleNavigate} style={{ cursor: 'pointer' }}>

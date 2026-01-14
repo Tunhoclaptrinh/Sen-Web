@@ -38,6 +38,11 @@ export const adminMenu: IMenuItem[] = [
         icon: <BankOutlined />,
         children: [
             {
+                key: 'categories',
+                path: '/admin/categories',
+                name: 'Danh mục Văn hóa',
+            },
+            {
                 key: 'sites',
                 path: '/admin/heritage-sites',
                 name: 'Di sản Văn hóa',
@@ -48,20 +53,16 @@ export const adminMenu: IMenuItem[] = [
                 name: 'Hiện vật Lịch sử',
             },
             {
-                key: 'categories',
-                path: '/admin/categories',
-                name: 'Danh mục Văn hóa',
+                key: 'history',
+                path: '/admin/history',
+                name: 'Bài viết văn hóa',
             },
             {
                 key: 'exhibitions',
                 path: '/admin/exhibitions',
                 name: 'Triển lãm ảo',
             },
-            {
-                key: 'history',
-                path: '/admin/history',
-                name: 'Lịch sử',
-            },
+            
         ]
     },
     {

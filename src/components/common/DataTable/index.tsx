@@ -566,9 +566,16 @@ const DataTable: React.FC<DataTableProps> = ({
             )}
 
             {batchOperations && activeSelectedRowKeys.length > 0 && (
-              <Badge count={activeSelectedRowKeys.length} color="#F43F5E">
+              <Badge
+                count={activeSelectedRowKeys.length}
+                className="batch-op-badge"
+              >
                 <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                  <Button variant="outline" buttonSize="small">
+                  <Button
+                    variant="outline"
+                    buttonSize="small"
+                    className="batch-action-btn"
+                  >
                     Thao tác hàng loạt
                   </Button>
                 </Dropdown>
@@ -600,7 +607,7 @@ const DataTable: React.FC<DataTableProps> = ({
             )}
 
             {filters && filters.length > 0 && (
-              <Badge dot={hasActiveFilters} color="#F43F5E">
+              <Badge dot={hasActiveFilters} className="filter-badge">
                 <Button
                   variant="outline"
                   onClick={() => setFilterModalOpen(true)}
@@ -732,6 +739,7 @@ const DataTable: React.FC<DataTableProps> = ({
                               disabled
                               options={[{ label: label, value: filter.key }]}
                               style={{ width: "100%" }}
+                              popupClassName="custom-filter-dropdown"
                             />
                           </div>
 
@@ -755,6 +763,7 @@ const DataTable: React.FC<DataTableProps> = ({
                                   filter.operators?.includes(op.value as any),
                                 )}
                                 style={{ width: "100%" }}
+                                popupClassName="custom-filter-dropdown"
                               />
                             </div>
                           )}

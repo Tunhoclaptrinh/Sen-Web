@@ -198,6 +198,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   const handleOk = async (values: any) => {
     // Transform values before submit
     const submitData = {
+<<<<<<< HEAD
       ...values,
       shortDescription: values.short_description, // Sync for compatibility
       related_heritage_ids: values.related_heritage_ids?.map((item: any) =>
@@ -206,6 +207,17 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       related_history_ids: values.related_history_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ),
+=======
+        ...values,
+        image: Array.isArray(values.image) ? (values.image[0] || '') : values.image,
+        shortDescription: values.short_description, // Sync for compatibility
+        related_heritage_ids: values.related_heritage_ids?.map((item: any) => 
+          typeof item === 'object' ? item.value : item
+        ),
+        related_history_ids: values.related_history_ids?.map((item: any) => 
+          typeof item === 'object' ? item.value : item
+        )
+>>>>>>> 88ee52629bed9196cf61660f359f712adf1e6a33
     };
     await onSubmit(submitData);
   };

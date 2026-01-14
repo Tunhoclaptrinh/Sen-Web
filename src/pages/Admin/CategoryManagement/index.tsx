@@ -11,6 +11,7 @@ const CategoryManagement: React.FC = () => {
             title: 'Tên danh mục',
             dataIndex: 'name',
             key: 'name',
+            searchable: true, // Enable search on this column
         },
         {
             title: 'Mô tả',
@@ -41,6 +42,14 @@ const CategoryManagement: React.FC = () => {
                 onAdd={model.openCreate}
                 onEdit={model.openEdit}
                 onDelete={model.remove}
+                // Full Features Sync
+                rowSelection={{
+                    selectedRowKeys: model.selectedIds,
+                    onChange: model.setSelectedIds,
+                }}
+                onBatchDelete={model.batchDelete}
+                batchOperations={true}
+                onRefresh={model.refresh}
             />
 
             <Modal

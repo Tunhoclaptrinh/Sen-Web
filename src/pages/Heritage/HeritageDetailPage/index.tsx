@@ -32,6 +32,7 @@ import historyService from "@/services/history.service";
 import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { HeritageSite, TimelineEvent } from "@/types";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import "./styles.less";
 
 
@@ -224,10 +225,10 @@ const HeritageDetailPage = () => {
 
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
     const apiHost = apiBase.replace(/\/api$/, '');
-    const rawImage = site.main_image || site.image || (site.images && site.images[0]);
-    const mainImage = rawImage 
-        ? (rawImage.startsWith('http') ? rawImage : `${apiHost}${rawImage}`)
-        : 'https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200';
+    
+    // Use helper to resolve main image
+    const rawImage = resolveImage(site.main_image) || resolveImage(site.image) || resolveImage(site.images);
+    const mainImage = getImageUrl(rawImage, 'https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200');
     const publishDate = site.publishDate || site.created_at || new Date().toISOString();
     const authorName = site.author || 'Admin';
 
@@ -266,15 +267,15 @@ const HeritageDetailPage = () => {
                                 onVisibleChange: (vis) => setPreviewVisible(vis),
                             }}
                         >
-                             {[
-                                ...(site.main_image ? [site.main_image] : []),
-                                ...(site.image ? [site.image] : []),
+                             {Array.from(new Set([
+                                ...(site.main_image ? [resolveImage(site.main_image)] : []),
+                                ...(site.image ? [resolveImage(site.image)] : []),
                                 ...(site.gallery || []),
                                 ...(site.images || [])
-                             ].filter((v, i, a) => a.indexOf(v) === i).map((img, idx) => {
-                                 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-                                 const apiHost = apiBase.replace(/\/api$/, '');
-                                 const src = img.startsWith('http') ? img : `${apiHost}${img}`;
+                             ]))
+                             .filter(Boolean)
+                             .map((img: any, idx) => {
+                                 const src = getImageUrl(img);
                                  return <Image key={idx} src={src} />;
                             })}
                         </Image.PreviewGroup>

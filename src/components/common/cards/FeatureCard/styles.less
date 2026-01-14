@@ -104,12 +104,13 @@
   left: 16px;
   z-index: 5;
 
-  .unesco-tag {
-    border: none;
-    background: #a5e3a7; // User requested Green
-    color: rgba(0, 0, 0, 0.45); // "Transparent" text effect
+    .unesco-tag {
+    border: 1px solid var(--primary-color);
+    background: rgba(255, 255, 255, 0.1); // Transparent/Glassy
+    color: var(--primary-color);
     font-weight: 700;
-    box-shadow: none; // Removed shadow
+    box-shadow: none;
+    backdrop-filter: blur(4px);
   }
 }
 

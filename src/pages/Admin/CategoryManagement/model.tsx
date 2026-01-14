@@ -58,5 +58,10 @@ export const useCategoryModel = () => {
         openEdit,
         closeForm,
         handleSubmit,
+        // Added for full feature sync
+        selectedIds: crud.selectedIds,
+        setSelectedIds: crud.setSelectedIds,
+        batchDelete: crud.batchDelete,
+        refresh: crud.refresh,
     };
 };
