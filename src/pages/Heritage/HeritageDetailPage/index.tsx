@@ -18,7 +18,9 @@ import {
   SafetyCertificateFilled,
   CameraOutlined,
   RocketOutlined,
-  ShopOutlined
+  ShopOutlined,
+  ReadOutlined,
+  HistoryOutlined
 } from "@ant-design/icons";
 import { Image } from "antd";
 import dayjs from 'dayjs';
@@ -421,101 +423,120 @@ const HeritageDetailPage = () => {
                             )
                         },
                         {
-                            key: 'artifacts',
-                            label: 'Hiện Vật',
-                            children: (
-                                <div className="article-main-wrapper">
-                                    <Title level={3} style={{fontFamily: 'Aleo, serif', marginBottom: 24}}>Hiện Vật Liên Quan</Title>
-                                    {siteArtifacts.length > 0 ? (
-                                        <Row gutter={[16, 16]}>
-                                            {siteArtifacts.map(artifact => (
-                                                <Col xs={24} sm={12} md={8} key={artifact.id}>
-                                                    <ArticleCard 
-                                                        data={artifact}
-                                                        type="artifact"
-                                                    />
-                                                </Col>
-                                            ))}
-                                        </Row>
-                                    ) : (
-                                        <Empty description="Chưa có hiện vật nào được cập nhật" />
-                                    )}
-                                </div>
-                            )
-                        },
-                        {
                             key: 'discovery',
                             label: 'Khám phá',
                             children: (
                                 <div className="article-main-wrapper">
-                                    {/* 1. Related Games / Interactive */}
-                                    {mockLevels.length > 0 && (
-                                        <div className="discovery-block" style={{marginBottom: 48}}>
-                                            <Title level={3}><RocketOutlined /> Trải nghiệm Lịch sử</Title>
-                                            <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.</p>
-                                            <Row gutter={[16, 16]}>
-                                                {mockLevels.map((level: any) => (
-                                                    <Col xs={24} md={12} key={level.id}>
-                                                        <div className="game-card-mini" style={{border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'flex', gap: 16, alignItems: 'center'}}>
-                                                            <div className="game-thumb" style={{width: 80, height: 80, borderRadius: 8, background: '#eee', backgroundImage: `url(${level.background_image || level.thumbnail})`, backgroundSize: 'cover'}} />
-                                                            <div className="game-info" style={{flex: 1}}>
-                                                                <h4 style={{margin: 0, fontSize: 16}}>{level.name}</h4>
-                                                                <div style={{color: '#888', fontSize: 13}}>{level.description}</div>
-                                                            </div>
-                                                            <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi Ngay</Button>
-                                                        </div>
-                                                    </Col>
-                                                ))}
-                                            </Row>
-                                            <Divider />
-                                        </div>
+                                    {/* 1. Related Games / Interactive (Mock UI) */}
+                                    <div className="discovery-block" style={{marginBottom: 48}}>
+                                        <Title level={3}><RocketOutlined /> Trải nghiệm Di sản</Title>
+                                        <p style={{marginBottom: 24}}>Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.</p>
+                                        <Row gutter={[16, 16]}>
+                                            <Col xs={24} md={12}>
+                                                <div className="game-card-mini" style={{border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'flex', gap: 16, alignItems: 'center'}}>
+                                                    <div className="game-thumb" style={{width: 80, height: 80, borderRadius: 8, background: '#eee', backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`, backgroundSize: 'cover'}} />
+                                                    <div className="game-info" style={{flex: 1}}>
+                                                        <h4 style={{margin: 0, fontSize: 16}}>Khám phá Hoàng Thành</h4>
+                                                        <div style={{color: '#888', fontSize: 13}}>Giải mã các bí mật khảo cổ dưới lòng đất Thăng Long.</div>
+                                                    </div>
+                                                    <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi Ngay</Button>
+                                                </div>
+                                            </Col>
+                                            <Col xs={24} md={12}>
+                                                <div className="game-card-mini" style={{border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'flex', gap: 16, alignItems: 'center'}}>
+                                                    <div className="game-thumb" style={{width: 80, height: 80, borderRadius: 8, background: '#eee', backgroundImage: `url(https://images.unsplash.com/photo-1555921015-5532091f6026?w=200)`, backgroundSize: 'cover'}} />
+                                                    <div className="game-info" style={{flex: 1}}>
+                                                        <h4 style={{margin: 0, fontSize: 16}}>Bảo vệ Thăng Long</h4>
+                                                        <div style={{color: '#888', fontSize: 13}}>Tham gia chiến dịch bảo vệ kinh thành.</div>
+                                                    </div>
+                                                    <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi Ngay</Button>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        <Divider />
+                                    </div>
+
+                                    {/* 2. Related Artifacts (Distinct Section) */}
+                                    {siteArtifacts.length > 0 && (
+                                         <div className="discovery-block" style={{marginBottom: 48}}>
+                                             <Title level={3}><ReadOutlined /> Hiện vật Tiêu biểu</Title>
+                                             <p style={{marginBottom: 24}}>Những bảo vật quý giá gắn liền với di tích này.</p>
+                                             <Row gutter={[16, 16]}>
+                                                 {siteArtifacts.map((artifact: any) => (
+                                                     <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
+                                                         <ArticleCard 
+                                                             data={artifact}
+                                                             type="artifact"
+                                                         />
+                                                     </Col>
+                                                 ))}
+                                             </Row>
+                                             <Divider />
+                                         </div>
                                     )}
 
-                                    {/* 2. References: Related History & Artifacts (Mirroring History Detail's layout) */}
-                                    {(mockHistory.length > 0 || siteArtifacts.length > 0) && (
+                                    {/* 3. Related History (Distinct Section) */}
+                                    {mockHistory.length > 0 && (
                                          <div className="discovery-block" style={{marginBottom: 48}}>
-                                             <Title level={3}><EnvironmentOutlined /> Lịch sử & Hiện vật liên quan</Title>
-                                            <Row gutter={[16, 16]}>
-                                                {/* Render History Articles first as 'Context' */}
-                                                {mockHistory.map((item: any) => (
-                                                    <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
-                                                        <ArticleCard data={item} type="history" />
-                                                    </Col>
-                                                ))}
-                                                {/* Render Artifacts */}
-                                                {siteArtifacts.map((artifact: any) => (
-                                                    <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
-                                                        <ArticleCard 
-                                                            data={artifact}
-                                                            type="artifact"
-                                                        />
-                                                    </Col>
-                                                ))}
-                                            </Row>
-                                            <Divider />
+                                             <Title level={3}><HistoryOutlined /> Câu chuyện Lịch sử</Title>
+                                             <p style={{marginBottom: 24}}>Các sự kiện và câu chuyện lịch sử liên quan.</p>
+                                             <Row gutter={[16, 16]}>
+                                                 {mockHistory.map((item: any) => (
+                                                     <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
+                                                         <ArticleCard data={item} type="history" />
+                                                     </Col>
+                                                 ))}
+                                             </Row>
+                                             <Divider />
                                          </div>
                                      )}
 
-                                    {/* 3. Related Products */}
-                                    {mockProducts.length > 0 && (
-                                        <div className="discovery-block">
-                                            <Title level={3}><ShopOutlined /> Sản phẩm Văn hóa</Title>
-                                            <Row gutter={[16, 16]}>
-                                                {mockProducts.map((p: any) => (
-                                                    <Col xs={24} sm={12} md={6} key={p.id}>
-                                                         <div className="product-card" style={{textAlign: 'center'}}>
-                                                             <div className="prod-img" style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: 'hidden'}}>
-                                                                 <img src={p.image || p.thumbnail} alt={p.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                                                             </div>
-                                                             <h4 style={{marginBottom: 8}}>{p.name}</h4>
-                                                             <div style={{color: '#d4380d', fontWeight: 'bold', marginBottom: 12}}>{p.price?.toLocaleString()} đ</div>
-                                                             <Button block>Xem chi tiết</Button>
-                                                         </div>
-                                                    </Col>
-                                                ))}
-                                            </Row>
-                                        </div>
-                                    )}
+                                    {/* 4. Related Products (Mock UI) */}
+                                    <div className="discovery-block">
+                                        <Title level={3}><ShopOutlined /> Sản phẩm Văn hóa</Title>
+                                        <Row gutter={[16, 16]}>
+                                            <Col xs={24} sm={12} md={6}>
+                                                    <div className="product-card" style={{textAlign: 'center'}}>
+                                                        <div className="prod-img" style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: 'hidden'}}>
+                                                            <img src="https://images.unsplash.com/photo-1599525281489-0824b223c285?w=400" alt="Mô hình" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                                        </div>
+                                                        <h4 style={{marginBottom: 8}}>Mô hình Hoàng Thành</h4>
+                                                        <div style={{color: '#d4380d', fontWeight: 'bold', marginBottom: 12}}>450,000 đ</div>
+                                                        <Button block>Xem chi tiết</Button>
+                                                    </div>
+                                            </Col>
+                                            <Col xs={24} sm={12} md={6}>
+                                                    <div className="product-card" style={{textAlign: 'center'}}>
+                                                        <div className="prod-img" style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: 'hidden'}}>
+                                                            <img src="https://salt.tikicdn.com/cache/w1200/ts/product/23/67/68/73919242d992953284346028887e3871.jpg" alt="Sách" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                                        </div>
+                                                        <h4 style={{marginBottom: 8}}>Sách: Lịch sử Thăng Long</h4>
+                                                        <div style={{color: '#d4380d', fontWeight: 'bold', marginBottom: 12}}>220,000 đ</div>
+                                                        <Button block>Xem chi tiết</Button>
+                                                    </div>
+                                            </Col>
+                                            <Col xs={24} sm={12} md={6}>
+                                                    <div className="product-card" style={{textAlign: 'center'}}>
+                                                        <div className="prod-img" style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: 'hidden'}}>
+                                                            <img src="https://images.unsplash.com/photo-1555921015-5532091f6026?w=400" alt="Tranh" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                                        </div>
+                                                        <h4 style={{marginBottom: 8}}>Tranh in Điện Kính Thiên</h4>
+                                                        <div style={{color: '#d4380d', fontWeight: 'bold', marginBottom: 12}}>180,000 đ</div>
+                                                        <Button block>Xem chi tiết</Button>
+                                                    </div>
+                                            </Col>
+                                            <Col xs={24} sm={12} md={6}>
+                                                    <div className="product-card" style={{textAlign: 'center'}}>
+                                                        <div className="prod-img" style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: 'hidden'}}>
+                                                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400" alt="Móc khóa" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                                        </div>
+                                                        <h4 style={{marginBottom: 8}}>Móc khóa Rồng đá</h4>
+                                                        <div style={{color: '#d4380d', fontWeight: 'bold', marginBottom: 12}}>45,000 đ</div>
+                                                        <Button block>Xem chi tiết</Button>
+                                                    </div>
+                                            </Col>
+                                        </Row>
+                                    </div>
                                     
                                     {/* Empty State */}
                                     {!mockLevels.length && !siteArtifacts.length && !mockHistory.length && !mockProducts.length && (

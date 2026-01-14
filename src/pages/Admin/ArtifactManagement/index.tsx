@@ -1,16 +1,12 @@
 import {
-  Space,
-  Tag,
-  Tooltip,
-  Button,
-  Popconfirm
+  Tag
 } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined
-} from "@ant-design/icons";
-import { Artifact } from "@/types";
+import { 
+  ArtifactType, 
+  ArtifactCondition, 
+  ArtifactTypeLabels, 
+  ArtifactConditionLabels 
+} from "@/types";
 import DataTable from "@/components/common/DataTable";
 
 import ArtifactDetailModal from "./components/DetailModal";
@@ -64,6 +60,31 @@ const ArtifactManagement = () => {
       width: 80,
     },
     {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: 100,
+      render: (image: string) => {
+        if (!image) return null;
+        const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+        const apiHost = apiBase.replace(/\/api$/, '');
+        const src = image.startsWith('http') ? image : `${apiHost}${image}`;
+        return (
+          <img 
+            src={src} 
+            alt="Artifact" 
+            style={{ 
+              width: 80, 
+              height: 50, 
+              objectFit: 'cover', 
+              borderRadius: 4,
+              border: '1px solid #f0f0f0' 
+            }} 
+          />
+        );
+      },
+    },
+    {
       title: "Tên Hiện vật",
       dataIndex: "name",
       key: "name_like",
@@ -76,24 +97,30 @@ const ArtifactManagement = () => {
       dataIndex: "artifact_type",
       key: "artifact_type",
       width: 150,
-      filters: [
-        { text: "Sculpture", value: "sculpture" },
-        { text: "Painting", value: "painting" },
-        { text: "Pottery", value: "pottery" },
-      ],
+      filters: Object.values(ArtifactType).map(type => ({
+        text: ArtifactTypeLabels[type],
+        value: type
+      })),
       filteredValue: filters.artifact_type ? (Array.isArray(filters.artifact_type) ? filters.artifact_type : [filters.artifact_type]) : null,
-      render: (type: string) => <Tag color="purple">{type?.toUpperCase()}</Tag>,
+      render: (type: ArtifactType) => (
+        <Tag color="purple">{ArtifactTypeLabels[type]?.toUpperCase() || type}</Tag>
+      ),
     },
     {
       title: "Tình trạng",
       dataIndex: "condition",
       key: "condition",
       width: 120,
-      render: (cond: string) => {
+      filters: Object.values(ArtifactCondition).map(cond => ({
+        text: ArtifactConditionLabels[cond],
+        value: cond
+      })),
+      filteredValue: filters.condition ? (Array.isArray(filters.condition) ? filters.condition : [filters.condition]) : null,
+      render: (cond: ArtifactCondition) => {
         let color = "blue";
-        if (cond === 'excellent') color = "green";
-        if (cond === 'poor') color = "red";
-        return <Tag color={color}>{cond?.toUpperCase()}</Tag>;
+        if (['excellent', 'EXCELLENT'].includes(cond)) color = "green";
+        if (['poor', 'POOR'].includes(cond)) color = "red";
+        return <Tag color={color}>{ArtifactConditionLabels[cond]?.toUpperCase() || cond}</Tag>;
       }
     },
     {
@@ -119,46 +146,6 @@ const ArtifactManagement = () => {
         <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
       ),
     },
-    {
-      title: "Thao tác",
-      key: "actions",
-      width: 120,
-      fixed: "right" as const,
-      align: "center" as const,
-      render: (_: any, record: Artifact) => (
-        <Space size="middle">
-          <Tooltip title="Xem chi tiết">
-            <Button
-              type="text"
-              icon={<EyeOutlined />}
-              onClick={() => openDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "orange" }} />}
-              onClick={() => openEdit(record)}
-            />
-          </Tooltip>
-          <Popconfirm
-            title="Bạn có chắc chắn muốn xóa?"
-            onConfirm={() => deleteArtifact(record.id)}
-            okText="Đồng ý"
-            cancelText="Hủy"
-            okButtonProps={{ danger: true }}
-          >
-            <Tooltip title="Xóa">
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-              />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
-    }
   ];
 
   return (
@@ -195,21 +182,26 @@ const ArtifactManagement = () => {
           {
             key: "artifact_type",
             placeholder: "Loại hình",
-            options: [
-              { label: "Sculpture", value: "sculpture" },
-              { label: "Painting", value: "painting" },
-              { label: "Pottery", value: "pottery" },
-            ],
+            options: Object.values(ArtifactType).map(type => ({
+                label: ArtifactTypeLabels[type],
+                value: type
+            })),
           },
           {
             key: "condition",
             placeholder: "Tình trạng",
+            options: Object.values(ArtifactCondition).map(cond => ({
+                label: ArtifactConditionLabels[cond],
+                value: cond
+            })),
+          },
+          {
+            key: "is_on_display",
+            placeholder: "Trưng bày",
             options: [
-              { label: "Excellent", value: "excellent" },
-              { label: "Good", value: "good" },
-              { label: "Fair", value: "fair" },
-              { label: "Poor", value: "poor" },
-            ],
+                { label: "Đang trưng bày", value: true },
+                { label: "Trong kho", value: false },
+            ]
           }
         ]}
         filterValues={filters}

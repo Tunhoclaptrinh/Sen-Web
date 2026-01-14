@@ -25,7 +25,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -68,9 +67,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1),
-    );
   };
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {

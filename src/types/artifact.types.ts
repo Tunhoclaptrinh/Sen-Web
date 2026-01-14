@@ -71,6 +71,7 @@ export interface Artifact extends BaseEntity, TimestampEntity {
   current_location?: string;
   location_in_site?: string;
   is_on_display: boolean;
+  gallery?: string[];
   images?: string[];
   image?: string;
   main_image?: string;
