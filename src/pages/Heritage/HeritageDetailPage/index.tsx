@@ -223,8 +223,8 @@ const HeritageDetailPage = () => {
     ] : siteProducts;
 
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-    const apiHost = apiBase.replace(/\/api$/, '');
+    // const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+    // const apiHost = apiBase.replace(/\/api$/, '');
     
     // Use helper to resolve main image
     const rawImage = resolveImage(site.main_image) || resolveImage(site.image) || resolveImage(site.images);
