@@ -41,6 +41,8 @@ interface AIChatPanelProps {
   };
 }
 
+import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
+
 const AIChatPanel: React.FC<AIChatPanelProps> = ({
   visible = false,
   onClose,
@@ -51,46 +53,250 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
   const { chatHistory, currentCharacter, chatLoading, isTyping, error } =
     useAppSelector((state) => state.ai);
   const { user } = useAppSelector((state) => state.auth);
+  
+  // Connect to Global Character
+  const globalChar = useGlobalCharacter();
+  const setIsTalking = globalChar?.setIsTalking || (() => {});
 
   const [inputMessage, setInputMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [streamingMessage, setStreamingMessage] = useState<{
+
+  // Enhanced Streaming State
+  const [streamingState, setStreamingState] = useState<{
     id: number;
     text: string;
   } | null>(null);
-  const lastStreamedIdRef = useRef<number | null>(null);
-  const streamIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const targetTextRef = useRef<string>("");
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const charPerMsRef = useRef<number>(0.1); // Default: 1 char per 10ms
+  
+  // Pause Refs
+  const pausedDurationRef = useRef<number>(0);
+  const activePauseEndTimeRef = useRef<number>(0);
+  const pauseStartTimeRef = useRef<number>(0);
+  const lastPunctuationIndexRef = useRef<number>(-1);
 
-  // Stream text character by character
-  const streamText = (fullText: string, messageId: number) => {
-    // Clear any existing interval
-    if (streamIntervalRef.current) {
-      clearInterval(streamIntervalRef.current);
+  const PUNCTUATION_PAUSES: Record<string, number> = {
+    '.': 600, '!': 600, '?': 600,
+    ',': 300, ';': 300, ':': 300
+  };
+
+  // Track processed messages to avoid re-streaming history on mount
+  const lastProcessedMessageIdRef = useRef<number | null>(null);
+
+  // Helper to start/ensure interval running
+  const startStreaming = () => {
+    if (intervalRef.current) return;
+    
+    // Initialize start time if starting fresh
+    if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
     }
 
-    let index = 0;
-    setStreamingMessage({ id: messageId, text: "" });
-    lastStreamedIdRef.current = messageId;
-    
-    streamIntervalRef.current = setInterval(() => {
-      if (index < fullText.length) {
-        setStreamingMessage((prev) => ({
-          id: messageId,
-          text: prev ? prev.text + fullText[index] : fullText[index],
-        }));
-        index++;
-      } else {
-        if (streamIntervalRef.current) {
-          clearInterval(streamIntervalRef.current);
-          streamIntervalRef.current = null;
+    setIsTalking(true);
+    intervalRef.current = setInterval(() => {
+      setStreamingState((prev) => {
+        if (!prev) {
+          if (intervalRef.current) {
+             clearInterval(intervalRef.current);
+             intervalRef.current = null;
+          }
+          setIsTalking(false);
+          startTimeRef.current = 0;
+          return null;
         }
-        setStreamingMessage(null);
+
+        const now = Date.now();
+        const targetText = targetTextRef.current;
+
+        // CHECK PAUSE STATE
+        if (activePauseEndTimeRef.current > 0) {
+            if (now < activePauseEndTimeRef.current) {
+                // Still Paused
+                setIsTalking(false);
+                return prev;
+            }
+            // Pause Finished
+            pausedDurationRef.current += (activePauseEndTimeRef.current - pauseStartTimeRef.current);
+            activePauseEndTimeRef.current = 0;
+            pauseStartTimeRef.current = 0;
+            setIsTalking(true);
+        }
+
+        // Use a fallback speed if charPerMsRef is invalid
+        const speed = charPerMsRef.current > 0 ? charPerMsRef.current : 0.1;
+        const effectiveElapsed = Math.max(0, now - startTimeRef.current - pausedDurationRef.current);
+        
+        let charsToShow = Math.floor(effectiveElapsed * speed);
+        
+        // CHECK PUNCTUATION PAUSE
+        const currentLen = prev.text.length;
+        // Optimization: only check punctuation if we are advancing
+        if (charsToShow > currentLen && charsToShow <= targetText.length) {
+             for (let i = currentLen; i < charsToShow; i++) {
+                 const char = targetText[i];
+                 if (PUNCTUATION_PAUSES[char] && i > lastPunctuationIndexRef.current) {
+                     // Found punctuation -> Trigger Pause
+                     charsToShow = i + 1; // Stop exactly after punctuation
+                     
+                     // Set pause state
+                     const pauseDur = PUNCTUATION_PAUSES[char];
+                     activePauseEndTimeRef.current = now + pauseDur;
+                     pauseStartTimeRef.current = now;
+                     lastPunctuationIndexRef.current = i;
+                     
+                     setIsTalking(false);
+                     break; // Stop loop, we pause here
+                 }
+             }
+        }
+
+        if (charsToShow < targetText.length) {
+          if (activePauseEndTimeRef.current === 0) setIsTalking(true);
+          return { ...prev, text: targetText.substring(0, charsToShow) };
+        } else {
+          // Caught up
+          setIsTalking(false);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          startTimeRef.current = 0;
+          return { ...prev, text: targetText };
+        }
+      });
+    }, 16); 
+  }; 
+
+  // Handle streaming and audio when new AI message arrives
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      const lastMessage = chatHistory[chatHistory.length - 1];
+      
+      // On mount/first load, don't stream if it's history
+      // We assume it's history if we haven't processed any message yet and there's a list.
+      // However, to be safe, if the user just sent a message, we want to stream the response.
+      // For now, let's just ensure we don't stream if ID implies it's old (not reliable).
+      // Better: if lastProcessedMessageIdRef is null, and we have history, set it to the last ID 
+      // WITHOUT streaming, UNLESS chatLoading is false and it just arrived (complex).
+      // SIMPLIFICATION: Only stream if the message ID changes while we are already mounted?
+      // No, that breaks the first message.
+      // Let's rely on standard check: only stream if id changes. 
+      // BUT to avoid 'autoplay on reload' causing errors, we can suppress audio on first render?
+      // The issue user reported "Empty bubble" means streaming started but didn't progress.
+      
+      if (lastMessage.role === "assistant" && lastMessage.content) {
+        // Update target text reference immediately
+        targetTextRef.current = lastMessage.content;
+
+        // If this is a new message we haven't processed for streaming yet
+        if (streamingState?.id !== lastMessage.id && lastProcessedMessageIdRef.current !== lastMessage.id) {
+          
+          const isHistoryLoad = lastProcessedMessageIdRef.current === null && chatHistory.length > 1; 
+          // If it's the very first load and we have history, assume it's old -> don't stream.
+          // Exception: If chatHistory has 1 item, it might be the welcome message or a fresh response.
+          // Let's assume if we are reloading, lastProcessedMessageId is null.
+          
+          if (isHistoryLoad) {
+              lastProcessedMessageIdRef.current = lastMessage.id;
+              // Ensure we show full text for history
+              setStreamingState(null); 
+              return;
+          }
+
+          lastProcessedMessageIdRef.current = lastMessage.id;
+
+          // New Message: Initialize state and stop previous
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          
+          startTimeRef.current = Date.now();
+          pausedDurationRef.current = 0;
+          activePauseEndTimeRef.current = 0;
+          pauseStartTimeRef.current = 0;
+          lastPunctuationIndexRef.current = -1;
+          
+          // Reset speed default
+          charPerMsRef.current = 0.1;
+
+          setStreamingState({ id: lastMessage.id, text: "" });
+
+          const audioBase64 = (lastMessage as any).audio_base64;
+
+          // Calculate speed based on audio duration if available
+          if (audioBase64) {
+             const audioSrc = audioBase64.startsWith("data:") 
+                ? audioBase64 
+                : `data:audio/mp3;base64,${audioBase64}`;
+             
+             // Trigger audio immediately
+             handlePlayAudio(lastMessage.id, audioBase64);
+
+             const tempAudio = new Audio(audioSrc);
+             // Safety timeout
+             const safetyTimeout = setTimeout(() => {
+                 // Audio meta load timed out, start streaming with default speed
+                 startStreaming(); 
+             }, 1000);
+
+             tempAudio.onloadedmetadata = () => {
+                 clearTimeout(safetyTimeout);
+                 const durationMs = tempAudio.duration * 1000;
+                 if (durationMs > 0 && lastMessage.content.length > 0) {
+                     let totalPauseTime = 0;
+                     for (const char of lastMessage.content) {
+                         if (PUNCTUATION_PAUSES[char]) totalPauseTime += PUNCTUATION_PAUSES[char];
+                     }
+
+                     const activeDuration = durationMs - totalPauseTime;
+                     const safeDuration = activeDuration > (durationMs * 0.2) 
+                        ? activeDuration 
+                        : durationMs * 0.8; 
+
+                     const speed = lastMessage.content.length / (safeDuration * 0.95);
+                     charPerMsRef.current = speed;
+                     console.log("Syncing TTS: Speed adjusted to", speed);
+                 }
+                 // Start streaming after speed calculation
+                 startStreaming();
+             };
+             tempAudio.onerror = () => {
+                 clearTimeout(safetyTimeout);
+                 startStreaming();
+             };
+          } else {
+             // No audio, just stream
+             startStreaming();
+          }
+
+        } else if (streamingState?.id === lastMessage.id) {
+          // Existing Message: If stopped (interval null) but text incomplete, resume ?
+          // With new logic, safer to just let it run. 
+          // If intervalRef is null and text < target, restart
+          if (!intervalRef.current && streamingState.text.length < lastMessage.content.length) {
+             const currentChars = streamingState.text.length;
+             // Recover start time
+             startTimeRef.current = Date.now() - (currentChars / charPerMsRef.current);
+             pausedDurationRef.current = 0; 
+             startStreaming();
+          }
+        }
       }
-    }, 30); // 30ms per character
-  };
+    }
+  }, [chatHistory]); // Intentionally omitting streamingState to avoid loops
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        setIsTalking(false);
+      }
+    };
+  }, []);
 
   // Set default character on mount
   useEffect(() => {
@@ -114,7 +320,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory, streamingMessage]);
+  }, [chatHistory, streamingState]); // Scroll on stream update
 
   // Show error
   useEffect(() => {
@@ -122,29 +328,6 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
       antdMessage.error(error);
     }
   }, [error]);
-
-  // Handle streaming when new AI message arrives
-  useEffect(() => {
-    if (chatHistory.length > 0) {
-      const lastMessage = chatHistory[chatHistory.length - 1];
-      if (
-        lastMessage.role === "assistant" &&
-        lastMessage.content &&
-        lastStreamedIdRef.current !== lastMessage.id
-      ) {
-        streamText(lastMessage.content, lastMessage.id);
-      }
-    }
-  }, [chatHistory]);
-
-  // Cleanup interval on unmount
-  useEffect(() => {
-    return () => {
-      if (streamIntervalRef.current) {
-        clearInterval(streamIntervalRef.current);
-      }
-    };
-  }, []);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || !currentCharacter || chatLoading) return;
@@ -210,7 +393,14 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
     }
 
     try {
-      const audio = new Audio(`data:audio/mp3;base64,${audioBase64}`);
+      console.log("Playing audio for message", messageId, "Length:", audioBase64.length);
+      
+      // Check if base64 already has prefix
+      const audioSrc = audioBase64.startsWith("data:") 
+        ? audioBase64 
+        : `data:audio/mp3;base64,${audioBase64}`;
+
+      const audio = new Audio(audioSrc);
       audioRef.current = audio;
 
       audio.onended = () => {
@@ -294,8 +484,8 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
           </div>
         ) : (
           chatHistory.map((msg) => {
-            const isStreaming = streamingMessage && streamingMessage.id === msg.id;
-            const displayText = isStreaming ? streamingMessage.text : msg.content;
+            const isStreaming = streamingState && streamingState.id === msg.id;
+            const displayText = isStreaming ? streamingState.text : msg.content;
             
             return (
             <div
@@ -310,7 +500,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
                 </div>
                 <div className="ai-chat-panel__message-text">
                   {displayText}
-                  {isStreaming && <span className="cursor">|</span>}
+                  {isStreaming && streamingState.text.length < msg.content.length && <span className="cursor">|</span>}
                 </div>
                 <div className="ai-chat-panel__message-meta">
                   <Text type="secondary" style={{ fontSize: 11 }}>

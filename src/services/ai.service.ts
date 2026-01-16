@@ -18,6 +18,7 @@ export interface ChatMessage {
     role: 'user' | 'assistant';
     content: string;
     timestamp: string;
+    audio_base64?: string; // Add audio field
     context?: {
         level_id?: number;
         artifact_id?: number;
@@ -65,6 +66,7 @@ class AIService extends BaseService {
                 role: 'assistant',
                 content: response.data.message,
                 timestamp: response.data.timestamp || new Date().toISOString(),
+                audio_base64: response.data.audio_base64, // Map audio
                 context: data.context,
             },
             character: response.data.character,
