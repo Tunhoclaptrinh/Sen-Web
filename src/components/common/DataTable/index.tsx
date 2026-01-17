@@ -10,6 +10,7 @@ import {
   Alert,
   Modal,
   Checkbox,
+  Input,
 } from "antd";
 import {
   PlusOutlined,
@@ -24,7 +25,7 @@ import {
   SearchOutlined,
   FileExcelOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Card, Select, toast } from "@/components/common";
+import { Button, Card, Select, toast } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
@@ -227,8 +228,7 @@ const DataTable: React.FC<DataTableProps> = ({
           onChange={onChange}
           onPressEnter={() => confirm()}
           className="filter-search-input"
-          containerStyle={{ marginBottom: 0, flex: 1, width: "auto" }}
-          fullWidth={false}
+          style={{ marginBottom: 0, flex: 1, width: "auto" }}
         />
         <Button
           variant="primary"
@@ -430,7 +430,7 @@ const DataTable: React.FC<DataTableProps> = ({
               toast.warning("Vui lòng chọn ít nhất 1 mục");
               return;
             }
-            AntModal.confirm({
+            Modal.confirm({
               title: "Xác nhận xóa hàng loạt?",
               content: `Bạn có chắc chắn muốn xóa ${activeSelectedRowKeys.length} mục đã chọn ? `,
               okText: "Xóa",
@@ -597,12 +597,10 @@ const DataTable: React.FC<DataTableProps> = ({
                   // Instant clear: if empty, force immediate search (bypass debounce)
                   if (!val && onSearch) onSearch("");
                 }}
-                style={{ width: 220, height: 32 }}
+                style={{ width: 220, height: 32, marginBottom: 0 }}
                 allowClear
                 prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
-                containerStyle={{ marginBottom: 0, height: 32 }}
-                fullWidth={false}
-                inputSize="middle"
+                size="middle"
               />
             )}
 
@@ -803,11 +801,10 @@ const DataTable: React.FC<DataTableProps> = ({
                                   )
                                 }
                                 allowClear
-                                style={{ width: "100%" }}
+                                style={{ width: "100%", marginBottom: 0 }}
                                 type={
                                   filter.type === "number" ? "number" : "text"
                                 }
-                                containerStyle={{ marginBottom: 0 }}
                               />
                             )}
                           </div>
