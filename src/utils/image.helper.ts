@@ -31,16 +31,16 @@ export const getImageUrl = (path: string | string[] | undefined | null, fallback
         return resolvedPath;
     }
 
-    // Otherwise, assume it's a relative path from the API
-    // Get API base URL from env or default
-    // Note: We're assuming the API serves static files at the root or /uploads
-    // If your backend serves static files at a specific route, adjust this.
-
     // Hardcoded for now based on typical setup, ideally from config
-    const API_URL = 'http://localhost:5000';
+    const API_URL = import.meta.env.VITE_API_BASE_URL; // e.g., http://localhost:3000/api
+
+    // If API_URL ends with /api, strip it to get the server root for static files
+    const serverRoot = API_URL.endsWith('/api') 
+        ? API_URL.slice(0, -4) // remove last 4 chars "/api"
+        : API_URL;
 
     // Check if path starts with /
     const cleanPath = resolvedPath.startsWith('/') ? resolvedPath : `/${resolvedPath}`;
 
-    return `${API_URL}${cleanPath}`;
+    return `${serverRoot}${cleanPath}`;
 };
