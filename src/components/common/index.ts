@@ -31,7 +31,7 @@ export { default as Dropdown } from "./Dropdown";
 
 // Data Display
 export { default as DataTable } from "./DataTable";
-export { default as Pagination } from "./Pagination";
+
 export { default as EmptyState } from "./EmptyState";
 
 // Loading States
