@@ -315,7 +315,7 @@ const DataTable: React.FC<DataTableProps> = ({
   const mergedActionsColumn =
     showActions || userActionColumn
       ? {
-          title: "Thao Tác",
+          title: "Thao tác",
           key: "actions",
           width: calculatedWidth,
           fixed: actionPosition,

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { message } from "antd";
+import { message, Modal } from "antd";
 import { Chapter } from "@/types";
 import adminChapterService from "@/services/admin-chapter.service";
 import { useCRUD } from "@/hooks/useCRUD";
@@ -53,17 +53,68 @@ export const useChapterModel = () => {
 
   const handleSubmit = async (values: any) => {
     let success = false;
-    
+
     if (currentRecord) {
       // Update existing chapter
+      // Check if order changed and conflicts with another chapter
+      if (values.order && values.order !== currentRecord.order) {
+        // Find chapter with the same order
+        const conflictingChapter = crud.data.find(
+          (ch: Chapter) => ch.order === values.order && ch.id !== currentRecord.id
+        );
+
+        if (conflictingChapter) {
+          // Show confirmation modal using Ant Design Modal.confirm
+          const confirmed = await new Promise<boolean>((resolve) => {
+            Modal.confirm({
+              title: "Trùng thứ tự chương",
+              content: (
+                <div>
+                  <p>
+                    Thứ tự <strong>{values.order}</strong> đã được sử dụng bởi chương{" "}
+                    <strong>"{conflictingChapter.name}"</strong>.
+                  </p>
+                  <p>Bạn có muốn đổi thứ tự của 2 chương này không?</p>
+                  <ul style={{ marginTop: 12, paddingLeft: 20 }}>
+                    <li>
+                      <strong>{currentRecord.name}</strong>: {currentRecord.order} → {values.order}
+                    </li>
+                    <li>
+                      <strong>{conflictingChapter.name}</strong>: {conflictingChapter.order} → {currentRecord.order}
+                    </li>
+                  </ul>
+                </div>
+              ),
+              okText: "Đồng ý đổi",
+              cancelText: "Hủy",
+              onOk: () => resolve(true),
+              onCancel: () => resolve(false),
+            });
+          });
+
+          if (confirmed) {
+            // Swap orders: update conflicting chapter first
+            const swapSuccess = await crud.update(conflictingChapter.id, {
+              order: currentRecord.order,
+            });
+
+            if (!swapSuccess) {
+              message.error("Không thể đổi thứ tự chương khác");
+              return false;
+            }
+            
+            message.success(`Đã đổi thứ tự với chương "${conflictingChapter.name}"`);
+          } else {
+            return false;
+          }
+        }
+      }
+
       success = await crud.update(currentRecord.id, values);
     } else {
-      // Create new chapter - auto set order
-      const maxOrder = crud.data.length > 0 
-        ? Math.max(...crud.data.map((item: any) => item.order || 0))
-        : 0;
-      const newValues = { ...values, order: maxOrder + 1 };
-      success = await crud.create(newValues);
+      // Create new chapter - remove order from values, backend will auto set
+      const { order, ...createValues } = values;
+      success = await crud.create(createValues);
     }
 
     if (success) {

@@ -24,10 +24,20 @@ const LevelForm: React.FC<LevelFormProps> = ({
     const [chapters, setChapters] = useState<any[]>([]);
 
     useEffect(() => {
-        if (open && initialValues) {
-            form.setFieldsValue(initialValues);
-        } else if (open) {
-            form.resetFields();
+        if (open) {
+            if (initialValues) {
+                // Edit mode: set values from record
+                form.setFieldsValue(initialValues);
+            } else {
+                // Create mode: reset to default values
+                form.resetFields();
+                // Explicitly set default values to ensure clean state
+                form.setFieldsValue({
+                    difficulty: "easy",
+                    type: "story",
+                    order: 1
+                });
+            }
         }
     }, [open, initialValues, form]);
 
@@ -58,7 +68,6 @@ const LevelForm: React.FC<LevelFormProps> = ({
             width={800}
             form={form}
             loading={loading}
-            initialValues={{ difficulty: "easy", type: "story", order: 1, ...initialValues }}
         >
             <Row gutter={16}>
                 <Col span={12}>

@@ -1,4 +1,5 @@
 import { Tag } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 
 import DataTable from "@/components/common/DataTable";
@@ -35,7 +36,6 @@ const HeritageSiteManagement = () => {
     importData,
     downloadTemplate,
     importLoading,
-    exportLoading,
     handleSubmit,
     // UI State & Handlers
     currentRecord,
@@ -109,7 +109,7 @@ const HeritageSiteManagement = () => {
       title: "Khu vực",
       dataIndex: "region",
       key: "region",
-      width: 120,
+      width: 100,
       filters: Object.values(HeritageRegion).map((region) => ({
         text: HeritageRegionLabels[region],
         value: region,
@@ -122,18 +122,24 @@ const HeritageSiteManagement = () => {
       render: (region: HeritageRegion) => HeritageRegionLabels[region] || region,
     },
     {
+      title: "Tỉnh/TP",
+      dataIndex: "province",
+      key: "province",
+      width: 120,
+    },
+    {
       title: "UNESCO",
       dataIndex: "unesco_listed",
       key: "unesco_listed",
       width: 100,
       render: (listed: boolean) =>
-        listed ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>,
+        listed ? <Tag color="green">CÓ</Tag> : <Tag color={"red"}>KHÔNG</Tag>,
     },
     {
       title: "Giá vé",
       dataIndex: "entrance_fee",
       width: 120,
-      render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Free"),
+      render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Miễn phí"),
     },
     {
       title: "Hiện vật",
@@ -175,13 +181,21 @@ const HeritageSiteManagement = () => {
         onDelete={deleteHeritage}
         onBatchDelete={batchDeleteHeritages}
         batchOperations={true}
+        batchActions={[
+          {
+            key: 'export',
+            label: 'Export đã chọn',
+            icon: <DownloadOutlined />,
+            onClick: (ids: any[]) => exportData('xlsx', ids),
+          }
+        ]}
         importable={true}
         importLoading={importLoading}
         exportable={true}
-        exportLoading={exportLoading}
+        exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={exportData}
+        onExport={() => exportData('xlsx')} 
         onRefresh={refresh}
         filters={[
           {
@@ -204,8 +218,8 @@ const HeritageSiteManagement = () => {
             key: "unesco_listed",
             placeholder: "UNESCO",
             options: [
-              { label: "Có", value: true },
-              { label: "Không", value: false },
+              { label: "CÓ", value: true },
+              { label: "KHÔNG", value: false },
             ],
           },
         ]}
@@ -215,6 +229,7 @@ const HeritageSiteManagement = () => {
       />
 
       <HeritageForm
+        isEdit={!!currentRecord}
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}

@@ -1,7 +1,9 @@
-import {
-    Tag
-} from "antd";
+import { Tag, Button, Tooltip } from "antd";
+import { AppstoreOutlined } from "@ant-design/icons";
 import DataTable from "@/components/common/DataTable";
+import { useState } from "react";
+import ScreensDrawer from "./components/ScreensDrawer";
+import { Level } from "@/types/game.types";
 
 import LevelForm from "./components/Form";
 import { useLevelModel } from "./model";
@@ -29,6 +31,20 @@ const LevelManagement = () => {
         openEdit,
         closeForm,
     } = useLevelModel();
+
+    // Screen Management State
+    const [screensDrawerOpen, setScreensDrawerOpen] = useState(false);
+    const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
+
+    const openScreens = (level: Level) => {
+        setSelectedLevel(level);
+        setScreensDrawerOpen(true);
+    };
+
+    const closeScreens = () => {
+        setScreensDrawerOpen(false);
+        setSelectedLevel(null);
+    };
 
     const onFilterChange = (key: string, value: any) => {
         updateFilters({ [key]: value });
@@ -84,7 +100,7 @@ const LevelManagement = () => {
             <DataTable
                 title="Quản lý Màn chơi"
                 loading={loading}
-                columns={columns}
+
                 dataSource={data}
                 pagination={pagination}
                 onChange={handleTableChange}
@@ -100,6 +116,24 @@ const LevelManagement = () => {
                 onBatchDelete={batchDelete}
                 batchOperations={true}
                 onRefresh={refresh}
+                columns={[
+                    ...columns,
+                    {
+                        title: "Quản lý màn chơi",
+                        key: "screens",
+                        width: 150,
+                        align: 'center' as const,
+                        render: (_: any, record: any) => (
+                            <Tooltip title="Quản lý màn chơi">
+                                <Button 
+                                    type="default" 
+                                    icon={<AppstoreOutlined />} 
+                                    onClick={() => openScreens(record)}
+                                />
+                            </Tooltip>
+                        ),
+                    }
+                ]}
                 filters={[
                     {
                         key: "type",
@@ -132,6 +166,12 @@ const LevelManagement = () => {
                 onSubmit={handleSubmit}
                 initialValues={currentRecord}
                 loading={loading}
+            />
+
+            <ScreensDrawer
+                open={screensDrawerOpen}
+                onClose={closeScreens}
+                level={selectedLevel}
             />
         </>
     );

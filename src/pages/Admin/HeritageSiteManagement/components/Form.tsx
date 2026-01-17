@@ -43,6 +43,7 @@ interface HeritageFormProps {
   initialValues?: any;
   loading?: boolean;
   title?: string;
+  isEdit?: boolean;
 }
 
 const HeritageForm: React.FC<HeritageFormProps> = ({
@@ -52,12 +53,14 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   initialValues,
   loading = false,
   title = "Thông tin Di sản",
+  isEdit = false,
 }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
     const initData = async () => {
-      if (open && initialValues && initialValues.id) {
+      // 1. Chế độ Sửa (isEdit = true)
+      if (open && initialValues && isEdit) {
         try {
           // Fetch labels for related IDs to show in DebounceSelect
           const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] =
@@ -135,13 +138,23 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             // Find the label for the region (handle both enum value and label)
             let regionLabel = initialValues.region;
             const regionKey = Object.keys(HeritageRegionLabels).find(
-              key => key === initialValues.region || HeritageRegionLabels[key as HeritageRegion] === initialValues.region
+              (key) =>
+                key === initialValues.region ||
+                HeritageRegionLabels[key as HeritageRegion] ===
+                  initialValues.region,
             ) as HeritageRegion;
             if (regionKey) {
               regionLabel = HeritageRegionLabels[regionKey];
               formattedValues.region = regionLabel; // Update region to label for form display
               setSelectedRegion(regionLabel);
-              setAvailableProvinces(ProvincesByRegion[regionKey]);
+              // Ensure available provinces are set immediately
+              const provinces = ProvincesByRegion[regionKey] || [];
+              setAvailableProvinces(provinces);
+              
+              // Validate current province exists in new list
+              if (formattedValues.province && !provinces.includes(formattedValues.province)) {
+                  formattedValues.province = undefined;
+              }
             }
           }
 
@@ -158,7 +171,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             // Find the label for the region (handle both enum value and label)
             let regionLabel = initialValues.region;
             const regionKey = Object.keys(HeritageRegionLabels).find(
-              key => key === initialValues.region || HeritageRegionLabels[key as HeritageRegion] === initialValues.region
+              (key) =>
+                key === initialValues.region ||
+                HeritageRegionLabels[key as HeritageRegion] ===
+                  initialValues.region,
             ) as HeritageRegion;
             if (regionKey) {
               regionLabel = HeritageRegionLabels[regionKey];
@@ -170,8 +186,18 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
           form.setFieldsValue(fallbackValues);
         }
-      } else if (open) {
+      } 
+      // 2. Chế độ Thêm mới (isEdit = false) -> Reset form
+      else if (open && !isEdit) {
+        // Aggressively clear all fields
+        const currentFields = form.getFieldsValue(true);
+        const resetValues = Object.keys(currentFields).reduce((acc: any, key) => {
+            acc[key] = undefined;
+            return acc;
+        }, {});
+        form.setFieldsValue(resetValues);
         form.resetFields();
+
         setSelectedRegion("");
         setAvailableProvinces([]);
         form.setFieldsValue({
@@ -183,10 +209,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
     };
 
     initData();
-  }, [open, initialValues, form]);
+  }, [open, isEdit, initialValues, form]);
 
   const [activeTab, setActiveTab] = useState("1");
-  const [availableProvinces, setAvailableProvinces] = useState<HeritageProvince[]>([]);
+  const [availableProvinces, setAvailableProvinces] = useState<
+    HeritageProvince[]
+  >([]);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
 
   useEffect(() => {
@@ -197,12 +225,19 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   useEffect(() => {
     if (selectedRegion) {
       const regionKey = Object.keys(HeritageRegionLabels).find(
-        key => HeritageRegionLabels[key as HeritageRegion] === selectedRegion
+        (key) => HeritageRegionLabels[key as HeritageRegion] === selectedRegion,
       ) as HeritageRegion;
+      
       if (regionKey && ProvincesByRegion[regionKey]) {
-        setAvailableProvinces(ProvincesByRegion[regionKey]);
-        // Clear province when region changes
-        form.setFieldsValue({ province: undefined });
+        const newProvinces = ProvincesByRegion[regionKey];
+        setAvailableProvinces(newProvinces);
+        
+        // Only clear province if it's not valid for the new region
+        // And ensure we don't clear it immediately after init if it matches
+        const currentProvince = form.getFieldValue("province");
+        if (currentProvince && !newProvinces.includes(currentProvince)) {
+          form.setFieldsValue({ province: undefined });
+        }
       } else {
         setAvailableProvinces([]);
         form.setFieldsValue({ province: undefined });
@@ -215,7 +250,11 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
   const handleSubmitClick = async () => {
     try {
-      const values = await form.validateFields();
+      // Validate only visible fields first to show UI feedback
+      await form.validateFields();
+      
+      // Get ALL values including hidden tabs
+      const values = form.getFieldsValue(true);
       await handleOk(values);
     } catch (error: any) {
       console.error("Validation failed:", error);
@@ -267,17 +306,31 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       ...values,
       shortDescription: values.short_description, // Sync for compatibility
       // Convert region label back to enum value
-      region: Object.keys(HeritageRegionLabels).find(
-        key => HeritageRegionLabels[key as HeritageRegion] === values.region
-      ) || values.region,
+      region:
+        Object.keys(HeritageRegionLabels).find(
+          (key) =>
+            HeritageRegionLabels[key as HeritageRegion] === values.region,
+        ) || values.region,
+      image: (() => {
+        const raw = Array.isArray(values.image) ? values.image[0] : values.image;
+        if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
+        return raw || "";
+      })(),
+      gallery: values.gallery?.map((item: any) => 
+        typeof item === "object" ? (item.url || item.response?.url || "") : item
+      ) || [],
+      timeline: values.timeline || [],
       related_artifact_ids: values.related_artifact_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
-      ),
+      ) || [],
       related_history_ids: values.related_history_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
-      ),
+      ) || [],
     };
-    await onSubmit(submitData);
+    const success = await onSubmit(submitData);
+    if (success) {
+      form.resetFields();
+    }
   };
 
   // Fetch function for Artifact Search
@@ -323,6 +376,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       width={1000}
       form={form}
       loading={loading}
+      preserve={false}
       initialValues={{
         is_active: true,
         unesco_listed: false,
@@ -332,7 +386,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
           <StyledButton
             variant="outline"
-            onClick={onCancel}
+            onClick={() => {
+              form.resetFields();
+              onCancel();
+            }}
             style={{ minWidth: "120px" }}
           >
             Hủy
@@ -445,7 +502,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                         onChange={(value) => setSelectedRegion(value)}
                       >
                         {Object.values(HeritageRegion).map((region) => (
-                          <Select.Option key={region} value={HeritageRegionLabels[region]}>
+                          <Select.Option
+                            key={region}
+                            value={HeritageRegionLabels[region]}
+                          >
                             {HeritageRegionLabels[region]}
                           </Select.Option>
                         ))}
@@ -454,7 +514,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                   </Col>
                   <Col span={8}>
                     <Form.Item name="province" label="Tỉnh/Thành phố">
-                      <Select placeholder="Chọn tỉnh/thành phố" disabled={!availableProvinces.length}>
+                      <Select
+                        placeholder="Chọn tỉnh/thành phố"
+                        disabled={!availableProvinces.length}
+                      >
                         {availableProvinces.map((province) => (
                           <Select.Option key={province} value={province}>
                             {HeritageProvinceLabels[province]}
@@ -515,8 +578,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                           valuePropName="checked"
                         >
                           <Switch
-                            checkedChildren="Có"
-                            unCheckedChildren="Không"
+                            checkedChildren="CÓ"
+                            unCheckedChildren="KHÔNG"
                           />
                         </Form.Item>
                       </Col>
@@ -548,6 +611,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
               >
                 <TinyEditor
+                  key={isEdit ? `desc-edit-${initialValues?.id}` : "desc-create"}
                   height={400}
                   placeholder="Nhập mô tả chi tiết về di sản..."
                   enableImageUpload={true}

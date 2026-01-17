@@ -6,234 +6,256 @@ import { useCRUD } from "@/hooks/useCRUD";
 import dayjs from "dayjs";
 
 export const useUserModel = () => {
-    // Stats State
-    const [stats, setStats] = useState<UserStats | null>(null);
-    const [statsLoading, setStatsLoading] = useState(false);
+  // Stats State
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
 
-    // UI State
-    const [currentRecord, setCurrentRecord] = useState<User | null>(null);
-    const [formVisible, setFormVisible] = useState(false);
-    const [detailVisible, setDetailVisible] = useState(false);
+  // UI State
+  const [currentRecord, setCurrentRecord] = useState<User | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
+  const [detailVisible, setDetailVisible] = useState(false);
 
-    // CRUD Setup
-    const crudOptions = useMemo(() => ({
-        pageSize: 10,
-        autoFetch: true,
-        onError: (action: any, error: any) => {
-            console.error(`Error ${action} user:`, error);
-            message.error(`Thao tác thất bại: ${error.message}`);
-        },
-    }), []);
+  // CRUD Setup
+  const crudOptions = useMemo(
+    () => ({
+      pageSize: 10,
+      autoFetch: true,
+      onError: (action: any, error: any) => {
+        console.error(`Error ${action} user:`, error);
+        message.error(`Thao tác thất bại: ${error.message}`);
+      },
+    }),
+    [],
+  );
 
-    const crud = useCRUD(userService, crudOptions);
+  const crud = useCRUD(userService, crudOptions);
 
-    // Stats Logic
-    const fetchStats = async () => {
-        setStatsLoading(true);
-        try {
-            const response = await userService.getStats();
-            if (response.success && response.data) {
-                setStats(response.data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch stats", error);
-        } finally {
-            setStatsLoading(false);
-        }
-    };
+  // Stats Logic
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const response = await userService.getStats();
+      if (response.success && response.data) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch stats", error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchStats();
-    }, []);
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
-    // Loading States for Import/Export
-    const [importLoading, setImportLoading] = useState(false);
-    const [exportLoading, setExportLoading] = useState(false);
+  // Loading States for Import/Export
+  const [importLoading, setImportLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
-    // Business Logic
-    const toggleStatus = async (record: User) => {
-        try {
-            await userService.toggleStatus(record.id);
-            message.success(`Đã ${record.isActive ? "khóa" : "mở khóa"} người dùng ${record.name}`);
-            crud.refresh();
-            fetchStats();
-        } catch (error) {
-            // Let the backend error message be displayed by the service
-        }
-    };
+  // Business Logic
+  const toggleStatus = async (record: User) => {
+    try {
+      await userService.toggleStatus(record.id);
+      message.success(
+        `Đã ${record.isActive ? "khóa" : "mở khóa"} người dùng ${record.name}`,
+      );
+      crud.refresh();
+      fetchStats();
+    } catch (error) {
+      // Let the backend error message be displayed by the service
+    }
+  };
 
-    const deleteUser = async (id: number) => {
-        const success = await crud.remove(id);
-        if (success) {
-            fetchStats();
-            // Close detail if deleting the currently viewed user
-            if (currentRecord?.id === id) {
-                setDetailVisible(false);
-                setCurrentRecord(null);
-            }
-        }
-        return success;
-    };
-
-    const batchDeleteUsers = async (keys: React.Key[]) => {
-        const success = await crud.batchDelete(keys);
-        if (success) fetchStats();
-        return success;
-    };
-
-    const exportData = async () => {
-        setExportLoading(true);
-        try {
-            const blob = await userService.export();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `users_export_${dayjs().format("YYYYMMDD")}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Xuất dữ liệu thành công");
-        } catch (error) {
-            message.error("Xuất dữ liệu thất bại");
-        } finally {
-            setExportLoading(false);
-        }
-    };
-
-    const importData = async (file: File) => {
-        setImportLoading(true);
-        try {
-            const response = await userService.import(file);
-
-            // Handle success based on API response structure
-            if (response.success) {
-                const { successCount, errorCount, errors } = response.data || {};
-
-                if (errorCount > 0) {
-                    // Show mixed result or error modal
-                    Modal.error({
-                        title: 'Kết quả Import',
-                        content: (
-                            <div>
-                                <p>Đã xử lý xong với một số lỗi:</p>
-                                <ul>
-                                    <li>Thành công: <b>{successCount || 0}</b> dòng</li>
-                                    <li>Thất bại: <b style={{ color: 'red' }}>{errorCount}</b> dòng</li>
-                                </ul>
-                                {errors && errors.length > 0 && (
-                                    <div style={{ marginTop: 10, maxHeight: 200, overflow: 'auto', background: '#f5f5f5', padding: 8 }}>
-                                        <p>Chi tiết lỗi:</p>
-                                        {errors.map((err: any, idx: number) => (
-                                            <div key={idx} style={{ marginBottom: 4, fontSize: 12 }}>
-                                                Dòng {err.row}: {err.message}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ),
-                        width: 500,
-                    });
-                } else {
-                    message.success(`Import thành công ${successCount || 'all'} dòng dữ liệu`);
-                }
-
-                crud.refresh();
-                fetchStats();
-            } else {
-                message.error("Import thất bại: " + response.message);
-            }
-        } catch (error) {
-            message.error("Import thất bại: Lỗi hệ thống");
-        } finally {
-            setImportLoading(false);
-        }
-    };
-
-    // UI Handlers
-    const openCreate = () => {
-        setCurrentRecord(null);
-        setFormVisible(true);
-    };
-
-    const openEdit = (record: User) => {
-        setCurrentRecord(record);
-        setFormVisible(true);
-    };
-
-    const openDetail = (record: User) => {
-        setCurrentRecord(record);
-        setDetailVisible(true);
-    };
-
-    const closeForm = () => {
-        setFormVisible(false);
-        setCurrentRecord(null);
-    };
-
-    const closeDetail = () => {
+  const deleteUser = async (id: number) => {
+    const success = await crud.remove(id);
+    if (success) {
+      fetchStats();
+      // Close detail if deleting the currently viewed user
+      if (currentRecord?.id === id) {
         setDetailVisible(false);
         setCurrentRecord(null);
-    };
+      }
+    }
+    return success;
+  };
 
-    const handleSubmit = async (values: any) => {
-        // Filter out empty password if editing
-        const submitData = { ...values };
-        if (currentRecord && !submitData.password) {
-            delete submitData.password;
-        }
+  const batchDeleteUsers = async (keys: React.Key[]) => {
+    const success = await crud.batchDelete(keys);
+    if (success) fetchStats();
+    return success;
+  };
 
-        let success = false;
-        if (currentRecord) {
-            success = await crud.update(currentRecord.id, submitData);
+  const exportData = async () => {
+    setExportLoading(true);
+    try {
+      const blob = await userService.export();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `users_export_${dayjs().format("YYYYMMDD")}.csv`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      message.success("Xuất dữ liệu thành công");
+    } catch (error) {
+      message.error("Xuất dữ liệu thất bại");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const importData = async (file: File) => {
+    setImportLoading(true);
+    try {
+      const response = await userService.import(file);
+
+      // Handle success based on API response structure
+      if (response.success) {
+        const { successCount, errorCount, errors } = response.data || {};
+
+        if (errorCount > 0) {
+          // Show mixed result or error modal
+          Modal.error({
+            title: "Kết quả Import",
+            content: (
+              <div>
+                <p>Đã xử lý xong với một số lỗi:</p>
+                <ul>
+                  <li>
+                    Thành công: <b>{successCount || 0}</b> dòng
+                  </li>
+                  <li>
+                    Thất bại: <b style={{ color: "red" }}>{errorCount}</b> dòng
+                  </li>
+                </ul>
+                {errors && errors.length > 0 && (
+                  <div
+                    style={{
+                      marginTop: 10,
+                      maxHeight: 200,
+                      overflow: "auto",
+                      background: "#f5f5f5",
+                      padding: 8,
+                    }}
+                  >
+                    <p>Chi tiết lỗi:</p>
+                    {errors.map((err: any, idx: number) => (
+                      <div key={idx} style={{ marginBottom: 4, fontSize: 12 }}>
+                        Dòng {err.row}: {err.message}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ),
+            width: 500,
+          });
         } else {
-            success = await crud.create(submitData);
+          message.success(
+            `Import thành công ${successCount || "all"} dòng dữ liệu`,
+          );
         }
 
-        if (success) {
-            fetchStats();
-            closeForm();
-        }
-        return success;
-    };
+        crud.refresh();
+        fetchStats();
+      } else {
+        message.error("Import thất bại: " + response.message);
+      }
+    } catch (error) {
+      message.error("Import thất bại: Lỗi hệ thống");
+    } finally {
+      setImportLoading(false);
+    }
+  };
 
-    const downloadTemplate = async () => {
-        try {
-            const blob = await userService.downloadTemplate();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "user_import_template.xlsx"); // Assuming API returns xlsx
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Tải mẫu thành công");
-        } catch (error) {
-            message.error("Tải mẫu thất bại");
-        }
-    };
+  // UI Handlers
+  const openCreate = () => {
+    setCurrentRecord(null);
+    setFormVisible(true);
+  };
 
-    return {
-        ...crud,
-        stats,
-        statsLoading,
-        importLoading,
-        exportLoading,
-        currentRecord,
-        formVisible,
-        detailVisible,
-        fetchStats,
-        toggleStatus,
-        deleteUser,
-        batchDeleteUsers,
-        exportData,
-        importData,
-        downloadTemplate,
-        handleSubmit,
-        openCreate,
-        openEdit,
-        openDetail,
-        closeForm,
-        closeDetail
-    };
+  const openEdit = (record: User) => {
+    setCurrentRecord(record);
+    setFormVisible(true);
+  };
+
+  const openDetail = (record: User) => {
+    setCurrentRecord(record);
+    setDetailVisible(true);
+  };
+
+  const closeForm = () => {
+    setFormVisible(false);
+    setCurrentRecord(null);
+  };
+
+  const closeDetail = () => {
+    setDetailVisible(false);
+    setCurrentRecord(null);
+  };
+
+  const handleSubmit = async (values: any) => {
+    // Filter out empty password if editing
+    const submitData = { ...values };
+    if (currentRecord && !submitData.password) {
+      delete submitData.password;
+    }
+
+    let success = false;
+    if (currentRecord) {
+      success = await crud.update(currentRecord.id, submitData);
+    } else {
+      success = await crud.create(submitData);
+    }
+
+    if (success) {
+      fetchStats();
+      closeForm();
+    }
+    return success;
+  };
+
+  const downloadTemplate = async () => {
+    try {
+      const blob = await userService.downloadTemplate();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "user_import_template.xlsx"); // Assuming API returns xlsx
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      message.success("Tải mẫu thành công");
+    } catch (error) {
+      message.error("Tải mẫu thất bại");
+    }
+  };
+
+  return {
+    ...crud,
+    stats,
+    statsLoading,
+    importLoading,
+    exportLoading,
+    currentRecord,
+    formVisible,
+    detailVisible,
+    fetchStats,
+    toggleStatus,
+    deleteUser,
+    batchDeleteUsers,
+    exportData,
+    importData,
+    downloadTemplate,
+    handleSubmit,
+    openCreate,
+    openEdit,
+    openDetail,
+    closeForm,
+    closeDetail,
+  };
 };

@@ -3,7 +3,6 @@ import { message } from "antd";
 import { HeritageSite } from "@/types";
 import heritageService from "@/services/heritage.service";
 import { useCRUD } from "@/hooks/useCRUD";
-import dayjs from "dayjs";
 
 export const useHeritageModel = () => {
     // Stats State
@@ -46,9 +45,7 @@ export const useHeritageModel = () => {
         fetchStats();
     }, []);
 
-    // Loading States for Import/Export
     const [importLoading, setImportLoading] = useState(false);
-    const [exportLoading, setExportLoading] = useState(false);
 
     // Business Logic
     const deleteHeritage = async (id: number) => {
@@ -67,25 +64,6 @@ export const useHeritageModel = () => {
         const success = await crud.batchDelete(keys);
         if (success) fetchStats();
         return success;
-    };
-
-    const exportData = async () => {
-        setExportLoading(true);
-        try {
-            const blob = await heritageService.export();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `heritage_export_${dayjs().format("YYYYMMDD")}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Xuất dữ liệu thành công");
-        } catch (error) {
-            message.error("Xuất dữ liệu thất bại");
-        } finally {
-            setExportLoading(false);
-        }
     };
 
     const importData = async (file: File) => {
@@ -168,14 +146,12 @@ export const useHeritageModel = () => {
         stats,
         statsLoading,
         importLoading,
-        exportLoading,
         currentRecord,
         formVisible,
         detailVisible,
         fetchStats,
         deleteHeritage,
         batchDeleteHeritages,
-        exportData,
         importData,
         downloadTemplate,
         handleSubmit,

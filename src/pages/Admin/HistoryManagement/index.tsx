@@ -1,4 +1,5 @@
 import { Tag } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
 import DataTable from "@components/common/DataTable";
 import dayjs from 'dayjs';
 
@@ -28,7 +29,6 @@ const HistoryManagement = () => {
         importData,
         downloadTemplate,
         importLoading,
-        exportLoading,
         handleSubmit,
         // UI State & Handlers
         currentRecord,
@@ -99,6 +99,16 @@ const HistoryManagement = () => {
       render: (date: string) => date ? dayjs(date).format('DD/MM/YYYY') : 'N/A',
     },
     {
+      title: "Cập nhật lần cuối",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      width: 150,
+      render: (date: string, record: any) => {
+        const finalDate = date || record.publishDate;
+        return finalDate ? dayjs(finalDate).format('DD/MM/YYYY') : 'N/A';
+      },
+    },
+    {
       title: "Lượt xem",
       dataIndex: "views",
       key: "views",
@@ -156,13 +166,21 @@ const HistoryManagement = () => {
         onDelete={deleteHistory}
         onBatchDelete={batchDeleteHistories}
         batchOperations={true}
+        batchActions={[
+          {
+            key: 'export',
+            label: 'Export đã chọn',
+            icon: <DownloadOutlined />,
+            onClick: (ids: any[]) => exportData('xlsx', ids),
+          }
+        ]}
         importable={true}
         importLoading={importLoading}
         exportable={true}
-        exportLoading={exportLoading}
+        exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={exportData}
+        onExport={() => exportData('xlsx')} 
         onRefresh={refresh}
         filters={[
           {
@@ -180,6 +198,7 @@ const HistoryManagement = () => {
       />
 
       <HistoryForm
+        key={currentRecord?.id || 'create'}
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}

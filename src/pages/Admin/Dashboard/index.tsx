@@ -70,9 +70,9 @@ const Dashboard = () => {
       <Spin spinning={loading}>
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className="stat-card" style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+            <Card style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
               <Statistic
-                title="Người Dùng"
+                title="Người dùng"
                 value={stats?.users?.total || 0}
                 prefix={<UserOutlined style={{ color: '#1890ff' }} />}
                 valueStyle={{ color: '#1890ff', fontWeight: 700 }}
@@ -81,9 +81,9 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+            <Card style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
               <Statistic
-                title="Di Sản"
+                title="Di sản"
                 value={stats?.heritage?.total || 0}
                 prefix={<BankOutlined style={{ color: '#52c41a' }} />}
                 valueStyle={{ color: '#52c41a', fontWeight: 700 }}
@@ -92,9 +92,9 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+            <Card style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
               <Statistic
-                title="Hiện Vật"
+                title="Hiện vật"
                 value={stats?.artifacts?.total || 0}
                 prefix={<FileOutlined style={{ color: '#722ed1' }} />}
                 valueStyle={{ color: '#722ed1', fontWeight: 700 }}
@@ -103,9 +103,9 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+            <Card style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
               <Statistic
-                title="Đánh Giá"
+                title="Đánh giá"
                 value={stats?.reviews?.avgRating || "0.0"}
                 prefix={<MessageOutlined style={{ color: '#faad14' }} />}
                 valueStyle={{ color: '#faad14', fontWeight: 700 }}
@@ -118,7 +118,7 @@ const Dashboard = () => {
 
         <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
           <Col xs={24} lg={12}>
-            <Card title="Phân Bố Di Sản Theo Vùng Miền" bordered={false} style={{ borderRadius: 12, height: 400 }}>
+            <Card title="Phân bố di sản theo vùng miền" style={{ borderRadius: 12, height: 400 }}>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -142,7 +142,7 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col xs={24} lg={12}>
-            <Card title="Thống Kê Đánh Giá" bordered={false} style={{ borderRadius: 12, height: 400 }}>
+            <Card title="Thống kê đánh giá" style={{ borderRadius: 12, height: 400 }}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={reviewDistribution}>
                   <XAxis dataKey="name" />

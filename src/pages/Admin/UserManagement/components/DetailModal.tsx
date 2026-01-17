@@ -49,7 +49,6 @@ const UserDetailModal = ({ userId, visible, onCancel }: UserDetailModalProps) =>
                 <Descriptions.Item label="Họ tên">{user.name}</Descriptions.Item>
                 <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
                 <Descriptions.Item label="Số điện thoại">{user.phone || "N/A"}</Descriptions.Item>
-                <Descriptions.Item label="Địa chỉ">{user.address || "N/A"}</Descriptions.Item>
                 <Descriptions.Item label="Vai trò">
                     <Tag color={user.role === "admin" ? "red" : "blue"}>{user.role.toUpperCase()}</Tag>
                 </Descriptions.Item>

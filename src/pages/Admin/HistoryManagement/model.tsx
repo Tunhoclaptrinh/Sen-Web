@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { message } from "antd";
 import historyService from "@/services/history.service";
 import { useCRUD } from "@/hooks/useCRUD";
-import dayjs from "dayjs";
 
 export const useHistoryModel = () => {
     // Stats State
@@ -22,6 +21,7 @@ export const useHistoryModel = () => {
             console.error(`Error ${action} history:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
         },
+        initialSort: { field: 'id', order: 'desc' },
     }), []);
 
     const crud = useCRUD(historyService, crudOptions);
@@ -45,9 +45,7 @@ export const useHistoryModel = () => {
         fetchStats();
     }, []);
 
-    // Loading States for Import/Export
     const [importLoading, setImportLoading] = useState(false);
-    const [exportLoading, setExportLoading] = useState(false);
 
     // Business Logic
     const deleteHistory = async (id: number) => {
@@ -66,25 +64,6 @@ export const useHistoryModel = () => {
         const success = await crud.batchDelete(keys);
         if (success) fetchStats();
         return success;
-    };
-
-    const exportData = async () => {
-        setExportLoading(true);
-        try {
-            const blob = await historyService.export();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `history_export_${dayjs().format("YYYYMMDD")}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Xuất dữ liệu thành công");
-        } catch (error) {
-            message.error("Xuất dữ liệu thất bại");
-        } finally {
-            setExportLoading(false);
-        }
     };
 
     const importData = async (file: File) => {
@@ -167,14 +146,12 @@ export const useHistoryModel = () => {
         stats,
         statsLoading,
         importLoading,
-        exportLoading,
         currentRecord,
         formVisible,
         detailVisible,
         fetchStats,
         deleteHistory,
         batchDeleteHistories,
-        exportData,
         importData,
         downloadTemplate,
         handleSubmit,

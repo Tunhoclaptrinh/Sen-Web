@@ -1,5 +1,5 @@
 import { Modal, Descriptions, Tag, Image, Space, Tabs, List, Typography, Button } from "antd";
-import { Artifact } from "@/types";
+import { Artifact, ArtifactTypeLabels, ArtifactCondition, ArtifactConditionLabels } from "@/types";
 import { StarOutlined, EnvironmentOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import heritageService from "@/services/heritage.service";
@@ -88,16 +88,25 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         </Descriptions.Item>
 
                         <Descriptions.Item label="Loại hình">
-                            <Tag color="purple">{record.artifact_type?.toUpperCase()}</Tag>
+                            <Tag color="purple">{ArtifactTypeLabels[record.artifact_type]?.toUpperCase() || record.artifact_type?.toUpperCase()}</Tag>
                         </Descriptions.Item>
                         <Descriptions.Item label="Chất liệu">{record.material || "N/A"}</Descriptions.Item>
                         <Descriptions.Item label="Tình trạng">
-                            <Tag color={['excellent', 'EXCELLENT', 'good', 'GOOD'].includes(record.condition || "") ? 'green' : 'orange'}>
-                                {record.condition?.toUpperCase()}
-                            </Tag>
+                            {(() => {
+                                const cond = record.condition as ArtifactCondition;
+                                let color = "default";
+                                const condLower = (cond || "").toLowerCase();
+                                
+                                if (condLower === ArtifactCondition.EXCELLENT) color = "green";
+                                else if (condLower === ArtifactCondition.GOOD) color = "blue";
+                                else if (condLower === ArtifactCondition.FAIR) color = "orange";
+                                else if (condLower === ArtifactCondition.POOR) color = "red";
+                                
+                                return <Tag color={color}>{ArtifactConditionLabels[cond].toUpperCase() || ArtifactConditionLabels[condLower as ArtifactCondition].toUpperCase() || cond.toUpperCase()}</Tag>;
+                            })()}
                         </Descriptions.Item>
                         <Descriptions.Item label="Trưng bày">
-                            {record.is_on_display ? <Tag color="green">Đang trưng bày</Tag> : <Tag>Trong kho</Tag>}
+                            {record.is_on_display ? <Tag color="green">ĐANG TRƯNG BÀY</Tag> : <Tag color="red">TRONG KHO</Tag>}
                         </Descriptions.Item>
                         <Descriptions.Item label="Vị trí" span={record.year_created ? 1 : 2}>
                             <Space>

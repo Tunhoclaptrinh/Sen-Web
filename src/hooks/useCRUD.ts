@@ -349,11 +349,23 @@ export const useCRUD = (service: any, options: any = {}) => {
      * Export data
      */
     const exportData = useCallback(
-        async (format = 'xlsx') => {
+        async (format = 'xlsx', ids: any[] = []) => {
             try {
                 setLoading(true);
-                const params = buildQueryParams();
-                const blob = await service.exportCollection ? service.exportCollection({ ...params, format }) : service.export ? service.export({ ...params, format }) : null;
+                let params;
+                
+                // If specific IDs are provided (Batch Export), use them exclusively
+                if (ids && ids.length > 0) {
+                     params = { 
+                         id_in: ids.join(','),
+                         format 
+                     };
+                } else {
+                    // Otherwise use current filters (Filtered Export)
+                    params = { ...buildQueryParams(), format };
+                }
+
+                const blob = await (service.exportCollection ? service.exportCollection(params) : service.export ? service.export(params) : null);
 
                 if (!blob) throw new Error("Export function not found");
 

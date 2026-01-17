@@ -3,7 +3,6 @@ import { message } from "antd";
 import { Artifact } from "@/types";
 import artifactService from "@/services/artifact.service";
 import { useCRUD } from "@/hooks/useCRUD";
-import dayjs from "dayjs";
 
 export const useArtifactModel = () => {
     // Stats State
@@ -23,6 +22,7 @@ export const useArtifactModel = () => {
             console.error(`Error ${action} artifact:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
         },
+        initialSort: { field: 'id', order: 'desc' },
     }), []);
 
     const crud = useCRUD(artifactService, crudOptions);
@@ -48,7 +48,6 @@ export const useArtifactModel = () => {
 
     // Loading States for Import/Export
     const [importLoading, setImportLoading] = useState(false);
-    const [exportLoading, setExportLoading] = useState(false);
 
     // Business Logic
     const deleteArtifact = async (id: number) => {
@@ -67,25 +66,6 @@ export const useArtifactModel = () => {
         const success = await crud.batchDelete(keys);
         if (success) fetchStats();
         return success;
-    };
-
-    const exportData = async () => {
-        setExportLoading(true);
-        try {
-            const blob = await artifactService.export();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `artifact_export_${dayjs().format("YYYYMMDD")}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            message.success("Xuất dữ liệu thành công");
-        } catch (error) {
-            message.error("Xuất dữ liệu thất bại");
-        } finally {
-            setExportLoading(false);
-        }
     };
 
     const importData = async (file: File) => {
@@ -168,14 +148,12 @@ export const useArtifactModel = () => {
         stats,
         statsLoading,
         importLoading,
-        exportLoading,
         currentRecord,
         formVisible,
         detailVisible,
         fetchStats,
         deleteArtifact,
         batchDeleteArtifacts,
-        exportData,
         importData,
         downloadTemplate,
         handleSubmit,

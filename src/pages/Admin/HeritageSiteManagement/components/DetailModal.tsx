@@ -1,5 +1,5 @@
 import { Modal, Descriptions, Tabs, Tag, Image, Space, List, Timeline, Typography, Button } from "antd";
-import { HeritageSite, HeritageTypeLabels, HeritageType } from "@/types/heritage.types";
+import { HeritageSite, HeritageTypeLabels, HeritageType, HeritageRegionLabels } from "@/types/heritage.types";
 import { EnvironmentOutlined, StarOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
@@ -88,11 +88,14 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         </Descriptions.Item>
 
                         <Descriptions.Item label="Loại hình">
-                            <Tag color="blue">{HeritageTypeLabels[record.type as HeritageType] || record.type}</Tag>
+                            <Tag color="blue">{HeritageTypeLabels[record.type as HeritageType].toUpperCase() || record.type.toUpperCase()}</Tag>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Khu vực">{record.region}</Descriptions.Item>
+                        <Descriptions.Item label="Khu vực">
+                            {HeritageRegionLabels[record.region as keyof typeof HeritageRegionLabels] || record.region}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Tỉnh/Thành phố">{record.province || "Chưa cập nhật"}</Descriptions.Item>
                         <Descriptions.Item label="UNESCO">
-                            {record.unesco_listed ? <Tag color="green">Có</Tag> : "Không"}
+                            {record.unesco_listed ? <Tag color="green">CÓ</Tag> : "KHÔNG"}
                         </Descriptions.Item>
                         <Descriptions.Item label="Vị trí" span={2}>
                             <Space>

@@ -34,6 +34,7 @@ interface ArtifactFormProps {
   initialValues?: any;
   loading?: boolean;
   title?: string;
+  isEdit?: boolean;
 }
 
 const ArtifactForm: React.FC<ArtifactFormProps> = ({
@@ -43,6 +44,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   initialValues,
   loading = false,
   title = "Thông tin Hiện vật",
+  isEdit = false,
 }) => {
   const [form] = Form.useForm();
   const [heritageSites, setHeritageSites] = useState<any[]>([]);
@@ -55,7 +57,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
   useEffect(() => {
     const initData = async () => {
-      if (open && initialValues && initialValues.id) {
+      // 1. Chế độ Sửa (isEdit = true)
+      if (open && isEdit && initialValues) {
         try {
           // Fetch labels for related IDs
           const [relHeritageRes, relHistoryRes] = await Promise.all([
@@ -119,17 +122,29 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           console.error("Failed to init artifact data", error);
           form.setFieldsValue(initialValues);
         }
-      } else if (open) {
-        form.resetFields();
+      } 
+      // 2. Chế độ Thêm mới (isEdit = false) -> Reset form
+      else if (open && !isEdit) {
+        // Aggressively clear all fields because form instance persists
+        const currentFields = form.getFieldsValue(true);
+        const resetValues = Object.keys(currentFields).reduce((acc: any, key) => {
+            acc[key] = undefined;
+            return acc;
+        }, {});
+        form.setFieldsValue(resetValues);
+        form.resetFields(); // Call this as well to reset errors/touched state
+        
+        // Set defaults
         form.setFieldsValue({
           is_on_display: true,
           condition: ArtifactCondition.GOOD,
+          year_created: undefined,
         });
       }
     };
 
     initData();
-  }, [open, initialValues, form]);
+  }, [open, isEdit, initialValues, form]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -199,16 +214,26 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
     // Transform values before submit
     const submitData = {
       ...values,
-      image: Array.isArray(values.image) ? values.image[0] || "" : values.image,
+      image: (() => {
+        const raw = Array.isArray(values.image) ? values.image[0] : values.image;
+        if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
+        return raw || "";
+      })(),
+      gallery: values.gallery?.map((item: any) => 
+        typeof item === "object" ? (item.url || item.response?.url || "") : item
+      ) || [],
       shortDescription: values.short_description, // Sync for compatibility
       related_heritage_ids: values.related_heritage_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
-      ),
+      ) || [],
       related_history_ids: values.related_history_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
-      ),
+      ) || [],
     };
-    await onSubmit(submitData);
+    const success = await onSubmit(submitData);
+    if (success) {
+      form.resetFields();
+    }
   };
 
   // Fetch function for Heritage Sites Search
@@ -254,16 +279,16 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       width={1000}
       form={form}
       loading={loading}
-      initialValues={{
-        is_on_display: true,
-        condition: ArtifactCondition.GOOD,
-        ...initialValues,
-      }}
+      preserve={false}
+      initialValues={initialValues}
       footer={
         <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
           <StyledButton
             variant="outline"
-            onClick={onCancel}
+            onClick={() => {
+              form.resetFields();
+              onCancel();
+            }}
             style={{ minWidth: "120px" }}
           >
             Hủy
@@ -466,6 +491,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
                 >
                   <TinyEditor
+                    key={isEdit ? `desc-edit-${initialValues?.id}` : "desc-create"}
                     height={350}
                     placeholder="Mô tả chi tiết về hiện vật..."
                     enableImageUpload={true}
@@ -475,13 +501,18 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
                 <Form.Item name="historical_context" label="Bối cảnh lịch sử">
                   <TinyEditor
+                    key={isEdit ? `hist-edit-${initialValues?.id}` : "hist-create"}
                     height={250}
                     placeholder="Mô tả bối cảnh lịch sử..."
                   />
                 </Form.Item>
 
                 <Form.Item name="cultural_significance" label="Ý nghĩa văn hóa">
-                  <TinyEditor height={250} placeholder="Giá trị văn hóa..." />
+                  <TinyEditor 
+                    key={isEdit ? `cult-edit-${initialValues?.id}` : "cult-create"}
+                    height={250} 
+                    placeholder="Giá trị văn hóa..." 
+                  />
                 </Form.Item>
               </>
             ),
