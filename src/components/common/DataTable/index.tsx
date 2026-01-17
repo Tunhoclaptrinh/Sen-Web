@@ -12,6 +12,7 @@ import {
   Checkbox,
   Input,
   Card,
+  Select,
 } from "antd";
 import {
   PlusOutlined,
@@ -26,7 +27,7 @@ import {
   SearchOutlined,
   FileExcelOutlined,
 } from "@ant-design/icons";
-import { Button, Select, toast } from "@/components/common";
+import { Button, toast } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
