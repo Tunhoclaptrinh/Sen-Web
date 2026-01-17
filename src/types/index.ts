@@ -10,6 +10,8 @@ export * from "./user.types";
 export * from "./collection.types";
 export * from "./game.types";
 export * from "./notification.types";
+export * from "./history.types";
+
 
 // Common Types
 
