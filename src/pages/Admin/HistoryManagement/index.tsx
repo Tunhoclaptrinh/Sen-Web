@@ -1,5 +1,6 @@
 import { Tag } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import DataTable from "@components/common/DataTable";
 import dayjs from 'dayjs';
 
@@ -58,10 +59,9 @@ const HistoryManagement = () => {
       key: "image",
       width: 100,
       render: (image: string) => {
-        if (!image) return null;
-        const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-        const apiHost = apiBase.replace(/\/api$/, '');
-        const src = image.startsWith('http') ? image : `${apiHost}${image}`;
+        const srcRaw = resolveImage(image);
+        if (!srcRaw) return null;
+        const src = getImageUrl(srcRaw);
         return (
           <img 
             src={src} 
@@ -204,6 +204,7 @@ const HistoryManagement = () => {
         onSubmit={handleSubmit}
         initialValues={currentRecord}
         loading={loading}
+        isEdit={!!currentRecord}
       />
 
       <HistoryDetailModal

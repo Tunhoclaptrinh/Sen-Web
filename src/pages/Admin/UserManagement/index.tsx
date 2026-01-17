@@ -2,6 +2,7 @@ import { Space, Tag, Avatar, Switch } from "antd";
 import {
   UserOutlined,
 } from "@ant-design/icons";
+import { getImageUrl } from "@/utils/image.helper";
 import { User } from "@/types";
 import DataTable from "@/components/common/DataTable";
 import dayjs from "dayjs";
@@ -70,7 +71,7 @@ const UserManagement = () => {
       searchable: true,
       render: (text: string, record: User) => (
         <Space>
-          <Avatar icon={<UserOutlined />} src={record.avatar} />
+          <Avatar icon={<UserOutlined />} src={getImageUrl(record.avatar)} />
           <div>
             <div style={{ fontWeight: 500 }}>{text}</div>
             <div style={{ fontSize: 12, color: "#888" }}>{record.email}</div>
@@ -218,11 +219,13 @@ const UserManagement = () => {
       />
 
       <UserForm
+        key={currentRecord?.id || 'create'}
         visible={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
         initialValues={currentRecord}
         loading={loading}
+        isEdit={!!currentRecord}
       />
 
       <UserDetailModal

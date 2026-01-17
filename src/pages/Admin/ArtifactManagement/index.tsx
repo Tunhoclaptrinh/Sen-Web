@@ -220,6 +220,7 @@ const ArtifactManagement = () => {
       />
 
       <ArtifactForm
+        key={currentRecord?.id || 'create'}
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}

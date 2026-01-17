@@ -229,6 +229,7 @@ const HeritageSiteManagement = () => {
       />
 
       <HeritageForm
+        key={currentRecord?.id || 'create'}
         isEdit={!!currentRecord}
         open={formVisible}
         onCancel={closeForm}

@@ -52,7 +52,6 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   onSubmit,
   initialValues,
   loading = false,
-  title = "Thông tin Di sản",
   isEdit = false,
 }) => {
   const [form] = Form.useForm();
@@ -372,7 +371,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
-      title={title}
+      title={isEdit ? "Cập nhật Di sản" : "Thêm mới Di sản"}
       width={1000}
       form={form}
       loading={loading}

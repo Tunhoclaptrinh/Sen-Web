@@ -14,6 +14,7 @@ interface HistoryFormProps {
   initialValues?: any;
   loading?: boolean;
   title?: string;
+  isEdit?: boolean;
 }
 
 const HistoryForm: React.FC<HistoryFormProps> = ({
@@ -22,10 +23,11 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   onSubmit,
   initialValues,
   loading = false,
-  title = "Bài viết Lịch sử",
+  isEdit = false,
 }) => {
   const [form] = Form.useForm();
   const [activeTab, setActiveTab] = useState("1");
+  const isEditMode = isEdit || (initialValues && initialValues.id);
 
   useEffect(() => {
     if (open) setActiveTab("1");
@@ -33,7 +35,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
   useEffect(() => {
     const initData = async () => {
-        if (open && initialValues && initialValues.id) {
+        // 1. Edit Mode
+        if (open && isEditMode) {
             try {
                 // Fetch labels for related IDs
                 const [relHeritageRes, relArtifactRes] = await Promise.all([
@@ -76,8 +79,17 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs()
                 });
             }
-        } else if (open) {
+        } 
+        // 2. Create Mode -> Aggressive Reset
+        else if (open) {
+            const currentFields = form.getFieldsValue(true);
+            const resetValues = Object.keys(currentFields).reduce((acc: any, key) => {
+                acc[key] = undefined;
+                return acc;
+            }, {});
+            form.setFieldsValue(resetValues);
             form.resetFields();
+            
             form.setFieldsValue({
                 is_active: true,
                 publishDate: dayjs(),
@@ -87,7 +99,34 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
     };
 
     initData();
-  }, [open, initialValues, form]);
+  }, [open, isEditMode, initialValues, form]);
+
+  const handleOk = async (values: any) => {
+    // Transform values before submit
+    const submitData = {
+        ...values,
+        shortDescription: values.short_description,
+        publishDate: values.publishDate?.toISOString(),
+        image: (() => {
+          const raw = Array.isArray(values.image) ? values.image[0] : values.image;
+          if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
+          return raw || "";
+        })(),
+        gallery: values.gallery?.map((item: any) => 
+          typeof item === "object" ? (item.url || item.response?.url || "") : item
+        ) || [],
+        related_heritage_ids: values.related_heritage_ids?.map((item: any) => 
+          typeof item === 'object' ? item.value : item
+        ) || [],
+        related_artifact_ids: values.related_artifact_ids?.map((item: any) => 
+          typeof item === 'object' ? item.value : item
+        ) || []
+    };
+    const success = await onSubmit(submitData);
+    if (success) {
+      form.resetFields();
+    }
+  };
 
   const handleSubmitClick = async () => {
     try {
@@ -114,33 +153,6 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         
         message.warning("Vui lòng kiểm tra lại thông tin trong các tab");
       }
-    }
-  };
-
-  const handleOk = async (values: any) => {
-    // Transform values before submit
-    const submitData = {
-        ...values,
-        shortDescription: values.short_description,
-        publishDate: values.publishDate?.toISOString(),
-        image: (() => {
-          const raw = Array.isArray(values.image) ? values.image[0] : values.image;
-          if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
-          return raw || "";
-        })(),
-        gallery: values.gallery?.map((item: any) => 
-          typeof item === "object" ? (item.url || item.response?.url || "") : item
-        ) || [],
-        related_heritage_ids: values.related_heritage_ids?.map((item: any) => 
-          typeof item === 'object' ? item.value : item
-        ) || [],
-        related_artifact_ids: values.related_artifact_ids?.map((item: any) => 
-          typeof item === 'object' ? item.value : item
-        ) || []
-    };
-    const success = await onSubmit(submitData);
-    if (success) {
-      form.resetFields();
     }
   };
 
@@ -174,17 +186,14 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
-      title={title}
+      title={isEdit ? "Cập nhật Bài viết" : "Thêm mới Bài viết"}
       width={1000}
       form={form}
       loading={loading}
       preserve={false}
       footer={
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-            <StyledButton variant="outline" onClick={() => {
-              form.resetFields();
-              onCancel();
-            }} style={{ minWidth: '120px' }}>
+            <StyledButton variant="outline" onClick={onCancel} style={{ minWidth: '120px' }}>
                 Hủy
             </StyledButton>
             <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{ minWidth: '120px' }}>

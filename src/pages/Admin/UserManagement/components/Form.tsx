@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Form, Input, Select } from "antd";
 import FormModal from "@/components/common/FormModal";
+import { Button as StyledButton } from "@/components/common";
 
 const { Option } = Select;
 
@@ -10,6 +11,7 @@ interface UserFormProps {
     onSubmit: (values: any) => Promise<void | boolean>;
     initialValues: any | null;
     loading?: boolean;
+    isEdit?: boolean;
 }
 
 const UserForm: React.FC<UserFormProps> = ({
@@ -17,36 +19,67 @@ const UserForm: React.FC<UserFormProps> = ({
     onCancel,
     onSubmit,
     initialValues,
-    loading
+    loading,
+    isEdit = false
 }) => {
     const [form] = Form.useForm();
-    const isEditing = !!initialValues;
 
     useEffect(() => {
-        if (visible) {
-            if (initialValues) {
+        const initData = async () => {
+            // 1. Edit Mode
+            if (visible && isEdit && initialValues) {
                 form.setFieldsValue(initialValues);
-            } else {
-                form.resetFields();
-            }
-        }
-    }, [visible, initialValues, form]);
+            } 
+            // 2. Create Mode -> Aggressive Reset
+            else if (visible && !isEdit) {
+                 const currentFields = form.getFieldsValue(true);
+                 const resetValues = Object.keys(currentFields).reduce((acc: any, key) => {
+                     acc[key] = undefined;
+                     return acc;
+                 }, {});
+                 form.setFieldsValue(resetValues);
+                 form.resetFields();
 
-    const handleOk = () => {
-        form.validateFields().then((values) => {
-            onSubmit(values);
-        });
+                 form.setFieldsValue({
+                     role: "customer",
+                     isActive: true
+                 });
+            }
+        };
+        initData();
+    }, [visible, isEdit, initialValues, form]);
+
+    const handleSubmitClick = async () => {
+        try {
+            const values = await form.validateFields();
+            await onSubmit(values);
+            // onSubmit in UserManagement handles closing, but we can reset here if needed
+            // Actually usually model closes it.
+        } catch (error) {
+            console.error("Validation failed:", error);
+        }
     };
 
     return (
         <FormModal
-            title={isEditing ? "Cập nhật Người Dùng" : "Thêm mới Người Dùng"}
+            title={isEdit ? "Cập nhật Người Dùng" : "Thêm mới Người Dùng"}
             open={visible}
             onCancel={onCancel}
-            onOk={handleOk}
-            confirmLoading={loading}
-            form={form} // Pass form instance for loading state management if needed
+            onOk={handleSubmitClick}
+            loading={loading}
+            form={form} 
             width={600}
+            preserve={false}
+            footer={
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                    <StyledButton variant="outline" onClick={onCancel} style={{ minWidth: '120px' }}>
+                        Hủy
+                    </StyledButton>
+                    <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{ minWidth: '120px' }}>
+                        Lưu lại
+                    </StyledButton>
+                </div>
+            }
         >
             <Form
                 form={form}
@@ -88,9 +121,9 @@ const UserForm: React.FC<UserFormProps> = ({
 
                 <Form.Item
                     name="password"
-                    label={isEditing ? "Mật khẩu (Để trống nếu không đổi)" : "Mật khẩu"}
+                    label={isEdit ? "Mật khẩu (Để trống nếu không đổi)" : "Mật khẩu"}
                     rules={[
-                        { required: !isEditing, message: "Vui lòng nhập mật khẩu" }
+                        { required: !isEdit, message: "Vui lòng nhập mật khẩu" }
                     ]}
                 >
                     <Input.Password placeholder="******" />
@@ -112,3 +145,4 @@ const UserForm: React.FC<UserFormProps> = ({
 };
 
 export default UserForm;
+

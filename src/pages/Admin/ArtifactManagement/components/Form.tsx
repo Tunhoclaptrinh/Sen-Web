@@ -43,7 +43,6 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   onSubmit,
   initialValues,
   loading = false,
-  title = "Thông tin Hiện vật",
   isEdit = false,
 }) => {
   const [form] = Form.useForm();
@@ -275,7 +274,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
-      title={title}
+      title={isEdit ? "Cập nhật Hiện vật" : "Thêm mới Hiện vật"}
       width={1000}
       form={form}
       loading={loading}
