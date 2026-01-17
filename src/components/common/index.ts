@@ -17,7 +17,7 @@ export { default as toast, ToastProvider, useToast } from "./Toast";
 // Form Components
 
 export { default as Select, Option } from "./Select";
-export { default as Checkbox, CheckboxGroup } from "./Checkbox";
+
 export { default as FormModal } from "./FormModal";
 
 // Display Components
