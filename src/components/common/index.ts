@@ -14,6 +14,8 @@ export { default as toast, ToastProvider, useToast } from "./Toast";
 
 // Form Components
 export { default as FormModal } from "./FormModal";
+export { default as DebounceSelect } from "./DebounceSelect";
+
 
 // Display Components
 export { default as Avatar, AvatarGroup } from "./Avatar";

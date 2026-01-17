@@ -1,11 +1,11 @@
 import { Input, Switch, Row, Col, Form, Tabs, message } from "antd";
-import { FormModal, TinyEditor, Button as StyledButton } from "@/components/common";
+import { FormModal, TinyEditor, Button as StyledButton, DebounceSelect } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
-import DebounceSelect from "@/components/common/Select/DebounceSelect";
+
 
 interface HistoryFormProps {
   open: boolean;

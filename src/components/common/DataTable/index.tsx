@@ -319,6 +319,7 @@ const DataTable: React.FC<DataTableProps> = ({
       ? {
           title: "Thao tác",
           key: "actions",
+          className: "data-table-actions-column", 
           width: calculatedWidth,
           fixed: actionPosition,
           align: "center" as const,

@@ -15,9 +15,10 @@ import {
   FormModal,
   TinyEditor,
   Button as StyledButton,
+  DebounceSelect,
 } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
-import DebounceSelect from "@/components/common/Select/DebounceSelect";
+
 import {
   HeritageType,
   SignificanceLevel,

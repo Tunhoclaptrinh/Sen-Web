@@ -13,6 +13,7 @@ import {
   FormModal,
   TinyEditor,
   Button as StyledButton,
+  DebounceSelect,
 } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {
@@ -25,7 +26,7 @@ import { useEffect, useState } from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import categoryService from "@/services/category.service";
-import DebounceSelect from "@/components/common/Select/DebounceSelect";
+
 
 interface ArtifactFormProps {
   open: boolean;
