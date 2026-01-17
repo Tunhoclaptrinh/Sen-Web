@@ -34,11 +34,11 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
   );
   const [aiChatVisible, setAiChatVisible] = useState(false);
 
-  // Default AI character (Minh - the tour guide)
+  // Default AI character (Sen - the tour guide)
   const defaultCharacter = {
     id: 1,
-    name: "Minh",
-    avatar: "/images/characters/minh-avatar.png",
+    name: "Sen",
+    avatar: "/images/characters/sen-avatar.png",
     personality: "Thân thiện, nhiệt tình, giàu kiến thức về văn hóa Việt Nam",
     state: "restored" as const,
     description: "Hướng dẫn viên AI chuyên gia về di sản văn hóa Việt Nam",

@@ -52,10 +52,34 @@
     flex-shrink: 0;
 }
 
+.user-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1f5f25 0%, #2d7a35 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
 .message-content {
     max-width: 70%;
     display: flex;
     flex-direction: column;
+    gap: 4px;
+}
+
+.message-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f5f25;
+    padding: 0 8px;
+    opacity: 0.8;
 }
 
 .message-bubble {

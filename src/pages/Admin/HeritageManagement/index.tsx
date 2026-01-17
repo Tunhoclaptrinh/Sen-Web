@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { message } from "antd"; // Import Modal for potential manual confirmation if needed, though DataTable handles it
-import { fetchHeritageSites, deleteHeritageSite } from "@/store/slices/heritageSlice";
+import {
+  fetchHeritageSites,
+  deleteHeritageSite,
+} from "@/store/slices/heritageSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import DataTable from "@/components/common/DataTable"; // Use the shared polished component
 
@@ -25,7 +28,7 @@ const HeritageManagement = () => {
 
   useEffect(() => {
     if (sites) {
-        setPagination(prev => ({ ...prev, total: sites.length }));
+      setPagination((prev) => ({ ...prev, total: sites.length }));
     }
   }, [sites]);
 
@@ -34,13 +37,13 @@ const HeritageManagement = () => {
   }, [error]);
 
   const handleDelete = async (id: number) => {
-    // DataTable's onDelete will trigger this. 
+    // DataTable's onDelete will trigger this.
     // We can directly dispatch. DataTable handles the confirmation UI.
     try {
-        await dispatch(deleteHeritageSite(id)).unwrap();
-        message.success("Xóa thành công");
+      await dispatch(deleteHeritageSite(id)).unwrap();
+      message.success("Xóa thành công");
     } catch (err) {
-        message.error("Xóa thất bại");
+      message.error("Xóa thất bại");
     }
   };
 
@@ -61,11 +64,13 @@ const HeritageManagement = () => {
         dataSource={sites}
         rowKey="id"
         pagination={pagination}
-        onPaginationChange={(newPagination: any) => setPagination(newPagination)}
+        onPaginationChange={(newPagination: any) =>
+          setPagination(newPagination)
+        }
         onDelete={handleDelete}
         // Note: No 'onEdit' or 'onAdd' provided in original file, so we leave them empty for now.
         // If 'Thêm Mới' button is needed, we can implement onAdd.
-        onAdd={() => message.info("Chức năng đang phát triển")} 
+        onAdd={() => message.info("Chức năng đang phát triển")}
       />
     </div>
   );

@@ -22,7 +22,7 @@ import {
   FilterOutlined,
   ExclamationCircleOutlined,
   SearchOutlined,
-  FileExcelOutlined
+  FileExcelOutlined,
 } from "@ant-design/icons";
 import { Button, Input, Card, Modal, Select, toast } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
@@ -84,7 +84,6 @@ const DataTable: React.FC<DataTableProps> = ({
   actionColumnProps, // New Prop
   ...tableProps
 }) => {
-
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
   const debouncedSearchTerm = useDebounce(internalSearchText, 500);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -94,28 +93,34 @@ const DataTable: React.FC<DataTableProps> = ({
   const [activeFilters, setActiveFilters] = useState<FilterConfig[]>([]);
   const [availableFilters] = useState(filters); // Keep all available filters
 
-  const [enabledFilters, setEnabledFilters] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    filters.forEach(f => initial[f.key] = true);
-    return initial;
-  });
+  const [enabledFilters, setEnabledFilters] = useState<Record<string, boolean>>(
+    () => {
+      const initial: Record<string, boolean> = {};
+      filters.forEach((f) => (initial[f.key] = true));
+      return initial;
+    },
+  );
 
   const getActiveFilterKey = (filterKey: string, op?: string) => {
-    const currentOp = op || operators[filterKey] || 'eq';
-    return currentOp === 'eq' ? filterKey : `${filterKey}_${currentOp} `;
+    const currentOp = op || operators[filterKey] || "eq";
+    return currentOp === "eq" ? filterKey : `${filterKey}_${currentOp} `;
   };
 
   const handleOperatorChange = (filterKey: string, newOp: string) => {
-    const oldOp = operators[filterKey] || 'eq';
+    const oldOp = operators[filterKey] || "eq";
     if (oldOp === newOp) return;
 
-    setOperators(prev => ({ ...prev, [filterKey]: newOp }));
+    setOperators((prev) => ({ ...prev, [filterKey]: newOp }));
 
-    const oldKey = oldOp === 'eq' ? filterKey : `${filterKey}_${oldOp} `;
-    const newKey = newOp === 'eq' ? filterKey : `${filterKey}_${newOp} `;
+    const oldKey = oldOp === "eq" ? filterKey : `${filterKey}_${oldOp} `;
+    const newKey = newOp === "eq" ? filterKey : `${filterKey}_${newOp} `;
     const currentValue = filterValues[oldKey];
 
-    if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
+    if (
+      currentValue !== undefined &&
+      currentValue !== null &&
+      currentValue !== ""
+    ) {
       handleFilterChange(newKey, currentValue);
       handleFilterChange(oldKey, undefined);
     }
@@ -127,25 +132,26 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   const toggleFilterEnabled = (key: string) => {
-    setEnabledFilters(prev => ({ ...prev, [key]: !prev[key] }));
+    setEnabledFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const addFilterCondition = (filterKey: string) => {
-    const filterToAdd = availableFilters.find(f => f.key === filterKey);
-    if (filterToAdd && !activeFilters.find(f => f.key === filterKey)) {
-      setActiveFilters(prev => [...prev, filterToAdd]);
-      setEnabledFilters(prev => ({ ...prev, [filterKey]: true }));
+    const filterToAdd = availableFilters.find((f) => f.key === filterKey);
+    if (filterToAdd && !activeFilters.find((f) => f.key === filterKey)) {
+      setActiveFilters((prev) => [...prev, filterToAdd]);
+      setEnabledFilters((prev) => ({ ...prev, [filterKey]: true }));
     }
   };
 
   const removeFilterCondition = (filterKey: string) => {
-    setActiveFilters(prev => prev.filter(f => f.key !== filterKey));
+    setActiveFilters((prev) => prev.filter((f) => f.key !== filterKey));
     // Also clear the filter value
-    const currentOp = operators[filterKey] || 'eq';
-    const activeKey = currentOp === 'eq' ? filterKey : `${filterKey}_${currentOp}`;
+    const currentOp = operators[filterKey] || "eq";
+    const activeKey =
+      currentOp === "eq" ? filterKey : `${filterKey}_${currentOp}`;
     handleFilterChange(activeKey, undefined);
     // Remove from enabled filters
-    setEnabledFilters(prev => {
+    setEnabledFilters((prev) => {
       const newEnabled = { ...prev };
       delete newEnabled[filterKey];
       return newEnabled;
@@ -169,75 +175,91 @@ const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+  const ColumnSearch = ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+    label: _label,
+  }: any) => {
+    const [value, setValue] = useState(selectedKeys[0]);
 
-  const ColumnSearch = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, label: _label }: any) => {
-      const [value, setValue] = useState(selectedKeys[0]);
+    // Handle input change: update local value and trigger search
+    const onChange = (e: any) => {
+      const val = e.target.value;
+      setValue(val);
+      setSelectedKeys(val ? [val] : []);
+    };
 
-      // Handle input change: update local value and trigger search
-      const onChange = (e: any) => {
-          const val = e.target.value;
-          setValue(val);
-          setSelectedKeys(val ? [val] : []);
-      };
+    // Re-implement Debounce Auto-Search
+    React.useEffect(() => {
+      const timer = setTimeout(() => {
+        if (value !== selectedKeys[0]) {
+          confirm({ closeDropdown: false });
+        }
+      }, 600);
+      return () => clearTimeout(timer);
+    }, [value, selectedKeys, confirm]);
 
-      // Re-implement Debounce Auto-Search
-      React.useEffect(() => {
-          const timer = setTimeout(() => {
-              if (value !== selectedKeys[0]) {
-                  confirm({ closeDropdown: false });
-              }
-          }, 600);
-          return () => clearTimeout(timer);
-      }, [value, selectedKeys, confirm]);
+    const handleClear = () => {
+      setValue("");
+      setSelectedKeys([]);
+      clearFilters && clearFilters();
+      confirm();
+    };
 
-      const handleClear = () => {
-          setValue('');
-          setSelectedKeys([]);
-          clearFilters && clearFilters();
-          confirm();
-      };
-
-      return (
-          <div className="filter-dropdown-container" style={{ padding: 12, minWidth: 350, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'nowrap' }} onKeyDown={(e) => e.stopPropagation()}>
-              <Input
-                  placeholder={`Tìm kiếm...`}
-                  value={value}
-                  onChange={onChange}
-                  onPressEnter={() => confirm()}
-                  className="filter-search-input"
-                  containerStyle={{ marginBottom: 0, flex: 1, width: 'auto' }}
-                  fullWidth={false}
-              />
-              <Button
-                  variant="primary"
-                  onClick={() => confirm()}
-                  buttonSize="small"
-                  style={{ boxShadow: 'none', whiteSpace: 'nowrap', flex: '0 0 auto' }}
-              >
-                  Tìm
-              </Button>
-              <Button
-                  variant="outline"
-                  onClick={handleClear}
-                  buttonSize="small"
-                  style={{ 
-                      borderColor: '#d9d9d9', 
-                      color: '#595959',
-                      fontWeight: 400,
-                      whiteSpace: 'nowrap',
-                      flex: '0 0 auto'
-                  }}
-              >
-                  Xóa
-              </Button>
-          </div>
-      );
+    return (
+      <div
+        className="filter-dropdown-container"
+        style={{
+          padding: 12,
+          minWidth: 350,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flexWrap: "nowrap",
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          placeholder={`Tìm kiếm...`}
+          value={value}
+          onChange={onChange}
+          onPressEnter={() => confirm()}
+          className="filter-search-input"
+          containerStyle={{ marginBottom: 0, flex: 1, width: "auto" }}
+          fullWidth={false}
+        />
+        <Button
+          variant="primary"
+          onClick={() => confirm()}
+          buttonSize="small"
+          style={{ boxShadow: "none", whiteSpace: "nowrap", flex: "0 0 auto" }}
+        >
+          Tìm
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleClear}
+          buttonSize="small"
+          style={{
+            borderColor: "#d9d9d9",
+            color: "#595959",
+            fontWeight: 400,
+            whiteSpace: "nowrap",
+            flex: "0 0 auto",
+          }}
+        >
+          Xóa
+        </Button>
+      </div>
+    );
   };
 
   const getColumnSearchProps = (_dataIndex: string, label: string) => ({
     filterDropdown: (props: any) => <ColumnSearch {...props} label={label} />,
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
     onFilter: (_value: any, _record: any) => {
       // Return true to disable client-side filtering and rely on server-side
@@ -251,136 +273,149 @@ const DataTable: React.FC<DataTableProps> = ({
     }
     // Re-enable all filters when clearing
     const allEnabled: Record<string, boolean> = {};
-    filters.forEach(f => allEnabled[f.key] = true);
+    filters.forEach((f) => (allEnabled[f.key] = true));
     setEnabledFilters(allEnabled);
     setFilterModalOpen(false);
   };
 
   // Resolve selectedRowKeys from direct prop or rowSelection object
-  const activeSelectedRowKeys = propSelectedRowKeys || customRowSelection?.selectedRowKeys || [];
+  const activeSelectedRowKeys =
+    propSelectedRowKeys || customRowSelection?.selectedRowKeys || [];
 
   const rowSelection = batchOperations
     ? customRowSelection || {
-      selectedRowKeys: activeSelectedRowKeys,
-      onChange: onSelectChange,
-      selections: [
-        Table.SELECTION_ALL,
-        Table.SELECTION_INVERT,
-        Table.SELECTION_NONE,
-      ],
-      getCheckboxProps: (record: any) => ({
-        disabled: record.disabled,
-      }),
-    }
+        selectedRowKeys: activeSelectedRowKeys,
+        onChange: onSelectChange,
+        selections: [
+          Table.SELECTION_ALL,
+          Table.SELECTION_INVERT,
+          Table.SELECTION_NONE,
+        ],
+        getCheckboxProps: (record: any) => ({
+          disabled: record.disabled,
+        }),
+      }
     : undefined;
 
   // Handle columns: check if "actions" column is defined in props.columns
-  const userActionColumnIndex = columns.findIndex(col => col.key === 'actions');
-  const userActionColumn = userActionColumnIndex !== -1 ? columns[userActionColumnIndex] : null;
+  const userActionColumnIndex = columns.findIndex(
+    (col) => col.key === "actions",
+  );
+  const userActionColumn =
+    userActionColumnIndex !== -1 ? columns[userActionColumnIndex] : null;
 
   // Dynamic Action Column Logic
-  const standardActionCount = (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0);
+  const standardActionCount =
+    (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0);
   // Base width per button (32px + 8px gap) + padding (16px)
   // If customActions exists, we add extra space or default to a safe width if not specified
-  const calculatedWidth = actionsWidth || (
-      (standardActionCount * 40) + (customActions ? 40 : 16)
-  );
+  const calculatedWidth =
+    actionsWidth || standardActionCount * 40 + (customActions ? 40 : 16);
 
-  const mergedActionsColumn = (showActions || userActionColumn)
-    ? {
-      title: "Thao Tác",
-      key: "actions",
-      width: calculatedWidth,
-      fixed: actionPosition,
-      align: "center" as const,
-      // Merge user properties if defined
-      ...userActionColumn,
-      ...actionColumnProps, // Keep this for backward compat or explicit override
-      render: (_: any, record: any) => {
-        if (userActionColumn && userActionColumn.render) {
-          return userActionColumn.render(_, record);
-        }
+  const mergedActionsColumn =
+    showActions || userActionColumn
+      ? {
+          title: "Thao Tác",
+          key: "actions",
+          width: calculatedWidth,
+          fixed: actionPosition,
+          align: "center" as const,
+          // Merge user properties if defined
+          ...userActionColumn,
+          ...actionColumnProps, // Keep this for backward compat or explicit override
+          render: (_: any, record: any) => {
+            if (userActionColumn && userActionColumn.render) {
+              return userActionColumn.render(_, record);
+            }
 
-        return (
-          <Space size={4} className="action-buttons-container">
-            {onView && (
-              <Tooltip title="Xem chi tiết">
-                <Button
-                  variant="ghost"
-                  buttonSize="small"
-                  onClick={() => onView(record)}
-                  className="action-btn-standard"
-                  style={{ color: "var(--primary-color)" }}
-                >
-                  <EyeOutlined />
-                </Button>
-              </Tooltip>
-            )}
+            return (
+              <Space size={4} className="action-buttons-container">
+                {onView && (
+                  <Tooltip title="Xem chi tiết">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      onClick={() => onView(record)}
+                      className="action-btn-standard"
+                      style={{ color: "var(--primary-color)" }}
+                    >
+                      <EyeOutlined />
+                    </Button>
+                  </Tooltip>
+                )}
 
-            {onEdit && (
-              <Tooltip title="Chỉnh sửa">
-                <Button
-                  variant="ghost"
-                  buttonSize="small"
-                  onClick={() => onEdit(record)}
-                  className="action-btn-standard action-btn-edit"
-                  style={{ color: "var(--primary-color)" }}
-                >
-                  <EditOutlined />
-                </Button>
-              </Tooltip>
-            )}
+                {onEdit && (
+                  <Tooltip title="Chỉnh sửa">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      onClick={() => onEdit(record)}
+                      className="action-btn-standard action-btn-edit"
+                      style={{ color: "var(--primary-color)" }}
+                    >
+                      <EditOutlined />
+                    </Button>
+                  </Tooltip>
+                )}
 
-            {onDelete && (
-              <Popconfirm
-                title="Xác nhận xóa?"
-                description="Bạn có chắc chắn muốn xóa mục này?"
-                onConfirm={() => onDelete(record[rowKey])}
-                okText="Xóa"
-                cancelText="Hủy"
-                okButtonProps={{ danger: true }}
-                icon={<ExclamationCircleOutlined style={{ color: "#EF4444" }} />}
-              >
-                <Tooltip title="Xóa">
-                  <Button
-                    variant="ghost"
-                    buttonSize="small"
-                    className="action-btn-standard action-btn-delete"
-                    style={{ color: "#ff4d4f" }}
+                {onDelete && (
+                  <Popconfirm
+                    title="Xác nhận xóa?"
+                    description="Bạn có chắc chắn muốn xóa mục này?"
+                    onConfirm={() => onDelete(record[rowKey])}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                    okButtonProps={{ danger: true }}
+                    icon={
+                      <ExclamationCircleOutlined style={{ color: "#EF4444" }} />
+                    }
                   >
-                    <DeleteOutlined />
-                  </Button>
-                </Tooltip>
-              </Popconfirm>
-            )}
+                    <Tooltip title="Xóa">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard action-btn-delete"
+                        style={{ color: "#ff4d4f" }}
+                      >
+                        <DeleteOutlined />
+                      </Button>
+                    </Tooltip>
+                  </Popconfirm>
+                )}
 
-            {customActions && customActions(record)}
-          </Space>
-        );
-      },
-    }
-    : null;
+                {customActions && customActions(record)}
+              </Space>
+            );
+          },
+        }
+      : null;
 
   const finalColumns = [
     // If action position is left and no user defined action column (or user position was not specified, handled by splicing?)
     // Actually, if user defined it in columns, let's keep its position!
-    ...(actionPosition === "left" && !userActionColumn ? [mergedActionsColumn] : []),
+    ...(actionPosition === "left" && !userActionColumn
+      ? [mergedActionsColumn]
+      : []),
 
     ...columns.map((col) => {
       // If this is the action column, return the merged one
-      if (col.key === 'actions') return mergedActionsColumn;
+      if (col.key === "actions") return mergedActionsColumn;
 
       const isSearchable = col.searchable;
       return {
         ...col,
         align: col.align || ("center" as const),
         sorter: sortable && col.sortable !== false,
-        ...(isSearchable ? getColumnSearchProps(col.dataIndex, col.title as string) : {}),
+        ...(isSearchable
+          ? getColumnSearchProps(col.dataIndex, col.title as string)
+          : {}),
       };
     }),
 
     // Append at end if right and not defined in columns
-    ...(actionPosition === "right" && !userActionColumn && mergedActionsColumn ? [mergedActionsColumn] : []),
+    ...(actionPosition === "right" && !userActionColumn && mergedActionsColumn
+      ? [mergedActionsColumn]
+      : []),
   ];
 
   const batchActionsMenu = (
@@ -437,14 +472,17 @@ const DataTable: React.FC<DataTableProps> = ({
     input.click();
   };
 
-  const hasActiveFilters = filters && filters.length > 0 && Object.keys(filterValues).some(key => filterValues[key]);
+  const hasActiveFilters =
+    filters &&
+    filters.length > 0 &&
+    Object.keys(filterValues).some((key) => filterValues[key]);
 
   return (
     <div className="data-table-wrapper">
       {/* Separate Title */}
       {title && (
         <div className="data-table-title">
-          {typeof title === 'string' ? <h2>{title}</h2> : title}
+          {typeof title === "string" ? <h2>{title}</h2> : title}
         </div>
       )}
 
@@ -453,15 +491,10 @@ const DataTable: React.FC<DataTableProps> = ({
         bodyStyle={{ padding: 0 }} // Remove default padding for custom layout
       >
         {/* Header Content inside Card for seamless look */}
-        {tableProps.headerContent && (
-          <div>
-            {tableProps.headerContent}
-          </div>
-        )}
+        {tableProps.headerContent && <div>{tableProps.headerContent}</div>}
 
         {/* ... existing toolbar ... */}
         <div className="data-table-toolbar">
-
           {/* Left Side: Primary Actions (Add, Import, Export, Batch) */}
           <Space wrap>
             {onAdd && (
@@ -478,22 +511,40 @@ const DataTable: React.FC<DataTableProps> = ({
                     disabled={tableProps.importLoading}
                     overlay={
                       <Menu>
-                        <Menu.Item key="upload" icon={<UploadOutlined />} onClick={handleImportClick}>
+                        <Menu.Item
+                          key="upload"
+                          icon={<UploadOutlined />}
+                          onClick={handleImportClick}
+                        >
                           Tải lên file dữ liệu
                         </Menu.Item>
-                        <Menu.Item key="template" icon={<FileExcelOutlined />} onClick={tableProps.onDownloadTemplate}>
+                        <Menu.Item
+                          key="template"
+                          icon={<FileExcelOutlined />}
+                          onClick={tableProps.onDownloadTemplate}
+                        >
                           Tải mẫu nhập liệu
                         </Menu.Item>
                       </Menu>
                     }
                   >
-                    <Button variant="outline" loading={tableProps.importLoading} buttonSize="small">
-                      <UploadOutlined /> Import <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
+                    <Button
+                      variant="outline"
+                      loading={tableProps.importLoading}
+                      buttonSize="small"
+                    >
+                      <UploadOutlined /> Import{" "}
+                      <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
                     </Button>
                   </Dropdown>
                 ) : (
                   <Tooltip title="Import dữ liệu">
-                    <Button variant="outline" onClick={handleImportClick} loading={tableProps.importLoading} buttonSize="small">
+                    <Button
+                      variant="outline"
+                      onClick={handleImportClick}
+                      loading={tableProps.importLoading}
+                      buttonSize="small"
+                    >
                       <UploadOutlined /> Import
                     </Button>
                   </Tooltip>
@@ -503,16 +554,30 @@ const DataTable: React.FC<DataTableProps> = ({
 
             {exportable && onExport && (
               <Tooltip title="Export dữ liệu">
-                <Button variant="outline" onClick={onExport} loading={tableProps.exportLoading} buttonSize="small">
+                <Button
+                  variant="outline"
+                  onClick={onExport}
+                  loading={tableProps.exportLoading}
+                  buttonSize="small"
+                >
                   <DownloadOutlined /> Export
                 </Button>
               </Tooltip>
             )}
 
             {batchOperations && activeSelectedRowKeys.length > 0 && (
-              <Badge count={activeSelectedRowKeys.length} className="batch-op-badge">
+              <Badge
+                count={activeSelectedRowKeys.length}
+                className="batch-op-badge"
+              >
                 <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                  <Button variant="outline" buttonSize="small" className="batch-action-btn">Thao tác hàng loạt</Button>
+                  <Button
+                    variant="outline"
+                    buttonSize="small"
+                    className="batch-action-btn"
+                  >
+                    Thao tác hàng loạt
+                  </Button>
                 </Dropdown>
               </Badge>
             )}
@@ -530,11 +595,11 @@ const DataTable: React.FC<DataTableProps> = ({
                   const val = e.target.value;
                   handleSearch(val);
                   // Instant clear: if empty, force immediate search (bypass debounce)
-                  if (!val && onSearch) onSearch(''); 
+                  if (!val && onSearch) onSearch("");
                 }}
                 style={{ width: 220, height: 32 }}
                 allowClear
-                prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
                 containerStyle={{ marginBottom: 0, height: 32 }}
                 fullWidth={false}
                 inputSize="middle"
@@ -593,13 +658,15 @@ const DataTable: React.FC<DataTableProps> = ({
           size={size}
           bordered={bordered}
           rowSelection={rowSelection}
-          pagination={{
-            ...pagination,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total: number) => `Tổng ${total} mục`,
-            pageSizeOptions: ["10", "20", "50", "100"],
-          } as any}
+          pagination={
+            {
+              ...pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total: number) => `Tổng ${total} mục`,
+              pageSizeOptions: ["10", "20", "50", "100"],
+            } as any
+          }
           onChange={onPaginationChange}
           scroll={scroll || { x: "max-content" }}
           locale={{
@@ -620,26 +687,41 @@ const DataTable: React.FC<DataTableProps> = ({
         >
           <div className="filter-builder-container">
             <div className="active-filters-section">
-              <div className="section-title">Các điều kiện lọc đang được áp dụng:</div>
+              <div className="section-title">
+                Các điều kiện lọc đang được áp dụng:
+              </div>
 
               {activeFilters.length === 0 ? (
                 <div className="empty-filter-state">
-                  <p>Chưa có điều kiện lọc nào. Nhấn "+ Thêm điều kiện lọc" để bắt đầu.</p>
+                  <p>
+                    Chưa có điều kiện lọc nào. Nhấn "+ Thêm điều kiện lọc" để
+                    bắt đầu.
+                  </p>
                 </div>
               ) : (
                 <div className="filter-conditions-list">
                   {activeFilters.map((filter, index) => {
                     const label = filter.label || filter.placeholder;
-                    const currentOp = operators[filter.key] || filter.defaultOperator || 'eq';
-                    const activeKey = currentOp === 'eq' ? filter.key : `${filter.key}_${currentOp} `;
-                    const hasValue = filterValues[activeKey] !== undefined &&
+                    const currentOp =
+                      operators[filter.key] || filter.defaultOperator || "eq";
+                    const activeKey =
+                      currentOp === "eq"
+                        ? filter.key
+                        : `${filter.key}_${currentOp} `;
+                    const hasValue =
+                      filterValues[activeKey] !== undefined &&
                       filterValues[activeKey] !== null &&
-                      filterValues[activeKey] !== '';
+                      filterValues[activeKey] !== "";
                     const isEnabled = enabledFilters[filter.key] !== false;
 
                     return (
-                      <div key={filter.key} className={`filter-condition-item ${!isEnabled ? 'disabled' : ''}`}>
-                        {index > 0 && <div className="condition-connector">VÀ</div>}
+                      <div
+                        key={filter.key}
+                        className={`filter-condition-item ${!isEnabled ? "disabled" : ""}`}
+                      >
+                        {index > 0 && (
+                          <div className="condition-connector">VÀ</div>
+                        )}
 
                         <div className="condition-row">
                           {/* Checkbox */}
@@ -656,57 +738,75 @@ const DataTable: React.FC<DataTableProps> = ({
                               value={filter.key}
                               disabled
                               options={[{ label: label, value: filter.key }]}
-                              style={{ width: '100%' }}
+                              style={{ width: "100%" }}
                               popupClassName="custom-filter-dropdown"
                             />
-
                           </div>
 
                           {filter.operators && (
                             <div className="condition-operator">
-                                <Select
+                              <Select
                                 value={currentOp}
-                                onChange={(val) => handleOperatorChange(filter.key, val)}
+                                onChange={(val) =>
+                                  handleOperatorChange(filter.key, val)
+                                }
                                 options={[
-                                  { label: 'Bằng', value: 'eq' },
-                                  { label: 'Lớn hơn', value: 'gt' },
-                                  { label: 'Lớn hơn hoặc bằng', value: 'gte' },
-                                  { label: 'Nhỏ hơn', value: 'lt' },
-                                  { label: 'Nhỏ hơn hoặc bằng', value: 'lte' },
-                                  { label: 'Chứa', value: 'like' },
-                                  { label: 'Khác', value: 'ne' },
-                                  { label: 'Trong', value: 'in' },
-                                ].filter(op => filter.operators?.includes(op.value as any))}
-                                style={{ width: '100%' }}
+                                  { label: "Bằng", value: "eq" },
+                                  { label: "Lớn hơn", value: "gt" },
+                                  { label: "Lớn hơn hoặc bằng", value: "gte" },
+                                  { label: "Nhỏ hơn", value: "lt" },
+                                  { label: "Nhỏ hơn hoặc bằng", value: "lte" },
+                                  { label: "Chứa", value: "like" },
+                                  { label: "Khác", value: "ne" },
+                                  { label: "Trong", value: "in" },
+                                ].filter((op) =>
+                                  filter.operators?.includes(op.value as any),
+                                )}
+                                style={{ width: "100%" }}
                                 popupClassName="custom-filter-dropdown"
                               />
-
                             </div>
                           )}
 
                           <div className="condition-value">
-                            {(!filter.type || filter.type === 'select') && (
+                            {(!filter.type || filter.type === "select") && (
                               <Select
-                                placeholder={filter.placeholder || `Chọn ${label?.toLowerCase()} `}
+                                placeholder={
+                                  filter.placeholder ||
+                                  `Chọn ${label?.toLowerCase()} `
+                                }
                                 value={filterValues[activeKey]}
-                                onChange={(value) => handleFilterValueChange(filter.key, value)}
+                                onChange={(value) =>
+                                  handleFilterValueChange(filter.key, value)
+                                }
                                 options={filter.options}
                                 allowClear
-                                mode={currentOp === 'in' ? 'multiple' : undefined}
-                                style={{ width: '100%' }}
-                                popupClassName="custom-filter-dropdown"
+                                mode={
+                                  currentOp === "in" ? "multiple" : undefined
+                                }
+                                style={{ width: "100%" }}
                               />
-
                             )}
 
-                            {(filter.type === 'input' || filter.type === 'number') && (
+                            {(filter.type === "input" ||
+                              filter.type === "number") && (
                               <Input
-                                placeholder={filter.placeholder || `Nhập ${label?.toLowerCase()} `}
+                                placeholder={
+                                  filter.placeholder ||
+                                  `Nhập ${label?.toLowerCase()} `
+                                }
                                 value={filterValues[activeKey]}
-                                onChange={(e) => handleFilterValueChange(filter.key, e.target.value)}
+                                onChange={(e) =>
+                                  handleFilterValueChange(
+                                    filter.key,
+                                    e.target.value,
+                                  )
+                                }
                                 allowClear
-                                style={{ width: '100%' }}
-                                type={filter.type === 'number' ? 'number' : 'text'}
+                                style={{ width: "100%" }}
+                                type={
+                                  filter.type === "number" ? "number" : "text"
+                                }
                                 containerStyle={{ marginBottom: 0 }}
                               />
                             )}
@@ -723,11 +823,17 @@ const DataTable: React.FC<DataTableProps> = ({
 
                         {hasValue && (
                           <div className="condition-preview">
-                            {label} {currentOp === 'like' ? 'chứa' : currentOp === 'in' ? 'trong' : '='} <strong>{
-                              Array.isArray(filterValues[activeKey])
-                                ? filterValues[activeKey].join(', ')
-                                : filterValues[activeKey]
-                            }</strong>
+                            {label}{" "}
+                            {currentOp === "like"
+                              ? "chứa"
+                              : currentOp === "in"
+                                ? "trong"
+                                : "="}{" "}
+                            <strong>
+                              {Array.isArray(filterValues[activeKey])
+                                ? filterValues[activeKey].join(", ")
+                                : filterValues[activeKey]}
+                            </strong>
                           </div>
                         )}
                       </div>
@@ -741,16 +847,18 @@ const DataTable: React.FC<DataTableProps> = ({
                 <Dropdown
                   menu={{
                     items: availableFilters
-                      .filter(f => !activeFilters.find(af => af.key === f.key))
-                      .map(f => ({
+                      .filter(
+                        (f) => !activeFilters.find((af) => af.key === f.key),
+                      )
+                      .map((f) => ({
                         key: f.key,
                         label: f.label || f.placeholder,
-                        onClick: () => addFilterCondition(f.key)
+                        onClick: () => addFilterCondition(f.key),
                       })),
                   }}
                   disabled={availableFilters.length === activeFilters.length}
                 >
-                  <Button variant="outline" style={{ width: '100%' }}>
+                  <Button variant="outline" style={{ width: "100%" }}>
                     + Thêm điều kiện lọc
                   </Button>
                 </Dropdown>
@@ -758,20 +866,32 @@ const DataTable: React.FC<DataTableProps> = ({
             </div>
 
             <div className="filter-builder-footer">
-              <Button variant="outline" onClick={() => setFilterModalOpen(false)} buttonSize="small">
+              <Button
+                variant="outline"
+                onClick={() => setFilterModalOpen(false)}
+                buttonSize="small"
+              >
                 Hủy
               </Button>
-              <Button variant="outline" onClick={handleClearFilters} buttonSize="small">
+              <Button
+                variant="outline"
+                onClick={handleClearFilters}
+                buttonSize="small"
+              >
                 Bỏ lọc
               </Button>
-              <Button variant="primary" onClick={() => setFilterModalOpen(false)} buttonSize="small">
+              <Button
+                variant="primary"
+                onClick={() => setFilterModalOpen(false)}
+                buttonSize="small"
+              >
                 Áp dụng bộ lọc
               </Button>
             </div>
           </div>
         </Modal>
       </Card>
-    </div >
+    </div>
   );
 };
 
