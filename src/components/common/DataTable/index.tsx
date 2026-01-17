@@ -185,75 +185,75 @@ const DataTable: React.FC<DataTableProps> = ({
     clearFilters,
     label: _label,
   }: any) => {
-    const [value, setValue] = useState(selectedKeys[0]);
+    const [value, setValue] = useState(selectedKeys[0] || "");
 
-    // Handle input change: update local value and trigger search
+    // Sync value if props change
+    React.useEffect(() => {
+        setValue(selectedKeys[0] || "");
+    }, [selectedKeys]);
+
+    // Handle input change: update local value only
     const onChange = (e: any) => {
       const val = e.target.value;
       setValue(val);
-      setSelectedKeys(val ? [val] : []);
+      
+      // If cleared (empty), trigger instant refresh
+      if (val === "") {
+        setSelectedKeys([]);
+        confirm();
+      }
     };
 
-    // Re-implement Debounce Auto-Search
+    // Debounce Auto-Search for typing
     React.useEffect(() => {
       const timer = setTimeout(() => {
-        if (value !== selectedKeys[0]) {
-          confirm({ closeDropdown: false });
+        const currentKey = selectedKeys[0] || "";
+        // Only debounce if value is NOT empty (empty is handled instantly by onChange)
+        if (value !== currentKey && value !== "") {
+           setSelectedKeys([value]);
+           confirm({ closeDropdown: false });
         }
       }, 600);
       return () => clearTimeout(timer);
-    }, [value, selectedKeys, confirm]);
+    }, [value, selectedKeys, confirm, setSelectedKeys]);
 
-    const handleClear = () => {
-      setValue("");
-      setSelectedKeys([]);
-      clearFilters && clearFilters();
-      confirm();
+    const onSearch = (val: string) => {
+        setValue(val); 
+        // Ensure we search with the current value
+        const keys = val ? [val] : [];
+        setSelectedKeys(keys);
+        confirm();
     };
 
     return (
       <div
         className="filter-dropdown-container"
         style={{
-          padding: 12,
-          minWidth: 350,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          flexWrap: "nowrap",
+          padding: 8,
+          width: 250, 
         }}
         onKeyDown={(e) => e.stopPropagation()}
       >
-        <Input
-          placeholder={`Tìm kiếm...`}
+        <Input.Search
+          placeholder={`Tìm ${(_label || "").toLowerCase()}...`}
           value={value}
           onChange={onChange}
-          onPressEnter={() => confirm()}
-          className="filter-search-input"
-          style={{ marginBottom: 0, flex: 1, width: "auto" }}
+          onSearch={onSearch}
+          enterButton /* Standard Ant Design Button */
+          allowClear
+          className="filter-search-input-compact"
         />
-        <Button
-          variant="primary"
-          onClick={() => confirm()}
-          buttonSize="small"
-          style={{ boxShadow: "none", whiteSpace: "nowrap", flex: "0 0 auto" }}
-        >
-          Tìm
-        </Button>
-        <Button
-          variant="outline"
-          onClick={handleClear}
-          buttonSize="small"
-          style={{
-            borderColor: "#d9d9d9",
-            color: "#595959",
-            fontWeight: 400,
-            whiteSpace: "nowrap",
-            flex: "0 0 auto",
-          }}
-        >
-          Xóa
-        </Button>
+        <div style={{ marginTop: 8, fontSize: 13, color: "#595959", textAlign: 'right' }}>
+           <a
+            onClick={() => {
+              confirm(); 
+              setFilterModalOpen(true);
+            }}
+            style={{ fontWeight: 500 }}
+          >
+            Xem thêm bộ lọc khác
+          </a>
+        </div>
       </div>
     );
   };
@@ -261,7 +261,10 @@ const DataTable: React.FC<DataTableProps> = ({
   const getColumnSearchProps = (_dataIndex: string, label: string) => ({
     filterDropdown: (props: any) => <ColumnSearch {...props} label={label} />,
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+      <SearchOutlined 
+        className={filtered ? "active-filter-icon" : ""}
+        style={{ color: filtered ? "var(--primary-color)" : undefined }} 
+      />
     ),
     onFilter: (_value: any, _record: any) => {
       // Return true to disable client-side filtering and rely on server-side
@@ -403,12 +406,26 @@ const DataTable: React.FC<DataTableProps> = ({
     ...columns.map((col) => {
       // If this is the action column, return the merged one
       if (col.key === "actions") return mergedActionsColumn;
+      
+      const colKey = col.key || col.dataIndex;
+      // Get controlled value from parent filterValues if available
+      // Check both exact key match or just dataIndex match
+      const controlledVal = filterValues?.[colKey];
 
       const isSearchable = col.searchable;
       return {
         ...col,
         align: col.align || ("center" as const),
         sorter: sortable && col.sortable !== false,
+        // Make column controlled if filterValues are provided
+        ...(controlledVal !== undefined
+          ? {
+              filteredValue: Array.isArray(controlledVal)
+                ? controlledVal
+                : [controlledVal],
+            }
+          : { filteredValue: null }), // Explicitly null to clear if not in state
+          
         ...(isSearchable
           ? getColumnSearchProps(col.dataIndex, col.title as string)
           : {}),
@@ -573,15 +590,66 @@ const DataTable: React.FC<DataTableProps> = ({
                 count={activeSelectedRowKeys.length}
                 className="batch-op-badge"
               >
-                <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                  <Button
-                    variant="outline"
-                    buttonSize="small"
-                    className="batch-action-btn"
-                  >
-                    Thao tác hàng loạt
-                  </Button>
-                </Dropdown>
+                {/* Logic: If only 1 action, show button directly. If > 1, show dropdown */}
+                {(onBatchDelete ? 1 : 0) + (batchActions?.length || 0) === 1 ? (
+                  /* Single Action Case - Text Only Style */
+                  onBatchDelete ? (
+                    <Button
+                      variant="ghost"
+                      danger
+                      buttonSize="small"
+                      style={{ 
+                        border: "none", 
+                        boxShadow: "none", 
+                        background: "transparent",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                        padding: "4px 8px"
+                      }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: "Xác nhận xóa hàng loạt?",
+                          content: `Bạn có chắc chắn muốn xóa ${activeSelectedRowKeys.length} mục đã chọn?`,
+                          okText: "Xóa",
+                          cancelText: "Hủy",
+                          okButtonProps: { danger: true },
+                          onOk: () => onBatchDelete(activeSelectedRowKeys),
+                        });
+                      }}
+                    >
+                      <DeleteOutlined /> Xóa đã chọn
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      danger={batchActions![0].danger}
+                      buttonSize="small"
+                      style={{ 
+                        border: "none", 
+                        boxShadow: "none", 
+                        background: "transparent", 
+                        color: batchActions![0].danger ? "#ff4d4f" : "var(--primary-color)",
+                        fontWeight: 500,
+                        padding: "4px 8px"
+                      }}
+                      onClick={() => batchActions![0].onClick(activeSelectedRowKeys)}
+                      className="batch-action-btn"
+                    >
+                      {batchActions![0].icon} {batchActions![0].label}
+                    </Button>
+                  )
+                ) : (
+                  /* Multiple Actions Case -> Dropdown */
+                  <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
+                    <Button
+                      variant="outline"
+                      buttonSize="small"
+                      className="batch-action-btn"
+                    >
+                      Thao tác hàng loạt <span style={{fontSize: 10, marginLeft: 4}}>▼</span>
+                    </Button>
+                  </Dropdown>
+                )}
               </Badge>
             )}
 

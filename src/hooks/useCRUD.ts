@@ -73,11 +73,26 @@ export const useCRUD = (service: any, options: any = {}) => {
         Object.keys(filters).forEach(key => {
             const value = filters[key];
             if (Array.isArray(value)) {
-                // User requested explicit usage of _in operator
-                // e.g. role=['admin','customer'] -> role_in='admin,customer'
-                params[`${key}_in`] = value.join(',');
+                // Handle special operators like _like (search) which shouldn't use _in
+                if (key.includes('_like') || key.includes('_ilike')) {
+                     // Safety check: if array is empty or value[0] is empty, don't set param
+                     if (value.length > 0 && value[0]) {
+                        params[key] = value[0];
+                     }
+                } 
+                // For other filters (typically select/checkbox), use _in for multiple values
+                else if (value.length > 0) {
+                     params[`${key}_in`] = value.join(',');
+                }
             } else {
                 params[key] = value;
+            }
+        });
+
+        // Clean up undefined params (crucial for clearing filters)
+        Object.keys(params).forEach(key => {
+            if (params[key] === undefined || params[key] === null || params[key] === '') {
+                delete params[key];
             }
         });
 
@@ -285,9 +300,11 @@ export const useCRUD = (service: any, options: any = {}) => {
             setFilters((prev: any) => {
                 const updated = { ...prev };
                 Object.keys(newFilters).forEach(key => {
-                    if (newFilters[key]) {
-                        // Store raw value (array or single) to support backend repeated params (e.g. role=admin&role=customer)
-                        updated[key] = newFilters[key];
+                    const val = newFilters[key];
+                    // Check if value exists and is NOT an empty array
+                    if (val && (Array.isArray(val) ? val.length > 0 : true)) {
+                        // Store raw value (array or single)
+                        updated[key] = val;
                     } else {
                         delete updated[key];
                     }

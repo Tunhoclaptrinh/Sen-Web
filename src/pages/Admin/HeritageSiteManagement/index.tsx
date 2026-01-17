@@ -131,6 +131,15 @@ const HeritageSiteManagement = () => {
       title: "UNESCO",
       dataIndex: "unesco_listed",
       key: "unesco_listed",
+      filters: [
+        { text: "CÓ", value: true },
+        { text: "KHÔNG", value: false },
+      ],
+      filteredValue: filters.unesco_listed
+        ? Array.isArray(filters.unesco_listed)
+          ? filters.unesco_listed
+          : [filters.unesco_listed]
+        : null,
       width: 100,
       render: (listed: boolean) =>
         listed ? <Tag color="green">CÓ</Tag> : <Tag color={"red"}>KHÔNG</Tag>,

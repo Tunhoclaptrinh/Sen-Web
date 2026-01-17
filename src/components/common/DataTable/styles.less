@@ -4,13 +4,43 @@
     box-shadow: 0 4px 4px #e8e8e8e8 !important;
 }
 
-.data-table-wrapper .ant-table-thead>tr>th {
-    text-align: center !important;
-    padding: 10px 8px !important;
+/* Active Sort/Filter Header Styling */
+.data-table-wrapper .ant-table-thead th.ant-table-column-has-sorters.ant-table-column-sort {
+    background: #f5f5f5; /* Maintain background or slightly darker if needed */
 }
 
-.data-table-wrapper .ant-table-tbody>tr>td {
-    padding: 6px 12px !important;
+/* Explicitly target the title content to underline and color it */
+.data-table-wrapper .ant-table-thead th.ant-table-column-sort .ant-table-column-title {
+    color: @primary-color;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    font-weight: 600;
+}
+
+/* Color the sort icon */
+.data-table-wrapper .ant-table-column-sorter-up.active,
+.data-table-wrapper .ant-table-column-sorter-down.active {
+    color: @primary-color !important;
+}
+
+/* Active Filter Trigger */
+.ant-table-filter-trigger.ant-dropdown-open,
+.ant-table-filter-trigger.active {
+    color: @primary-color !important;
+    background: transparent;
+}
+
+/* Apply same style to Title when Filter is Active 
+   Targeting any th that contains our active icon class 
+*/
+.data-table-wrapper .ant-table-thead th:has(.active-filter-icon) .ant-table-column-title,
+.data-table-wrapper .ant-table-thead th:has(.ant-table-filter-trigger.ant-dropdown-open) .ant-table-column-title {
+    color: @primary-color;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    font-weight: 600;
 }
 
 .data-table-title {
@@ -23,6 +53,7 @@
 }
 
 .data-table-toolbar {
+    margin-top: 8px;
     padding: 12px 16px;
     border-bottom: 1px solid #f0f0f0;
     display: flex;
@@ -64,7 +95,6 @@
 /* Pagination Override */
 .data-table-wrapper .ant-pagination-item-active {
     border-color: @primary-color;
-    background-color: #fff; /* Outline Style as requested */
     a {
         color: @primary-color !important;
     }
@@ -109,19 +139,19 @@
 
 /* Checkbox Override */
 .data-table-wrapper .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: @primary-color;
-    border-color: @primary-color;
+    background-color: @primary-color !important;
+    border-color: @primary-color !important;
 }
 
 .data-table-wrapper .ant-checkbox-wrapper:hover .ant-checkbox-inner,
 .data-table-wrapper .ant-checkbox:hover .ant-checkbox-inner,
 .data-table-wrapper .ant-checkbox-input:focus + .ant-checkbox-inner {
-    border-color: @primary-color;
+    border-color: @primary-color !important;
 }
 
 /* Indeterminate Checkbox */
 .data-table-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner::after {
-    background-color: @primary-color;
+    background-color: @primary-color !important;
 }
 
 .data-table-alert {
@@ -375,16 +405,32 @@
     padding: 8px;
 }
 
-.filter-search-input {
-    display: block;
+/* Compact Search Input Styling */
+.filter-search-input-compact {
+    .ant-input:hover, .ant-input:focus {
+        border-color: @primary-color !important;
+    }
+    
+    /* Target the standard Ant Design Search Button */
+    .ant-input-search-button {
+        background-color: @primary-color !important;
+        border-color: @primary-color !important;
+        
+        &:hover {
+             background-color: lighten(@primary-color, 5%) !important;
+             border-color: lighten(@primary-color, 5%) !important;
+        }
+    }
 }
 
-.filter-action-button {
-    width: 90px;
-}
-
-.search-icon {
-    color: rgba(0, 0, 0, 0.25);
+/* Custom Filter Link */
+.filter-dropdown-container a {
+    color: @primary-color !important; 
+    
+    &:hover {
+        text-decoration: underline;
+        color: lighten(@primary-color, 5%) !important;
+    }
 }
 
 .ant-input-affix-wrapper {
@@ -419,6 +465,8 @@
     width: 100%;
 }
 
+
+
 .data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
     background-color: fade(@primary-color, 5%) !important; 
 }
@@ -429,4 +477,20 @@
 
 .main-table {
     padding: 16px;
+}
+
+/* Override standard Ant Table Filter Dropdown Selected Item Color */
+.ant-table-filter-dropdown .ant-dropdown-menu-item-selected {
+    background-color: fade(@primary-color, 10%) !important;
+    color: @primary-color !important;
+    font-weight: 600;
+}
+
+.ant-table-filter-dropdown .ant-dropdown-menu-item:hover {
+     background-color: fade(@primary-color, 5%) !important;
+}
+
+.ant-table-filter-dropdown .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: @primary-color !important;
+    border-color: @primary-color !important;
 }
