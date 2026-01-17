@@ -9,7 +9,6 @@
     padding: 6px 12px !important;
 }
 
-/* Extracted Styles */
 .data-table-title {
     margin-bottom: 8px;
 
@@ -62,7 +61,6 @@
 .data-table-wrapper .ant-pagination-item-active {
     border-color: @primary-color;
     background-color: #fff; /* Outline Style as requested */
-    
     a {
         color: @primary-color !important;
     }
@@ -293,10 +291,11 @@
 .filter-builder-footer {
     display: flex;
     gap: 12px;
-    justify-content: center; /* Centered alignment */
-    padding: 16px 24px;
+    justify-content: center; 
+    padding: 16px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
     border-top: 1px solid #e8e8e8;
-    background: white;
 }
 
 /* Responsive */
@@ -306,24 +305,22 @@
     }
 
     .condition-checkbox {
-        /* Keep checkbox on the left */
         margin-right: 8px;
     }
 
     .condition-field,
     .condition-operator,
     .condition-value {
-        /* On mobile, make them full width or share width */
         flex: 1 1 100%; 
         min-width: 100%;
     }
     
     .condition-operator {
-         margin-bottom: 8px; /* Add spacing when stacked */
+         margin-bottom: 8px;
     }
 
     .condition-delete {
-        margin-left: auto; /* Push to right */
+        margin-left: auto;
     }
 
     .filter-builder-footer {
@@ -354,20 +351,18 @@
         box-shadow: 0 0 0 2px fade(@primary-color, 10%) !important;
     }
 
-    // Fix Dropdown Item Selected Color
-    // Note: This must be targeted via popupClassName or global override as it renders in body
 }
 
 /* GLOBAL OVERRIDE for Filter Dropdowns */
 .custom-filter-dropdown {
     .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-        background-color: fade(@primary-color, 10%) !important; // Light variant
+        background-color: fade(@primary-color, 10%) !important;
         color: @primary-color !important;
         font-weight: 600;
     }
 
     .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
-         background-color: fade(@primary-color, 15%) !important; // Hover variant
+         background-color: fade(@primary-color, 15%) !important;
     }
 }
 
@@ -420,10 +415,8 @@
     width: 100%;
 }
 
-/* Fix "Horrible" Dark Selection Color */
-/* Fix "Horrible" Dark Selection Color */
 .data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
-    background-color: fade(@primary-color, 5%) !important; /* Lighter shade of primary */
+    background-color: fade(@primary-color, 5%) !important; 
 }
 
 .data-table-wrapper .ant-table-tbody > tr.ant-table-row-selected:hover > td {

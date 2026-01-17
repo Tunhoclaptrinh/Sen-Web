@@ -8,7 +8,7 @@ import {
   Menu,
   Dropdown,
   Alert,
-  Modal as AntModal,
+  Modal,
   Checkbox,
 } from "antd";
 import {
@@ -24,7 +24,7 @@ import {
   SearchOutlined,
   FileExcelOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Card, Modal, Select, toast } from "@/components/common";
+import { Button, Input, Card, Select, toast } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
@@ -682,7 +682,7 @@ const DataTable: React.FC<DataTableProps> = ({
           title="Bộ lọc tùy chỉnh"
           width={700}
           footer={null}
-          bodyStyle={{ padding: 0 }}
+          styles={{ body: { padding: 0 } }}
           className="custom-filter-modal"
         >
           <div className="filter-builder-container">
