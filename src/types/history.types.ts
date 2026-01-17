@@ -16,6 +16,14 @@ export interface HistoryArticle extends BaseEntity {
   // Relations
   related_heritage_ids?: number[];
   related_artifact_ids?: number[];
+
+  // Populated Data (for Detail View)
+  shortDescription?: string;
+  timeline_events?: any[];
+  related_heritage?: any[];
+  related_artifacts?: any[];
+  related_levels?: any[];
+  related_products?: any[];
 }
 
 export interface HistoryArticleDTO {

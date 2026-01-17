@@ -61,7 +61,7 @@ const HistoryDetailPage = () => {
                  // Also fetch general related history items for the bottom section
                  const resRelated = await historyService.getRelated(currentId);
                  console.log('[HistoryDetail] Related History Data:', resRelated);
-                 if (resRelated.success) setRelatedHistory(resRelated.data);
+                 if (resRelated.success) setRelatedHistory(resRelated.data || []);
 
             } else {
                 message.error('Không tìm thấy bài viết');

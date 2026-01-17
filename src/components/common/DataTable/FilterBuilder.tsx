@@ -53,7 +53,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({
           </div>
         ) : (
           <div className="filter-conditions-list" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {activeFilters.map((filter, index) => {
+            {activeFilters.map((filter) => {
               const label = filter.label || filter.placeholder;
               const currentOp =
                 operators[filter.key] || filter.defaultOperator || "eq";
@@ -147,7 +147,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({
                             placeholder="Chọn ngày"
                             style={{ width: "100%" }}
                             value={filterValues[activeKey] ? dayjs(filterValues[activeKey]) : null}
-                            onChange={(date, dateString) => {
+                            onChange={(_date, dateString) => {
                                 onFilterChange(filter.key, dateString);
                             }}
                             size="middle"
