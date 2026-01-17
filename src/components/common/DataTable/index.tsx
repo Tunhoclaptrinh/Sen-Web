@@ -11,6 +11,7 @@ import {
   Modal,
   Checkbox,
   Input,
+  Card,
 } from "antd";
 import {
   PlusOutlined,
@@ -25,7 +26,7 @@ import {
   SearchOutlined,
   FileExcelOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Select, toast } from "@/components/common";
+import { Button, Select, toast } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
@@ -487,8 +488,8 @@ const DataTable: React.FC<DataTableProps> = ({
       )}
 
       <Card
-        bordered={false}
-        bodyStyle={{ padding: 0 }} // Remove default padding for custom layout
+        styles={{body: { borderRadius: 12, padding: 0 }}}
+        hoverable={false}
       >
         {/* Header Content inside Card for seamless look */}
         {tableProps.headerContent && <div>{tableProps.headerContent}</div>}
