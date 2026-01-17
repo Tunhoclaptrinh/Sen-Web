@@ -180,7 +180,7 @@ const HistoryManagement = () => {
         exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={() => exportData('xlsx')} 
+        onExport={exportData} 
         onRefresh={refresh}
         filters={[
           {
@@ -190,6 +190,28 @@ const HistoryManagement = () => {
               { label: "Đang hiển thị", value: true },
               { label: "Đã ẩn", value: false },
             ],
+          },
+          {
+            key: "author",
+            placeholder: "Tác giả",
+            type: "input",
+            operators: ["like", "eq"],
+            defaultOperator: "like"
+          },
+          {
+             key: "publishDate",
+             placeholder: "Ngày đăng",
+             type: "date",
+             operators: ["eq", "gte", "lte"],
+             defaultOperator: "eq"
+          },
+          {
+            key: "category",
+            placeholder: "Danh mục",
+            // Assuming categories are fetched or static? For now simplified.
+            type: "input", 
+            operators: ["like"], 
+            defaultOperator: "like"
           }
         ]}
         filterValues={filters}

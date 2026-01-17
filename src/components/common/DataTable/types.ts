@@ -11,8 +11,8 @@ export interface FilterConfig {
     placeholder?: string;
     type?: 'select' | 'input' | 'date' | 'date-range' | 'number'; // Supported types
     options?: FilterOption[]; // For select type
-    operators?: ('eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'like' | 'not_like' | 'in')[]; // Allowed operators
-    defaultOperator?: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'like' | 'not_like' | 'in'; // Default operator
+    operators?: ('eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'like' | 'not_like' | 'in' | 'ilike')[]; // Allowed operators
+    defaultOperator?: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'like' | 'not_like' | 'in' | 'ilike'; // Default operator
     colSpan?: number; // Grid span (default 12 or 24)
 }
 
@@ -60,7 +60,7 @@ export interface DataTableProps {
     exportLoading?: boolean;
     onImport?: (file: File) => void;
     onDownloadTemplate?: () => void;
-    onExport?: () => void;
+    onExport?: (options?: any) => void;
     title?: React.ReactNode;
     extra?: React.ReactNode;
     rowKey?: string;

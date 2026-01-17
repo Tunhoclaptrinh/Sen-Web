@@ -9,10 +9,8 @@ import {
   Dropdown,
   Alert,
   Modal,
-  Checkbox,
   Input,
   Card,
-  Select,
 } from "antd";
 import {
   PlusOutlined,
@@ -31,6 +29,8 @@ import { Button, toast } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
+import ExportModal from "./ExportModal"; // Import the modal
+import FilterBuilder from "./FilterBuilder";
 
 /**
  * DataTable Component
@@ -90,6 +90,7 @@ const DataTable: React.FC<DataTableProps> = ({
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
   const debouncedSearchTerm = useDebounce(internalSearchText, 500);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
   const [operators, setOperators] = useState<Record<string, string>>({});
 
   // Dynamic filters state - start EMPTY, user adds as needed
@@ -105,18 +106,23 @@ const DataTable: React.FC<DataTableProps> = ({
   );
 
   const getActiveFilterKey = (filterKey: string, op?: string) => {
-    const currentOp = op || operators[filterKey] || "eq";
-    return currentOp === "eq" ? filterKey : `${filterKey}_${currentOp} `;
+    const filterConfig = filters.find((f) => f.key === filterKey);
+    const defaultOp = filterConfig?.defaultOperator || "eq";
+    const currentOp = op || operators[filterKey] || defaultOp;
+    return currentOp === "eq" ? filterKey : `${filterKey}_${currentOp}`;
   };
 
   const handleOperatorChange = (filterKey: string, newOp: string) => {
-    const oldOp = operators[filterKey] || "eq";
+    const filterConfig = filters.find((f) => f.key === filterKey);
+    const defaultOp = filterConfig?.defaultOperator || "eq";
+    const oldOp = operators[filterKey] || defaultOp;
+
     if (oldOp === newOp) return;
 
     setOperators((prev) => ({ ...prev, [filterKey]: newOp }));
 
-    const oldKey = oldOp === "eq" ? filterKey : `${filterKey}_${oldOp} `;
-    const newKey = newOp === "eq" ? filterKey : `${filterKey}_${newOp} `;
+    const oldKey = oldOp === "eq" ? filterKey : `${filterKey}_${oldOp}`;
+    const newKey = newOp === "eq" ? filterKey : `${filterKey}_${newOp}`;
     const currentValue = filterValues[oldKey];
 
     if (
@@ -149,7 +155,10 @@ const DataTable: React.FC<DataTableProps> = ({
   const removeFilterCondition = (filterKey: string) => {
     setActiveFilters((prev) => prev.filter((f) => f.key !== filterKey));
     // Also clear the filter value
-    const currentOp = operators[filterKey] || "eq";
+    const filterConfig = filters.find((f) => f.key === filterKey);
+    const defaultOp = filterConfig?.defaultOperator || "eq";
+    const currentOp = operators[filterKey] || defaultOp;
+    
     const activeKey =
       currentOp === "eq" ? filterKey : `${filterKey}_${currentOp}`;
     handleFilterChange(activeKey, undefined);
@@ -182,7 +191,6 @@ const DataTable: React.FC<DataTableProps> = ({
     setSelectedKeys,
     selectedKeys,
     confirm,
-    clearFilters,
     label: _label,
   }: any) => {
     const [value, setValue] = useState(selectedKeys[0] || "");
@@ -573,16 +581,22 @@ const DataTable: React.FC<DataTableProps> = ({
             )}
 
             {exportable && onExport && (
-              <Tooltip title="Export dữ liệu">
-                <Button
-                  variant="outline"
-                  onClick={onExport}
-                  loading={tableProps.exportLoading}
-                  buttonSize="small"
-                >
-                  <DownloadOutlined /> Export
-                </Button>
-              </Tooltip>
+              <>
+                 <Tooltip title="Export dữ liệu">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                        // Open our new modal instead of calling direct
+                        // Note: We need a state for this
+                       setExportModalOpen(true);
+                    }}
+                    loading={tableProps.exportLoading}
+                    buttonSize="small"
+                  >
+                    <DownloadOutlined /> Export
+                  </Button>
+                </Tooltip>
+              </>
             )}
 
             {batchOperations && activeSelectedRowKeys.length > 0 && (
@@ -754,211 +768,40 @@ const DataTable: React.FC<DataTableProps> = ({
           styles={{ body: { padding: 0 } }}
           className="custom-filter-modal"
         >
-          <div className="filter-builder-container">
-            <div className="active-filters-section">
-              <div className="section-title">
-                Các điều kiện lọc đang được áp dụng:
-              </div>
-
-              {activeFilters.length === 0 ? (
-                <div className="empty-filter-state">
-                  <p>
-                    Chưa có điều kiện lọc nào. Nhấn "+ Thêm điều kiện lọc" để
-                    bắt đầu.
-                  </p>
-                </div>
-              ) : (
-                <div className="filter-conditions-list">
-                  {activeFilters.map((filter, index) => {
-                    const label = filter.label || filter.placeholder;
-                    const currentOp =
-                      operators[filter.key] || filter.defaultOperator || "eq";
-                    const activeKey =
-                      currentOp === "eq"
-                        ? filter.key
-                        : `${filter.key}_${currentOp} `;
-                    const hasValue =
-                      filterValues[activeKey] !== undefined &&
-                      filterValues[activeKey] !== null &&
-                      filterValues[activeKey] !== "";
-                    const isEnabled = enabledFilters[filter.key] !== false;
-
-                    return (
-                      <div
-                        key={filter.key}
-                        className={`filter-condition-item ${!isEnabled ? "disabled" : ""}`}
-                      >
-                        {index > 0 && (
-                          <div className="condition-connector">VÀ</div>
-                        )}
-
-                        <div className="condition-row">
-                          {/* Checkbox */}
-                          <div className="condition-checkbox">
-                            <Checkbox
-                              checked={isEnabled}
-                              onChange={() => toggleFilterEnabled(filter.key)}
-                            />
-                          </div>
-
-                          {/* Field Selector */}
-                          <div className="condition-field">
-                            <Select
-                              value={filter.key}
-                              disabled
-                              options={[{ label: label, value: filter.key }]}
-                              style={{ width: "100%" }}
-                              popupClassName="custom-filter-dropdown"
-                            />
-                          </div>
-
-                          {filter.operators && (
-                            <div className="condition-operator">
-                              <Select
-                                value={currentOp}
-                                onChange={(val) =>
-                                  handleOperatorChange(filter.key, val)
-                                }
-                                options={[
-                                  { label: "Bằng", value: "eq" },
-                                  { label: "Lớn hơn", value: "gt" },
-                                  { label: "Lớn hơn hoặc bằng", value: "gte" },
-                                  { label: "Nhỏ hơn", value: "lt" },
-                                  { label: "Nhỏ hơn hoặc bằng", value: "lte" },
-                                  { label: "Chứa", value: "like" },
-                                  { label: "Khác", value: "ne" },
-                                  { label: "Trong", value: "in" },
-                                ].filter((op) =>
-                                  filter.operators?.includes(op.value as any),
-                                )}
-                                style={{ width: "100%" }}
-                                popupClassName="custom-filter-dropdown"
-                              />
-                            </div>
-                          )}
-
-                          <div className="condition-value">
-                            {(!filter.type || filter.type === "select") && (
-                              <Select
-                                placeholder={
-                                  filter.placeholder ||
-                                  `Chọn ${label?.toLowerCase()} `
-                                }
-                                value={filterValues[activeKey]}
-                                onChange={(value) =>
-                                  handleFilterValueChange(filter.key, value)
-                                }
-                                options={filter.options}
-                                allowClear
-                                mode={
-                                  currentOp === "in" ? "multiple" : undefined
-                                }
-                                style={{ width: "100%" }}
-                              />
-                            )}
-
-                            {(filter.type === "input" ||
-                              filter.type === "number") && (
-                              <Input
-                                placeholder={
-                                  filter.placeholder ||
-                                  `Nhập ${label?.toLowerCase()} `
-                                }
-                                value={filterValues[activeKey]}
-                                onChange={(e) =>
-                                  handleFilterValueChange(
-                                    filter.key,
-                                    e.target.value,
-                                  )
-                                }
-                                allowClear
-                                style={{ width: "100%", marginBottom: 0 }}
-                                type={
-                                  filter.type === "number" ? "number" : "text"
-                                }
-                              />
-                            )}
-                          </div>
-                          {/* Delete Button */}
-                          <button
-                            className="condition-delete"
-                            onClick={() => removeFilterCondition(filter.key)}
-                            title="Xóa điều kiện"
-                          >
-                            ×
-                          </button>
-                        </div>
-
-                        {hasValue && (
-                          <div className="condition-preview">
-                            {label}{" "}
-                            {currentOp === "like"
-                              ? "chứa"
-                              : currentOp === "in"
-                                ? "trong"
-                                : "="}{" "}
-                            <strong>
-                              {Array.isArray(filterValues[activeKey])
-                                ? filterValues[activeKey].join(", ")
-                                : filterValues[activeKey]}
-                            </strong>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Add Condition Button */}
-              <div className="filter-actions">
-                <Dropdown
-                  menu={{
-                    items: availableFilters
-                      .filter(
-                        (f) => !activeFilters.find((af) => af.key === f.key),
-                      )
-                      .map((f) => ({
-                        key: f.key,
-                        label: f.label || f.placeholder,
-                        onClick: () => addFilterCondition(f.key),
-                      })),
-                  }}
-                  disabled={availableFilters.length === activeFilters.length}
-                >
-                  <Button variant="outline" style={{ width: "100%" }}>
-                    + Thêm điều kiện lọc
-                  </Button>
-                </Dropdown>
-              </div>
-            </div>
-
-            <div className="filter-builder-footer">
-              <Button
-                variant="outline"
-                onClick={() => setFilterModalOpen(false)}
-                buttonSize="small"
-              >
-                Hủy
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleClearFilters}
-                buttonSize="small"
-              >
-                Bỏ lọc
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => setFilterModalOpen(false)}
-                buttonSize="small"
-              >
-                Áp dụng bộ lọc
-              </Button>
-            </div>
-          </div>
+          <FilterBuilder 
+            filters={availableFilters}
+            activeFilters={activeFilters}
+            filterValues={filterValues}
+            operators={operators}
+            enabledFilters={enabledFilters}
+            onAddFilter={addFilterCondition}
+            onRemoveFilter={removeFilterCondition}
+            onFilterChange={handleFilterValueChange}
+            onOperatorChange={handleOperatorChange}
+            onToggleFilter={toggleFilterEnabled}
+            onApply={() => setFilterModalOpen(false)}
+            onClear={handleClearFilters}
+            onCancel={() => setFilterModalOpen(false)}
+          />
         </Modal>
       </Card>
+
+      {/* Advanced Export Modal */}
+      <ExportModal 
+          visible={exportModalOpen}
+          onCancel={() => setExportModalOpen(false)}
+          onOk={(options) => {
+              if (onExport) {
+                  onExport(options);
+                  setExportModalOpen(false);
+              }
+          }}
+          loading={tableProps.exportLoading}
+          totalRecords={pagination && typeof pagination !== 'boolean' ? pagination.total : 0}
+          currentPageSize={pagination && typeof pagination !== 'boolean' ? pagination.pageSize : 10}
+          filters={filters}
+          currentFilters={filterValues}
+      />
     </div>
   );
 };

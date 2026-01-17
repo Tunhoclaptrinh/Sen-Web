@@ -186,7 +186,7 @@ const ArtifactManagement = () => {
         exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={() => exportData('xlsx')} 
+        onExport={exportData} 
         onRefresh={refresh}
         filters={[
           {
@@ -212,6 +212,34 @@ const ArtifactManagement = () => {
                 { label: "Đang trưng bày", value: true },
                 { label: "Trong kho", value: false },
             ]
+          },
+          {
+            key: "material",
+            placeholder: "Chất liệu",
+            type: "input",
+            operators: ["like", "ilike", "eq"],
+            defaultOperator: "ilike"
+          },
+          {
+            key: "technique",
+            placeholder: "Kỹ thuật chế tác",
+            type: "input",
+            operators: ["like", "ilike"],
+            defaultOperator: "ilike"
+          },
+          {
+            key: "dating",
+            placeholder: "Niên đại",
+            type: "input",
+            operators: ["like", "ilike", "eq"],
+            defaultOperator: "ilike"
+          },
+          {
+            key: "origin",
+            placeholder: "Nguồn gốc/Xuất xứ",
+            type: "input",
+            operators: ["like", "ilike"],
+            defaultOperator: "ilike"
           }
         ]}
         filterValues={filters}

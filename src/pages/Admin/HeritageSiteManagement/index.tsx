@@ -204,7 +204,7 @@ const HeritageSiteManagement = () => {
         exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={() => exportData('xlsx')} 
+        onExport={exportData} 
         onRefresh={refresh}
         filters={[
           {
@@ -231,6 +231,31 @@ const HeritageSiteManagement = () => {
               { label: "KHÔNG", value: false },
             ],
           },
+          {
+            key: "recognition_date",
+            placeholder: "Ngày công nhận",
+            type: "date",
+            operators: ["eq", "gte", "lte"], 
+            defaultOperator: "eq"
+          },
+          {
+            key: "management_unit",
+            placeholder: "Đơn vị quản lý",
+            type: "input",
+            operators: ["like"],
+            defaultOperator: "like"
+          },
+           {
+            key: "ranking",
+            placeholder: "Xếp hạng",
+            options: [
+                { label: "Cấp Tỉnh", value: "Cấp Tỉnh" },
+                { label: "Cấp Quốc gia", value: "Cấp Quốc gia" },
+                { label: "Cấp Quốc gia đặc biệt", value: "Cấp Quốc gia đặc biệt" },
+            ],
+            operators: ["eq", "in"],
+            defaultOperator: "eq"
+          }
         ]}
         filterValues={filters}
         onFilterChange={onFilterChange}

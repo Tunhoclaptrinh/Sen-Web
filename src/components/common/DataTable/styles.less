@@ -138,6 +138,23 @@
 }
 
 /* Checkbox Override */
+
+/* Radio Button Override to fix black color issue */
+.data-table-wrapper .ant-radio-checked .ant-radio-inner,
+.export-modal .ant-radio-checked .ant-radio-inner {
+    border-color: @primary-color !important;
+    background-color: @primary-color !important;
+
+    &::after {
+        background-color: #fff !important;
+    }
+}
+
+.data-table-wrapper .ant-radio:hover .ant-radio-inner,
+.export-modal .ant-radio:hover .ant-radio-inner {
+    border-color: @primary-color !important;
+}
+
 .data-table-wrapper .ant-checkbox-checked .ant-checkbox-inner {
     background-color: @primary-color !important;
     border-color: @primary-color !important;

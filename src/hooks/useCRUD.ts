@@ -365,12 +365,21 @@ export const useCRUD = (service: any, options: any = {}) => {
     /**
      * Export data
      */
+    /**
+     * Export data
+     */
     const exportData = useCallback(
-        async (format = 'xlsx', ids: any[] = []) => {
+        async (options: any = 'xlsx', ids: any[] = []) => {
             try {
                 setLoading(true);
-                let params;
+                let params: any = {};
                 
+                // Determine format and scope from options
+                // Backward compatibility: if options is string, treat as format only (default scope=page)
+                const format = typeof options === 'string' ? options : options.format || 'xlsx';
+                const scope = typeof options === 'object' ? options.scope || 'page' : 'page';
+                const limit = typeof options === 'object' ? options.limit : undefined;
+
                 // If specific IDs are provided (Batch Export), use them exclusively
                 if (ids && ids.length > 0) {
                      params = { 
@@ -378,8 +387,34 @@ export const useCRUD = (service: any, options: any = {}) => {
                          format 
                      };
                 } else {
-                    // Otherwise use current filters (Filtered Export)
-                    params = { ...buildQueryParams(), format };
+                    // Decide which filters to use: options.filters (from Ad-hoc Export) or current URL params
+                    let baseParams = {};
+                    if (options.filters) {
+                         // Build params manually from options.filters object if provided
+                         baseParams = { ...options.filters };
+                    } else {
+                         // Fallback to current table filters
+                         baseParams = buildQueryParams();
+                    }
+
+                    // Otherwise construct params based on scope
+                    if (scope === 'all') {
+                        // Export ALL: use filter params but REMOVE pagination
+                        const { _page, _limit, ...rest } = baseParams as any;
+                        params = { ...rest, format };
+                        params._limit = -1; 
+                    } else if (scope === 'custom') {
+                        // Custom Limit: use filters but override limit
+                         const { _page, ...rest } = baseParams as any;
+                         params = { ...rest, _limit: limit, _page: 1, format };
+                    } else { // scope === 'page'
+                        // Current Page: use exactly what's provided (including pagination if it came from buildQueryParams, or default if ad-hoc)
+                        params = { ...baseParams, format };
+                        // If ad-hoc filters were used, they don't have pagination params, so we might need defaults?
+                        // Actually 'page' scope implies "Current visible page". 
+                        // If we changed filters ad-hoc, "Current Page" concept is vague. 
+                        // Let's assume for ad-hoc, "page" means "First Page" unless specified.
+                    }
                 }
 
                 const blob = await (service.exportCollection ? service.exportCollection(params) : service.export ? service.export(params) : null);
@@ -399,6 +434,7 @@ export const useCRUD = (service: any, options: any = {}) => {
                 message.success(successMessage.export);
                 return true;
             } catch (err) {
+                console.error("Export error", err);
                 message.error(errorMessage.export);
                 return false;
             } finally {
@@ -426,12 +462,35 @@ export const useCRUD = (service: any, options: any = {}) => {
                 setLoading(false);
             }
         },
-        [service, fetchAll, successMessage.import, errorMessage.import]
+        [service, fetchAll, successMessage.import, errorMessage.import] 
     );
-
     /**
-     * Fetch on mount or when dependencies change (via fetchAll identity)
+     * Download template
      */
+    const downloadTemplate = useCallback(async () => {
+        try {
+            setLoading(true);
+            if (service.downloadTemplate) {
+                 const blob = await service.downloadTemplate();
+                 const url = window.URL.createObjectURL(blob);
+                 const link = document.createElement('a');
+                 link.href = url;
+                 link.download = `import_template.xlsx`;
+                 document.body.appendChild(link);
+                 link.click();
+                 document.body.removeChild(link);
+                 window.URL.revokeObjectURL(url);
+                 message.success("Tải mẫu thành công");
+            } else {
+                message.warning("Chức năng chưa được hỗ trợ");
+            }
+        } catch (err) {
+            message.error("Tải mẫu thất bại");
+        } finally {
+            setLoading(false);
+        }
+    }, [service]);
+
     useEffect(() => {
         if (autoFetch) {
             fetchAll();
@@ -478,6 +537,7 @@ export const useCRUD = (service: any, options: any = {}) => {
         // Import/Export
         exportData,
         importData,
+        downloadTemplate,
 
         // Table helpers
         handleTableChange,

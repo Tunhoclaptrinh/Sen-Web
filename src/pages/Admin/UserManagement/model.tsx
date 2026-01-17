@@ -3,7 +3,6 @@ import { message, Modal } from "antd";
 import { User, UserStats } from "@/types";
 import userService from "@/services/user.service";
 import { useCRUD } from "@/hooks/useCRUD";
-import dayjs from "dayjs";
 
 export const useUserModel = () => {
   // Stats State
@@ -49,9 +48,8 @@ export const useUserModel = () => {
     fetchStats();
   }, []);
 
-  // Loading States for Import/Export
+  // Loading States for Import
   const [importLoading, setImportLoading] = useState(false);
-  const [exportLoading, setExportLoading] = useState(false);
 
   // Business Logic
   const toggleStatus = async (record: User) => {
@@ -84,28 +82,6 @@ export const useUserModel = () => {
     const success = await crud.batchDelete(keys);
     if (success) fetchStats();
     return success;
-  };
-
-  const exportData = async () => {
-    setExportLoading(true);
-    try {
-      const blob = await userService.export();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute(
-        "download",
-        `users_export_${dayjs().format("YYYYMMDD")}.csv`,
-      );
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      message.success("Xuất dữ liệu thành công");
-    } catch (error) {
-      message.error("Xuất dữ liệu thất bại");
-    } finally {
-      setExportLoading(false);
-    }
   };
 
   const importData = async (file: File) => {
@@ -219,28 +195,11 @@ export const useUserModel = () => {
     return success;
   };
 
-  const downloadTemplate = async () => {
-    try {
-      const blob = await userService.downloadTemplate();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "user_import_template.xlsx"); // Assuming API returns xlsx
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      message.success("Tải mẫu thành công");
-    } catch (error) {
-      message.error("Tải mẫu thất bại");
-    }
-  };
-
   return {
     ...crud,
     stats,
     statsLoading,
     importLoading,
-    exportLoading,
     currentRecord,
     formVisible,
     detailVisible,
@@ -248,9 +207,7 @@ export const useUserModel = () => {
     toggleStatus,
     deleteUser,
     batchDeleteUsers,
-    exportData,
     importData,
-    downloadTemplate,
     handleSubmit,
     openCreate,
     openEdit,

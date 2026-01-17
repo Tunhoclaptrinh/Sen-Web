@@ -37,7 +37,7 @@ const UserManagement = () => {
     importData,
     downloadTemplate,
     importLoading,
-    exportLoading,
+    loading: exportLoading, // Aliasing loading as exportLoading since useCRUD uses shared loading
     handleSubmit,
     // UI State & Handlers
     currentRecord,
@@ -202,16 +202,30 @@ const UserManagement = () => {
             key: "name",
             placeholder: "Tên người dùng",
             type: "input",
-            operators: ["like", "eq", "ne"],
-            defaultOperator: "like",
+            operators: ["like", "ilike", "eq", "ne", "in", "not_like"],
+            defaultOperator: "ilike",
           },
           {
             key: "email",
             placeholder: "Email",
             type: "input",
-            operators: ["like", "eq"],
-            defaultOperator: "like",
+            operators: ["like", "ilike", "eq"],
+            defaultOperator: "ilike",
           },
+          {
+             key: "phone",
+             placeholder: "Số điện thoại",
+             type: "input",
+             operators: ["like", "ilike", "eq"],
+             defaultOperator: "like"
+          },
+          {
+              key: "created_at",
+              placeholder: "Ngày tham gia",
+              type: "date",
+              operators: ["eq", "gte", "lte"],
+              defaultOperator: "eq"
+          }
         ]}
         filterValues={filters}
         onFilterChange={onFilterChange}
