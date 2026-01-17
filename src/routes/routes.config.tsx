@@ -80,6 +80,9 @@ const ShopManagement = lazy(
 const ChapterManagement = lazy(
   () => import("@/pages/Admin/GameManagement/ChapterManagement"),
 );
+const LevelManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/LevelManagement"),
+);
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -332,6 +335,10 @@ const routes: RouteObject[] = [
       {
         path: "chapters",
         element: <ChapterManagement />,
+      },
+      {
+        path: "levels",
+        element: <LevelManagement />,
       },
       {
         path: "characters",

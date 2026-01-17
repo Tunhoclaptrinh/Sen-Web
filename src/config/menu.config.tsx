@@ -73,7 +73,12 @@ export const adminMenu: IMenuItem[] = [
             {
                 key: 'chapters',
                 path: '/admin/chapters',
-                name: 'Chương & Màn chơi',
+                name: 'Chương',
+            },
+            {
+                key: 'levels',
+                path: '/admin/levels',
+                name: 'Màn chơi',
             },
             {
                 key: 'characters',

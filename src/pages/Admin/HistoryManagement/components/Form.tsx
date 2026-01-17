@@ -1,4 +1,4 @@
-import { Input, Switch, Row, Col, Form, Tabs, message, DatePicker } from "antd";
+import { Input, Switch, Row, Col, Form, Tabs, message } from "antd";
 import { FormModal, TinyEditor, Button as StyledButton } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import { useEffect, useState } from "react";
@@ -123,14 +123,25 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         ...values,
         shortDescription: values.short_description,
         publishDate: values.publishDate?.toISOString(),
+        image: (() => {
+          const raw = Array.isArray(values.image) ? values.image[0] : values.image;
+          if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
+          return raw || "";
+        })(),
+        gallery: values.gallery?.map((item: any) => 
+          typeof item === "object" ? (item.url || item.response?.url || "") : item
+        ) || [],
         related_heritage_ids: values.related_heritage_ids?.map((item: any) => 
           typeof item === 'object' ? item.value : item
-        ),
+        ) || [],
         related_artifact_ids: values.related_artifact_ids?.map((item: any) => 
           typeof item === 'object' ? item.value : item
-        )
+        ) || []
     };
-    await onSubmit(submitData);
+    const success = await onSubmit(submitData);
+    if (success) {
+      form.resetFields();
+    }
   };
 
   // Fetch functions for Search
@@ -167,9 +178,13 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       width={1000}
       form={form}
       loading={loading}
+      preserve={false}
       footer={
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-            <StyledButton variant="outline" onClick={onCancel} style={{ minWidth: '120px' }}>
+            <StyledButton variant="outline" onClick={() => {
+              form.resetFields();
+              onCancel();
+            }} style={{ minWidth: '120px' }}>
                 Hủy
             </StyledButton>
             <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{ minWidth: '120px' }}>
@@ -225,11 +240,6 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                             <Col span={8}>
                                 <Form.Item name="author" label="Tác giả">
                                     <Input placeholder="Tên tác giả..." />
-                                </Form.Item>
-                            </Col>
-                            <Col span={8}>
-                                <Form.Item name="publishDate" label="Ngày đăng">
-                                    <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" showTime />
                                 </Form.Item>
                             </Col>
                             <Col span={8}>

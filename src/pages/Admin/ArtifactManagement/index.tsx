@@ -1,6 +1,7 @@
 import {
   Tag
 } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import { 
   ArtifactType, 
@@ -36,7 +37,6 @@ const ArtifactManagement = () => {
     importData,
     downloadTemplate,
     importLoading,
-    exportLoading,
     handleSubmit,
     // UI State & Handlers
     currentRecord,
@@ -119,6 +119,8 @@ const ArtifactManagement = () => {
       render: (cond: ArtifactCondition) => {
         let color = "blue";
         if (['excellent', 'EXCELLENT'].includes(cond)) color = "green";
+        if (['good', 'GOOD'].includes(cond)) color = "blue";
+        if (['fair', 'FAIR'].includes(cond)) color = "orange";
         if (['poor', 'POOR'].includes(cond)) color = "red";
         return <Tag color={color}>{ArtifactConditionLabels[cond]?.toUpperCase() || cond}</Tag>;
       }
@@ -128,7 +130,7 @@ const ArtifactManagement = () => {
       dataIndex: "is_on_display",
       key: "is_on_display",
       width: 100,
-      render: (onDisplay: boolean) => onDisplay ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>,
+      render: (onDisplay: boolean) => onDisplay ? <Tag color="green">CÓ</Tag> : <Tag color="red">KHÔNG</Tag>,
     },
     {
       title: "Di sản",
@@ -170,13 +172,21 @@ const ArtifactManagement = () => {
         onDelete={deleteArtifact}
         onBatchDelete={batchDeleteArtifacts}
         batchOperations={true}
+        batchActions={[
+          {
+            key: 'export',
+            label: 'Export đã chọn',
+            icon: <DownloadOutlined />,
+            onClick: (ids: any[]) => exportData('xlsx', ids),
+          }
+        ]}
         importable={true}
         importLoading={importLoading}
         exportable={true}
-        exportLoading={exportLoading}
+        exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={exportData}
+        onExport={() => exportData('xlsx')} 
         onRefresh={refresh}
         filters={[
           {
@@ -215,6 +225,7 @@ const ArtifactManagement = () => {
         onSubmit={handleSubmit}
         initialValues={currentRecord}
         loading={loading}
+        isEdit={!!currentRecord}
       />
 
       <ArtifactDetailModal

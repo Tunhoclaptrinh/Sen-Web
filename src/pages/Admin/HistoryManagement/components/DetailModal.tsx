@@ -73,7 +73,7 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                             <Space size="large">
                                 <Space><UserOutlined style={{color: '#8c8c8c'}} /> <strong>{record.author || "Khuyết danh"}</strong></Space>
-                                <Space><CalendarOutlined style={{color: '#8c8c8c'}} /> {dayjs(record.publishDate).format('DD/MM/YYYY HH:mm')}</Space>
+                                <Space><CalendarOutlined style={{color: '#8c8c8c'}} /> {dayjs(record.publishDate).format('DD/MM/YYYY')}</Space>
                                 <Tag color={record.is_active ? 'green' : 'red'}>{record.is_active ? 'HIỂN THỊ' : 'ĐÃ ẨN'}</Tag>
                             </Space>
                             <Space><EyeOutlined /> {record.views || 0} lượt xem</Space>
@@ -96,7 +96,12 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({
                         <Descriptions.Item label="Tiêu đề bài viết"><strong>{record.title}</strong></Descriptions.Item>
                         <Descriptions.Item label="Mô tả ngắn">{record.short_description || record.shortDescription}</Descriptions.Item>
                         <Descriptions.Item label="Tác giả">{record.author || "Khuyết danh"}</Descriptions.Item>
-                        <Descriptions.Item label="Ngày xuất bản">{dayjs(record.publishDate).format('DD/MM/YYYY HH:mm')}</Descriptions.Item>
+                        <Descriptions.Item label="Ngày đăng">
+                            {record.publishDate ? dayjs(record.publishDate).format('DD/MM/YYYY') : 'N/A'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày cập nhật">
+                            {record.updatedAt ? dayjs(record.updatedAt).format('DD/MM/YYYY') : 'Chưa cập nhật'}
+                        </Descriptions.Item>
                         <Descriptions.Item label="Số lượt xem">{record.views || 0}</Descriptions.Item>
                     </Descriptions>
 
