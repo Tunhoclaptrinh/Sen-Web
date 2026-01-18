@@ -212,7 +212,7 @@ const QuestsPage: React.FC = () => {
                                         </Button>,
                                         quest.is_completed ? (
                                             <Tag key="completed" color="success" icon={<CheckCircleOutlined />}>
-                                                Đã Hoàn Thành
+                                                Đã hoàn thành
                                             </Tag>
                                         ) : (
                                             <Button
@@ -220,7 +220,7 @@ const QuestsPage: React.FC = () => {
                                                 type="primary"
                                                 onClick={() => handleCompleteQuest(quest.id)}
                                             >
-                                                Hoàn Thành
+                                                Hoàn thành
                                             </Button>
                                         ),
                                     ]}
@@ -231,10 +231,10 @@ const QuestsPage: React.FC = () => {
                                         </div>
                                         <Tag color={getTypeColor(quest.type)}>
                                             {quest.type === 'daily'
-                                                ? 'Hằng Ngày'
+                                                ? 'Hằng ngày'
                                                 : quest.type === 'weekly'
-                                                    ? 'Hằng Tuần'
-                                                    : 'Thành Tích'}
+                                                    ? 'Hằng tuần'
+                                                    : 'Thành tích'}
                                         </Tag>
                                     </div>
 
