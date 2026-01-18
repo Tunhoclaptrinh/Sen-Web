@@ -5,6 +5,7 @@ import {
   SearchOutlined,
   MenuOutlined,
   SettingOutlined,
+  AppstoreOutlined,
   HeartOutlined,
   MailOutlined,
   FacebookOutlined,
@@ -76,9 +77,9 @@ const Header: React.FC = () => {
       label: <Link to="/profile">Hồ Sơ</Link>,
     },
     {
-      key: 'collections',
-      icon: <HeartOutlined />,
-      label: <Link to="/collections">Bộ Sưu Tập</Link>,
+      key: 'library',
+      icon: <AppstoreOutlined />,
+      label: <Link to="/profile/library">Kho Lưu Trữ</Link>,
     },
     {
       key: 'settings',

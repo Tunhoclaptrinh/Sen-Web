@@ -54,6 +54,7 @@ const ArtifactDetailPage = () => {
     loading,
     error,
   } = useSelector((state: RootState) => state.artifact);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
   const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
@@ -70,8 +71,22 @@ const ArtifactDetailPage = () => {
   useEffect(() => {
     if (artifact && artifact.id) {
       fetchRelated(artifact);
+      if (isAuthenticated) {
+          checkFavoriteStatus(artifact.id);
+      }
     }
-  }, [artifact]);
+  }, [artifact, isAuthenticated]);
+
+  const checkFavoriteStatus = async (artifactId: number) => {
+      try {
+          const res = await favoriteService.check("artifact", artifactId);
+          if (res.success && res.data) {
+              setIsFavorite(res.data.isFavorited);
+          }
+      } catch (error) {
+          console.error("Failed to check favorite status", error);
+      }
+  };
 
   const fetchRelated = async (currentItem: Artifact) => {
     try {
@@ -123,6 +138,10 @@ const ArtifactDetailPage = () => {
   }, [error, navigate]);
 
   const handleToggleFavorite = async () => {
+    if (!isAuthenticated) {
+        message.warning("Vui lòng đăng nhập để sử dụng tính năng này");
+        return;
+    }
     try {
       if (isFavorite) {
         setIsFavorite(false);
@@ -135,6 +154,15 @@ const ArtifactDetailPage = () => {
     } catch (error) {
       message.error("Thao tác thất bại");
     }
+  };
+
+  const handleShare = () => {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+          message.success("Đã sao chép liên kết vào bộ nhớ tạm!");
+      }).catch(() => {
+          message.error("Không thể sao chép liên kết");
+      });
   };
 
   if (loading)
@@ -250,7 +278,7 @@ const ArtifactDetailPage = () => {
       <section className="main-content">
         <div
           className="content-wrapper"
-          style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 24px" }}
+          style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}
         >
           <Tabs
             defaultActiveKey="description"
@@ -261,6 +289,38 @@ const ArtifactDetailPage = () => {
                 label: "Mô Tả",
                 children: (
                   <div className="article-main-wrapper">
+                    <div className="article-meta-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
+                      <div style={{ display: 'flex', gap: 24, color: '#888' }}>
+                        <span>
+                          <CalendarOutlined /> {artifact.year_created}
+                        </span>
+                        <span>
+                          <UserOutlined /> {artifact.creator || "Không rõ"}
+                        </span>
+                      </div>
+                      <div className="action-row" style={{ display: 'flex', gap: 8 }}>
+                        <Button
+                          type="text"
+                          icon={
+                            isFavorite ? (
+                              <HeartFilled style={{ color: "#ff4d4f" }} />
+                            ) : (
+                              <HeartOutlined />
+                            )
+                          }
+                          onClick={handleToggleFavorite}
+                        >
+                          {isFavorite ? "Đã thích" : "Yêu thích"}
+                        </Button>
+                        <Button
+                          type="text"
+                          icon={<ShareAltOutlined />}
+                          onClick={handleShare}
+                        >
+                          Chia sẻ
+                        </Button>
+                      </div>
+                    </div>
                     <h3 className="section-title">Câu Chuyện & Ý Nghĩa</h3>
                     <div className="description-text">
                       <Paragraph>{artifact.description}</Paragraph>
@@ -418,7 +478,11 @@ const ArtifactDetailPage = () => {
                           >
                             {isFavorite ? "Đã Thích" : "Yêu Thích"}
                           </Button>
-                          <Button icon={<ShareAltOutlined />} size="large">
+                          <Button 
+                            icon={<ShareAltOutlined />} 
+                            size="large"
+                            onClick={handleShare}
+                          >
                             Chia Sẻ
                           </Button>
                         </div>

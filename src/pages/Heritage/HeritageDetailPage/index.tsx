@@ -58,6 +58,7 @@ const HeritageDetailPage = () => {
     loading,
     error,
   } = useSelector((state: RootState) => state.heritage);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth); // Get auth state
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
   const [siteArtifacts, setSiteArtifacts] = useState<any[]>([]);
@@ -75,8 +76,22 @@ const HeritageDetailPage = () => {
   useEffect(() => {
     if (site && site.id) {
       fetchRelatedData(site);
+      if (isAuthenticated) {
+        checkFavoriteStatus(site.id);
+      }
     }
-  }, [site]);
+  }, [site, isAuthenticated]);
+
+  const checkFavoriteStatus = async (siteId: number) => {
+    try {
+      const res = await favoriteService.check("heritage_site", siteId);
+      if (res.success && res.data) {
+        setIsFavorite(res.data.isFavorited);
+      }
+    } catch (error) {
+      console.error("Failed to check favorite status", error);
+    }
+  };
 
   const fetchRelatedData = async (currentItem: HeritageSite) => {
     try {
@@ -134,6 +149,10 @@ const HeritageDetailPage = () => {
   }, [error, navigate]);
 
   const handleToggleFavorite = async () => {
+    if (!isAuthenticated) {
+        message.warning("Vui lòng đăng nhập để sử dụng tính năng này");
+        return;
+    }
     if (!id) return;
     try {
       if (isFavorite) {
@@ -150,6 +169,15 @@ const HeritageDetailPage = () => {
     }
   };
 
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+        message.success("Đã sao chép liên kết vào bộ nhớ tạm!");
+    }).catch(() => {
+        message.error("Không thể sao chép liên kết");
+    });
+  };
+
   if (loading)
     return (
       <div className="loading-container">
@@ -158,116 +186,13 @@ const HeritageDetailPage = () => {
     );
   if (!site) return <Empty description="Không tìm thấy di sản" />;
 
-  // const siteArtifacts = site.related_artifacts || []; // Use state-managed siteArtifacts instead
-  const siteLevels = site.related_levels || [];
-  const siteProducts = site.related_products || [];
+
   const relatedHistory =
     relatedHistoryArr.length > 0
       ? relatedHistoryArr
       : site.related_history || [];
 
-  // MOCK DATA for demonstration - only show if NO real data exists
-  const useMockData =
-    relatedHistory.length === 0 &&
-    siteArtifacts.length === 0 &&
-    siteLevels.length === 0;
 
-  // Debug: Log what backend returns
-  console.log("[Heritage Detail] Real data loaded:", {
-    id,
-    relatedHistory,
-    siteArtifacts,
-    useMockData,
-  });
-
-  const mockLevels = useMockData
-    ? [
-        {
-          id: 102,
-          name: "Khám phá Hoàng Thành",
-          description: "Giải mã các bí mật khảo cổ dưới lòng đất Thăng Long.",
-          background_image:
-            "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=800",
-        },
-        {
-          id: 103,
-          name: "Bảo vệ Thăng Long",
-          description:
-            "Tham gia chiến dịch bảo vệ kinh thành Thăng Long khỏi quân xâm lược.",
-          background_image:
-            "https://images.unsplash.com/photo-1555921015-5532091f6026?w=800",
-        },
-        {
-          id: 104,
-          name: "Chiếu Thiên đô",
-          description:
-            "Tìm hiểu về bản chiếu nổi tiếng của vua Lý Thái Tổ khi dời đô.",
-          background_image:
-            "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=800",
-        },
-      ]
-    : siteLevels;
-
-  const mockHistory =
-    useMockData && relatedHistory.length === 0
-      ? [
-          {
-            id: 1,
-            title: "Lý Thái Tổ dời đô ra Thăng Long",
-            name: "Lý Thái Tổ dời đô ra Thăng Long",
-            shortDescription:
-              "Sự kiện lịch sử trọng đại đánh dấu sự hình thành kinh đô Thăng Long - trung tâm chính trị ngàn năm.",
-            image:
-              "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=800",
-            author: "GS. Nguyễn Văn Sử",
-            publishDate: "2024-03-15T00:00:00Z",
-          },
-          {
-            id: 2,
-            title: "Kiến trúc Hoàng Thành qua các triều đại",
-            name: "Kiến trúc Hoàng Thành qua các triều đại",
-            shortDescription:
-              "Sự biến đổi và phát triển của kiến trúc Hoàng Thành Thăng Long qua 13 thế kỷ lịch sử.",
-            image:
-              "https://images.unsplash.com/photo-1555921015-5532091f6026?w=800",
-            author: "TS. Trần Văn Kiến",
-            publishDate: "2024-04-20T00:00:00Z",
-          },
-        ]
-      : relatedHistory.map((h) => ({ ...h, name: h.title || h.name }));
-
-  const mockProducts = useMockData
-    ? [
-        {
-          id: 5,
-          name: "Mô hình Hoàng Thành Thăng Long",
-          price: 450000,
-          image:
-            "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=400",
-        },
-        {
-          id: 6,
-          name: "Sách: Lịch sử Thăng Long - Hà Nội",
-          price: 220000,
-          image:
-            "https://salt.tikicdn.com/cache/w1200/ts/product/23/67/68/73919242d992953284346028887e3871.jpg",
-        },
-        {
-          id: 7,
-          name: "Tranh in Điện Kính Thiên",
-          price: 180000,
-          image:
-            "https://images.unsplash.com/photo-1555921015-5532091f6026?w=400",
-        },
-        {
-          id: 8,
-          name: "Móc khóa Rồng đá",
-          price: 45000,
-          image:
-            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
-        },
-      ]
-    : siteProducts;
 
   // Use helper to resolve main image
   const rawImage =
@@ -362,34 +287,21 @@ const HeritageDetailPage = () => {
               children: (
                 <div className="article-main-wrapper">
                   {/* Article Header Meta */}
-                  <div className="article-meta-header">
-                    <SpaceItem
-                      icon={<CalendarOutlined />}
-                      text={dayjs(publishDate).format("MMM D, YYYY")}
-                    />
-                    <SpaceItem icon={<UserOutlined />} text={authorName} />
-                    <SpaceItem
-                      icon={<CommentOutlined />}
-                      text={`${site.commentCount || 0} comments`}
-                    />
-                  </div>
-
-                  {/* Main Title */}
-                  <h2 className="article-main-title">{site.name}</h2>
-
-                  {/* Content Body (Rich Text) */}
-                  <div
-                    className="article-body-content"
-                    dangerouslySetInnerHTML={{ __html: site.description || "" }}
-                  />
-
-                  {/* Actions Row */}
-                  <div className="article-footer-info">
-                    <Divider />
-                    <div className="action-row">
-                      <Button
+                  <div className="article-meta-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                      <SpaceItem
+                        icon={<CalendarOutlined />}
+                        text={dayjs(publishDate).format("MMM D, YYYY")}
+                      />
+                      <SpaceItem icon={<UserOutlined />} text={authorName} />
+                      <SpaceItem
+                        icon={<CommentOutlined />}
+                        text={`${site.commentCount || 0} comments`}
+                      />
+                    </div>
+                    <div className="action-row" style={{ display: 'flex', gap: 8 }}>
+                       <Button
                         type="text"
-                        size="large"
                         icon={
                           isFavorite ? (
                             <HeartFilled style={{ color: "#ff4d4f" }} />
@@ -403,12 +315,26 @@ const HeritageDetailPage = () => {
                       </Button>
                       <Button
                         type="text"
-                        size="large"
                         icon={<ShareAltOutlined />}
+                        onClick={handleShare}
                       >
                         Chia sẻ
                       </Button>
                     </div>
+                  </div>
+
+                  {/* Main Title */}
+                  <h2 className="article-main-title">{site.name}</h2>
+
+                  {/* Content Body (Rich Text) */}
+                  <div
+                    className="article-body-content"
+                    dangerouslySetInnerHTML={{ __html: site.description || "" }}
+                  />
+
+                  {/* Footer Stats/Divider only - Actions removed */}
+                   <div className="article-footer-info">
+                    <Divider />
                   </div>
                 </div>
               ),
@@ -693,7 +619,7 @@ const HeritageDetailPage = () => {
                   )}
 
                   {/* 3. Related History (Distinct Section) */}
-                  {mockHistory.length > 0 && (
+                  {relatedHistory.length > 0 && (
                     <div
                       className="discovery-block"
                       style={{ marginBottom: 48 }}
@@ -705,7 +631,7 @@ const HeritageDetailPage = () => {
                         Các sự kiện và câu chuyện lịch sử liên quan.
                       </p>
                       <Row gutter={[16, 16]}>
-                        {mockHistory.map((item: any) => (
+                        {relatedHistory.map((item: any) => (
                           <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
                             <ArticleCard data={item} type="history" />
                           </Col>
@@ -879,12 +805,7 @@ const HeritageDetailPage = () => {
                   </div>
 
                   {/* Empty State */}
-                  {!mockLevels.length &&
-                    !siteArtifacts.length &&
-                    !mockHistory.length &&
-                    !mockProducts.length && (
-                      <Empty description="Đang cập nhật nội dung khám phá..." />
-                    )}
+
                 </div>
               ),
             },
