@@ -5,7 +5,7 @@ import { logger } from "@/utils/logger.utils";
 /**
  * Favorite item type
  */
-export type FavoriteType = "artifact" | "heritage_site" | "exhibition";
+export type FavoriteType = "artifact" | "heritage_site" | "exhibition" | "article";
 
 /**
  * Favorite interface
@@ -65,16 +65,19 @@ class FavoriteService {
   /**
    * Get all favorites for current user
    */
-  async getAll(): Promise<BaseApiResponse<Favorite[]>> {
+  async getAll(params?: any): Promise<BaseApiResponse<Favorite[]>> {
     try {
       const response = await apiClient.get<BaseApiResponse<Favorite[]>>(
         this.endpoint,
+        { params }
       );
 
       return {
         success: response.success ?? true,
         data: response.data ?? [],
         message: response.message,
+        // @ts-ignore - Handle pagination metadata if exists
+        pagination: response.pagination || (response as any).meta || undefined
       };
     } catch (error) {
       logger.error("[Favorite] getAll error:", error);

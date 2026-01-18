@@ -16,6 +16,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import historyService from "@/services/history.service"; // Adapt service
+import favoriteService from "@/services/favorite.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import "./styles.less";
 
@@ -41,6 +42,7 @@ const HistoryDetailPage = () => {
     useEffect(() => {
         if (id) {
             fetchData(id);
+            checkFavoriteStatus(id);
             window.scrollTo(0, 0);
         }
     }, [id]);
@@ -74,9 +76,28 @@ const HistoryDetailPage = () => {
         }
     };
 
-    const handleToggleFavorite = () => {
-         setIsFavorite(!isFavorite);
-         message.success(isFavorite ? "Đã xóa khỏi danh sách quan tâm" : "Đã lưu vào danh sách quan tâm");
+    const checkFavoriteStatus = async (currentId: string) => {
+        try {
+            const res = await favoriteService.check('article', currentId);
+            if (res.data) {
+                setIsFavorite(res.data.isFavorited);
+            }
+        } catch (error) {
+            console.error("Error checking favorite status:", error);
+        }
+    };
+
+    const handleToggleFavorite = async () => {
+        try {
+            if (!id) return;
+            const res = await favoriteService.toggle('article', id);
+            if (res.success && res.data) {
+                setIsFavorite(res.data.isFavorited);
+                message.success(res.message);
+            }
+        } catch (error) {
+            message.error("Lỗi khi cập nhật yêu thích");
+        }
     };
 
     if (loading) return <div className="loading-container"><Spin size="large"/></div>;

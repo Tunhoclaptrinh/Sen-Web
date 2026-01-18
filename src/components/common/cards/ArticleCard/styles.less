@@ -121,43 +121,56 @@
             border: none;
             padding: 0;
             display: flex;
-            justify-content: flex-end; // Right align for progressive feel
+            justify-content: space-between; // Align left and right components
+            align-items: center;
 
-            .read-more-btn {
-                background: transparent;
-                color: #6ABE45;
-                padding: 6px 0;
-                border-radius: 0;
-                font-size: 14px;
-                font-weight: 600;
-                border: none;
-                cursor: pointer;
-                transition: all 0.3s;
-                position: relative;
+            .footer-left {
                 display: flex;
                 align-items: center;
-                gap: 6px;
-                box-shadow: none;
+            }
 
-                &::after {
-                    content: '';
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 0;
-                    height: 2px;
-                    background: #6ABE45;
-                    transition: width 0.3s ease;
-                }
+            .footer-right {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                flex: 1;
 
-                &:hover {
-                    color: #5aa63a;
-                    transform: translateX(4px); // Slight move right
+                .read-more-btn {
                     background: transparent;
+                    color: #6ABE45;
+                    padding: 6px 0;
+                    border-radius: 0;
+                    font-size: 14px;
+                    font-weight: 600;
+                    border: none;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
                     box-shadow: none;
-                    
+    
                     &::after {
-                        width: 100%;
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 0;
+                        height: 2px;
+                        background: #6ABE45;
+                        transition: width 0.3s ease;
+                    }
+    
+                    &:hover {
+                        color: #5aa63a;
+                        transform: translateX(4px); // Slight move right
+                        background: transparent;
+                        box-shadow: none;
+                        
+                        &::after {
+                            width: 100%;
+                        }
                     }
                 }
             }

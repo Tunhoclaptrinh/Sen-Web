@@ -38,6 +38,9 @@ export interface StatisticsItem {
 	onClick?: () => void;
 
 	selected?: boolean;
+
+	/** Tùy chỉnh span của item (override global colSpan) */
+	colSpan?: any;
 }
 
 /**
