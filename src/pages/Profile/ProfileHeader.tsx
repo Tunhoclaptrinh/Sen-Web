@@ -47,18 +47,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, onTabCha
         }
     };
 
-    const handleTabClick = (key: string) => {
-        if (onTabChange) {
-            onTabChange(key);
-        } else {
-             // Navigation logic if props not provided, or specific routing
-             if (key === 'library') {
-                 navigate('/profile/library');
-             } else if (key === 'profile') {
-                 navigate('/profile');
-             }
-        }
-    };
+    // const handleTabClick = (key: string) => {
+    //     if (onTabChange) {
+    //         onTabChange(key);
+    //     } else {
+    //          // Navigation logic if props not provided, or specific routing
+    //          if (key === 'library') {
+    //              navigate('/profile/library');
+    //          } else if (key === 'profile') {
+    //              navigate('/profile');
+    //          }
+    //     }
+    // };
 
     const isLibraryPage = location.pathname.includes('/profile/library');
 
@@ -92,7 +92,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, onTabCha
                                 <div className="name-role-wrapper">
                                     <h1 className="user-name">{user?.name}</h1>
                                     <span className="user-role-badge">
-                                        {user?.role === "admin" ? "🛡️ Quản Trị Viên" : "Thành Viên"}
+                                        {user?.role === "admin" ? "🛡️ Quản trị viên" : "Thành viên"}
                                     </span>
                                     {/* Edit Button - Only show if not on profile page, or always show? 
                                         User said: "thêm nút chỉnh sửa thông tin cá nhân để chuyển đến trang profile"

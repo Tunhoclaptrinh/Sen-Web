@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; // React unused but imports kept for hook usage
 import { useSearchParams } from "react-router-dom";
 import {
   Form,
@@ -7,14 +8,14 @@ import {
   Spin,
   Row,
   Col,
-  Upload,
-  Avatar,
+  // Upload,
+  // Avatar,
   Timeline,
   Alert
 } from "antd";
 import Button from "@/components/common/Button"; // Core Component
 import {
-  CameraOutlined,
+  // CameraOutlined,
   SaveOutlined,
   LockOutlined,
   UserOutlined,
@@ -30,7 +31,7 @@ import { useSelector, useDispatch } from "react-redux";
 import userService from "@services/user.service";
 import collectionService, { Collection } from "@services/collection.service";
 import favoriteService, { FavoriteStats } from "@services/favorite.service";
-import apiClient from "@config/axios.config";
+// import apiClient from "@config/axios.config";
 import { getMe } from "@store/slices/authSlice";
 import { RootState, AppDispatch } from "@/store";
 import StatisticsCard from "@/components/common/StatisticsCard"; // Core Component
@@ -47,7 +48,8 @@ const Profile = () => {
   // Loading States
   const [loading, setLoading] = useState(false);
   const [collectionsLoading, setCollectionsLoading] = useState(false);
-  const [favoritesLoading, setFavoritesLoading] = useState(false);
+  // const [favoritesLoading, setFavoritesLoading] = useState(false);
+  const [favoritesLoading] = useState<boolean>(false);
   const [activityLoading, setActivityLoading] = useState(false);
 
   // Data States
@@ -55,7 +57,7 @@ const Profile = () => {
   // Favorites list moved to LibraryPage, keeping stats only
   const [favoriteStats, setFavoriteStats] = useState<FavoriteStats | null>(null);
   // const [activities, setActivities] = useState<any[]>([]); // Unused for now
-  const [avatar, setAvatar] = useState(user?.avatar);
+  // const [avatar, setAvatar] = useState(user?.avatar);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ const Profile = () => {
         phone: user.phone,
         bio: user.bio,
       });
-      setAvatar(user.avatar);
+      // setAvatar(user.avatar);
       fetchDashboardData();
       fetchCollections(); // Fetch for stats count
     }
