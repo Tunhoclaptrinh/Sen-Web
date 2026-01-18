@@ -39,9 +39,7 @@ const HistoryDetailPage = lazy(
 
 // Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
-const CollectionsPage = lazy(
-  () => import("@/pages/Profile/Collections/CollectionsPage"),
-);
+const LibraryPage = lazy(() => import("@/pages/Profile/Library/LibraryPage"));
 const FavoritesPage = lazy(() => import("@/pages/Profile/FavoritesPage"));
 const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 // const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
@@ -269,9 +267,13 @@ const routes: RouteObject[] = [
         element: <Profile />,
       },
       {
-        path: "collections",
-        element: <CollectionsPage />,
+        path: "library",
+        element: <LibraryPage />,
       },
+      // {
+      //   path: "collections", // Deprecated, redirect or keep for legacy URL support if needed
+      //   element: <LibraryPage />, // Or redirect to library? For now let's just use Library
+      // },
       {
         path: "favorites",
         element: <FavoritesPage />,

@@ -116,7 +116,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
 
 				<Row gutter={[rowGutter, rowGutter]}>
 					{data.map((item, index) => (
-						<Col {...colSpan} key={index}>
+						<Col {...(item.colSpan || colSpan)} key={index}>
 							{renderStatisticItem(item)}
 						</Col>
 					))}
@@ -133,7 +133,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
 
 			<Row gutter={[rowGutter, rowGutter]} wrap>
 				{data.map((item, index) => (
-					<Col {...colSpan} key={index}>
+					<Col {...(item.colSpan || colSpan)} key={index}>
 						{renderStatisticItem(item)}
 					</Col>
 				))}

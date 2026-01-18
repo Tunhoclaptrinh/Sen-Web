@@ -16,11 +16,14 @@ const { Paragraph } = Typography;
 
 interface ArticleCardProps {
     data: any; // Using any for shared convenience
-    type: 'artifact' | 'heritage' | 'history';
+    type: 'artifact' | 'heritage' | 'history' | 'collection';
     variant?: 'default' | 'portrait'; // Added variant support
+    actions?: React.ReactNode;
+    secondaryAction?: React.ReactNode;
+    showReadMore?: boolean;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'default' }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'default', actions, secondaryAction, showReadMore = true }) => {
     const navigate = useNavigate();
 
     const handleNavigate = () => {
@@ -28,12 +31,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
         if (type === 'artifact') path = `/artifacts/${data.id}`;
         else if (type === 'heritage') path = `/heritage-sites/${data.id}`;
         else if (type === 'history') path = `/history/${data.id}`;
+        else if (type === 'collection') path = `/profile/collections/${data.id}`;
         
-        navigate(path);
+        if (path) navigate(path);
     };
 
-    const rawImage = resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images);
-    const imageUrl = getImageUrl(rawImage, 'https://via.placeholder.com/800x600');
+    const rawImage = resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images) || data.thumbnail; // Added thumbnail for collection
+    const imageUrl = getImageUrl(rawImage, type === 'collection' ? '/images/collection-placeholder.jpg' : 'https://via.placeholder.com/800x600');
 
     return (
         <div className={`article-card ${type} ${variant}`} onClick={handleNavigate} style={{ cursor: 'pointer' }}>
@@ -45,18 +49,25 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
                          <EnvironmentOutlined /> {data.region}
                      </div>
                  )}
+                 {type === 'collection' && data.total_items !== undefined && (
+                     <div className="location-badge" style={{ background: 'rgba(0,0,0,0.7)' }}>
+                         {data.total_items} mục
+                     </div>
+                 )}
             </div>
 
             <div className="card-content">
                 {/* Meta Row: Date | Author | Comments */}
                 <div className="card-meta">
                     <span className="meta-item">
-                        <CalendarOutlined /> {dayjs(data.publishDate || data.createdAt).format('MMM D, YYYY')}
+                        <CalendarOutlined /> {dayjs(data.publishDate || data.createdAt || data.created_at).format('DD/MM/YYYY')}
                     </span>
-                    <span className="meta-item">
-                        <UserOutlined /> {data.author || 'Admin'}
-                    </span>
-                    {data.commentCount !== undefined && (
+                    {type !== 'collection' && (
+                        <span className="meta-item">
+                            <UserOutlined /> {data.author || 'Admin'}
+                        </span>
+                    )}
+                    {(data.commentCount !== undefined && type !== 'collection') && (
                         <span className="meta-item">
                              <CommentOutlined /> {data.commentCount > 0 ? `${data.commentCount}` : '0'}
                         </span>
@@ -67,13 +78,20 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
 
                 {/* Short Description or Truncated Description */}
                 <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
-                    {data.short_description || data.shortDescription || "Chưa có mô tả ngắn."}
+                    {data.short_description || data.shortDescription || data.description || "Chưa có mô tả ngắn."}
                 </Paragraph>
                 
                 <div className="card-footer">
-                    <button className="read-more-btn">
-                        {data.short_description || data.shortDescription ? 'Đọc thêm' : 'Khám phá'} <ArrowRightOutlined />
-                    </button>
+                    <div className="footer-left" onClick={(e) => e.stopPropagation()}>
+                        {secondaryAction}
+                    </div>
+                    <div className="footer-right" onClick={(e) => actions && e.stopPropagation()}>
+                        {actions ? actions : (showReadMore && (
+                            <button className="read-more-btn">
+                                {(data.short_description || data.shortDescription) ? 'Đọc thêm' : 'Khám phá'} <ArrowRightOutlined />
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

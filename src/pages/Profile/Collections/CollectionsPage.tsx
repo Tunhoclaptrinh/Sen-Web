@@ -1,280 +1,174 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Spin, message, Typography, Empty, Modal } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined, AppstoreOutlined } from '@ant-design/icons';
+import Button from '@/components/common/Button';
+import ArticleCard from '@/components/common/cards/ArticleCard';
+import collectionService, { Collection, CollectionDTO } from '@/services/collection.service';
+import CollectionModal from './CollectionModal';
 import { useNavigate } from 'react-router-dom';
-import {
-    Row,
-    Col,
-    Card,
-    Button,
-    Empty,
-    Spin,
-    Statistic,
-    Tag,
-    Modal,
-    Form,
-    Input,
-    Switch,
-    message,
-    Tooltip,
-} from 'antd';
-import {
-    PlusOutlined,
-    EyeOutlined,
-    LockOutlined,
-    GlobalOutlined,
-    HeartOutlined,
-    PictureOutlined,
-} from '@ant-design/icons';
-import collectionService from '@services/collection.service';
-import type { Collection } from '@/types';
-import './styles.less';
 
-const { TextArea } = Input;
+const { Title, Paragraph } = Typography;
 
-const CollectionsPage: React.FC = () => {
-    const navigate = useNavigate();
+const CollectionsPage = () => {
+    // const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [collections, setCollections] = useState<Collection[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [createModalVisible, setCreateModalVisible] = useState(false);
-    const [form] = Form.useForm();
-
-    useEffect(() => {
-        fetchCollections();
-    }, []);
+    
+    // Modal State
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalLoading, setModalLoading] = useState(false);
+    const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
 
     const fetchCollections = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await collectionService.getAll();
-            setCollections(response.data || []);
+            const res = await collectionService.getAll();
+            if (res.success) {
+                setCollections(res.data || []);
+            }
         } catch (error) {
-            message.error('Không thể tải bộ sưu tập');
+            message.error("Không thể tải danh sách bộ sưu tập");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleCreateCollection = async (values: any) => {
+    useEffect(() => {
+        fetchCollections();
+    }, []);
+
+    const handleCreate = () => {
+        setEditingCollection(null);
+        setModalVisible(true);
+    };
+
+    const handleEdit = (col: Collection) => {
+        setEditingCollection(col);
+        setModalVisible(true);
+    };
+
+    const handleSave = async (values: CollectionDTO) => {
+        setModalLoading(true);
         try {
-            await collectionService.create(values);
-            message.success('Tạo bộ sưu tập thành công!');
-            setCreateModalVisible(false);
-            form.resetFields();
+            if (editingCollection) {
+                await collectionService.update(editingCollection.id, values);
+                message.success("Cập nhật thành công!");
+            } else {
+                await collectionService.create(values);
+                message.success("Tạo bộ sưu tập thành công!");
+            }
+            setModalVisible(false);
             fetchCollections();
         } catch (error) {
-            message.error('Không thể tạo bộ sưu tập');
+            message.error("Có lỗi xảy ra, vui lòng thử lại.");
+        } finally {
+            setModalLoading(false);
         }
     };
 
-    if (loading) {
-        return (
-            <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                <Spin size="large" tip="Đang tải bộ sưu tập..." />
-            </div>
-        );
-    }
+    const handleDelete = (id: number) => {
+        Modal.confirm({
+            title: "Xóa bộ sưu tập",
+            content: "Bạn có chắc chắn muốn xóa? Hành động này không thể hoàn tác.",
+            okText: "Xóa",
+            okType: "danger",
+            cancelText: "Hủy",
+            onOk: async () => {
+                try {
+                    await collectionService.delete(id);
+                    message.success("Đã xóa bộ sưu tập");
+                    fetchCollections();
+                } catch (error) {
+                    message.error("Xóa thất bại");
+                }
+            }
+        });
+    };
 
     return (
-        <div className="collections-page">
-            <div className="page-header">
+        <div className="collections-page" style={{ padding: '24px 0' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
                 <div>
-                    <h1 className="page-title">
-                        <HeartOutlined /> Bộ Sưu Tập Của Tôi
-                    </h1>
-                    <p className="page-description">
-                        Quản lý và khám phá các bộ sưu tập di sản văn hóa của bạn
-                    </p>
+                   <Title level={2} style={{ margin: 0 }}>Bộ Sưu Tập Của Tôi</Title>
+                   <Paragraph type="secondary" style={{ margin: 0 }}>Quản lý và tổ chức các di sản yêu thích của bạn</Paragraph>
                 </div>
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    size="large"
-                    onClick={() => setCreateModalVisible(true)}
+                <Button 
+                    variant="primary" 
+                    buttonSize="medium" 
+                    icon={<PlusOutlined />} 
+                    onClick={handleCreate}
                 >
-                    Tạo Bộ Sưu Tập Mới
+                    Tạo Mới
                 </Button>
             </div>
 
-            {collections.length === 0 ? (
-                <Card className="empty-state-card">
-                    <Empty
-                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        description={
-                            <div>
-                                <h3>Chưa có bộ sưu tập nào</h3>
-                                <p>Bắt đầu tạo bộ sưu tập để lưu trữ các di sản yêu thích của bạn</p>
-                            </div>
-                        }
-                    >
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() => setCreateModalVisible(true)}
-                        >
-                            Tạo Bộ Sưu Tập Đầu Tiên
-                        </Button>
-                    </Empty>
-                </Card>
-            ) : (
-                <>
-                    <div className="collections-stats">
-                        <Row gutter={16}>
-                            <Col xs={12} sm={6}>
-                                <Card className="stat-card">
-                                    <Statistic
-                                        title="Tổng Bộ Sưu Tập"
-                                        value={collections.length}
-                                        prefix={<HeartOutlined />}
-                                    />
-                                </Card>
-                            </Col>
-                            <Col xs={12} sm={6}>
-                                <Card className="stat-card">
-                                    <Statistic
-                                        title="Tổng Di Sản"
-                                        value={collections.reduce((sum, c) => sum + c.total_items, 0)}
-                                        prefix={<PictureOutlined />}
-                                    />
-                                </Card>
-                            </Col>
-                            <Col xs={12} sm={6}>
-                                <Card className="stat-card">
-                                    <Statistic
-                                        title="Công Khai"
-                                        value={collections.filter((c) => c.is_public).length}
-                                        prefix={<GlobalOutlined />}
-                                    />
-                                </Card>
-                            </Col>
-                            <Col xs={12} sm={6}>
-                                <Card className="stat-card">
-                                    <Statistic
-                                        title="Riêng Tư"
-                                        value={collections.filter((c) => !c.is_public).length}
-                                        prefix={<LockOutlined />}
-                                    />
-                                </Card>
-                            </Col>
-                        </Row>
-                    </div>
-
-                    <Row gutter={[24, 24]} className="collections-grid">
-                        {collections.map((collection) => (
-                            <Col xs={24} sm={12} lg={8} xl={6} key={collection.id}>
-                                <Card
-                                    hoverable
-                                    className="collection-card"
-                                    cover={
-                                        <div className="collection-cover">
-                                            <div className="collection-overlay">
-                                                <PictureOutlined className="collection-icon" />
-                                                <div className="collection-count">
-                                                    {collection.total_items} di sản
-                                                </div>
-                                            </div>
+            {/* List */}
+             {loading ? (
+                 <div style={{ textAlign: "center", padding: 80 }}><Spin size="large" tip="Đang tải..." /></div> 
+             ) : (
+                 collections.length > 0 ? (
+                    <Row gutter={[24, 24]}>
+                        {collections.map(col => (
+                            <Col key={col.id} xs={24} sm={12} lg={8} xl={6}>
+                                <ArticleCard
+                                    type="collection"
+                                    data={{
+                                        id: col.id,
+                                        name: col.name,
+                                        short_description: col.description,
+                                        created_at: col.created_at,
+                                        total_items: col.total_items,
+                                        thumbnail: "/images/collection-placeholder.jpg"
+                                    }}
+                                    actions={
+                                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', width: '100%' }}>
+                                            <Button 
+                                                variant="ghost" 
+                                                icon={<EditOutlined />} 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEdit(col);
+                                                }} 
+                                            />
+                                            <Button 
+                                                variant="ghost" 
+                                                danger 
+                                                icon={<DeleteOutlined />} 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(col.id);
+                                                }} 
+                                            />
                                         </div>
                                     }
-                                    actions={[
-                                        <Tooltip title="Xem chi tiết">
-                                            <Button
-                                                type="text"
-                                                icon={<EyeOutlined />}
-                                                onClick={() =>
-                                                    navigate(`/profile/collections/${collection.id}`)
-                                                }
-                                            >
-                                                Xem
-                                            </Button>
-                                        </Tooltip>,
-                                    ]}
-                                >
-                                    <Card.Meta
-                                        title={
-                                            <div className="collection-title">
-                                                <span>{collection.name}</span>
-                                                {collection.is_public ? (
-                                                    <Tag color="blue" icon={<GlobalOutlined />}>
-                                                        Công khai
-                                                    </Tag>
-                                                ) : (
-                                                    <Tag icon={<LockOutlined />}>Riêng tư</Tag>
-                                                )}
-                                            </div>
-                                        }
-                                        description={
-                                            <div className="collection-description">
-                                                <p>
-                                                    {collection.description || 'Chưa có mô tả'}
-                                                </p>
-                                                <div className="collection-meta">
-                                                    <span>
-                                                        <strong>{collection.artifact_ids?.length || 0}</strong>{' '}
-                                                        hiện vật
-                                                    </span>
-                                                    <span>
-                                                        <strong>
-                                                            {collection.heritage_site_ids?.length || 0}
-                                                        </strong>{' '}
-                                                        di tích
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        }
-                                    />
-                                </Card>
+                                />
                             </Col>
                         ))}
                     </Row>
-                </>
-            )}
-
-            <Modal
-                title="Tạo Bộ Sưu Tập Mới"
-                open={createModalVisible}
-                onCancel={() => {
-                    setCreateModalVisible(false);
-                    form.resetFields();
-                }}
-                footer={null}
-                width={600}
-            >
-                <Form form={form} layout="vertical" onFinish={handleCreateCollection}>
-                    <Form.Item
-                        name="name"
-                        label="Tên Bộ Sưu Tập"
-                        rules={[
-                            { required: true, message: 'Vui lòng nhập tên bộ sưu tập' },
-                            { min: 3, message: 'Tên phải có ít nhất 3 ký tự' },
-                        ]}
+                 ) : (
+                    <Empty
+                        image={<div style={{ fontSize: 64, color: '#e0e0e0', marginBottom: 16 }}><AppstoreOutlined /></div>}
+                        description={
+                            <span>
+                                Bạn chưa có bộ sưu tập nào. <br/>
+                                <span style={{ color: '#888' }}>Hãy tạo ngay một bộ sưu tập để lưu giữ những di sản bạn yêu thích!</span>
+                            </span>
+                        }
                     >
-                        <Input placeholder="VD: Di Sản Hà Nội" size="large" />
-                    </Form.Item>
+                        <Button variant="primary" onClick={handleCreate}>Tạo Ngay</Button>
+                    </Empty>
+                 )
+             )}
 
-                    <Form.Item name="description" label="Mô Tả">
-                        <TextArea
-                            rows={4}
-                            placeholder="Mô tả ngắn về bộ sưu tập này..."
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="is_public"
-                        label="Công Khai"
-                        valuePropName="checked"
-                        initialValue={false}
-                    >
-                        <Switch
-                            checkedChildren={<GlobalOutlined />}
-                            unCheckedChildren={<LockOutlined />}
-                        />
-                    </Form.Item>
-
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" size="large" block>
-                            Tạo Bộ Sưu Tập
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
+             <CollectionModal 
+                visible={modalVisible}
+                onCancel={() => setModalVisible(false)}
+                onOk={handleSave}
+                loading={modalLoading}
+                initialValues={editingCollection}
+             />
         </div>
     );
 };
