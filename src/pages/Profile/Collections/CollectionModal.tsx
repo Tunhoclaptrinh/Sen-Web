@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Checkbox, message } from 'antd';
+import { Modal, Form, Input, Checkbox } from 'antd';
 import { CollectionDTO, Collection } from '@/services/collection.service';
 
 interface CollectionModalProps {

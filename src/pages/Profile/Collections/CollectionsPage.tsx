@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Spin, message, Typography, Empty, Modal } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined, AppstoreOutlined } from '@ant-design/icons';
 import Button from '@/components/common/Button';
 import ArticleCard from '@/components/common/cards/ArticleCard';
 import collectionService, { Collection, CollectionDTO } from '@/services/collection.service';
 import CollectionModal from './CollectionModal';
-import { useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 
