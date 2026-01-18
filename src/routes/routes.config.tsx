@@ -47,6 +47,7 @@ const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 // const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const Support = lazy(() => import("@/pages/Support"));
 
 
 // Admin/Manager Pages (DataTables)
@@ -170,6 +171,10 @@ const routes: RouteObject[] = [
             element: <HistoryDetailPage />,
           },
         ],
+      },
+      {
+        path: "support",
+        element: <Support />,
       },
 
     ],
