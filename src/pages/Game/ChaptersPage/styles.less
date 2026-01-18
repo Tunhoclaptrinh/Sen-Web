@@ -1,8 +1,8 @@
+@import "@/styles/variables.less";
+
 .chapters-page {
-    padding: 24px;
-    max-width: 1400px;
-    margin: 0 auto;
-    background-color: #f0e9e9;
+    padding: 24px; 
+    // background-color: #f0e9e9;
     min-height: 100vh;
 }
 
@@ -11,8 +11,8 @@
     text-align: center;
 }
 
-.chapters-header .ant-typography {
-    color: #2c3e50;
+.chapters-header .ant-typography.page-title {
+    color: @primary-color;
 }
 
 .progress-card {
@@ -53,82 +53,105 @@
     position: relative;
     transition: all 0.3s ease;
     width: 100%;
-    height: 320px;
-    background-color: #f0e9e9;
+    // height: 380px; // Allow flexible height or slightly taller
+    background-color: #fff;
     border: 1px solid #d4c5c5;
-    border-radius: 10px;
+    border-radius: 12px;
+    overflow: hidden; // For border radius on image
 }
 
 .chapter-card .ant-card-body {
-    padding: 20px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.chapter-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.chapter-card.locked {
-    opacity: 0.85;
-    cursor: not-allowed;
-}
-
-.chapter-card.locked:hover {
-    transform: translateY(-2px);
-}
-
-.chapter-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.chapter-icon {
-    flex-shrink: 0;
-    font-size: 48px;
-    line-height: 1;
-}
-
-.chapter-info {
-    flex: 1;
-}
-
-.chapter-info .ant-typography {
-    margin: 0;
-    color: #2c3e50;
-}
-
-.chapter-info h4 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 0 !important;
-    line-height: 1.2;
-}
-
-.chapter-info .ant-tag {
-    display: none;
-}
-
-.chapter-card .ant-typography-paragraph {
-    color: #5a5a5a;
-    font-size: 13px;
-    line-height: 1.5;
-    margin-bottom: 0;
-    height: 58px;
+.chapter-cover {
+    height: 160px;
+    width: 100%;
+    position: relative;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+    background-color: #f9f9f9; // Add background for contain mode
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // Revert to cover as requested for "full"
+        transition: transform 0.5s ease;
+    }
+}
+
+.play-button {
+    background-color: #d4a356 !important; // Slightly enriched gold
+    border-color: #d4a356 !important;
+    color: #4a3418 !important; // Darker brown text
+    font-weight: 700;
+    height: 48px;
+    font-size: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 0 #b08d55 !important; // 3D effect shadow
+    margin-top: auto; // Push to bottom if flex container
+    margin-bottom: 4px; // Space for shadow
+    
+    &:hover {
+        background-color: #e0b060 !important;
+        border-color: #e0b060 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #b08d55 !important;
+    }
+    
+    &:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #b08d55 !important;
+    }
+    
+    &[disabled] {
+        background-color: #f5f5f5 !important;
+        border-color: #d9d9d9 !important;
+        color: #00000040 !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+}
+
+.chapter-card:hover .chapter-cover img {
+    transform: scale(1.05);
+}
+
+.chapter-theme-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    
+    .ant-tag {
+        margin: 0;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+}
+
+.chapter-body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chapter-header-info {
+    margin-bottom: 8px;
+    
+    h4.ant-typography {
+        margin-bottom: 4px !important;
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
 }
 
 .chapter-description-wrapper {
-    position: relative;
-    margin-bottom: 8px;
-    height: 75px;
+    flex: 1;
+    margin-bottom: 12px;
 }
 
 .chapter-read-more {
@@ -136,7 +159,7 @@
     font-size: 12px;
     cursor: pointer;
     font-weight: 500;
-    margin-top: 2px;
+    margin-top: 4px;
     display: inline-block;
 }
 

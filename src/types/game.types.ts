@@ -40,6 +40,7 @@ export interface Chapter {
     layer_index: 1 | 2 | 3;
     petal_state: 'closed' | 'blooming' | 'full';
     color: string;
+    image?: string;
     required_petals: number;
     is_unlocked: boolean;
     total_levels: number;

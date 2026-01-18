@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters, fetchProgress } from '@/store/slices/gameSlice';
 import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal } from 'antd';
-import { LockOutlined, CheckCircleOutlined, TrophyOutlined } from '@ant-design/icons';
+import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import type { Chapter } from '@/types';
+import { StatisticsCard } from "@/components/common";
 import "./styles.less";
 
 const { Title, Text, Paragraph } = Typography;
@@ -47,6 +48,25 @@ const ChaptersPage: React.FC = () => {
         return colors[theme] || '#1890ff';
     };
 
+    const getChapterImage = (chapter: Chapter) => {
+        if (chapter.image) return chapter.image;
+        
+        // Default images mapping based on chapter ID or theme
+        // Using Unsplash placeholders matching the themes for now
+        switch (chapter.id) {
+            case 1:
+                return "https://media.licdn.com/dms/image/v2/D5612AQE8NiooxTxA3w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1695825196046?e=1770249600&v=beta&t=Oy9UgJswkfS4zaALRlZyxKH9xh3Cga6Mb5aWMOSJBtw"; // Historical/Battle
+            case 2:
+                // Hue / Imperial timeline
+                return "https://images.unsplash.com/photo-1555169062-013468b47731?w=600"; 
+            case 3:
+                // Golden age
+                return "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=600";
+            default:
+                return "https://images.unsplash.com/photo-1555921015-5532091f6026?w=600";
+        }
+    };
+
     const getPetalStateIcon = (state: string) => {
         switch (state) {
             case 'full':
@@ -70,53 +90,46 @@ const ChaptersPage: React.FC = () => {
     return (
         <div className="chapters-page">
             <div className="chapters-header">
-                <Title level={2}>Sen Hoa - Hành Trình Khám Phá</Title>
+                <Title level={2} className="page-title">Sen Hoa - Hành trình khám phá</Title>
                 <Paragraph>
                     Mỗi cánh sen là một chương trong hành trình khám phá di sản Việt Nam.
                     Hoàn thành các màn chơi để mở khóa những câu chuyện mới!
                 </Paragraph>
 
                 {progress && (
-                    <Card className="progress-card">
-                        <Row gutter={16}>
-                            <Col span={6}>
-                                <div className="stat-item">
-                                    <TrophyOutlined style={{ fontSize: 24, color: '#ffd700' }} />
-                                    <div>
-                                        <Text strong>{progress.total_points}</Text>
-                                        <Text type="secondary"> Điểm</Text>
-                                    </div>
-                                </div>
-                            </Col>
-                            <Col span={6}>
-                                <div className="stat-item">
-                                    <span style={{ fontSize: 24 }}>🌸</span>
-                                    <div>
-                                        <Text strong>{progress.total_sen_petals}</Text>
-                                        <Text type="secondary"> Cánh Sen</Text>
-                                    </div>
-                                </div>
-                            </Col>
-                            <Col span={6}>
-                                <div className="stat-item">
-                                    <span style={{ fontSize: 24 }}>💰</span>
-                                    <div>
-                                        <Text strong>{progress.coins}</Text>
-                                        <Text type="secondary"> Xu</Text>
-                                    </div>
-                                </div>
-                            </Col>
-                            <Col span={6}>
-                                <div className="stat-item">
-                                    <CheckCircleOutlined style={{ fontSize: 24, color: '#52c41a' }} />
-                                    <div>
-                                        <Text strong>{progress.stats?.completion_rate || 0}%</Text>
-                                        <Text type="secondary"> Hoàn thành</Text>
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
-                    </Card>
+                    <StatisticsCard
+                        data={[
+                            {
+                                title: "Điểm",
+                                value: progress.total_points,
+                                icon: <TrophyOutlined />,
+                                valueColor: "#ffd700",
+                            },
+                            {
+                                title: "Cánh Sen",
+                                value: progress.total_sen_petals,
+                                icon: <span style={{ fontSize: 24, lineHeight: 1 }}>🌸</span>,
+                                valueColor: "#ff4d4f", // Fallback color if emoji doesn't render or for text
+                            },
+                            {
+                                title: "Xu",
+                                value: progress.coins,
+                                icon: <DollarOutlined />,
+                                valueColor: "#faad14",
+                            },
+                            {
+                                title: "Hoàn thành",
+                                value: `${progress.stats?.completion_rate || 0}%`,
+                                icon: <CheckCircleOutlined />,
+                                valueColor: "#52c41a",
+                            }
+                        ]}
+                        colSpan={{ xs: 12, sm: 6, md: 6, lg: 6 }}
+                        statShadow={true}
+                        hideCard
+                        autoBackground={{ enabled: true, lightenAmount: 0.1, alphaAmount: 0.15 }}
+                        cardStyle={{ alignItems: 'center', textAlign: 'left' }}
+                    />
                 )}
             </div>
 
@@ -132,19 +145,19 @@ const ChaptersPage: React.FC = () => {
                                 borderWidth: 2,
                             }}
                         >
-                            <div className="chapter-header">
-                                <div className="chapter-icon">
-                                    <span style={{ fontSize: 48 }}>
-                                        {getPetalStateIcon(chapter.petal_state)}
-                                    </span>
-                                </div>
-                                <div className="chapter-info">
-                                    <Title level={4}>{chapter.name}</Title>
+                            <div className="chapter-cover">
+                                <img src={getChapterImage(chapter)} alt={chapter.name} />
+                                <div className="chapter-theme-tag">
                                     <Tag color={getChapterColor(chapter.theme)}>
-                                        {chapter.theme}
+                                        Chủ đề: {chapter.theme || "Không có"}
                                     </Tag>
                                 </div>
                             </div>
+
+                            <div className="chapter-body">
+                                <div className="chapter-header-info">
+                                    <Title level={4}>{chapter.name}</Title>
+                                </div>
 
                             <div className="chapter-description-wrapper">
                                 <Paragraph ellipsis={{ rows: 3 }}>
@@ -160,19 +173,20 @@ const ChaptersPage: React.FC = () => {
                                 )}
                             </div>
 
-                            <div className="chapter-stats">
-                                <div className="stat">
-                                    <Text type="secondary">Tiến độ</Text>
-                                    <Progress
-                                        percent={chapter.completion_rate}
-                                        size="small"
-                                        status={chapter.completion_rate === 100 ? 'success' : 'active'}
-                                    />
-                                </div>
-                                <div className="stat">
-                                    <Text type="secondary">
-                                        {chapter.completed_levels}/{chapter.total_levels} màn
-                                    </Text>
+                                <div className="chapter-stats">
+                                    <div className="stat">
+                                        <Text type="secondary">Tiến độ</Text>
+                                        <Progress
+                                            percent={chapter.completion_rate}
+                                            size="small"
+                                            status={chapter.completion_rate === 100 ? 'success' : 'active'}
+                                        />
+                                    </div>
+                                    <div className="stat">
+                                        <Text type="secondary">
+                                            {chapter.completed_levels}/{chapter.total_levels} màn
+                                        </Text>
+                                    </div>
                                 </div>
                             </div>
 
@@ -196,9 +210,16 @@ const ChaptersPage: React.FC = () => {
                             )}
 
                             {chapter.is_unlocked && (
-                                <Button type="primary" block>
-                                    Chơi ngay
-                                </Button>
+                                <div style={{ padding: '0 16px 16px 16px', marginTop: 'auto' }}>
+                                    <Button
+                                        type="primary"
+                                        className="play-button"
+                                        block
+                                        onClick={() => navigate(`/game/chapters/${chapter.id}/levels`)}
+                                    >
+                                        Chơi ngay
+                                    </Button>
+                                </div>
                             )}
                         </Card>
                     </Col>
@@ -223,7 +244,8 @@ const ChaptersPage: React.FC = () => {
                     selectedChapter?.is_unlocked && (
                         <Button 
                             key="play" 
-                            type="primary" 
+                            type="primary"
+                            className="play-button"
                             onClick={() => {
                                 if (selectedChapter) {
                                     navigate(`/game/chapters/${selectedChapter.id}/levels`);

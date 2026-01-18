@@ -10,7 +10,6 @@ import {
     Progress,
     Tag,
     message,
-    Statistic,
 } from 'antd';
 import {
     BookOutlined,
@@ -19,6 +18,7 @@ import {
     TrophyOutlined,
 } from '@ant-design/icons';
 import learningService from '@/services/learning.service';
+import StatisticsCard from '@/components/common/StatisticsCard';
 import './styles.less';
 
 const LearningDetail = lazy(() => import('./LearningDetail'));
@@ -96,67 +96,69 @@ const LearningPathPage: React.FC = () => {
     return (
         <div className="learning-path-page">
             <div className="page-header">
-                <div>
+                <div className="header-left">
                     <h1 className="page-title">
-                        <BookOutlined /> Lộ Trình Học Tập
+                        <BookOutlined /> Lộ trình học tập
                     </h1>
                     <p className="page-description">
                         Khám phá và học hỏi về lịch sử văn hóa Việt Nam qua các module
                     </p>
                 </div>
+                
+                {progress && progress.percentage < 100 && (
+                    <div className="header-right-progress">
+                        <div className="progress-compact">
+                            <div className="progress-header">
+                                <h3>Tiến độ tổng thể</h3>
+                                <span>{progress.completed} / {progress.total} module</span>
+                            </div>
+                            
+                        </div>
+                        <Progress
+                                percent={progress.percentage || 0}
+                                status="active"
+                                strokeColor={{
+                                    from: '#108ee9',
+                                    to: '#87d068',
+                                }}
+                            />
+                    </div>
+                )}
             </div>
 
             {progress && (
                 <div className="learning-stats">
-                    <Row gutter={[16, 16]}>
-                        <Col xs={12} sm={6}>
-                            <Card className="stat-card gradient-1">
-                                <Statistic
-                                    title="Tổng Module"
-                                    value={progress.total || 0}
-                                    prefix={<BookOutlined />}
-                                    valueStyle={{ color: '#fff' }}
-                                />
-                            </Card>
-                        </Col>
-                        <Col xs={12} sm={6}>
-                            <Card className="stat-card gradient-2">
-                                <Statistic
-                                    title="Đã Hoàn Thành"
-                                    value={progress.completed || 0}
-                                    prefix={<CheckCircleOutlined />}
-                                    valueStyle={{ color: '#fff' }}
-                                />
-                            </Card>
-                        </Col>
-                        <Col xs={12} sm={6}>
-                            <Card className="stat-card gradient-3">
-                                <Statistic
-                                    title="Tiến Độ"
-                                    value={progress.percentage || 0}
-                                    suffix="%"
-                                    prefix={<TrophyOutlined />}
-                                    valueStyle={{ color: '#fff' }}
-                                />
-                            </Card>
-                        </Col>
-                        <Col xs={12} sm={6}>
-                            <Card className="stat-card gradient-4">
-                                <Statistic
-                                    title="Thời Gian"
-                                    value={
-                                        learningPath.reduce(
-                                            (sum, m) => sum + (m.estimated_duration || 0),
-                                            0
-                                        )
-                                    }
-                                    suffix="phút"
-                                    prefix={<ClockCircleOutlined />}
-                                    valueStyle={{ color: '#fff' }}
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
+                    <StatisticsCard
+                        data={[
+                            {
+                                title: "Tổng module",
+                                value: progress.total || 0,
+                                icon: <BookOutlined />,
+                                valueColor: "#1890ff", // Blue
+                            },
+                            {
+                                title: "Đã hoàn thành",
+                                value: progress.completed || 0,
+                                icon: <CheckCircleOutlined />,
+                                valueColor: "#52c41a", // Green
+                            },
+                            {
+                                title: "Tiến độ",
+                                icon: <TrophyOutlined />,
+                                valueColor: "#faad14", // Gold
+                                value: `${progress.percentage || 0}%`,
+                            },
+                            {
+                                title: "Thời gian",
+                                value: `${learningPath.reduce((sum, m) => sum + (m.estimated_duration || 0), 0)}'`,
+                                icon: <ClockCircleOutlined />,
+                                valueColor: "#722ed1", // Purple
+                            }
+                        ]}
+                        colSpan={{ xs: 12, sm: 6, md: 6, lg: 6 }}
+                        statShadow={true}
+                        autoBackground={{ enabled: true, lightenAmount: 0.1, alphaAmount: 0.15 }} // Enhanced background
+                    />
                 </div>
             )}
 
@@ -229,25 +231,6 @@ const LearningPathPage: React.FC = () => {
                     </Row>
                 )}
             </Card>
-
-            {progress && progress.percentage < 100 && (
-                <Card className="progress-card">
-                    <div className="overall-progress">
-                        <h3>Tiến Độ Tổng Thể</h3>
-                        <Progress
-                            percent={progress.percentage || 0}
-                            status="active"
-                            strokeColor={{
-                                from: '#108ee9',
-                                to: '#87d068',
-                            }}
-                        />
-                        <p>
-                            Bạn đã hoàn thành {progress.completed} / {progress.total} module
-                        </p>
-                    </div>
-                </Card>
-            )}
         </div>
     );
 };
