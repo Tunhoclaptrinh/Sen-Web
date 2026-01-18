@@ -385,10 +385,12 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
+      setIsTalking(false); // Stop talking if previously playing
     }
 
     if (audioPlaying === messageId) {
       setAudioPlaying(null);
+      setIsTalking(false);
       return;
     }
 
@@ -403,15 +405,25 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
       const audio = new Audio(audioSrc);
       audioRef.current = audio;
 
+      audio.onplay = () => {
+         setIsTalking(true);
+      };
+
       audio.onended = () => {
         setAudioPlaying(null);
         audioRef.current = null;
+        setIsTalking(false);
       };
+
+      audio.onpause = () => {
+         setIsTalking(false);
+      }
 
       audio.onerror = () => {
         antdMessage.error("Không thể phát audio");
         setAudioPlaying(null);
         audioRef.current = null;
+        setIsTalking(false);
       };
 
       setAudioPlaying(messageId);
@@ -420,6 +432,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
       console.error("Error playing audio:", err);
       antdMessage.error("Lỗi khi phát audio");
       setAudioPlaying(null);
+      setIsTalking(false);
     }
   };
 
