@@ -6,9 +6,12 @@ export interface User {
   avatar?: string;
   role: UserRole;
   isActive: boolean;
-  created_at: string;
+  createdAt?: string;
+  created_at?: string;
   updated_at?: string;
+  lastLogin?: string;
   address?: string;
+  bio?: string;
 }
 
 export enum UserRole {
@@ -41,6 +44,7 @@ export interface RegisterData {
 }
 
 export interface ChangePasswordData {
+  id?: number | string;
   currentPassword: string;
   newPassword: string;
 }

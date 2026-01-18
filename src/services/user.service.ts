@@ -48,7 +48,7 @@ class UserService extends BaseService<User, Partial<User>, UserUpdateDTO> {
   async changePassword(data: ChangePasswordData): Promise<BaseApiResponse<void>> {
     try {
       const response = await apiClient.put<BaseApiResponse<void>>(
-        '/users/change-password',
+        '/auth/change-password',
         data
       );
 
