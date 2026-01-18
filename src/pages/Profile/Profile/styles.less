@@ -2,79 +2,310 @@
 
 .profile-page {
   min-height: 100vh;
-  // Match Home page background
-  background: linear-gradient(
-    357.93deg,
-    #fff4ec 1.72%,
-    #f6f5f3
-  );
-  padding-bottom: 40px;
+  background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3);
+  /* Prevent horizontal scroll from full-width header */
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Aleo", serif;
+  }
 
+@import "../../../styles/variables.less";
+
+// Shared Container - Top Level
+.profile-container {
+  max-width: 1200px;
+  margin: auto;
+  margin-bottom: 0;
+  padding: 0 24px;
+  background-color: transparent;
+
+
+}
+
+// Global Profile Page Wrapper
+.profile-page {
+  min-height: 100vh;
+  background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3);
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Aleo", serif;
+  }
+}
+
+// Profile Header - Top Level for reusability (LibraryPage)
+.profile-header-section {
+  background: #fff;
+  padding-bottom: 0;
+  margin-bottom: 24px; // Consistent spacing
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      background: url("/images/Zero_home.png") no-repeat center center;
+
+  
+  // Natural Full Width (Assuming MainLayout is full width)
+  width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+
+.cover-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+      }
+
+  .profile-info-bar {
+      position: relative;
+      background-color: transparent!important;
+      min-height: 220px;
+      
+      
+      .profile-layout-row {
+          display: flex;
+          align-items: flex-end;
+          gap: 32px;
+          padding-bottom: 0; // Handled by tabs margin/padding
+          position: absolute;
+          bottom: 0;
+          
+          @media (max-width: 768px) {
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+              gap: 16px;
+              padding-bottom: 24px;
+          }
+      }
+
+      .left-col-avatar {
+          margin-top: -50px;
+          position: relative;
+          z-index: 10;
+          padding-bottom: 24px; // Space for avatar below line
+          
+          .avatar-wrapper {
+              position: relative;
+              
+              .profile-avatar {
+                 border: 4px solid #fff;
+                 box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+                 background: #fff;
+              }
+
+              .upload-trigger {
+                  position: absolute;
+                  bottom: 8px;
+                  right: 8px;
+                  width: 34px;
+                  height: 34px;
+                  background: #f0f0f0;
+                  border: 2px solid #fff;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  cursor: pointer;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                  transition: all 0.2s;
+                  color: #555;
+
+                  &:hover {
+                      background: var(--primary-color);
+                      color: #fff;
+                      transform: scale(1.1);
+                  }
+              }
+          }
+      }
+
+      .right-col-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+
+          .user-main-info {
+              margin-bottom: 16px; 
+              // Added top margin to align with avatar? No.
+              
+              .name-role-wrapper {
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  margin-bottom: 4px;
+                  
+                  @media (max-width: 768px) {
+                      justify-content: center;
+                      flex-wrap: wrap;
+                  }
+
+                  .user-name {
+                      margin: 0;
+                      font-size: 28px;
+                      font-weight: 800;
+                      color: white;
+                      line-height: 1.2;
+                  }
+
+                  .user-role-badge {
+                      background: #e6f7ff;
+                      color: #1890ff;
+                      border: 1px solid #91d5ff;
+                      padding: 2px 10px;
+                      border-radius: 20px;
+                      font-size: 12px;
+                      font-weight: 600;
+                      text-transform: uppercase;
+                  }
+              }
+
+              .join-date {
+                  color: white;
+                  margin: 0;
+                  font-size: 14px;
+              }
+          }
+
+          .profile-header-tabs {
+              width: 100%;
+              
+              .ant-tabs-nav {
+                  margin: 0;
+                  
+                  &::before {
+                      display: none; // Remove bottom border line
+                  }
+              }
+
+              .ant-tabs-tab {
+                  padding: 8px 16px;
+                  margin: 0 4px 0 0;
+                  color: rgba(255, 255, 255, 0.85); // White text with slight transparency
+                  font-size: 15px;
+                  font-weight: 600;
+                  transition: all 0.3s;
+                  border-radius: 8px 8px 0 0; // Tab shape
+                  border: none;
+                  background: transparent;
+
+                  &:hover {
+                      color: var(--primary-color);
+                      background: rgba(255, 255, 255, 0.9);
+                  }
+
+              }
+
+              .ant-tabs-tab-active {
+                  .ant-tabs-tab-btn {
+                      color: var(--primary-color) !important;
+                  }
+                  background: #fff; // White background for active
+              }
+
+              .ant-tabs-ink-bar {
+                  display: none; // Hide the underline bar as we use background
+              }
+          }
+      }
+  }
+}
+
+  // Main Content
   .profile-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-    margin-top: 24px; // Changed from -60px to 24px to prevent overlapping/hiding tabs
+    // max-width managed by inner .container
+    padding: 24px 0;
+    margin-bottom: 24px;
     position: relative;
     z-index: 2;
   }
 
-  .profile-container {
-    // Container logic
-  }
-
+  // Cards - Clean Core Style
   .profile-card {
     background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-radius: 12px; // Standard standard radius
+    padding: 32px;
+    border: 1px solid #e0e0e0; // Use border for separation
+    box-shadow: none; // Remove deep shadow as requested
     height: 100%;
-    border: 1px solid rgba(0,0,0,0.02);
+    
+    // Optional very subtle hover
+    &:hover {
+      border-color: #d9d9d9;
+    }
 
     .card-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #2d5a27; // Use Sen Green
+      color: #2c3e50;
       margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
 
       .anticon {
-        color: #ff4d4f; // Sen Red/Pink accent
+        color: var(--primary-color);
+        font-size: 24px;
       }
     }
   }
 
-  .security-tips {
-    background: #fffbf0;
-    border: 1px solid #ffe58f;
-    border-radius: 12px;
-    padding: 24px;
-    
-    h4 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #faad14;
+
+  // Empty State
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+
+    .empty-icon {
+      font-size: 80px;
+      color: #d9d9d9;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 20px;
+      color: #666;
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    ul {
-      padding-left: 20px;
-      li {
-        margin-bottom: 8px;
-        color: #595959;
-      }
+    p {
+      color: #999;
+      margin-bottom: 24px;
+    }
+
+    .ant-btn {
+      height: 44px;
+      padding: 0 32px;
+      border-radius: 8px;
+      font-weight: 600;
     }
   }
 
-  /* Password Strength */
+  // Form Styling
+  .ant-form-item-label > label {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .ant-input,
+  .ant-input-password {
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #c0c0c0;
+    }
+
+    &:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(196, 239, 161, 0.2);
+    }
+  }
+
+  // Password Strength Indicator
   .password-strength {
-    margin-top: -12px;
-    margin-bottom: 24px;
+    margin-top: 8px;
 
     .strength-bar {
       height: 4px;
@@ -85,248 +316,115 @@
 
       .strength-fill {
         height: 100%;
-        transition: all 0.3s;
-        width: 0;
+        transition: all 0.3s ease;
 
-        &.weak { width: 33%; background: #ff4d4f; }
-        &.medium { width: 66%; background: #faad14; }
-        &.strong { width: 100%; background: #52c41a; }
+        &.weak {
+          width: 33%;
+          background: #ff4d4f;
+        }
+
+        &.medium {
+          width: 66%;
+          background: #faad14;
+        }
+
+        &.strong {
+          width: 100%;
+          background: #52c41a;
+        }
       }
     }
 
     .strength-text {
-      font-size: 12px;
-      text-align: right;
-      
+      font-size: 13px;
+      font-weight: 600;
+
       &.weak { color: #ff4d4f; }
       &.medium { color: #faad14; }
       &.strong { color: #52c41a; }
     }
   }
 
-  /* Activity Timeline */
+  // Activity Timeline
   .activity-timeline {
-    padding: 0 12px;
+    .ant-timeline-item {
+      padding-bottom: 24px;
 
-    .ant-timeline-item-label {
-        width: calc(20% - 12px);
-    }
-    
-    .ant-timeline-item-content {
-        left: calc(20% - 4px);
-        width: calc(80% - 12px);
-    }
+      .timeline-content {
+        background: #f8f9fa;
+        padding: 16px;
+        border-radius: 12px;
+        border-left: 3px solid var(--primary-color);
 
-    .timeline-content {
-      background: #fff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid #f0f0f0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-
-      .activity-title {
-        font-weight: 600;
-        color: #2d5a27;
-        margin-bottom: 4px;
-      }
-
-      .activity-desc {
-        color: #595959;
-        font-size: 14px;
-        margin-bottom: 4px;
-      }
-
-      .activity-time {
-        font-size: 12px;
-        color: #8c8c8c;
-      }
-    }
-    
-    // Customize Timeline dot color
-    .ant-timeline-item-head {
-        border-color: #ff4d4f;
-    }
-  }
-}
-
-/* Profile Header Styles */
-.profile-header-section {
-  background: white;
-  margin-bottom: 0; // Remove bottom margin to connect flow better or keep minimal
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-
-  .profile-info-bar {
-    position: relative;
-    padding-bottom: 0;
-    
-    .cover-overlay {
-      height: 240px; // Increased height nicely
-      // Apply Sen Theme Background
-      background: url("/images/Zero_home.png") no-repeat center 20%;
-      background-size: cover;
-      position: relative;
-      width: 100%;
-
-      // Add a subtle overlay so text text/avatar pops if needed, though mostly avatar is below
-      &::after {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0,0,0,0.1); 
-      }
-    }
-
-    .profile-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
-    }
-
-    .profile-layout-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 32px;
-      margin-top: -60px; // Keep this to overlap avatar on cover
-      padding-bottom: 4px; // Reduced padding to let text sit lower
-      position: relative; // Ensure z-index works
-      z-index: 5;
-      
-      @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: center;
-        margin-top: -50px;
-        gap: 16px;
-      }
-    }
-
-    .left-col-avatar {
-      flex-shrink: 0;
-
-      .avatar-wrapper {
-        position: relative;
-        padding: 4px;
-        background: white;
-        border-radius: 50%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-
-        .profile-avatar {
-            border: 4px solid white;
-            width: 160px;
-            height: 160px;
+        .activity-title {
+          font-weight: 600;
+          color: #2c3e50;
+          margin-bottom: 4px;
         }
 
-        .upload-trigger {
-          position: absolute;
-          bottom: 1px;
-          right: 20px;
-          cursor: pointer;
-          background: #ff4d4f; // Sen Red
-          border: 2px solid white;
-          color: white;
-          width: 36px;
-          height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          
-          &:hover {
-              background: #ff7875;
-          }
-        }
-      }
-    }
-
-    .right-col-info {
-      flex: 1;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-
-      .user-main-info {
-        margin-bottom: 24px;
-        
-        @media (max-width: 768px) {
-             text-align: center;
-        }
-
-        .name-role-wrapper {
-          display: flex;
-          align-items: center;
-          gap: 12px;
+        .activity-desc {
+          font-size: 14px;
+          color: #666;
           margin-bottom: 8px;
-          
-          @media (max-width: 768px) {
-             justify-content: center;
-             flex-wrap: wrap;
-          }
-
-          .user-name {
-             font-size: 32px; // Increased size slightly
-             font-weight: 800;
-             margin: 0;
-             color: #ffffff; // White text for contrast on Cover
-             text-shadow: 0 2px 8px rgba(0,0,0,0.4); // Strong shadow for readability
-             font-family: 'Aleo', serif;
-             letter-spacing: 0.5px;
-          }
-
-          .user-role-badge {
-             background: #fff; // White background
-             color: #2d5a27; // Green text
-             padding: 4px 12px;
-             border-radius: 20px;
-             font-size: 12px;
-             font-weight: 700;
-             border: none;
-             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-          }
         }
 
-        .join-date {
-           color: rgba(255, 255, 255, 0.9); // Light Gray/White
-           font-size: 14px;
-           margin: 0;
-           text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        .activity-time {
+          font-size: 12px;
+          color: #999;
         }
-      }
-
-      .profile-header-tabs {
-         // Ensure tabs are visible and styled nicely
-         margin-bottom: 0;
-         width: 100%;
-         
-         .ant-tabs-nav {
-             margin: 0;
-             &:before { border-bottom: none; }
-             
-             .ant-tabs-tab {
-                 padding: 12px 0;
-                 margin-right: 32px;
-                 font-size: 16px;
-                 font-weight: 600;
-                 color: #8c8c8c;
-                 transition: all 0.3s;
-                 
-                 &:hover {
-                     color: #2d5a27;
-                 }
-                 
-                 &.ant-tabs-tab-active .ant-tabs-tab-btn {
-                     color: #ff4d4f; // Active tab Red
-                     text-shadow: 0 0 0.25px currentcolor;
-                 }
-             }
-
-             .ant-tabs-ink-bar {
-                 background: #ff4d4f;
-                 height: 3px;
-                 border-radius: 3px;
-             }
-         }
       }
     }
   }
+
+  // Security Tips
+  .security-tips {
+    background: linear-gradient(135deg, #fffbe6 0%, #fff7e6 100%);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #ffe58f;
+
+    h4 {
+      color: #d48806;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .anticon {
+        font-size: 20px;
+      }
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+
+      li {
+        color: #8c6e1f;
+        margin-bottom: 8px;
+        line-height: 1.6;
+      }
+    }
+  }
+
+  // Responsive
+  @media (max-width: 768px) {
+    .profile-hero {
+      min-height: 250px;
+      margin-bottom: -60px;
+
+      .hero-content h1 {
+        font-size: 24px;
+      }
+    }
+
+    .profile-card {
+      padding: 20px;
+    }
+
+    .item-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 }
+
