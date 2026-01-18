@@ -182,7 +182,7 @@ const Profile = () => {
       <Col xs={24} md={16}>
         <div className="profile-card">
           <div className="card-title">
-            <UserOutlined /> Thông Tin Cá Nhân
+            <UserOutlined /> Thông tin Cá nhân
           </div>
           <Form
             form={form}
@@ -222,7 +222,7 @@ const Profile = () => {
             </Row>
             <Form.Item style={{ textAlign: 'center', marginTop: 16 }}>
               <Button variant="primary" htmlType="submit" icon={<SaveOutlined />} loading={loading} style={{ height: 40, padding: '0 48px' }}>
-                Lưu Thay Đổi
+                Lưu thay đổi
               </Button>
             </Form.Item>
           </Form>
@@ -235,13 +235,13 @@ const Profile = () => {
             colSpan={{ span: 24 } as any}
             data={[
               {
-                title: "Bộ Sưu Tập",
+                title: "Bộ sưu tập",
                 value: collections.length || 0,
                 icon: <AppstoreOutlined />,
                 valueColor: "#1890ff",
               },
               {
-                title: "Đã Yêu Thích",
+                title: "Đã yêu thích",
                 value: favoriteStats?.total || 0,
                 icon: <HeartOutlined />,
                 valueColor: "#ff4d4f",
@@ -257,7 +257,7 @@ const Profile = () => {
       <Col xs={24} md={14}>
         <div className="profile-card">
           <div className="card-title">
-            <LockOutlined /> Đổi Mật Khẩu
+            <LockOutlined /> Đổi mật khẩu
           </div>
           <Alert message="Lưu ý quan trọng" description="Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường và số để đảm bảo an toàn." type="warning" showIcon style={{ marginBottom: 24 }} />
           
@@ -312,7 +312,7 @@ const Profile = () => {
 
             <Form.Item>
               <Button variant="primary" htmlType="submit" fullWidth buttonSize="large" loading={loading} style={{ height: 48, background: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}>
-                Cập Nhật Mật Khẩu
+                Cập nhật Mật khẩu
               </Button>
             </Form.Item>
           </Form>
@@ -320,7 +320,7 @@ const Profile = () => {
       </Col>
       <Col xs={24} md={10}>
           <div className="security-tips">
-              <h4><SafetyCertificateOutlined /> Bảo Mật Tài Khoản</h4>
+              <h4><SafetyCertificateOutlined /> Bảo mật Tài khoản</h4>
               <p style={{ color: '#8c6e1f', marginBottom: 16 }}>Giữ an toàn cho tài khoản của bạn là ưu tiên hàng đầu của chúng tôi.</p>
               <ul>
                   <li>Sử dụng mật khẩu mạnh bao gồm chữ hoa, thường, số và ký tự đặc biệt.</li>
@@ -343,7 +343,7 @@ const Profile = () => {
 
   const renderActivityTab = () => (
       <div className="profile-card">
-          <div className="card-title"><HistoryOutlined /> Lịch Sử Hoạt Động</div>
+          <div className="card-title"><HistoryOutlined /> Lịch sử Hoạt động</div>
           <p style={{ color: '#666', marginBottom: 32 }}>Theo dõi các hoạt động gần đây của bạn trên hệ thống.</p>
           
           <div className="activity-timeline">

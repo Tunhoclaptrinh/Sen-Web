@@ -27,18 +27,18 @@ const AdminLayout = () => {
     {
       key: "profile",
       icon: <UserOutlined />,
-      label: <Link to="/profile">Hồ Sơ</Link>,
+      label: <Link to="/profile">Hồ sơ</Link>,
     },
     {
       key: "settings",
       icon: <SettingOutlined />,
-      label: "Cài Đặt",
+      label: "Cài đặt",
     },
     { type: "divider" },
     {
       key: "back-to-site",
       icon: <DashboardOutlined />,
-      label: <Link to="/">Về Trang Chủ</Link>,
+      label: <Link to="/">Về trang chủ</Link>,
     },
     { type: "divider" },
   ];

@@ -74,23 +74,23 @@ const Header: React.FC = () => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: <Link to="/profile">Hồ Sơ</Link>,
+      label: <Link to="/profile">Hồ sơ</Link>,
     },
     {
       key: 'library',
       icon: <AppstoreOutlined />,
-      label: <Link to="/profile/library">Kho Lưu Trữ</Link>,
+      label: <Link to="/profile/library">Kho lưu trữ</Link>,
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Cài Đặt',
+      label: 'Cài đặt',
     },
     { type: 'divider' },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Đăng Xuất',
+      label: 'Đăng xuất',
       onClick: handleLogout,
       danger: true,
     },
@@ -116,11 +116,11 @@ const Header: React.FC = () => {
     },
     {
       key: 'learn',
-      label: <Link to="/learn">Học tập</Link>,
+      label: <Link to="/game/learning">Học tập</Link>,
     },
     {
       key: 'game',
-      label: <Link to="/game">Game</Link>,
+      label: <Link to="/game/chapters">Game</Link>,
     },
     {
       key: 'support',
