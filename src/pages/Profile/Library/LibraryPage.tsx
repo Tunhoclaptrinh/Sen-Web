@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Tabs, Typography } from "antd";
+import { Tabs } from "antd";
 import { AppstoreOutlined, HeartOutlined } from "@ant-design/icons";
 import CollectionsPage from "../Collections/CollectionsPage";
 import FavoritesPage from "../FavoritesPage";
@@ -10,7 +10,7 @@ import { RootState } from "@/store";
 import ProfileHeader from "../ProfileHeader";
 import "../Profile/styles.less";
 
-const { Title, Paragraph } = Typography;
+
 
 const LibraryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
