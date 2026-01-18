@@ -47,7 +47,7 @@ const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 // const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const CharacterShowcase = lazy(() => import("@/pages/CharacterShowcase"));
+
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
@@ -171,10 +171,7 @@ const routes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: "character-showcase",
-        element: <CharacterShowcase />,
-      },
+
     ],
   },
 
