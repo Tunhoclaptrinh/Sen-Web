@@ -5,7 +5,6 @@ import { logger } from "@/utils/logger.utils";
 import { 
   Collection, 
   CollectionDTO, 
-  CollectionItem, 
   ShareCollectionData, 
   CollectionStats 
 } from "@/types/collection.types";

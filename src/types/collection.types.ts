@@ -1,4 +1,4 @@
-import { BaseEntity, TimestampEntity, User } from "./api.types";
+import { BaseEntity, TimestampEntity } from "./api.types";
 import { User as UserType } from "./user.types";
 
 export interface CollectionItem {

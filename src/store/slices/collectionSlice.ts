@@ -59,9 +59,9 @@ export const toggleArtifactInCollection = createAsyncThunk(
     try {
       let response;
       if (isAdding) {
-        response = await collectionService.addArtifact(collectionId, artifactId);
+        response = await collectionService.addItem(collectionId, { id: artifactId, type: 'artifact' });
       } else {
-        response = await collectionService.removeArtifact(collectionId, artifactId);
+        response = await collectionService.removeItem(collectionId, artifactId, 'artifact');
       }
       return response.data;
     } catch (error: any) {

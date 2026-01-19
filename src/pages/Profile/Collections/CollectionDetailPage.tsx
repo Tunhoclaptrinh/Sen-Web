@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Row, Col, Typography, Button, Spin, message, Empty, Modal } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, ShareAltOutlined } from '@ant-design/icons';
