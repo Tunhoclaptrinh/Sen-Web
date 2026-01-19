@@ -1,13 +1,22 @@
-import { BaseEntity, TimestampEntity, User } from ".";
+import { BaseEntity, TimestampEntity, User } from "./api.types";
+import { User as UserType } from "./user.types";
+
+export interface CollectionItem {
+    id: number;
+    type: 'heritage' | 'artifact';
+    addedAt: string;
+    note?: string;
+    details?: any; // Populated details from backend
+}
 
 export interface Collection extends BaseEntity, TimestampEntity {
   user_id: number;
   name: string;
   description?: string;
-  artifact_ids: number[];
-  heritage_site_ids: number[];
+  items: CollectionItem[];
   total_items: number;
   is_public: boolean;
+  user?: UserType; // If populated
 }
 
 export interface CollectionDTO {
@@ -16,21 +25,23 @@ export interface CollectionDTO {
   is_public?: boolean;
 }
 
+export interface ShareCollectionData {
+  emails: string[];
+  permission: 'view' | 'edit';
+}
+
+export interface CollectionStats {
+  totalCollections: number;
+  totalItems: number;
+  publicCollections: number;
+  privateCollections: number;
+}
+
 export interface CollectionState {
   items: Collection[];
   currentItem: Collection | null;
   loading: boolean;
   error: string | null;
-}
-
-export interface CollectionResponse {
-  success: boolean;
-  data: Collection[];
-}
-
-export interface CollectionSingleResponse {
-  success: boolean;
-  data: Collection;
 }
 
 // Favorite
@@ -56,7 +67,7 @@ export interface Review extends BaseEntity, TimestampEntity {
   comment?: string;
   images?: string[];
   is_verified?: boolean;
-  user?: User;
+  user?: UserType;
 }
 
 export interface ReviewDTO {

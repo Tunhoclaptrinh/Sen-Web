@@ -31,6 +31,7 @@ import {
   SkinOutlined,
   ExpandOutlined,
   HistoryOutlined,
+  FolderAddOutlined,
 } from "@ant-design/icons";
 import { fetchArtifactById } from "@store/slices/artifactSlice";
 import favoriteService from "@/services/favorite.service";
@@ -41,6 +42,7 @@ import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import type { Artifact } from "@/types";
+import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import "./styles.less";
 
 const { Paragraph, Title } = Typography;
@@ -60,6 +62,7 @@ const ArtifactDetailPage = () => {
   const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
   const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -319,7 +322,24 @@ const ArtifactDetailPage = () => {
                         >
                           Chia sẻ
                         </Button>
+                        <Button
+                          type="text"
+                          icon={<FolderAddOutlined />}
+                          onClick={() => setShowCollectionModal(true)}
+                        >
+                          Lưu vào BST
+                        </Button>
                       </div>
+
+                    <AddToCollectionModal
+                        visible={showCollectionModal}
+                        onCancel={() => setShowCollectionModal(false)}
+                        item={{
+                            id: artifact.id,
+                            type: 'artifact',
+                            name: artifact.name
+                        }}
+                    />
                     </div>
                     <h3 className="section-title">Câu Chuyện & Ý Nghĩa</h3>
                     <div className="description-text">

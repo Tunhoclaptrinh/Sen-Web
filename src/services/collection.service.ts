@@ -1,32 +1,14 @@
-import BaseService from './base.service';
-import apiClient from '@/config/axios.config';
-import type { BaseApiResponse, QueryParams } from '@/types';
-import { logger } from '@/utils/logger.utils';
-
-/**
- * Collection interface
- */
-export interface Collection {
-  id: number;
-  user_id: number;
-  name: string;
-  description?: string;
-  artifact_ids: number[];
-  heritage_site_ids: number[];
-  total_items: number;
-  is_public: boolean;
-  created_at: string;
-  updated_at?: string;
-}
-
-/**
- * Collection DTO for create/update
- */
-export interface CollectionDTO {
-  name: string;
-  description?: string;
-  is_public?: boolean;
-}
+import apiClient from "@/config/axios.config";
+import BaseService from "./base.service";
+import type { BaseApiResponse, QueryParams } from "@/types";
+import { logger } from "@/utils/logger.utils";
+import { 
+  Collection, 
+  CollectionDTO, 
+  CollectionItem, 
+  ShareCollectionData, 
+  CollectionStats 
+} from "@/types/collection.types";
 
 /**
  * Collection with items populated
@@ -36,26 +18,6 @@ export interface CollectionWithItems extends Collection {
   heritage_sites?: any[];
 }
 
-/**
- * Share collection data
- */
-export interface ShareCollectionData {
-  users?: number[];
-  emails?: string[];
-  permissions?: 'view' | 'edit';
-  message?: string;
-}
-
-/**
- * Collection statistics
- */
-export interface CollectionStats {
-  total_collections: number;
-  total_items: number;
-  public_collections: number;
-  private_collections: number;
-  most_items: Collection;
-}
 
 /**
  * Collection Service
@@ -67,15 +29,16 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   }
 
   /**
-   * Add artifact to collection
+   * Add item to collection
    */
-  async addArtifact(
+  async addItem(
     collectionId: number | string,
-    artifactId: number | string
+    item: { id: number | string; type: 'heritage' | 'artifact'; note?: string }
   ): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.post<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
+        `${this.endpoint}/${collectionId}/items`,
+        item
       );
 
       return {
@@ -84,21 +47,22 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã thêm vào bộ sưu tập',
       };
     } catch (error) {
-      logger.error('[Collection] addArtifact error:', error);
+      logger.error('[Collection] addItem error:', error);
       throw error;
     }
   }
 
   /**
-   * Remove artifact from collection
+   * Remove item from collection
    */
-  async removeArtifact(
+  async removeItem(
     collectionId: number | string,
-    artifactId: number | string
+    itemId: number | string,
+    type: 'heritage' | 'artifact'
   ): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.delete<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/artifacts/${artifactId}`
+        `${this.endpoint}/${collectionId}/items/${itemId}?type=${type}`
       );
 
       return {
@@ -107,56 +71,11 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
       };
     } catch (error) {
-      logger.error('[Collection] removeArtifact error:', error);
+      logger.error('[Collection] removeItem error:', error);
       throw error;
     }
   }
 
-  /**
-   * Add heritage site to collection
-   */
-  async addHeritageSite(
-    collectionId: number | string,
-    siteId: number | string
-  ): Promise<BaseApiResponse<Collection>> {
-    try {
-      const response = await apiClient.post<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/heritage-sites/${siteId}`
-      );
-
-      return {
-        success: response.success ?? true,
-        data: response.data ?? (response as any),
-        message: response.message ?? 'Đã thêm vào bộ sưu tập',
-      };
-    } catch (error) {
-      logger.error('[Collection] addHeritageSite error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove heritage site from collection
-   */
-  async removeHeritageSite(
-    collectionId: number | string,
-    siteId: number | string
-  ): Promise<BaseApiResponse<Collection>> {
-    try {
-      const response = await apiClient.delete<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/heritage-sites/${siteId}`
-      );
-
-      return {
-        success: response.success ?? true,
-        data: response.data ?? (response as any),
-        message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
-      };
-    } catch (error) {
-      logger.error('[Collection] removeHeritageSite error:', error);
-      throw error;
-    }
-  }
 
   /**
    * Get collection artifacts with details

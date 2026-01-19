@@ -4,6 +4,17 @@
 
 import { Pagination, Metadata } from "./index";
 
+// Base Entity
+export interface BaseEntity {
+  id: number;
+}
+
+// Timestamp Entity
+export interface TimestampEntity {
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Base API Response
 export interface BaseApiResponse<T = any> {
   success: boolean;
