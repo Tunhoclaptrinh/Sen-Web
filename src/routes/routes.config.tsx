@@ -41,6 +41,7 @@ const HistoryDetailPage = lazy(
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
 const LibraryPage = lazy(() => import("@/pages/Profile/Library/LibraryPage"));
 const FavoritesPage = lazy(() => import("@/pages/Profile/FavoritesPage"));
+const CollectionDetailPage = lazy(() => import("@/pages/Profile/Collections/CollectionDetailPage"));
 const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 // const ReviewsPage = lazy(() => import("@/pages/Profile/ReviewsPage"));
 
@@ -277,6 +278,10 @@ const routes: RouteObject[] = [
       {
         path: "favorites",
         element: <FavoritesPage />,
+      },
+      {
+        path: "collections/:id",
+        element: <CollectionDetailPage />,
       },
       //   element: <ReviewsPage />,
       // },

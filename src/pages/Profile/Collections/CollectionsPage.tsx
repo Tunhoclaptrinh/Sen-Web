@@ -1,16 +1,17 @@
 
 import { useState, useEffect } from 'react';
+
 import { Row, Col, Spin, message, Typography, Empty, Modal } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined, AppstoreOutlined } from '@ant-design/icons';
 import Button from '@/components/common/Button';
 import ArticleCard from '@/components/common/cards/ArticleCard';
-import collectionService, { Collection, CollectionDTO } from '@/services/collection.service';
+import collectionService from '@/services/collection.service';
+import { Collection, CollectionDTO } from '@/types/collection.types';
 import CollectionModal from './CollectionModal';
 
 const { Title, Paragraph } = Typography;
 
 const CollectionsPage = () => {
-    // const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [collections, setCollections] = useState<Collection[]>([]);
     
@@ -111,38 +112,38 @@ const CollectionsPage = () => {
                     <Row gutter={[24, 24]}>
                         {collections.map(col => (
                             <Col key={col.id} xs={24} sm={12} lg={8} xl={6}>
-                                <ArticleCard
-                                    type="collection"
-                                    data={{
-                                        id: col.id,
-                                        name: col.name,
-                                        short_description: col.description,
-                                        created_at: col.created_at,
-                                        total_items: col.total_items,
-                                        thumbnail: "/images/collection-placeholder.jpg"
-                                    }}
-                                    actions={
-                                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', width: '100%' }}>
-                                            <Button 
-                                                variant="ghost" 
-                                                icon={<EditOutlined />} 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleEdit(col);
-                                                }} 
-                                            />
-                                            <Button 
-                                                variant="ghost" 
-                                                danger 
-                                                icon={<DeleteOutlined />} 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDelete(col.id);
-                                                }} 
-                                            />
-                                        </div>
-                                    }
-                                />
+                                    <ArticleCard
+                                        type="collection"
+                                        data={{
+                                            id: col.id,
+                                            name: col.name,
+                                            short_description: col.description,
+                                            created_at: col.createdAt,
+                                            total_items: col.total_items,
+                                            thumbnail: "/images/collection-placeholder.jpg"
+                                        }}
+                                        actions={
+                                            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', width: '100%' }}>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    icon={<EditOutlined />} 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleEdit(col);
+                                                    }} 
+                                                />
+                                                <Button 
+                                                    variant="ghost" 
+                                                    danger 
+                                                    icon={<DeleteOutlined />} 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDelete(col.id);
+                                                    }} 
+                                                />
+                                            </div>
+                                        }
+                                    />
                             </Col>
                         ))}
                     </Row>

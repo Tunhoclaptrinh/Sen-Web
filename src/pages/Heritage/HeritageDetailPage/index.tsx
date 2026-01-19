@@ -33,6 +33,7 @@ import {
   ShopOutlined,
   ReadOutlined,
   HistoryOutlined,
+  FolderAddOutlined,
 } from "@ant-design/icons";
 import { Image } from "antd";
 import dayjs from "dayjs";
@@ -45,6 +46,7 @@ import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { HeritageSite, TimelineEvent } from "@/types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -65,6 +67,7 @@ const HeritageDetailPage = () => {
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
   const [relatedHistoryArr, setRelatedHistoryArr] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -320,7 +323,24 @@ const HeritageDetailPage = () => {
                       >
                         Chia sẻ
                       </Button>
+                      <Button
+                        type="text"
+                        icon={<FolderAddOutlined />}
+                        onClick={() => setShowCollectionModal(true)}
+                      >
+                        Lưu vào BST
+                      </Button>
                     </div>
+
+                    <AddToCollectionModal
+                        visible={showCollectionModal}
+                        onCancel={() => setShowCollectionModal(false)}
+                        item={{
+                            id: site.id,
+                            type: 'heritage',
+                            name: site.name
+                        }}
+                    />
                   </div>
 
                   {/* Main Title */}

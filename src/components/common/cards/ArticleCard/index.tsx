@@ -5,7 +5,8 @@ import {
     UserOutlined,
     CommentOutlined,
     EnvironmentOutlined,
-    ArrowRightOutlined 
+    ArrowRightOutlined,
+    AppstoreOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -41,20 +42,17 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
 
     return (
         <div className={`article-card ${type} ${variant}`} onClick={handleNavigate} style={{ cursor: 'pointer' }}>
-            <div className="card-image-wrapper">
-                 <div className="card-image" style={{ backgroundImage: `url('${imageUrl}')` }} />
-                 {/* Optional: Add Region/Location badge if Heritage */}
-                 {type === 'heritage' && data.region && (
-                     <div className="location-badge">
-                         <EnvironmentOutlined /> {data.region}
-                     </div>
-                 )}
-                 {type === 'collection' && data.total_items !== undefined && (
-                     <div className="location-badge" style={{ background: 'rgba(0,0,0,0.7)' }}>
-                         {data.total_items} mục
-                     </div>
-                 )}
-            </div>
+            {type !== 'collection' && (
+                <div className="card-image-wrapper">
+                     <div className="card-image" style={{ backgroundImage: `url('${imageUrl}')` }} />
+                     {/* Optional: Add Region/Location badge if Heritage */}
+                     {type === 'heritage' && data.region && (
+                         <div className="location-badge">
+                             <EnvironmentOutlined /> {data.region}
+                         </div>
+                     )}
+                </div>
+            )}
 
             <div className="card-content">
                 {/* Meta Row: Date | Author | Comments */}
@@ -62,6 +60,11 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
                     <span className="meta-item">
                         <CalendarOutlined /> {dayjs(data.publishDate || data.createdAt || data.created_at).format('DD/MM/YYYY')}
                     </span>
+                    {type === 'collection' && (
+                        <span className="meta-item">
+                            <AppstoreOutlined /> {data.total_items ?? 0} mục
+                        </span>
+                    )}
                     {type !== 'collection' && (
                         <span className="meta-item">
                             <UserOutlined /> {data.author || 'Admin'}
