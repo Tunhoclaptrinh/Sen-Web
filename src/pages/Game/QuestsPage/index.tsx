@@ -1,367 +1,425 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-    Row,
-    Col,
-    Card,
-    Tabs,
-    Button,
-    Spin,
-    Empty,
-    Progress,
-    Tag,
-    message,
-    Modal,
-    Typography,
-    Space,
-    Statistic,
-} from 'antd';
+  Row,
+  Col,
+  Card,
+  Tabs,
+  Button,
+  Spin,
+  Empty,
+  Progress,
+  Tag,
+  message,
+  Modal,
+  Typography,
+  Space,
+} from "antd";
+import { StatisticsCard } from "@/components/common";
 import {
-    TrophyOutlined,
-    CalendarOutlined,
-    ClockCircleOutlined,
-    CheckCircleOutlined,
-    GiftOutlined,
-} from '@ant-design/icons';
-import questService from '@services/quest.service';
-import './styles.less';
+  TrophyOutlined,
+  CalendarOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  GiftOutlined,
+  RocketOutlined,
+} from "@ant-design/icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  fetchActiveQuests,
+  startQuest,
+  claimQuestRewards,
+  clearSuccessMessage,
+  clearError,
+} from "@/store/slices/questSlice";
+import type { Quest } from "@/types/quest.types";
+import "./styles.less";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph } = Typography;
 
 const QuestsPage: React.FC = () => {
-    // const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [quests, setQuests] = useState<any[]>([]);
-    const [activeTab, setActiveTab] = useState('all');
-    const [selectedQuest, setSelectedQuest] = useState<any>(null);
-    const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const dispatch = useAppDispatch();
+  const { activeQuests, activeLoading, error, successMessage } = useAppSelector(
+    (state) => state.quest,
+  );
+  const [activeTab, setActiveTab] = useState("all");
+  const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
 
-    useEffect(() => {
-        fetchQuests();
-    }, []);
+  useEffect(() => {
+    dispatch(fetchActiveQuests());
+  }, [dispatch]);
 
-    const fetchQuests = async () => {
-        try {
-            setLoading(true);
-            const response = await questService.getActiveQuests();
-            setQuests(response || []);
-        } catch (error) {
-            message.error('Không thể tải danh sách nhiệm vụ');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleCompleteQuest = async (questId: number) => {
-        try {
-            await questService.completeQuest(questId);
-            message.success('Hoàn thành nhiệm vụ!');
-            fetchQuests();
-        } catch (error: any) {
-            message.error(error.message || 'Không thể hoàn thành nhiệm vụ');
-        }
-    };
-
-    const handleViewDetail = (quest: any) => {
-        setSelectedQuest(quest);
-        setDetailModalVisible(true);
-    };
-
-    const getQuestsByTab = () => {
-        if (activeTab === 'all') return quests;
-        if (activeTab === 'daily') return quests.filter((q) => q.type === 'daily');
-        if (activeTab === 'weekly') return quests.filter((q) => q.type === 'weekly');
-        if (activeTab === 'achievements')
-            return quests.filter((q) => q.type === 'achievement');
-        return quests;
-    };
-
-    const getTypeIcon = (type: string) => {
-        switch (type) {
-            case 'daily':
-                return <CalendarOutlined />;
-            case 'weekly':
-                return <ClockCircleOutlined />;
-            case 'achievement':
-                return <TrophyOutlined />;
-            default:
-                return <CheckCircleOutlined />;
-        }
-    };
-
-    const getTypeColor = (type: string) => {
-        switch (type) {
-            case 'daily':
-                return 'blue';
-            case 'weekly':
-                return 'purple';
-            case 'achievement':
-                return 'gold';
-            default:
-                return 'default';
-        }
-    };
-
-    const getStats = () => {
-        return {
-            total: quests.length,
-            daily: quests.filter((q) => q.type === 'daily').length,
-            weekly: quests.filter((q) => q.type === 'weekly').length,
-            achievements: quests.filter((q) => q.type === 'achievement').length,
-        };
-    };
-
-    const stats = getStats();
-
-    if (loading) {
-        return (
-            <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                <Spin size="large" tip="Đang tải nhiệm vụ..." />
-            </div>
-        );
+  useEffect(() => {
+    if (successMessage) {
+      message.success(successMessage);
+      dispatch(clearSuccessMessage());
     }
+    if (error) {
+      message.error(error);
+      dispatch(clearError());
+    }
+  }, [successMessage, error, dispatch]);
 
+  const handleStartQuest = (questId: number) => {
+    dispatch(startQuest(questId));
+  };
+
+  const handleClaimRewards = (questId: number) => {
+    dispatch(claimQuestRewards(questId));
+  };
+
+  const handleViewDetail = (quest: Quest) => {
+    setSelectedQuest(quest);
+    setDetailModalVisible(true);
+  };
+
+  const getQuestsByTab = () => {
+    if (activeTab === "all") return activeQuests;
+    return activeQuests.filter((q) => q.type === activeTab);
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "daily":
+        return <CalendarOutlined />;
+      case "weekly":
+        return <ClockCircleOutlined />;
+      case "achievement":
+        return <TrophyOutlined />;
+      case "exploration":
+        return <RocketOutlined />;
+      default:
+        return <CheckCircleOutlined />;
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "daily":
+        return "blue";
+      case "weekly":
+        return "purple";
+      case "achievement":
+        return "gold";
+      case "exploration":
+        return "cyan";
+      default:
+        return "default";
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+    },
+  };
+
+  const statsData = [
+    {
+      title: "Tất cả",
+      value: activeQuests.length,
+      valueColor: "#1890ff",
+      icon: <CheckCircleOutlined />,
+    },
+    {
+      title: "Hàng ngày",
+      value: activeQuests.filter((q) => q.type === "daily").length,
+      valueColor: "#52c41a",
+      icon: <CalendarOutlined />,
+    },
+    {
+      title: "Hàng tuần",
+      value: activeQuests.filter((q) => q.type === "weekly").length,
+      valueColor: "#722ed1",
+      icon: <ClockCircleOutlined />,
+    },
+    {
+      title: "Thành tích",
+      value: activeQuests.filter((q) => q.type === "achievement").length,
+      valueColor: "#faad14",
+      icon: <TrophyOutlined />,
+    },
+  ];
+
+  if (activeLoading && activeQuests.length === 0) {
     return (
-        <div className="quests-page">
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title">
-                        <TrophyOutlined /> Nhiệm Vụ
-                    </h1>
-                    <p className="page-description">
-                        Hoàn thành nhiệm vụ để nhận phần thưởng hấp dẫn
-                    </p>
-                </div>
-            </div>
-
-            <div className="quests-stats">
-                <Row gutter={[16, 16]}>
-                    <Col xs={12} sm={6}>
-                        <Card className="stat-card gradient-1">
-                            <Statistic
-                                title="Tất Cả"
-                                value={stats.total}
-                                prefix={<CheckCircleOutlined />}
-                                valueStyle={{ color: '#fff' }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                        <Card className="stat-card gradient-2">
-                            <Statistic
-                                title="Hằng Ngày"
-                                value={stats.daily}
-                                prefix={<CalendarOutlined />}
-                                valueStyle={{ color: '#fff' }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                        <Card className="stat-card gradient-3">
-                            <Statistic
-                                title="Hằng Tuần"
-                                value={stats.weekly}
-                                prefix={<ClockCircleOutlined />}
-                                valueStyle={{ color: '#fff' }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                        <Card className="stat-card gradient-4">
-                            <Statistic
-                                title="Thành Tích"
-                                value={stats.achievements}
-                                prefix={<TrophyOutlined />}
-                                valueStyle={{ color: '#fff' }}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
-            </div>
-
-            <Card className="quests-content">
-                <Tabs
-                    activeKey={activeTab}
-                    onChange={setActiveTab}
-                    items={[
-                        { key: 'all', label: `Tất Cả (${stats.total})` },
-                        { key: 'daily', label: `Hằng Ngày (${stats.daily})` },
-                        { key: 'weekly', label: `Hằng Tuần (${stats.weekly})` },
-                        { key: 'achievements', label: `Thành Tích (${stats.achievements})` },
-                    ]}
-                />
-
-                {getQuestsByTab().length === 0 ? (
-                    <Empty
-                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        description="Không có nhiệm vụ nào"
-                    />
-                ) : (
-                    <Row gutter={[24, 24]} className="quests-grid">
-                        {getQuestsByTab().map((quest) => (
-                            <Col xs={24} sm={12} lg={8} key={quest.id}>
-                                <Card
-                                    hoverable
-                                    className="quest-card"
-                                    actions={[
-                                        <Button
-                                            key="detail"
-                                            type="link"
-                                            onClick={() => handleViewDetail(quest)}
-                                        >
-                                            Xem Chi Tiết
-                                        </Button>,
-                                        quest.is_completed ? (
-                                            <Tag key="completed" color="success" icon={<CheckCircleOutlined />}>
-                                                Đã hoàn thành
-                                            </Tag>
-                                        ) : (
-                                            <Button
-                                                key="complete"
-                                                type="primary"
-                                                onClick={() => handleCompleteQuest(quest.id)}
-                                            >
-                                                Hoàn thành
-                                            </Button>
-                                        ),
-                                    ]}
-                                >
-                                    <div className="quest-header">
-                                        <div className="quest-icon">
-                                            {getTypeIcon(quest.type)}
-                                        </div>
-                                        <Tag color={getTypeColor(quest.type)}>
-                                            {quest.type === 'daily'
-                                                ? 'Hằng ngày'
-                                                : quest.type === 'weekly'
-                                                    ? 'Hằng tuần'
-                                                    : 'Thành tích'}
-                                        </Tag>
-                                    </div>
-
-                                    <Title level={5} ellipsis={{ rows: 1 }}>
-                                        {quest.title}
-                                    </Title>
-
-                                    <Paragraph ellipsis={{ rows: 2 }} className="quest-description">
-                                        {quest.description}
-                                    </Paragraph>
-
-                                    {quest.progress !== undefined && (
-                                        <div className="quest-progress">
-                                            <Text type="secondary">
-                                                Tiến độ: {quest.progress}/{quest.target || 100}
-                                            </Text>
-                                            <Progress
-                                                percent={Math.round(
-                                                    ((quest.progress || 0) / (quest.target || 100)) * 100
-                                                )}
-                                                status={quest.is_completed ? 'success' : 'active'}
-                                                strokeColor={{
-                                                    '0%': '#108ee9',
-                                                    '100%': '#87d068',
-                                                }}
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="quest-rewards">
-                                        <Space>
-                                            <GiftOutlined style={{ color: '#faad14' }} />
-                                            <Text strong>Phần thưởng:</Text>
-                                        </Space>
-                                        <div className="rewards-list">
-                                            {quest.rewards?.coins && (
-                                                <Tag color="gold">💰 {quest.rewards.coins} xu</Tag>
-                                            )}
-                                            {quest.rewards?.experience && (
-                                                <Tag color="blue">⭐ {quest.rewards.experience} XP</Tag>
-                                            )}
-                                            {quest.rewards?.petals && (
-                                                <Tag color="pink">🌸 {quest.rewards.petals} cánh hoa</Tag>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                )}
-            </Card>
-
-            <Modal
-                title={
-                    <Space>
-                        {selectedQuest && getTypeIcon(selectedQuest.type)}
-                        <span>{selectedQuest?.title}</span>
-                    </Space>
-                }
-                open={detailModalVisible}
-                onCancel={() => setDetailModalVisible(false)}
-                footer={[
-                    <Button key="close" onClick={() => setDetailModalVisible(false)}>
-                        Đóng
-                    </Button>,
-                    !selectedQuest?.is_completed && (
-                        <Button
-                            key="complete"
-                            type="primary"
-                            onClick={() => {
-                                handleCompleteQuest(selectedQuest.id);
-                                setDetailModalVisible(false);
-                            }}
-                        >
-                            Hoàn Thành
-                        </Button>
-                    ),
-                ].filter(Boolean)}
-                width={600}
-            >
-                {selectedQuest && (
-                    <div className="quest-detail">
-                        <Tag color={getTypeColor(selectedQuest.type)} style={{ marginBottom: 16 }}>
-                            {selectedQuest.type === 'daily'
-                                ? 'Nhiệm Vụ Hằng Ngày'
-                                : selectedQuest.type === 'weekly'
-                                    ? 'Nhiệm Vụ Hằng Tuần'
-                                    : 'Thành Tích'}
-                        </Tag>
-
-                        <Paragraph>{selectedQuest.description}</Paragraph>
-
-                        {selectedQuest.progress !== undefined && (
-                            <div style={{ marginTop: 24 }}>
-                                <Text strong>Tiến Độ:</Text>
-                                <Progress
-                                    percent={Math.round(
-                                        ((selectedQuest.progress || 0) / (selectedQuest.target || 100)) * 100
-                                    )}
-                                    status={selectedQuest.is_completed ? 'success' : 'active'}
-                                />
-                                <Text type="secondary">
-                                    {selectedQuest.progress} / {selectedQuest.target || 100}
-                                </Text>
-                            </div>
-                        )}
-
-                        <div style={{ marginTop: 24 }}>
-                            <Text strong>Phần Thưởng:</Text>
-                            <div style={{ marginTop: 12 }}>
-                                {selectedQuest.rewards?.coins && (
-                                    <div>💰 {selectedQuest.rewards.coins} xu</div>
-                                )}
-                                {selectedQuest.rewards?.experience && (
-                                    <div>⭐ {selectedQuest.rewards.experience} điểm kinh nghiệm</div>
-                                )}
-                                {selectedQuest.rewards?.petals && (
-                                    <div>🌸 {selectedQuest.rewards.petals} cánh hoa sen</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </Modal>
-        </div>
+      <div className="quests-loading">
+        <Spin size="large" tip="Đang chuẩn bị nhiệm vụ..." />
+      </div>
     );
+  }
+
+  return (
+    <div className="premium-quests-page">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="page-header"
+      >
+        <Title level={1} className="main-title">
+          <TrophyOutlined className="title-icon" /> Đường đến vinh quang
+        </Title>
+        <Paragraph className="subtitle">
+          Hoàn thành thử thách, nhận báu vật di truyền và thăng cấp bản thân
+        </Paragraph>
+      </motion.div>
+
+      <div className="stats-container">
+        <StatisticsCard
+          data={statsData}
+          hideCard
+          colSpan={{ xs: 12, sm: 12, md: 6 }}
+          cardStyle={{
+            borderRadius: 20,
+            backdropFilter: "blur(8px)",
+            background: "rgba(255, 255, 255, 0.7)",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+          }}
+        />
+      </div>
+
+      <div className="tabs-container glass-morphism">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          centered
+          items={[
+            { key: "all", label: "Tất Cả" },
+            { key: "daily", label: "Hằng Ngày" },
+            { key: "weekly", label: "Hằng Tuần" },
+            { key: "achievement", label: "Thành Tích" },
+            { key: "exploration", label: "Thám Hiểm" },
+          ]}
+        />
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="quests-grid-container"
+        >
+          {getQuestsByTab().length === 0 ? (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <Empty description="Hiện không có nhiệm vụ nào trong mục này" />
+            </motion.div>
+          ) : (
+            <Row gutter={[24, 24]}>
+              {getQuestsByTab().map((quest) => (
+                <Col xs={24} sm={12} lg={8} key={quest.id}>
+                  <motion.div variants={itemVariants} whileHover={{ y: -5 }}>
+                    <Card
+                      className={`quest-card glass-morphism ${quest.progress?.status || "locked"}`}
+                      cover={
+                        quest.thumbnail && (
+                          <div className="quest-image-container">
+                            <img
+                              alt={quest.title}
+                              src={quest.thumbnail}
+                              className="quest-image"
+                            />
+                            <div className="quest-overlay" />
+                          </div>
+                        )
+                      }
+                    >
+                      <div className="quest-type-tag">
+                        <Tag
+                          color={getTypeColor(quest.type)}
+                          icon={getTypeIcon(quest.type)}
+                        >
+                          {quest.type.toUpperCase()}
+                        </Tag>
+                      </div>
+
+                      <Title level={4} className="quest-title">
+                        {quest.title}
+                      </Title>
+                      <Paragraph ellipsis={{ rows: 2 }} className="quest-desc">
+                        {quest.description}
+                      </Paragraph>
+
+                      {quest.progress ? (
+                        <div className="quest-progress-section">
+                          <div className="progress-info">
+                            <span>Tiến độ</span>
+                            <span>
+                              {quest.progress.current_value}/
+                              {quest.requirements[0]?.target}
+                            </span>
+                          </div>
+                          <Progress
+                            percent={Math.round(
+                              (quest.progress.current_value /
+                                (quest.requirements[0]?.target || 1)) *
+                                100,
+                            )}
+                            status={
+                              quest.progress.is_completed ? "success" : "active"
+                            }
+                            showInfo={false}
+                            strokeColor={
+                              quest.progress.is_completed
+                                ? "#52c41a"
+                                : "#1890ff"
+                            }
+                          />
+                        </div>
+                      ) : (
+                        <div className="quest-locked-state">
+                          <RocketOutlined /> Chăm chỉ học tập để mở khóa
+                        </div>
+                      )}
+
+                      <div className="quest-rewards-summary">
+                        <Space>
+                          {quest.rewards.experience && (
+                            <span className="reward-item">
+                              ⭐ {quest.rewards.experience}
+                            </span>
+                          )}
+                          {quest.rewards.petals && (
+                            <span className="reward-item">
+                              🌸 {quest.rewards.petals}
+                            </span>
+                          )}
+                          {quest.rewards.badge && (
+                            <span className="reward-item">
+                              🏅 {quest.rewards.badge}
+                            </span>
+                          )}
+                        </Space>
+                      </div>
+
+                      <div className="quest-actions">
+                        {!quest.progress ? (
+                          <Button
+                            type="primary"
+                            block
+                            className="action-btn start-btn"
+                            onClick={() => handleStartQuest(quest.id)}
+                          >
+                            Bắt đầu
+                          </Button>
+                        ) : quest.progress.status === "completed" ? (
+                          <Button
+                            type="primary"
+                            block
+                            className="action-btn claim-btn"
+                            icon={<GiftOutlined />}
+                            onClick={() => handleClaimRewards(quest.id)}
+                          >
+                            Nhận Thưởng
+                          </Button>
+                        ) : quest.progress.status === "claimed" ? (
+                          <Button
+                            block
+                            disabled
+                            className="action-btn claimed-btn"
+                          >
+                            <CheckCircleOutlined /> Đã Hoàn Thành
+                          </Button>
+                        ) : (
+                          <Button
+                            ghost
+                            type="primary"
+                            block
+                            className="action-btn detail-btn"
+                            onClick={() => handleViewDetail(quest)}
+                          >
+                            Chi Tiết
+                          </Button>
+                        )}
+                      </div>
+                    </Card>
+                  </motion.div>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      <Modal
+        title={<span className="modal-title">{selectedQuest?.title}</span>}
+        open={detailModalVisible}
+        onCancel={() => setDetailModalVisible(false)}
+        footer={null}
+        className="premium-quest-modal"
+        centered
+      >
+        {selectedQuest && (
+          <div className="quest-modal-content">
+            <Paragraph className="modal-desc">
+              {selectedQuest.description}
+            </Paragraph>
+
+            <div className="modal-section">
+              <Title level={5}>Yêu cầu</Title>
+              <Paragraph>
+                {selectedQuest.requirements[0]?.description}
+              </Paragraph>
+            </div>
+
+            <div className="modal-section">
+              <Title level={5}>Phần thưởng</Title>
+              <div className="rewards-grid">
+                {selectedQuest.rewards.experience && (
+                  <div className="modal-reward">
+                    <div className="reward-icon">⭐</div>
+                    <div className="reward-val">
+                      {selectedQuest.rewards.experience} XP
+                    </div>
+                  </div>
+                )}
+                {selectedQuest.rewards.petals && (
+                  <div className="modal-reward">
+                    <div className="reward-icon">🌸</div>
+                    <div className="reward-val">
+                      {selectedQuest.rewards.petals} Cánh
+                    </div>
+                  </div>
+                )}
+                {selectedQuest.rewards.coins && (
+                  <div className="modal-reward">
+                    <div className="reward-icon">💰</div>
+                    <div className="reward-val">
+                      {selectedQuest.rewards.coins} Xu
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Button
+              type="primary"
+              size="large"
+              block
+              onClick={() => setDetailModalVisible(false)}
+              className="modal-close-btn"
+            >
+              Đã hiểu
+            </Button>
+          </div>
+        )}
+      </Modal>
+    </div>
+  );
 };
 
 export default QuestsPage;
