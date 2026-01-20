@@ -116,17 +116,11 @@ const CustomerLayout: React.FC = () => {
                 </Card>
             </Drawer>
 
-            {/* AI Chat Drawer */}
-            <Drawer
-                title="💬 Trợ lý AI"
-                placement="right"
-                onClose={() => setAiChatVisible(false)}
-                open={aiChatVisible}
-                width={480}
-                styles={{ body: { padding: 0 } }}
-            >
-                <AIChat />
-            </Drawer>
+            {/* AI Chat Overlay */}
+            <AIChat 
+                open={aiChatVisible} 
+                onClose={() => setAiChatVisible(false)} 
+            />
         </>
     );
 };
