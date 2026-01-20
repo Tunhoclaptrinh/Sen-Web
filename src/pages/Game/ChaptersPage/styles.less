@@ -1,256 +1,342 @@
 @import "@/styles/variables.less";
 
+@glass-bg: fade(white, 70%);
+@glass-border: fade(white, 30%);
+@glass-shadow: 0 8px 32px 0 fade(@primary-color, 10%);
+@dynamic-bg-start: tint(@primary-color, 95%);
+@dynamic-bg-end: tint(@primary-color, 85%);
+
 .chapters-page {
-    padding: 24px; 
-    // background-color: #f0e9e9;
+    padding: 24px;
     min-height: 100vh;
-}
+    background: linear-gradient(135deg, @dynamic-bg-start 0%, @dynamic-bg-end 100%);
 
-.chapters-header {
-    margin-bottom: 32px;
-    text-align: center;
-}
+    .chapters-header {
+        text-align: center;
+        margin-bottom: 40px;
 
-.chapters-header .ant-typography.page-title {
-    color: @primary-color;
-}
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-.progress-card {
-    margin-top: 24px;
-    background: linear-gradient(135deg, #1f5f25 0%, #4f88dd 100%);
-    border: none;
-    color: white;
-    border-radius: 12px;
-}
+        .main-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: @primary-color;
+            margin-bottom: 8px;
 
-.progress-card .ant-card-body {
-    padding: 20px 24px;
-}
+            .title-icon {
+                margin-right: 12px;
+                color: @primary-color;
+                filter: drop-shadow(0 4px 8px fade(@primary-color, 30%));
+            }
+        }
 
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    justify-content: center;
-    height: 100%;
-}
-
-.stat-item .ant-typography {
-    color: white !important;
-    margin: 0;
-    font-weight: 500;
-}
-
-.chapters-grid {
-    margin-top: 32px;
-}
-
-.chapters-grid .ant-col {
-    display: flex;
-}
-
-.chapter-card {
-    position: relative;
-    transition: all 0.3s ease;
-    width: 100%;
-    // height: 380px; // Allow flexible height or slightly taller
-    background-color: #fff;
-    border: 1px solid #d4c5c5;
-    border-radius: 12px;
-    overflow: hidden; // For border radius on image
-}
-
-.chapter-card .ant-card-body {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.chapter-cover {
-    height: 160px;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    background-color: #f9f9f9; // Add background for contain mode
-    
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; // Revert to cover as requested for "full"
-        transition: transform 0.5s ease;
+        .subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
     }
-}
 
-.play-button {
-    background-color: #d4a356 !important; // Slightly enriched gold
-    border-color: #d4a356 !important;
-    color: #4a3418 !important; // Darker brown text
-    font-weight: 700;
-    height: 48px;
-    font-size: 16px;
-    border-radius: 8px;
-    box-shadow: 0 4px 0 #b08d55 !important; // 3D effect shadow
-    margin-top: auto; // Push to bottom if flex container
-    margin-bottom: 4px; // Space for shadow
-    
-    &:hover {
-        background-color: #e0b060 !important;
-        border-color: #e0b060 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 0 #b08d55 !important;
+    .stats-container {
+        max-width: 1200px;
+        margin: 0 auto 32px;
     }
-    
-    &:active {
-        transform: translateY(2px);
-        box-shadow: 0 2px 0 #b08d55 !important;
+
+    .chapters-content {
+        max-width: 1200px;
+        margin: 0 auto;
     }
-    
-    &[disabled] {
-        background-color: #f5f5f5 !important;
-        border-color: #d9d9d9 !important;
-        color: #00000040 !important;
-        box-shadow: none !important;
-        transform: none !important;
+
+    .chapters-grid {
+        .chapter-card {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid @glass-border;
+            background: @glass-bg;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            position: relative;
+
+            &:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 24px fade(@primary-color, 15%);
+                border-color: fade(@primary-color, 30%);
+            }
+
+            &.locked {
+                border-color: #d1d5db;
+                
+                .chapter-cover img {
+                    filter: grayscale(1) blur(2px);
+                }
+
+                .locked-overlay {
+                    opacity: 1;
+                    visibility: visible;
+                }
+            }
+
+            .chapter-cover {
+                height: 160px;
+                position: relative;
+                overflow: hidden;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.5s ease;
+                }
+
+                .chapter-theme-tag {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    z-index: 2;
+                    
+                    .ant-tag {
+                        border-radius: 8px;
+                        font-weight: 700;
+                        margin: 0;
+                        padding: 2px 12px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                        border: none;
+                    }
+                }
+            }
+
+            .chapter-body {
+                padding: 24px;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .chapter-header-info {
+                    margin-bottom: 20px;
+                    h4.ant-typography {
+                        font-size: 1.25rem;
+                        font-weight: 800;
+                        color: #1e293b;
+                        margin-bottom: 0 !important;
+                    }
+                }
+
+                .chapter-description-wrapper {
+                    margin-bottom: 20px;
+                    flex: 1;
+                    .ant-typography {
+                        color: #64748b;
+                        font-size: 0.95rem;
+                        line-height: 1.6;
+                    }
+
+                    .chapter-read-more {
+                        color: @primary-color;
+                        font-weight: 700;
+                        cursor: pointer;
+                        font-size: 0.85rem;
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                .chapter-stats {
+                    .stat {
+                        margin-bottom: 8px;
+                        &:last-child { margin-bottom: 0; }
+                        
+                        .ant-typography {
+                            font-size: 0.85rem;
+                            font-weight: 600;
+                            color: #64748b;
+                        }
+                        
+                        .ant-progress-bg {
+                            background: linear-gradient(90deg, @primary-color, tint(@primary-color, 40%));
+                        }
+                    }
+                }
+            }
+
+            .ant-card-actions {
+                background: transparent;
+                border-top: 1px solid fade(@primary-color, 5%);
+                padding: 12px;
+                
+                li {
+                    margin: 0;
+                    padding: 0 12px;
+                    width: 100% !important;
+                }
+
+                .ant-btn {
+                    height: 40px;
+                    border-radius: 10px;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                    background: linear-gradient(135deg, @primary-color, darken(@primary-color, 10%));
+                    border: none;
+                    box-shadow: 0 4px 12px fade(@primary-color, 30%);
+
+                    &:hover {
+                        background: linear-gradient(135deg, lighten(@primary-color, 5%), @primary-color);
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 16px fade(@primary-color, 40%);
+                    }
+                }
+            }
+
+            .locked-overlay {
+                position: absolute;
+                inset: 0;
+                background: fade(#0f172a, 80%);
+                backdrop-filter: blur(4px);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+                text-align: center;
+                z-index: 10;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+
+                .anticon {
+                    font-size: 3rem;
+                    color: #fbbf24;
+                    margin-bottom: 16px;
+                }
+
+                .ant-typography {
+                    color: white !important;
+                    font-weight: 700;
+                }
+
+                .ant-btn {
+                    margin-top: 20px;
+                    height: 44px;
+                    padding: 0 32px;
+                    border-radius: 10px;
+                    font-weight: 800;
+                }
+            }
+        }
     }
-}
-
-.chapter-card:hover .chapter-cover img {
-    transform: scale(1.05);
-}
-
-.chapter-theme-tag {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    
-    .ant-tag {
-        margin: 0;
-        border: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-}
-
-.chapter-body {
-    padding: 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.chapter-header-info {
-    margin-bottom: 8px;
-    
-    h4.ant-typography {
-        margin-bottom: 4px !important;
-        font-size: 18px;
-        font-weight: 600;
-        color: #2c3e50;
-    }
-}
-
-.chapter-description-wrapper {
-    flex: 1;
-    margin-bottom: 12px;
-}
-
-.chapter-read-more {
-    color: #4f88dd;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    margin-top: 4px;
-    display: inline-block;
-}
-
-.chapter-read-more:hover {
-    color: #1f5f25;
-    text-decoration: underline;
-}
-
-.chapter-stats {
-    margin-bottom: 12px;
-}
-
-.chapter-stats .stat {
-    margin-bottom: 6px;
-}
-
-.chapter-stats .ant-typography-secondary {
-    color: #7a7a7a;
-    font-size: 13px;
-}
-
-.chapter-stats .ant-progress {
-    margin-top: 4px;
-}
-
-.chapter-stats .ant-progress-bg {
-    background: linear-gradient(90deg, #1f5f25 0%, #4f88dd 100%);
-}
-
-.chapter-card .ant-btn {
-    background: linear-gradient(90deg, #c49a4f 0%, #d4b070 100%);
-    border: none;
-    border-radius: 8px;
-    height: 40px;
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.chapter-card .ant-btn:hover {
-    background: linear-gradient(90deg, #d4b070 0%, #c49a4f 100%);
-    transform: translateY(-1px);
-}
-
-.locked-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(44, 62, 80, 0.75);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    border-radius: 10px;
-    backdrop-filter: blur(2px);
-}
-
-.locked-overlay .ant-typography {
-    color: white !important;
-}
-
-.locked-overlay .anticon {
-    font-size: 40px;
-    margin-bottom: 12px;
-    color: #ffd700;
-}
-
-.locked-overlay .ant-btn {
-    background: linear-gradient(90deg, #1f5f25 0%, #4f88dd 100%);
-    border: none;
-    color: white;
-    margin-top: 16px;
-}
-
-.locked-overlay .ant-btn:hover {
-    background: linear-gradient(90deg, #4f88dd 0%, #1f5f25 100%);
 }
 
 @media (max-width: 768px) {
     .chapters-page {
         padding: 16px;
+        
+        .chapters-header {
+            .main-title {
+                font-size: 2rem;
+            }
+        }
+    }
+}
+
+// Premium Modal Styles
+.premium-chapter-modal {
+    .ant-modal-content {
+        border-radius: 24px;
+        overflow: hidden;
+        padding: 0;
+        background: @glass-bg;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid @glass-border;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     }
 
-    .chapters-grid {
-        gap: 16px;
+    .ant-modal-header {
+        background: transparent;
+        border-bottom: none;
+        padding: 32px 32px 0;
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
     }
 
-    .stat-item {
-        flex-direction: column;
-        gap: 4px;
+    .ant-modal-close {
+        top: 24px;
+        right: 24px;
+    }
+
+    .chapter-modal-content {
+        padding: 0 32px 32px;
+
+        .modal-desc {
+            font-size: 1.1rem;
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .modal-section {
+            background: rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            .ant-typography {
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .ant-progress {
+                margin-bottom: 4px;
+            }
+        }
+    }
+
+    .ant-modal-footer {
+        padding: 0 32px 32px;
+        border-top: none;
+        display: flex;
+        gap: 12px;
+
+        .ant-btn {
+            flex: 1;
+            height: 50px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .detail-btn {
+            border: 2px solid #e2e8f0;
+            color: #64748b;
+            background: white;
+            
+            &:hover {
+                border-color: @primary-color;
+                color: @primary-color;
+            }
+        }
+    }
+}
+
+.chapter-card {
+    // Add a more pronounced inner glow on hover
+    &:hover {
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            box-shadow: inset 0 0 20px fade(@primary-color, 10%);
+            pointer-events: none;
+        }
     }
 }

@@ -11,6 +11,7 @@ export * from "./collection.types";
 export * from "./game.types";
 export * from "./notification.types";
 export * from "./history.types";
+export * from "./quest.types";
 
 
 // Common Types

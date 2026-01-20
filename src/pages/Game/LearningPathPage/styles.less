@@ -1,184 +1,116 @@
 @import "../../../styles/variables.less";
 
+@glass-bg: fade(white, 70%);
+@glass-border: fade(white, 30%);
+@glass-shadow: 0 8px 32px 0 fade(@primary-color, 10%);
+@dynamic-bg-start: tint(@primary-color, 95%);
+@dynamic-bg-end: tint(@primary-color, 85%);
+
 .learning-path-page {
-    // margin: 0 auto;
+    padding: 24px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, @dynamic-bg-start 0%, @dynamic-bg-end 100%);
 
     .page-header {
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap; // Responsive wrapping
-        gap: 24px;
+        text-align: center;
+        margin-bottom: 40px;
 
-        .header-left {
-            flex: 1;
-            min-width: 300px;
-            display: flex;
-            flex-direction: column;
-            justify-content: start;
-            align-items: start;
-        }
+        .main-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: @primary-color;
+            margin-bottom: 8px;
 
-        .header-right-progress {
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            display: flex;
-            justify-content: space-between;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-
-            .progress-compact {
-               // Removed card styling as requested
-               background: transparent;
-               padding: 0;
-               border-radius: 0;
-               box-shadow: none;
-               display: flex;
-               flex-direction: column;
-               justify-content: center;
-
-               .progress-header {
-                   display: flex;
-                   justify-content: space-between;
-                   align-items: center;
-                   margin-bottom: 8px;
-                   
-                   h3 {
-                       margin: 0;
-                       font-size: 16px;
-                       font-weight: 700; // Bold for visibility without card
-                       color: @primary-color; // Use primary color
-                       // For progress title, "Tiến Độ Tổng Thể", let's keep it clean.
-                   }
-                   
-                   span {
-                       font-size: 14px;
-                       color: #666;
-                   }
-               }
-               
-               .ant-progress-line {
-                   margin-bottom: 0;
-               }
-            }
-        }
-
-        .page-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 0;
-            color: @primary-color; // Primary Sen Color
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            white-space: nowrap; 
-            
-            // Ensure icon also takes the color
-            .anticon {
+            .title-icon {
+                margin-right: 12px;
                 color: @primary-color;
+                filter: drop-shadow(0 4px 8px fade(@primary-color, 30%));
             }
         }
 
-        .page-description {
-            color: #8c8c8c;
-            font-size: 16px;
+        .subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
         }
     }
 
     .learning-stats {
-        margin-bottom: 32px;
+        max-width: 1200px;
+        margin: 0 auto 32px;
+    }
 
-        .stat-card {
-            text-align: center;
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-
-            &:hover {
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-                transform: translateY(-4px);
-            }
-
-            &.gradient-1 {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
-            &.gradient-2 {
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            }
-
-            &.gradient-3 {
-                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            }
-
-            &.gradient-4 {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            }
-
-            .ant-statistic-title {
-                color: rgba(255, 255, 255, 0.9);
-            }
-
-            .ant-statistic-content {
-                color: white;
-                font-size: 32px;
-                font-weight: 700;
-            }
-        }
+    .glass-morphism {
+        background: @glass-bg;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid @glass-border;
+        box-shadow: @glass-shadow;
+        border-radius: 20px;
     }
 
     .learning-content {
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        margin-bottom: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+
+        .ant-card-body {
+            padding: 0;
+        }
 
         .learning-grid {
             .learning-card {
-                border-radius: 16px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                border-radius: 20px;
+                overflow: hidden;
+                border: 1px solid @glass-border;
+                background: @glass-bg;
+                backdrop-filter: blur(8px);
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
                 &:hover {
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-                    transform: translateY(-4px);
+                    transform: translateY(-8px);
+                    box-shadow: 0 12px 24px fade(@primary-color, 15%);
+                    border-color: fade(@primary-color, 30%);
                 }
 
                 &.completed {
                     .learning-cover {
-                        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+                        background: linear-gradient(135deg, #52c41a, #95de64);
                     }
                 }
 
                 .learning-cover {
-                    height: 150px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    height: 160px;
+                    background: linear-gradient(135deg, @primary-color, tint(@primary-color, 40%));
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     position: relative;
 
                     .learning-number {
-                        font-size: 64px;
-                        font-weight: 700;
+                        font-size: 4rem;
+                        font-weight: 800;
                         color: white;
-                        opacity: 0.9;
+                        opacity: 0.3;
                     }
 
                     .completed-badge {
                         position: absolute;
-                        top: 12px;
-                        right: 12px;
+                        top: 16px;
+                        right: 16px;
                         background: white;
                         color: #52c41a;
                         padding: 4px 12px;
                         border-radius: 20px;
-                        font-weight: 600;
-                        font-size: 12px;
+                        font-weight: 700;
+                        font-size: 0.75rem;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                     }
+                }
+
+                .ant-card-body {
+                    padding: 24px;
                 }
 
                 .module-meta {
@@ -186,17 +118,38 @@
                         display: flex;
                         gap: 8px;
                         flex-wrap: wrap;
-                        margin-bottom: 12px;
+                        margin-bottom: 20px;
+
+                        .ant-tag {
+                            border-radius: 6px;
+                            font-weight: 600;
+                            margin: 0;
+                        }
                     }
 
                     .score {
-                        margin-top: 16px;
-                        text-align: center;
+                        margin-top: 20px;
+                        display: flex;
+                        justify-content: center;
                     }
                 }
 
                 .ant-card-actions {
-                    background: #fafafa;
+                    background: transparent;
+                    border-top: 1px solid fade(@primary-color, 5%);
+                    padding: 12px;
+                    
+                    li {
+                        margin: 0;
+                        padding: 0 12px;
+                        width: 100% !important;
+                    }
+
+                    .ant-btn {
+                        height: 40px;
+                        border-radius: 10px;
+                        font-weight: 700;
+                    }
                 }
             }
         }
