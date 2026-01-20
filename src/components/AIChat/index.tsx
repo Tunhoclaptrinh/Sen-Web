@@ -1,160 +1,386 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Input, Button, Spin } from "antd";
-import { SendOutlined } from "@ant-design/icons";
-import axios from "axios";
+import { SendOutlined, CloseOutlined, AudioOutlined, AudioMutedOutlined } from "@ant-design/icons";
+import { Stage } from "@pixi/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  sendChatMessage,
+  fetchChatHistory,
+  fetchCharacters,
+  addUserMessage,
+  setCurrentCharacter,
+} from "@/store/slices/aiSlice";
+import type { ChatMessage } from "@/types";
+import SenChibi from "@/components/SenChibi";
 import "./styles.less";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  isStreaming?: boolean;
+interface AIChatProps {
+  open: boolean;
+  onClose: () => void;
 }
 
-const AIChat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content:
-        "Xin chào! Mình là trợ lý Sen. Mình sẽ hướng dẫn bạn khám phá di sản văn hóa Việt Nam! 🌸",
-    },
-  ]);
+const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
+  const dispatch = useAppDispatch();
+  const { chatHistory, currentCharacter, chatLoading } = useAppSelector((state) => state.ai);
+  const { user } = useAppSelector((state) => state.auth);
+
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [streamingText, setStreamingText] = useState("");
-  const userName = "Bạn";
+  const [dimensions, setDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  // Fetch history when opening
+  useEffect(() => {
+    if (open && user && currentCharacter) {
+      dispatch(fetchChatHistory({ characterId: currentCharacter.id, limit: 50 }));
+    }
+  }, [open, user, currentCharacter, dispatch]);
+
+  // Set default character if not present
+  useEffect(() => {
+    if (open && !currentCharacter) {
+      dispatch(fetchCharacters()).then((action: any) => {
+        if (action.payload && action.payload.length > 0) {
+          dispatch(setCurrentCharacter(action.payload[0]));
+        }
+      });
+    }
+  }, [open, currentCharacter, dispatch]);
+
+  // Audio & Sync Refs
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const targetTextRef = useRef<string>("");
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const charPerMsRef = useRef<number>(0.1); // Default: 1 char per 10ms
+  const pausedDurationRef = useRef<number>(0);
+  const activePauseEndTimeRef = useRef<number>(0);
+  const pauseStartTimeRef = useRef<number>(0);
+  const lastPunctuationIndexRef = useRef<number>(-1);
+
+  const PUNCTUATION_PAUSES: Record<string, number> = {
+    '.': 600, '!': 600, '?': 600,
+    ',': 300, ';': 300, ':': 300
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, streamingText]);
+    if (open) {
+      scrollToBottom();
+    }
+  }, [chatHistory, streamingText, open]);
 
-  // Hiệu ứng streaming - hiện từng chữ
-  const streamText = (fullText: string, messageId: string) => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < fullText.length) {
-        setStreamingText((prev) => prev + fullText[index]);
-        index++;
-      } else {
-        clearInterval(interval);
-        // Khi stream xong, cập nhật message chính thức
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === messageId
-              ? { ...msg, content: fullText, isStreaming: false }
-              : msg,
-          ),
-        );
-        setStreamingText("");
-        setLoading(false);
+  // Cleanup on unmount or close
+  useEffect(() => {
+    if (!open) {
+      stopAll();
+    }
+    return () => stopAll();
+  }, [open]);
+
+  const stopAll = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+    }
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    startTimeRef.current = 0;
+  };
+
+  const startStreaming = () => {
+    if (intervalRef.current) return;
+    
+    if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+    }
+
+    intervalRef.current = setInterval(() => {
+      const targetText = targetTextRef.current;
+      if (!targetText) {
+          stopAll();
+          return;
       }
-    }, 30); // 30ms mỗi ký tự
+
+      const now = Date.now();
+
+      // Handle active pause (punctuation)
+      if (activePauseEndTimeRef.current > 0) {
+          if (now < activePauseEndTimeRef.current) {
+              setIsSpeaking(false); // Stop mouth movement during pause
+              return;
+          }
+          // Pause finished
+          pausedDurationRef.current += (activePauseEndTimeRef.current - pauseStartTimeRef.current);
+          activePauseEndTimeRef.current = 0;
+          pauseStartTimeRef.current = 0;
+          setIsSpeaking(true);
+      }
+
+      const speed = charPerMsRef.current > 0 ? charPerMsRef.current : 0.1;
+      const effectiveElapsed = Math.max(0, now - startTimeRef.current - pausedDurationRef.current);
+      let charsToShow = Math.floor(effectiveElapsed * speed);
+      
+      // Check for next punctuation pause
+      const currentLen = streamingText.length;
+      if (charsToShow > currentLen && charsToShow <= targetText.length) {
+          for (let i = currentLen; i < charsToShow; i++) {
+              const char = targetText[i];
+              if (PUNCTUATION_PAUSES[char] && i > lastPunctuationIndexRef.current) {
+                  charsToShow = i + 1;
+                  activePauseEndTimeRef.current = now + PUNCTUATION_PAUSES[char];
+                  pauseStartTimeRef.current = now;
+                  lastPunctuationIndexRef.current = i;
+                  setIsSpeaking(false);
+                  break;
+              }
+          }
+      }
+
+      if (charsToShow < targetText.length) {
+        setStreamingText(targetText.substring(0, charsToShow));
+        if (activePauseEndTimeRef.current === 0) setIsSpeaking(true);
+      } else {
+        // Complete
+        setStreamingText(targetText);
+        setIsSpeaking(false);
+        // Note: Redux chatHistory will already have the message from sendChatMessage.fulfilled
+        // We just clear local streaming text after a short delay or immediately
+        setTimeout(() => {
+            setStreamingText("");
+            stopAll();
+        }, 500);
+      }
+    }, 16); 
+  };
+
+  const streamText = (fullText: string, audioBase64?: string) => {
+    targetTextRef.current = fullText;
+    setStreamingText("");
+    startTimeRef.current = Date.now();
+    pausedDurationRef.current = 0;
+    activePauseEndTimeRef.current = 0;
+    lastPunctuationIndexRef.current = -1;
+    charPerMsRef.current = 0.05; // Fallback
+
+    if (audioBase64) {
+        const audioSrc = audioBase64.startsWith("data:") ? audioBase64 : `data:audio/mp3;base64,${audioBase64}`;
+        const audio = new Audio(audioSrc);
+        audio.muted = isMuted; // Set initial mute state
+        audioRef.current = audio;
+
+        audio.onloadedmetadata = () => {
+            const durationMs = audio.duration * 1000;
+            if (durationMs > 0 && fullText.length > 0) {
+                let totalPauseTime = 0;
+                for (const char of fullText) {
+                    if (PUNCTUATION_PAUSES[char]) totalPauseTime += PUNCTUATION_PAUSES[char];
+                }
+                const activeDuration = durationMs - totalPauseTime;
+                const safeDuration = activeDuration > (durationMs * 0.2) ? activeDuration : durationMs * 0.8; 
+                charPerMsRef.current = fullText.length / (safeDuration * 0.95);
+            }
+            audio.play();
+            startStreaming();
+        };
+        audio.onerror = () => startStreaming();
+    } else {
+        startStreaming();
+    }
   };
 
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !currentCharacter) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    const userText = input.trim();
     setInput("");
     setLoading(true);
 
+    // Add user message to Redux
+    dispatch(addUserMessage(userText));
+
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/ai/chat`,
-        { message: userMessage.content },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+      console.log("Sending message to AI via Redux:", userText);
+      const action: any = await dispatch(sendChatMessage({
+        character_id: currentCharacter.id,
+        message: userText,
+      })).unwrap();
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "",
-        isStreaming: true,
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
-
-      // Bắt đầu streaming text
-      const fullResponse =
-        response.data.data.message ||
-        "Xin lỗi, mình không thể trả lời câu hỏi này.";
-      streamText(fullResponse, aiMessage.id);
+      // Extracted from ChatResponse
+      const fullResponse = action.message?.content || action.message || "Xin lỗi, mình không thể trả lời câu hỏi này.";
+      const audioBase64 = action.message?.audio_base64 || action.audio_base64;
+      
+      setLoading(false);
+      streamText(fullResponse, audioBase64);
     } catch (error) {
-      console.error("AI Chat Error:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      console.error("AI Chat Error Detail:", error);
       setLoading(false);
     }
   };
 
   return (
-    <div className="ai-chat-container">
-      <div className="messages-container">
-        {messages.map((message) => (
-          <div key={message.id} className={`message ${message.role}`}>
-            <div className="message-content">
-              <div className="message-name">
-                {message.role === "assistant" ? "Sen" : userName}
-              </div>
-              <div className="message-bubble">
-                {message.isStreaming ? streamingText : message.content}
-                {message.isStreaming && <span className="cursor">|</span>}
-              </div>
+    <AnimatePresence>
+      {open && (
+        <motion.div 
+          className="ai-chat-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div 
+            className="ai-chat-container"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          >
+            <div className="controls-group">
+                <Button 
+                    className="control-button mute-button"
+                    icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />} 
+                    onClick={() => {
+                        const newMuted = !isMuted;
+                        setIsMuted(newMuted);
+                        if (audioRef.current) {
+                            audioRef.current.muted = newMuted;
+                        }
+                        if (newMuted) {
+                            window.speechSynthesis.cancel();
+                        }
+                    }}
+                    type="text"
+                />
+                <Button 
+                    className="control-button close-button"
+                    icon={<CloseOutlined />} 
+                    onClick={onClose}
+                    type="text"
+                />
             </div>
-          </div>
-        ))}
-        {loading && !streamingText && (
-          <div className="message assistant">
-            <div className="message-content">
-              <div className="message-name">Sen</div>
-              <div className="message-bubble">
-                <Spin size="small" />
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
 
-      <div className="input-container">
-        <Input
-          placeholder="Hỏi về di sản văn hóa Việt Nam..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onPressEnter={handleSend}
-          disabled={loading}
-          suffix={
-            <Button
-              type="text"
-              icon={<SendOutlined />}
-              onClick={handleSend}
-              disabled={loading || !input.trim()}
-              style={{ color: "#1f5f25" }}
-            />
-          }
-        />
-      </div>
-    </div>
+            <div className="chat-scene">
+              <div className="scene-background" />
+              
+              <div className="character-layer">
+                <Stage
+                  width={dimensions.width * 0.4}
+                  height={dimensions.height * 0.7}
+                  options={{ backgroundAlpha: 0, antialias: true }}
+                >
+                  <SenChibi
+                    x={dimensions.width * 0.2}
+                    y={dimensions.height * 0.4}
+                    scale={Math.min(dimensions.width / 1920, dimensions.height / 1080) * 0.32}
+                    isTalking={loading || !!streamingText || isSpeaking}
+                    gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
+                    eyeState={loading ? "blink" : "normal"}
+                  />
+                </Stage>
+              </div>
+
+              <div className="messages-overlay">
+                <div className="messages-container">
+                  {chatHistory.length === 0 && !loading && !streamingText && (
+                    <div className="message assistant">
+                      <div className="message-content">
+                        <div className="message-bubble">
+                          Xin chào! Mình là trợ lý Sen. Mình sẽ hướng dẫn bạn khám phá di sản văn hóa Việt Nam! 🌸
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {chatHistory
+                    .slice()
+                    .map((message: ChatMessage, index: number) => {
+                      // Tránh hiển thị trùng lặp khi đang stream tin nhắn mới nhất
+                      const isLastAssistantMessage = 
+                        index === chatHistory.length - 1 && 
+                        message.role === "assistant" && 
+                        streamingText;
+                        
+                      if (isLastAssistantMessage) return null;
+
+                      return (
+                        <div key={message.id} className={`message ${message.role}`}>
+                          <div className="message-content">
+                            <div className="message-bubble">
+                              {message.content}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {streamingText && (
+                    <div className="message assistant">
+                      <div className="message-content">
+                        <div className="message-bubble">
+                          {streamingText}
+                          <span className="cursor">|</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {loading && !streamingText && (
+                    <div className="message assistant">
+                      <div className="message-content">
+                        <div className="message-bubble">
+                          <Spin size="small" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
+            </div>
+
+            <div className="input-container" style={{ pointerEvents: 'auto' }}>
+              <Input
+                autoFocus
+                placeholder="Hỏi về di sản văn hóa Việt Nam..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onPressEnter={handleSend}
+                disabled={loading || chatLoading}
+                style={{ fontSize: '18px' }}
+                suffix={
+                  <Button
+                    type="text"
+                    icon={<SendOutlined />}
+                    onClick={handleSend}
+                    disabled={loading || chatLoading || !input.trim()}
+                    style={{ color: "#8b1d1d" }}
+                  />
+                }
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

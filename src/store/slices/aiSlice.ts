@@ -171,7 +171,13 @@ const aiSlice = createSlice({
             })
             .addCase(fetchChatHistory.fulfilled, (state, action) => {
                 state.chatLoading = false;
-                state.chatHistory = action.payload;
+                // Sắp xếp tin nhắn theo thời gian tăng dần (cũ trước, mới sau)
+                state.chatHistory = [...action.payload].sort((a, b) => {
+                    const timeA = new Date(a.timestamp || 0).getTime();
+                    const timeB = new Date(b.timestamp || 0).getTime();
+                    if (timeA !== timeB) return timeA - timeB;
+                    return (a.id as number) - (b.id as number);
+                });
             })
             .addCase(fetchChatHistory.rejected, (state, action) => {
                 state.chatLoading = false;
