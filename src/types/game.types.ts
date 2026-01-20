@@ -37,16 +37,16 @@ export interface Chapter {
     description: string;
     theme: string;
     order: number;
-    layer_index: 1 | 2 | 3;
-    petal_state: 'closed' | 'blooming' | 'full';
     color: string;
     image?: string;
     required_petals: number;
     is_unlocked: boolean;
+    is_finished?: boolean;
     total_levels: number;
     completed_levels: number;
     completion_rate: number;
     can_unlock: boolean;
+    is_active: boolean;
     levels?: Level[];
 }
 

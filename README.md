@@ -362,13 +362,13 @@ sen-web/
   - Response: `{answer, audio_base64, route, score, context_used}`
   - Saves to `db.json` for persistence
 
-### 5. Game System (Coming Soon)
-
-- Chapter-based progression
-- Multiple level types
-- AI assistant integration
-- Character collection
-- Achievement system
+### 5. Game System
+- **Sequential Chapters**: Hệ thống mở khóa tuần tự (1 -> 2 -> 3).
+- **Purchase Mechanism**: Sử dụng **Sen Petals** để mở khóa chương mới.
+- **Interactive Gameplay**: Hỗ trợ nhiều loại màn chơi (Quiz, Timeline, Hidden Object).
+- **AI Assistant**: Tích hợp trợ lý ảo trong game.
+- **Character Collection**: Thu thập nhân vật lịch sử.
+- **Achievement System**: Hệ thống thành tựu và huy hiệu.
 
 ### 5. User Collections
 
