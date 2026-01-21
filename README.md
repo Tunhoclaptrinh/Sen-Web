@@ -363,12 +363,12 @@ sen-web/
   - Saves to `db.json` for persistence
 
 ### 5. Game System
-- **Sequential Chapters**: Hệ thống mở khóa tuần tự (1 -> 2 -> 3).
-- **Purchase Mechanism**: Sử dụng **Sen Petals** để mở khóa chương mới.
-- **Interactive Gameplay**: Hỗ trợ nhiều loại màn chơi (Quiz, Timeline, Hidden Object).
-- **AI Assistant**: Tích hợp trợ lý ảo trong game.
-- **Character Collection**: Thu thập nhân vật lịch sử.
-- **Achievement System**: Hệ thống thành tựu và huy hiệu.
+- **Sequential Chapters**
+- **Purchase Mechanism**
+- **Interactive Gameplay**
+- **AI Assistant**
+- **Character Collection**
+- **Achievement System**
 
 ### 5. User Collections
 

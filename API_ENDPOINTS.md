@@ -3367,6 +3367,7 @@ Content-Type: application/json
   "theme": "Văn hóa Đại Việt",
   "order": 1,
   "layer_index": 1,
+  "petal_state": "blooming",
   "required_petals": 0,
   "color": "#D35400"
 }
