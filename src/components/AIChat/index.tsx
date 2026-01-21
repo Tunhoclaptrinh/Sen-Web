@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Input, Button, Spin, Modal, List, Avatar, Typography, Tabs } from "antd";
+import { Input, Button, Spin, Modal, List, Avatar, Tabs } from "antd";
 import { 
     SendOutlined, 
     CloseOutlined, 
@@ -20,7 +20,6 @@ import {
   fetchCharacters,
   addUserMessage,
   setCurrentCharacter,
-  setOverlayOpen,
   setMuted,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
