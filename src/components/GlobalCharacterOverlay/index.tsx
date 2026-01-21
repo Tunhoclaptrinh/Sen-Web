@@ -44,8 +44,8 @@ const GlobalCharacterOverlay = () => {
   const [isMinimized, setIsMinimized] = useState(false); // New: Minimized state
   const [showModal, setShowModal] = useState(false);
 
-  const CHAR_WIDTH = isChibi ? 518 * (scale * 2.5) : 250 * (scale * 4);
-  const CHAR_HEIGHT = isChibi ? 920 * (scale * 2.5) : 650 * (scale * 4);
+  const CHAR_WIDTH = isChibi ? 800 * (scale * 2.5) : 400 * (scale * 4);
+  const CHAR_HEIGHT = isChibi ? 1100 * (scale * 2.5) : 900 * (scale * 4);
 
   // Drag logic
   const handleMouseDown = (e: React.MouseEvent) => {

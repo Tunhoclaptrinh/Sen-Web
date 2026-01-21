@@ -16,7 +16,7 @@ export const GlobalCharacterProvider = ({ children }: { children: ReactNode }) =
   const savedPos = localStorage.getItem("sen_position");
   const initialPos = savedPos
     ? JSON.parse(savedPos)
-    : { x: window.innerWidth - 150, y: window.innerHeight - 200 };
+    : { x: window.innerWidth - 400, y: window.innerHeight - 550 };
 
   const [position, setPosition] = useState(initialPos);
   const [isVisible, setIsVisible] = useState(true);
