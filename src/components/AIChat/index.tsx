@@ -1,6 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Input, Button, Spin } from "antd";
-import { SendOutlined, CloseOutlined, AudioOutlined, AudioMutedOutlined } from "@ant-design/icons";
+import { Input, Button, Spin, Modal, List, Avatar, Typography, Tabs } from "antd";
+import { 
+    SendOutlined, 
+    CloseOutlined, 
+    SoundOutlined, 
+    AudioMutedOutlined, 
+    AudioOutlined, 
+    PauseCircleOutlined,
+    SettingOutlined,
+    UserOutlined,
+    EditOutlined
+} from "@ant-design/icons";
 import { Stage } from "@pixi/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -10,9 +20,13 @@ import {
   fetchCharacters,
   addUserMessage,
   setCurrentCharacter,
+  setOverlayOpen,
+  setMuted,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
 import SenChibi from "@/components/SenChibi";
+import SenCharacter from "@/components/SenCharacter";
+import { SenCustomizationSettings } from "@/components/common";
 import "./styles.less";
 
 interface AIChatProps {
@@ -22,13 +36,14 @@ interface AIChatProps {
 
 const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
   const dispatch = useAppDispatch();
-  const { chatHistory, currentCharacter, chatLoading } = useAppSelector((state) => state.ai);
+  const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings } = useAppSelector((state) => state.ai);
   const { user } = useAppSelector((state) => state.auth);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [streamingText, setStreamingText] = useState("");
   const [dimensions, setDimensions] = useState({
@@ -108,7 +123,41 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     }
     window.speechSynthesis.cancel();
     setIsSpeaking(false);
+    setAudioPlaying(null);
     startTimeRef.current = 0;
+  };
+
+  const playMessageAudio = (audioBase64: string, messageId: number) => {
+    if (audioPlaying === messageId && audioRef.current) {
+        audioRef.current.pause();
+        return;
+    }
+    stopAll();
+    if (!audioBase64) return;
+
+    const audioSrc = audioBase64.startsWith("data:") ? audioBase64 : `data:audio/mp3;base64,${audioBase64}`;
+    const audio = new Audio(audioSrc);
+    audio.muted = isMuted;
+    audioRef.current = audio;
+
+    audio.onplay = () => {
+        setIsSpeaking(true);
+        setAudioPlaying(messageId);
+    };
+    audio.onended = () => {
+        setIsSpeaking(false);
+        setAudioPlaying(null);
+    };
+    audio.onpause = () => {
+        setIsSpeaking(false);
+        setAudioPlaying(null);
+    };
+    audio.onerror = () => {
+        setIsSpeaking(false);
+        setAudioPlaying(null);
+    };
+
+    audio.play().catch(console.error);
   };
 
   const startStreaming = () => {
@@ -263,14 +312,27 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                     icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />} 
                     onClick={() => {
                         const newMuted = !isMuted;
-                        setIsMuted(newMuted);
+                        dispatch(setMuted(newMuted));
                         if (audioRef.current) {
                             audioRef.current.muted = newMuted;
+                            if (newMuted) {
+                                audioRef.current.pause(); // Pause if muted, as per user's "thực sự hoạt động"
+                                setIsSpeaking(false);
+                            } else if (!!streamingText || targetTextRef.current) {
+                                audioRef.current.play().catch(console.error);
+                                setIsSpeaking(true);
+                            }
                         }
                         if (newMuted) {
                             window.speechSynthesis.cancel();
                         }
                     }}
+                    type="text"
+                />
+                <Button 
+                    className="control-button setting-button"
+                    icon={<SettingOutlined />} 
+                    onClick={() => setIsSettingsOpen(true)}
                     type="text"
                 />
                 <Button 
@@ -287,17 +349,41 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
               <div className="character-layer">
                 <Stage
                   width={dimensions.width * 0.4}
-                  height={dimensions.height * 0.7}
+                  height={dimensions.height}
                   options={{ backgroundAlpha: 0, antialias: true }}
                 >
-                  <SenChibi
-                    x={dimensions.width * 0.2}
-                    y={dimensions.height * 0.4}
-                    scale={Math.min(dimensions.width / 1920, dimensions.height / 1080) * 0.32}
-                    isTalking={loading || !!streamingText || isSpeaking}
-                    gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
-                    eyeState={loading ? "blink" : "normal"}
-                  />
+                  {senSettings.isChibi ? (
+                    <SenChibi
+                        x={dimensions.width * 0.2}
+                        y={dimensions.height * 0.69} 
+                        scale={senSettings.scale * 1.45} 
+                        isTalking={loading || !!streamingText || isSpeaking}
+                        gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
+                        eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
+                        mouthState={senSettings.mouthState as any}
+                        showHat={senSettings.accessories.hat}
+                        showGlasses={senSettings.accessories.glasses}
+                        showCoat={senSettings.accessories.coat}
+                        isBlinking={senSettings.isBlinking}
+                    />
+                  ) : (
+                    <SenCharacter
+                        x={dimensions.width * 0.2}
+                        y={dimensions.height * 0.49}
+                        scale={senSettings.scale * 1.45}
+                        isTalking={loading || !!streamingText || isSpeaking}
+                        eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
+                        mouthState={senSettings.mouthState as any}
+                        showHat={senSettings.accessories.hat}
+                        showGlasses={senSettings.accessories.glasses}
+                        showCoat={senSettings.accessories.coat}
+                        showBag={senSettings.accessories.bag}
+                        isBlinking={senSettings.isBlinking}
+                        draggable={false}
+                        onPositionChange={() => { }}
+                        onClick={() => { }}
+                    />
+                  )}
                 </Stage>
               </div>
 
@@ -327,7 +413,20 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                         <div key={message.id} className={`message ${message.role}`}>
                           <div className="message-content">
                             <div className="message-bubble">
-                              {message.content}
+                              <div className="message-text">{message.content}</div>
+                              <div className="message-footer">
+                                <span className="timestamp">
+                                  {new Date(message.timestamp).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </span>
+                                {message.role === "assistant" && message.audio_base64 && (
+                                  <Button
+                                    className="audio-replay-btn"
+                                    icon={audioPlaying === message.id ? <PauseCircleOutlined /> : <SoundOutlined />}
+                                    size="small"
+                                    onClick={() => playMessageAudio(message.audio_base64!, message.id)}
+                                  />
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -337,8 +436,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                     <div className="message assistant">
                       <div className="message-content">
                         <div className="message-bubble">
-                          {streamingText}
-                          <span className="cursor">|</span>
+                          <div className="message-text">
+                            {streamingText}
+                            <span className="cursor">|</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -380,6 +481,70 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
           </motion.div>
         </motion.div>
       )}
+
+      <Modal
+        title="Cài đặt AI"
+        open={isSettingsOpen}
+        onCancel={() => setIsSettingsOpen(false)}
+        footer={null}
+        width={600}
+        className="character-settings-modal"
+      >
+        <Tabs
+            defaultActiveKey="select"
+            items={[
+                {
+                    key: 'select',
+                    label: (
+                        <span>
+                            <UserOutlined />
+                            Nhân vật
+                        </span>
+                    ),
+                    children: (
+                        <List
+                            itemLayout="horizontal"
+                            dataSource={characters}
+                            renderItem={(character) => (
+                                <List.Item
+                                    className={`character-item ${currentCharacter?.id === character.id ? 'active' : ''}`}
+                                    onClick={() => {
+                                        dispatch(setCurrentCharacter(character));
+                                        // Keep modal open if it's Sen to allow customization, 
+                                        // or close it if user wants to get back to chat
+                                    }}
+                                    style={{ cursor: 'pointer', padding: '12px', borderRadius: '8px' }}
+                                >
+                                    <List.Item.Meta
+                                        avatar={<Avatar src={character.avatar} size="large" />}
+                                        title={character.name}
+                                        description={character.description}
+                                    />
+                                    {currentCharacter?.id === character.id && (
+                                        <div className="active-badge">Đang chọn</div>
+                                    )}
+                                </List.Item>
+                            )}
+                        />
+                    )
+                },
+                ...(currentCharacter?.name?.toLowerCase().includes('sen') ? [{
+                    key: 'customize',
+                    label: (
+                        <span>
+                            <EditOutlined />
+                            Tùy chỉnh SEN
+                        </span>
+                    ),
+                    children: (
+                        <div style={{ padding: '0 12px 12px 12px', maxHeight: '60vh', overflowY: 'auto' as const }}>
+                            <SenCustomizationSettings compact />
+                        </div>
+                    )
+                }] : [])
+            ]}
+        />
+      </Modal>
     </AnimatePresence>
   );
 };

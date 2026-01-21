@@ -11,6 +11,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
+import { setOverlayOpen } from '@/store/slices/aiSlice';
 import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
@@ -24,8 +25,8 @@ const CustomerLayout: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const { progress } = useSelector((state: RootState) => state.game);
 
+    const { isOverlayOpen } = useSelector((state: RootState) => state.ai);
     const [dailyRewardVisible, setDailyRewardVisible] = useState(false);
-    const [aiChatVisible, setAiChatVisible] = useState(false);
 
     const handleLogout = () => {
         dispatch(logout() as any);
@@ -88,7 +89,7 @@ const CustomerLayout: React.FC = () => {
                         key="chat"
                         type="text"
                         icon={<MessageOutlined />}
-                        onClick={() => setAiChatVisible(true)}
+                        onClick={() => dispatch(setOverlayOpen(true))}
                     />,
                     <NotificationPopover key="notifications" />
                 ]}
@@ -118,8 +119,8 @@ const CustomerLayout: React.FC = () => {
 
             {/* AI Chat Overlay */}
             <AIChat 
-                open={aiChatVisible} 
-                onClose={() => setAiChatVisible(false)} 
+                open={isOverlayOpen} 
+                onClose={() => dispatch(setOverlayOpen(false))} 
             />
         </>
     );
