@@ -2,6 +2,22 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { aiService } from '@/services';
 import type { AICharacter, ChatMessage, ChatResponse } from '@/types';
 
+// Sen Character Settings interface
+export interface SenSettings {
+    isChibi: boolean;
+    scale: number;
+    accessories: {
+        hat: boolean;
+        glasses: boolean;
+        coat: boolean;
+        bag: boolean;
+    };
+    mouthState: 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue' | 'angry';
+    eyeState: 'normal' | 'blink' | 'close' | 'half' | 'like' | 'sleep';
+    gesture: 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back';
+    isBlinking: boolean;
+}
+
 // State interface
 interface AIState {
     // Characters
@@ -15,7 +31,12 @@ interface AIState {
     isTyping: boolean;
 
     // UI State
+    isOverlayOpen: boolean;
+    isMuted: boolean;
     error: string | null;
+
+    // Sen Specific Settings
+    senSettings: SenSettings;
 }
 
 const initialState: AIState = {
@@ -25,7 +46,23 @@ const initialState: AIState = {
     chatHistory: [],
     chatLoading: false,
     isTyping: false,
+    isOverlayOpen: false,
+    isMuted: false,
     error: null,
+    senSettings: {
+        isChibi: true, // Default to Chibi
+        scale: 0.2,    // Default scale for Chibi
+        accessories: {
+            hat: true,
+            glasses: true,
+            coat: true,
+            bag: true,
+        },
+        mouthState: 'smile',
+        eyeState: 'normal',
+        gesture: 'normal',
+        isBlinking: true,
+    },
 };
 
 // Async Thunks
@@ -145,6 +182,23 @@ const aiSlice = createSlice({
         },
         setTyping: (state, action: PayloadAction<boolean>) => {
             state.isTyping = action.payload;
+        },
+        setOverlayOpen: (state, action: PayloadAction<boolean>) => {
+            state.isOverlayOpen = action.payload;
+        },
+        setMuted: (state, action: PayloadAction<boolean>) => {
+            state.isMuted = action.payload;
+        },
+        updateSenSettings: (state, action: PayloadAction<Partial<SenSettings>>) => {
+            state.senSettings = { ...state.senSettings, ...action.payload };
+            
+            // Auto adjust scale if isChibi changed and scale was NOT explicitly provided
+            if (action.payload.isChibi !== undefined && action.payload.scale === undefined) {
+                state.senSettings.scale = action.payload.isChibi ? 0.2 : 0.25;
+            }
+        },
+        toggleSenAccessory: (state, action: PayloadAction<keyof SenSettings['accessories']>) => {
+            state.senSettings.accessories[action.payload] = !state.senSettings.accessories[action.payload];
         },
     },
     extraReducers: (builder) => {
@@ -270,6 +324,10 @@ export const {
     setCurrentCharacter,
     addUserMessage,
     setTyping,
+    setOverlayOpen,
+    setMuted,
+    updateSenSettings,
+    toggleSenAccessory,
 } = aiSlice.actions;
 
 export default aiSlice.reducer;
