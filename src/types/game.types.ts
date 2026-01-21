@@ -5,7 +5,6 @@
 // Re-export from other services
 export * from '../services/ai.service';
 export * from '../services/learning.service';
-export * from '../services/quest.service';
 
 // ==================== Game Progress ====================
 export interface GameProgress {

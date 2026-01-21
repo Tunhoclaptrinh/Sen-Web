@@ -29,7 +29,8 @@ import {
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import userService from "@services/user.service";
-import collectionService, { Collection } from "@services/collection.service";
+import collectionService from "@services/collection.service";
+import { Collection } from "@/types/collection.types";
 import favoriteService, { FavoriteStats } from "@services/favorite.service";
 // import apiClient from "@config/axios.config";
 import { getMe } from "@store/slices/authSlice";

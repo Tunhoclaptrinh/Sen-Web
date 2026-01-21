@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+
 import { Tabs } from "antd";
 import { AppstoreOutlined, HeartOutlined } from "@ant-design/icons";
 import CollectionsPage from "../Collections/CollectionsPage";
