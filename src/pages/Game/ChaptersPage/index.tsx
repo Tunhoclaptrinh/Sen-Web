@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters, fetchProgress } from '@/store/slices/gameSlice';
-import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal } from 'antd';
+import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal, message } from 'antd';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
+import gameService from '@/services/game.service';
 import type { Chapter } from '@/types';
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,8 +37,23 @@ const ChaptersPage: React.FC = () => {
     };
 
     const handleUnlockChapter = async (chapterId: number) => {
-        // Will implement unlock logic
-        console.log('Unlock chapter:', chapterId);
+        try {
+            const result = await gameService.unlockChapter(chapterId);
+            if (result.success) {
+                Modal.success({
+                    title: 'Mở khóa thành công!',
+                    content: `Bạn đã mở khóa chương mới và chi tiêu ${result.data.petals_spent} cánh sen.`,
+                    onOk: () => {
+                        dispatch(fetchChapters());
+                        dispatch(fetchProgress());
+                    }
+                });
+            } else {
+                message.error(result.message || 'Không thể mở khóa chương này');
+            }
+        } catch (error: any) {
+            message.error(error.message || 'Lỗi kết nối');
+        }
     };
 
     const getChapterColor = (theme: string) => {
