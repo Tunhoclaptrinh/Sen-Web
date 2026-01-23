@@ -11,6 +11,36 @@
     min-height: 100vh;
     background: linear-gradient(135deg, @dynamic-bg-start 0%, @dynamic-bg-end 100%);
 
+    .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        
+        .loading-content {
+            text-align: center;
+            p {
+                margin-top: 16px;
+                font-weight: 500;
+                color: @text-color-secondary;
+            }
+        }
+    }
+
     .page-header {
         text-align: center;
         margin-bottom: 40px;
@@ -34,18 +64,9 @@
         }
     }
 
-    .learning-stats {
+    .stats-container {
         max-width: 1200px;
         margin: 0 auto 32px;
-    }
-
-    .glass-morphism {
-        background: @glass-bg;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid @glass-border;
-        box-shadow: @glass-shadow;
-        border-radius: 20px;
     }
 
     .learning-content {
@@ -61,51 +82,90 @@
 
         .learning-grid {
             .learning-card {
-                border-radius: 20px;
+                border-radius: 24px; // Rounded corners
                 overflow: hidden;
-                border: 1px solid @glass-border;
-                background: @glass-bg;
-                backdrop-filter: blur(8px);
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid fade(white, 60%); // Subtler border
+                background: fade(white, 80%); // More opaque for readability
+                box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); // Smooth shadow
+                backdrop-filter: blur(12px);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Bouncy effect
 
                 &:hover {
-                    transform: translateY(-8px);
-                    box-shadow: 0 12px 24px fade(@primary-color, 15%);
-                    border-color: fade(@primary-color, 30%);
+                    transform: translateY(-8px) scale(1.02);
+                    box-shadow: 0 20px 40px -10px fade(@primary-color, 20%);
+                    border-color: @primary-color;
                 }
 
                 &.completed {
-                    .learning-cover {
-                        background: linear-gradient(135deg, #52c41a, #95de64);
+                    border-color: #52c41a;
+                    .learning-cover img {
+                        // filter: brightness(0.9); // Removed for vibrancy
                     }
                 }
 
                 .learning-cover {
-                    height: 160px;
-                    background: linear-gradient(135deg, @primary-color, tint(@primary-color, 40%));
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    height: 180px; // Slightly taller
                     position: relative;
+                    overflow: hidden;
 
-                    .learning-number {
-                        font-size: 4rem;
-                        font-weight: 800;
-                        color: white;
-                        opacity: 0.3;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        transition: transform 0.6s ease;
+                    }
+
+                    &:hover img {
+                        transform: scale(1.1);
                     }
 
                     .completed-badge {
                         position: absolute;
-                        top: 16px;
-                        right: 16px;
-                        background: white;
+                        top: 12px;
+                        right: 12px;
+                        background: rgba(255, 255, 255, 0.95);
                         color: #52c41a;
-                        padding: 4px 12px;
-                        border-radius: 20px;
+                        padding: 6px 16px;
+                        border-radius: 100px;
                         font-weight: 700;
-                        font-size: 0.75rem;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                        font-size: 0.8rem;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        backdrop-filter: blur(4px);
+                    }
+
+                    .locked-overlay {
+                         position: absolute;
+                         top: 0;
+                         left: 0;
+                         width: 100%;
+                         height: 100%;
+                         display: flex;
+                         flex-direction: column;
+                         justify-content: center;
+                         align-items: center;
+                         background: rgba(255,255,255,0.3);
+                         backdrop-filter: blur(8px); // Frosted glass lock
+                         color: #595959;
+                         
+                         .anticon {
+                             padding: 20px;
+                             background: rgba(255,255,255,0.5);
+                             border-radius: 50%;
+                             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                         }
+                    }
+                }
+                
+                &.locked {
+                    filter: grayscale(0.8); // Grayscale the whole card
+                    opacity: 0.8;
+                    pointer-events: none; // Disable interaction
+                    
+                    .ant-card-actions {
+                        display: none; // Hide actions for locked
                     }
                 }
 
@@ -118,43 +178,73 @@
                         display: flex;
                         gap: 8px;
                         flex-wrap: wrap;
-                        margin-bottom: 20px;
+                        margin-bottom: 16px;
 
                         .ant-tag {
-                            border-radius: 6px;
+                            border-radius: 8px;
                             font-weight: 600;
                             margin: 0;
+                            border: none;
+                            padding: 2px 10px;
                         }
                     }
 
-                    .score {
-                        margin-top: 20px;
+                    .completion-info {
+                        // margin-top: 12px;
+                    }
+
+                    .score-display {
+                        margin-top: 16px;
                         display: flex;
-                        justify-content: center;
+                        align-items: baseline;
+                        gap: 8px;
+                        justify-content: flex-end; // Align score to right
+
+                        .score-label {
+                            font-size: 0.85rem;
+                            color: @text-color-secondary;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            font-weight: 600;
+                        }
+
+                        .score-value {
+                            font-size: 2rem;
+                            font-weight: 800;
+                            line-height: 1;
+
+                            &.high { color: #52c41a; text-shadow: 0 4px 12px fade(#52c41a, 30%); }
+                            &.normal { color: @primary-color; }
+                        }
                     }
                 }
 
                 .ant-card-actions {
                     background: transparent;
-                    border-top: 1px solid fade(@primary-color, 5%);
-                    padding: 12px;
+                    border: none;
+                    padding: 0 24px 24px;
                     
                     li {
                         margin: 0;
-                        padding: 0 12px;
+                        padding: 0;
                         width: 100% !important;
                     }
 
                     .ant-btn {
-                        height: 40px;
-                        border-radius: 10px;
+                        height: 48px;
+                        border-radius: 12px;
                         font-weight: 700;
+                        font-size: 1rem;
+                        box-shadow: 0 8px 20px -6px fade(@primary-color, 40%);
+                        
+                        &:disabled {
+                            box-shadow: none;
+                        }
                     }
                 }
             }
         }
-    } 
-    /* removed progress-card */
+    }
 }
 
 @media (max-width: 768px) {
@@ -162,12 +252,12 @@
         padding: 16px;
 
         .page-header {
-            .page-title {
-                font-size: 24px;
+            .main-title {
+                font-size: 2rem;
             }
         }
 
-        .learning-stats {
+        .stats-container {
             .ant-col {
                 margin-bottom: 8px;
             }
