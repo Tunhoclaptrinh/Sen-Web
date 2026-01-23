@@ -362,13 +362,13 @@ sen-web/
   - Response: `{answer, audio_base64, route, score, context_used}`
   - Saves to `db.json` for persistence
 
-### 5. Game System (Coming Soon)
-
-- Chapter-based progression
-- Multiple level types
-- AI assistant integration
-- Character collection
-- Achievement system
+### 5. Game System
+- **Sequential Chapters**
+- **Purchase Mechanism**
+- **Interactive Gameplay**
+- **AI Assistant**
+- **Character Collection**
+- **Achievement System**
 
 ### 5. User Collections
 

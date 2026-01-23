@@ -5,9 +5,10 @@ import {
   fetchLevelsByChapter,
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
-import { Button, Spin, Typography, Progress, Tooltip } from "antd";
-import { CheckOutlined, LockFilled, StarFilled } from "@ant-design/icons";
+import { Button, Spin, Typography, Progress, Popover, Switch, Space } from "antd";
+import { CheckOutlined, LockFilled, StarFilled, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import type { Level } from "@/types";
+import LevelDetailCard from "./LevelDetailCard";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -16,8 +17,8 @@ const { Title } = Typography;
 const MAP_CONFIG = {
   CONTAINER_WIDTH: 380, // Chiều rộng cố định của bản đồ để dễ căn SVG
   ITEM_SIZE: 75, // Nút to hơn
-  VERTICAL_SPACING: 120, // Khoảng cách thưa hơn
-  AMPLITUDE: 80, // Độ rộng uốn lượn
+  VERTICAL_SPACING: 200, // Khoảng cách đủ rộng cho card
+  AMPLITUDE: 80, // Độ rộng uốn lượn tự nhiên
   FREQUENCY: 1.5, // Tần số sóng
 };
 
@@ -28,6 +29,9 @@ const LevelsPage: React.FC = () => {
   const { levels, levelsLoading, currentChapter } = useAppSelector(
     (state) => state.game,
   );
+  
+  // Controls validity of card "Always On" mode
+  const [showDetailCards, setShowDetailCards] = React.useState(false);
 
   useEffect(() => {
     if (chapterId) {
@@ -50,7 +54,7 @@ const LevelsPage: React.FC = () => {
     const centerX = MAP_CONFIG.CONTAINER_WIDTH / 2;
 
     return levels.map((level, index) => {
-      // Offset từ tâm (-80 đến +80)
+      // Offset từ tâm (-80 đến +80) tạo đường cong tự nhiên
       const xOffset =
         Math.sin(index / MAP_CONFIG.FREQUENCY) * MAP_CONFIG.AMPLITUDE;
 
@@ -58,7 +62,7 @@ const LevelsPage: React.FC = () => {
         ...level,
         // Toạ độ tuyệt đối trong khung 380px
         x: centerX + xOffset,
-        y: index * MAP_CONFIG.VERTICAL_SPACING + 180, // Padding top 60px
+        y: index * MAP_CONFIG.VERTICAL_SPACING + 180, // Padding top
       };
     });
   }, [levels]);
@@ -87,7 +91,8 @@ const LevelsPage: React.FC = () => {
   return (
     <div className="levels-page-container">
       {/* HEADER */}
-      <div className="fixed-header">
+      <div className="fixed-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
+        {/* Left: Back Button */}
         <Button
           type="text"
           icon={<span>←</span>}
@@ -95,8 +100,10 @@ const LevelsPage: React.FC = () => {
         >
           Trở về
         </Button>
+
+        {/* Center: Chapter Info (Absolute centering might be better, but flex works if sides are balanced. Let's try simple flex for now) */}
         {currentChapter && (
-          <div className="chapter-info">
+           <div className="chapter-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Title level={5} style={{ margin: 0 }}>
               {currentChapter.name}
             </Title>
@@ -110,6 +117,17 @@ const LevelsPage: React.FC = () => {
             />
           </div>
         )}
+
+        {/* Right: Toggle Switch */}
+        <Space>
+           <Typography.Text style={{ fontSize: 12 }}>Chi tiết</Typography.Text>
+           <Switch 
+              checkedChildren={<EyeOutlined />}
+              unCheckedChildren={<EyeInvisibleOutlined />}
+              checked={showDetailCards}
+              onChange={(checked) => setShowDetailCards(checked)}
+           />
+        </Space>
       </div>
 
       {/* MAP AREA */}
@@ -150,8 +168,11 @@ const LevelsPage: React.FC = () => {
           </svg>
 
           {/* LỚP 2: CÁC NÚT LEVEL (HTML) */}
-          {levelsWithPos.map((level) => {
+          {levelsWithPos.map((level, index) => {
             const isCurrent = level.id === currentActiveLevelId;
+            // Spread props conditionally
+            const popoverProps = showDetailCards ? { open: true } : {};
+
             return (
               <div
                 key={level.id}
@@ -167,14 +188,25 @@ const LevelsPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Main Button */}
-                <Tooltip
-                  title={
-                    level.is_locked
-                      ? `🔒 Hoàn thành màn trước để mở khóa: ${level.name}`
-                      : level.name
+                <Popover
+                  content={
+                    <LevelDetailCard 
+                      level={level} 
+                      onPlay={() => handleStartLevel(level)} 
+                    />
                   }
-                  placement="top"
+                  trigger="hover"
+                  // Force alternating sides (So le): Right -> Left -> Right...
+                  placement={index % 2 === 0 ? "right" : "left"}
+                  // Offset popup xa hơn (50px)
+                  align={{
+                    offset: index % 2 === 0 ? [50, 0] : [-50, 0]
+                  }}
+                  autoAdjustOverflow={true}
+                  overlayInnerStyle={{ padding: 0, backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
+                  zIndex={1050}
+                  getPopupContainer={(trigger) => trigger.parentElement || document.body}
+                  {...popoverProps}
                 >
                   <div className="level-circle">
                     {level.is_locked ? (
@@ -188,7 +220,7 @@ const LevelsPage: React.FC = () => {
                     {/* Hiệu ứng bóng sáng trên nút (Highlight) */}
                     <div className="shine-effect"></div>
                   </div>
-                </Tooltip>
+                </Popover>
 
                 {/* Stars / Score */}
                 {level.is_completed &&

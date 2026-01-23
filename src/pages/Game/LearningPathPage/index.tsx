@@ -25,6 +25,8 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import learningService from "@/services/learning.service";
+import { fetchProgress } from "@/store/slices/gameSlice";
+import { useAppDispatch } from "@/store/hooks";
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from "framer-motion";
 import "./styles.less";
@@ -41,11 +43,14 @@ const LearningPathPage: React.FC = () => {
   const [learningPath, setLearningPath] = useState<any[]>([]);
   const [progress, setProgress] = useState<any>(null);
 
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (!id) {
       fetchLearningPath();
+      dispatch(fetchProgress());
     }
-  }, [id]);
+  }, [id, dispatch]);
 
   const fetchLearningPath = async () => {
     try {

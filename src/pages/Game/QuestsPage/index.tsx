@@ -32,6 +32,7 @@ import {
   clearSuccessMessage,
   clearError,
 } from "@/store/slices/questSlice";
+import { fetchProgress } from "@/store/slices/gameSlice";
 import type { Quest } from "@/types/quest.types";
 import "./styles.less";
 
@@ -48,6 +49,7 @@ const QuestsPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchActiveQuests());
+    dispatch(fetchProgress());
   }, [dispatch]);
 
   useEffect(() => {
@@ -170,7 +172,7 @@ const QuestsPage: React.FC = () => {
         className="page-header"
       >
         <Title level={1} className="main-title">
-          <TrophyOutlined className="title-icon" /> Đường đến vinh quang
+          <TrophyOutlined className="title-icon" /> Đường đến Vinh quang
         </Title>
         <Paragraph className="subtitle">
           Hoàn thành thử thách, nhận báu vật di truyền và thăng cấp bản thân
