@@ -37,7 +37,7 @@ export interface Chapter {
     theme: string;
     order: number;
     layer_index: 1 | 2 | 3;
-    petal_state: 'closed' | 'blooming' | 'full';
+    petal_state: 'closed' | 'blooming' | 'full' | 'locked';
     color: string;
     image?: string;
     required_petals: number;
