@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/store/hooks";
 import {
   Card,
   Button,
@@ -18,6 +19,7 @@ import {
   FullscreenExitOutlined,
 } from "@ant-design/icons";
 import gameService from "@/services/game.service";
+import { fetchProgress } from "@/store/slices/gameSlice";
 import type { Screen, Level } from "@/types/game.types";
 import { SCREEN_TYPES } from "@/types/game.types";
 
@@ -36,6 +38,7 @@ const { Title, Paragraph } = Typography;
 const GamePlayPage: React.FC = () => {
   const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // State
   const [loading, setLoading] = useState(true);
@@ -76,14 +79,17 @@ const GamePlayPage: React.FC = () => {
   const handleNextScreen = async () => {
     if (!sessionId) return;
 
-    if (currentScreen?.is_last) {
-      await handleFinishLevel();
-      return;
-    }
+
 
     try {
       setLoading(true);
       const response = await gameService.navigateToNextScreen(sessionId);
+
+      if (response.level_finished) {
+        await handleFinishLevel();
+        return;
+      }
+
       setCurrentScreen(response.current_screen);
       setProgress({
         completed: response.progress.completed_screens,
@@ -135,6 +141,10 @@ const GamePlayPage: React.FC = () => {
       );
       setCompletionData(result);
       setGameCompleted(true);
+      
+      // Sync global progress (coins, petals) immediately
+      dispatch(fetchProgress());
+      
     } catch (error) {
       message.error("Lỗi khi hoàn thành màn chơi");
     } finally {
@@ -214,9 +224,11 @@ const GamePlayPage: React.FC = () => {
             icon={
               <TrophyTwoTone twoToneColor="#faad14" style={{ fontSize: 72 }} />
             }
-            status="success"
-            title="HOÀN THÀNH MÀN CHƠI!"
-            subTitle={`Bạn đã xuất sắc vượt qua màn chơi này với số điểm: ${completionData.score}`}
+            status={completionData.passed === false ? "warning" : "success"}
+            title={completionData.passed === false ? "RẤT TIẾC!" : "HOÀN THÀNH MÀN CHƠI!"}
+            subTitle={completionData.passed === false 
+              ? `Bạn chưa đủ điểm qua màn. Hãy thử lại nhé!` 
+              : `Bạn đã xuất sắc vượt qua màn chơi này với số điểm: ${completionData.score}`}
             extra={[
               <Button
                 type="primary"
@@ -235,9 +247,38 @@ const GamePlayPage: React.FC = () => {
               >
                 Chơi Lại
               </Button>,
+              (completionData.new_totals || completionData.passed || completionData.is_completed) && (
+                  <Button
+                    type="primary"
+                    key="next"
+                    size="large"
+                    className="next-level-btn"
+                    onClick={() => {
+                        if (completionData.next_level_id) {
+                          navigate(`/game/play/${completionData.next_level_id}`);
+                        } else {
+                          message.success("Chúc mừng! Bạn đã hoàn thành chương này.");
+                          navigate("/game/chapters");
+                        }
+                    }}
+                  >
+                    {completionData.next_level_id ? "Màn tiếp theo" : "Danh sách chương"}
+                  </Button>
+              )
             ]}
           >
-            {completionData.rewards ? (
+            {completionData.passed === false ? (
+              <div className="rewards-summary">
+                 <Title level={4} style={{ color: "#ff4d4f" }}>
+                  😢 Chưa đạt yêu cầu
+                 </Title>
+                 <Paragraph style={{ fontSize: 16 }}>
+                    Bạn cần đạt {completionData.required_score} điểm để qua màn.
+                    <br />
+                    Điểm của bạn: {completionData.score}
+                 </Paragraph>
+              </div>
+            ) : completionData.rewards ? (
               <div className="rewards-summary">
                 <Title level={4}>Phần thưởng nhận được:</Title>
                 <div className="rewards-grid">

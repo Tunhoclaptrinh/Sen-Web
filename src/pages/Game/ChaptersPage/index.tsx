@@ -4,10 +4,10 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters, fetchProgress } from '@/store/slices/gameSlice';
 import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal, message } from 'antd';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
+import gameService from '@/services/game.service';
 import type { Chapter } from '@/types';
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from 'framer-motion';
-import gameService from '@/services/game.service';
 import "./styles.less";
 
 const { Title, Text, Paragraph } = Typography;
@@ -38,16 +38,21 @@ const ChaptersPage: React.FC = () => {
 
     const handleUnlockChapter = async (chapterId: number) => {
         try {
-            const response = await gameService.unlockChapter(chapterId);
-            if (response.success) {
-                message.success(`Mở khóa thành công! Số cánh sen còn lại: ${response.data.petals_remaining}`);
-                dispatch(fetchChapters());
-                dispatch(fetchProgress());
+            const result = await gameService.unlockChapter(chapterId);
+            if (result.success) {
+                Modal.success({
+                    title: 'Mở khóa thành công!',
+                    content: `Bạn đã mở khóa chương mới và chi tiêu ${result.data.petals_spent} cánh sen.`,
+                    onOk: () => {
+                        dispatch(fetchChapters());
+                        dispatch(fetchProgress());
+                    }
+                });
             } else {
-                message.error(response.message || "Không thể mở khóa");
+                message.error(result.message || 'Không thể mở khóa chương này');
             }
         } catch (error: any) {
-            message.error(error.message || "Lỗi kết nối");
+            message.error(error.message || 'Lỗi kết nối');
         }
     };
 

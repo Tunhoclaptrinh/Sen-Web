@@ -65,6 +65,8 @@ class GameService extends BaseService {
             total_screens: number;
             percentage: number;
         };
+        level_finished?: boolean;
+        final_score?: number;
     }> {
         const response = await this.post(`/sessions/${sessionId}/next-screen`);
         return response.data;
@@ -143,6 +145,7 @@ class GameService extends BaseService {
             points: number;
             coins: number;
         };
+        next_level_id?: number;
     }> {
         const response = await this.post(`/levels/${levelId}/complete`, { score, timeSpent });
         return response.data;

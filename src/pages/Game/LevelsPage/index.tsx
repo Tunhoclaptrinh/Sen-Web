@@ -33,7 +33,16 @@ const LevelsPage: React.FC = () => {
     if (chapterId) {
       dispatch(fetchLevelsByChapter(Number(chapterId)));
     }
-  }, [dispatch, chapterId]);
+  }, [dispatch, chapterId, levels?.length, currentChapter?.id]); // Refetch if chapter mismatches or initially
+
+  // ✅ Force refetch when progress changes (level completed)
+  const { progress } = useAppSelector((state) => state.game); // Needs to be destructured from state.game
+  
+  useEffect(() => {
+    if (chapterId) {
+       dispatch(fetchLevelsByChapter(Number(chapterId)));
+    }
+  }, [dispatch, chapterId, progress?.completed_levels]); // Re-run when completion status changes
 
   // --- CORE LOGIC: TÍNH TOÁN TOẠ ĐỘ TUYỆT ĐỐI (PIXEL) ---
   const levelsWithPos = useMemo(() => {
@@ -159,7 +168,14 @@ const LevelsPage: React.FC = () => {
                 )}
 
                 {/* Main Button */}
-                <Tooltip title={level.name} placement="top">
+                <Tooltip
+                  title={
+                    level.is_locked
+                      ? `🔒 Hoàn thành màn trước để mở khóa: ${level.name}`
+                      : level.name
+                  }
+                  placement="top"
+                >
                   <div className="level-circle">
                     {level.is_locked ? (
                       <LockFilled className="icon-locked" />
