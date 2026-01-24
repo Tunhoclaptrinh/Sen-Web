@@ -5,7 +5,7 @@ import {
   fetchLevelsByChapter,
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
-import { Button, Spin, Typography, Progress, Popover, Switch, Space, Tooltip } from "antd";
+import { Button, Spin, Typography, Progress, Popover, Switch, Tooltip } from "antd";
 import { CheckOutlined, LockFilled, StarFilled, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import type { Level } from "@/types";
 import LevelDetailCard from "./LevelDetailCard";
