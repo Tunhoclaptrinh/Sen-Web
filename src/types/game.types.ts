@@ -92,6 +92,7 @@ export interface DialogueScreen extends Screen {
         text: string;
         avatar?: string;
         emotion?: string;
+        audio?: string; // Base64 audio string
     }>;
 }
 

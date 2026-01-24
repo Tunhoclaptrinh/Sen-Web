@@ -218,7 +218,6 @@ const ChaptersPage: React.FC = () => {
 
                                                 <div className="chapter-stats">
                                                     <div className="stat">
-                                                        <Text type="secondary">Tiến độ</Text>
                                                         <Progress
                                                             percent={chapter.completion_rate}
                                                             size="small"
@@ -226,6 +225,8 @@ const ChaptersPage: React.FC = () => {
                                                         />
                                                     </div>
                                                     <div className="stat">
+                                                        <Text type="secondary">Tiến độ</Text>
+
                                                         <Text type="secondary">
                                                             {chapter.completed_levels}/{chapter.total_levels} màn
                                                         </Text>

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Card, Button, Avatar, Typography, Space } from "antd";
-import { StepForwardOutlined, UserOutlined } from "@ant-design/icons";
+// import { Button } from "antd"; // Unused
+import { Stage } from "@pixi/react";
+import SenChibi from "@/components/SenChibi";
 import type { DialogueScreen as DialogueScreenType } from "@/types/game.types";
 import "./styles.less";
 
-const { Text, Paragraph } = Typography;
+// const { Text, Paragraph } = Typography; // Unused
 
 interface Props {
   data: DialogueScreenType;
@@ -15,13 +16,36 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
+  // Determine current active dialogue
   const currentDialogue = data.content?.[currentIndex];
+  // Determine if Sen is speaking or listening (for animation)
+  const isSenSpeaking = currentDialogue?.speaker !== "USER";
+  const isUserSpeaking = currentDialogue?.speaker === "USER";
 
+  // Typing Effect & Audio
   React.useEffect(() => {
     if (currentDialogue) {
       setDisplayedText("");
       setIsTyping(true);
+      
+      // Audio Playback
+      if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+      }
+      
+      if (currentDialogue.audio) {
+          try {
+              audioRef.current = new Audio(currentDialogue.audio);
+              audioRef.current.play().catch(e => console.error("Audio play failed", e));
+          } catch (err) {
+              console.error("Invalid audio data", err);
+          }
+      }
+
       let index = 0;
       const text = currentDialogue.text;
 
@@ -32,11 +56,21 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
           clearInterval(timer);
           setIsTyping(false);
         }
-      }, 30); // Speed: 30ms per char
+      }, 30); // Speed: 30ms
 
-      return () => clearInterval(timer);
+      return () => {
+          clearInterval(timer);
+          if (audioRef.current) {
+              audioRef.current.pause();
+          }
+      };
     }
   }, [currentIndex, currentDialogue]);
+
+  // Auto-scroll to bottom whenever text updates
+  React.useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [displayedText, currentIndex]);
 
   const handleNextDialogue = () => {
     if (isTyping) {
@@ -55,8 +89,10 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
 
   if (!currentDialogue) return null;
 
+  // Storyteller Layout: No history visible, just current message.
+
   return (
-    <div className="dialogue-screen">
+    <div className="dialogue-screen" onClick={handleNextDialogue}>
       <div
         className="dialogue-background"
         style={{
@@ -65,72 +101,65 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
       />
 
       <div className="dialogue-content">
-        <Card
-          className="dialogue-box"
-          onClick={handleNextDialogue}
-          hoverable={false}
-        >
-          <div className="dialogue-header">
-            <Space align="center" size="middle">
-              <Avatar
-                size={64}
-                src={
-                  currentDialogue.avatar ||
-                  (currentDialogue.speaker === "USER"
-                    ? undefined
-                    : "https://api.dicebear.com/7.x/bottts/svg?seed=SenBot")
-                }
-                icon={<UserOutlined />}
-                className="character-avatar"
-                style={{
-                  backgroundColor:
-                    currentDialogue.speaker === "USER" ? "#1890ff" : "#ffc107",
-                }}
-              />
-              <div className="character-info">
-                <Text
-                  strong
-                  className="character-name"
-                  style={{ fontSize: 18, color: "#1f1f1f" }}
-                >
-                  {currentDialogue.speaker === "USER"
-                    ? "Bạn"
-                    : currentDialogue.speaker === "AI"
-                      ? "Trợ lý Sen"
-                      : currentDialogue.speaker}
-                </Text>
-              </div>
-            </Space>
-          </div>
-
-          <div className="dialogue-body">
-            <Paragraph
-              className="dialogue-text"
-              style={{ fontSize: 16, minHeight: 60 }}
-            >
-              {displayedText}
-              {isTyping && <span className="typing-cursor">|</span>}
-            </Paragraph>
-          </div>
-
-          <div className="dialogue-actions">
-            <Button
-              type="primary"
-              size="large"
-              icon={<StepForwardOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNextDialogue();
+        {/* Story Interface Container */}
+        <div className="story-interface">
+          {/* SEN PORTRAIT (LEFT OF BOX or INSIDE) - Reference shows it on right of text, but let's put it next to it */}
+          {/* IF SEN IS SPEAKING/ACTIVE */}
+          <div
+            className={`sen-portrait-container ${isSenSpeaking ? "active" : ""}`}
+          >
+            <Stage
+              width={280}
+              height={400}
+              options={{ backgroundAlpha: 0 }}
+              style={{
+                position: "absolute",
+                bottom: -100,
+                right: -100,
+                pointerEvents: "none",
               }}
             >
-              {isTyping
-                ? "Bỏ qua hiệu ứng"
-                : currentIndex < (data.content?.length || 0) - 1
-                  ? "Tiếp tục"
-                  : "Hoàn thành"}
-            </Button>
+              <SenChibi
+                x={140}
+                y={260}
+                scale={0.16}
+                visible={true}
+                mouthState={isSenSpeaking && isTyping ? "open" : "smile"}
+                isTalking={isSenSpeaking && isTyping}
+                eyeState="normal"
+                gesture="normal"
+                showCoat={true}
+                showHat={true}
+              />
+            </Stage>
           </div>
-        </Card>
+
+          <div
+            className={`dialogue-box-story ${isUserSpeaking ? "user-turn" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNextDialogue();
+            }}
+          >
+            <div className="dialogue-header">
+              <span className="character-name">
+                {isUserSpeaking
+                  ? "Bạn"
+                  : currentDialogue.speaker === "AI"
+                    ? "Trợ lý Sen"
+                    : currentDialogue.speaker}
+              </span>
+            </div>
+            <div className="dialogue-text">
+              {displayedText}
+              {isTyping && <span className="typing-cursor">|</span>}
+            </div>
+
+            {!isTyping && (
+              <div className="next-indicator">Chạm để tiếp tục ▼</div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
