@@ -25,7 +25,6 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import learningService from "@/services/learning.service";
-import { fetchProgress } from "@/store/slices/gameSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,7 +47,6 @@ const LearningPathPage: React.FC = () => {
   useEffect(() => {
     if (!id) {
       fetchLearningPath();
-      dispatch(fetchProgress());
     }
   }, [id, dispatch]);
 

@@ -6,12 +6,14 @@ import {
     MessageOutlined,
     UserOutlined,
     BookOutlined,
+    DollarOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
 import { setOverlayOpen } from '@/store/slices/aiSlice';
+import { fetchProgress } from '@/store/slices/gameSlice';
 import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
@@ -27,6 +29,14 @@ const CustomerLayout: React.FC = () => {
 
     const { isOverlayOpen } = useSelector((state: RootState) => state.ai);
     const [dailyRewardVisible, setDailyRewardVisible] = useState(false);
+
+    // Initial Data Fetching (Persistent Game Data)
+    // Ensures stats (Coins, Petals) are available on direct navigation or refresh
+    React.useEffect(() => {
+        if (!progress) {
+            dispatch(fetchProgress() as any);
+        }
+    }, [dispatch, progress]);
 
     const handleLogout = () => {
         dispatch(logout() as any);
@@ -75,7 +85,7 @@ const CustomerLayout: React.FC = () => {
                             <span>{progress?.total_sen_petals || 0}</span>
                         </div>
                         <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <span style={{ fontSize: 16 }}>💰</span>
+                            <DollarOutlined style={{ fontSize: 16, color: '#ffd700' }}/>
                             <span>{progress?.coins || 0}</span>
                         </div>
                     </div>,
