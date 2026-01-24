@@ -5,7 +5,8 @@ import React, {
   Suspense,
   lazy,
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,
+} from "react-router-dom";
 import {
   Row,
   Col,
@@ -13,42 +14,40 @@ import {
   Button,
   Spin,
   Empty,
-  Progress,
+  Typography,
   Tag,
   message,
-  Typography,
 } from "antd";
 import {
   BookOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
   TrophyOutlined,
+  PlayCircleOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
-import learningService from "@/services/learning.service";
-import { useAppDispatch } from "@/store/hooks";
+import learningService, { LearningModule } from "@/services/learning.service";
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from "framer-motion";
+import defaultThumbnail from "@/assets/images/background/senhoacum.png";
 import "./styles.less";
 
 const LearningDetail = lazy(() => import("./LearningDetail"));
 
-const { Meta } = Card;
 const { Title, Paragraph } = Typography;
 
 const LearningPathPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [learningPath, setLearningPath] = useState<any[]>([]);
+  const [learningPath, setLearningPath] = useState<LearningModule[]>([]);
   const [progress, setProgress] = useState<any>(null);
-
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!id) {
       fetchLearningPath();
     }
-  }, [id, dispatch]);
+  }, [id]);
 
   const fetchLearningPath = async () => {
     try {
@@ -65,23 +64,14 @@ const LearningPathPage: React.FC = () => {
 
   const getDifficultyColor = (difficulty: string) => {
     const colors: Record<string, string> = {
-      easy: "green",
+      easy: "geekblue",
       medium: "orange",
-      hard: "red",
+      hard: "volcano",
     };
-    return colors[difficulty] || "default";
+    return colors[difficulty] || "blue";
   };
 
-  const getDifficultyLabel = (difficulty: string) => {
-    const labels: Record<string, string> = {
-      easy: "Dễ",
-      medium: "Trung Bình",
-      hard: "Khó",
-    };
-    return labels[difficulty] || difficulty;
-  };
-
-  const handleNavigate = (path: string) => {
+  const handlesNavigate = (path: string) => {
     startTransition(() => {
       navigate(path);
     });
@@ -92,8 +82,11 @@ const LearningPathPage: React.FC = () => {
     return (
       <Suspense
         fallback={
-          <div className="loading-container">
-            <Spin size="large" tip="Đang tải bài học..." />
+          <div className="loading-overlay">
+             <div className="loading-content">
+                <Spin size="large" />
+                <p>Đang tải bài học...</p>
+             </div>
           </div>
         }
       >
@@ -104,8 +97,8 @@ const LearningPathPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: "100px 0" }}>
-        <Spin size="large" tip="Đang tải lộ trình học tập..." />
+      <div className="loading-container">
+        <Spin size="large" tip="Đang tải lộ trình..." />
       </div>
     );
   }
@@ -118,20 +111,19 @@ const LearningPathPage: React.FC = () => {
         className="page-header"
       >
         <Title level={1} className="main-title">
-          <BookOutlined className="title-icon" /> Lộ trình học tập
+          <BookOutlined className="title-icon" /> Ôn tập kiến thức
         </Title>
         <Paragraph className="subtitle">
-          Khám phá và học hỏi về lịch sử văn hóa Việt Nam qua các module chuyên
-          sâu
+          Ôn luyện và củng cố kiến thức về lịch sử văn hóa Việt Nam qua các bài học chuyên sâu
         </Paragraph>
       </motion.div>
 
       {progress && (
-        <div className="learning-stats">
+        <div className="stats-container">
           <StatisticsCard
             data={[
               {
-                title: "Tổng module",
+                title: "Tổng bài học",
                 value: progress.total || 0,
                 icon: <BookOutlined />,
                 valueColor: "#1890ff",
@@ -149,7 +141,7 @@ const LearningPathPage: React.FC = () => {
                 value: `${progress.percentage || 0}%`,
               },
               {
-                title: "Thời gian",
+                title: "Thời lượng",
                 value: `${learningPath.reduce((sum, m) => sum + (m.estimated_duration || 0), 0)}'`,
                 icon: <ClockCircleOutlined />,
                 valueColor: "#722ed1",
@@ -183,10 +175,15 @@ const LearningPathPage: React.FC = () => {
           className="learning-content"
         >
           {learningPath.length === 0 ? (
-            <Empty description="Chưa có module học tập nào" />
+            <Empty description="Chưa có bài học nào" />
           ) : (
             <Row gutter={[24, 24]} className="learning-grid">
-              {learningPath.map((module, index) => (
+              {learningPath.map((module, index) => {
+                // Logic: A module is locked if the previous module is not completed
+                // Exception: The first module (index 0) is always unlocked
+                const isLocked = index > 0 && !learningPath[index - 1].is_completed;
+
+                return (
                 <Col xs={24} sm={12} lg={8} key={module.id}>
                   <motion.div
                     variants={{
@@ -196,70 +193,146 @@ const LearningPathPage: React.FC = () => {
                         opacity: 1,
                       },
                     }}
+                    style={{ height: '100%' }}
                   >
                     <Card
-                      hoverable
+                      hoverable={!isLocked}
                       className={`learning-card ${
                         module.is_completed ? "completed" : ""
-                      }`}
+                      } ${isLocked ? "locked" : ""}`}
+                      style={{ 
+                          borderRadius: 20, 
+                          border: 'none', 
+                          boxShadow: isLocked 
+                              ? 'none' 
+                              : (module.is_completed ? '0 10px 30px rgba(82, 196, 26, 0.15)' : '0 10px 30px rgba(0,0,0,0.08)'),
+                          background: isLocked ? '#f5f5f5' : '#fff',
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflow: 'hidden',
+                          position: 'relative',
+                          transition: 'all 0.3s ease'
+                      }}
+                      bodyStyle={{ 
+                          flex: 1, 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          padding: 24 
+                      }}
                       cover={
-                        <div className="learning-cover">
-                          <div className="learning-number">{index + 1}</div>
-                          {module.is_completed && (
-                            <div className="completed-badge">
-                              <CheckCircleOutlined /> Hoàn thành
-                            </div>
-                          )}
-                        </div>
-                      }
-                      actions={[
-                        <Button
-                          key="start"
-                          type={module.is_completed ? "default" : "primary"}
-                          block
-                          onClick={() =>
-                            handleNavigate(`/game/learning/${module.id}`)
-                          }
-                        >
-                          {module.is_completed ? "Xem Lại" : "Bắt Đầu"}
-                        </Button>,
-                      ]}
-                    >
-                      <Meta
-                        title={module.title}
-                        description={
-                          <div className="module-meta">
-                            <div className="tags">
-                              <Tag
-                                color={getDifficultyColor(module.difficulty)}
-                              >
-                                {getDifficultyLabel(module.difficulty)}
-                              </Tag>
-                              <Tag icon={<ClockCircleOutlined />}>
-                                {module.estimated_duration} phút
-                              </Tag>
-                            </div>
-
-                            {module.is_completed && module.score !== null && (
-                              <div className="score">
-                                <Progress
-                                  type="circle"
-                                  percent={module.score}
-                                  width={60}
-                                  strokeColor={{
-                                    "0%": "#108ee9",
-                                    "100%": "#87d068",
+                          <div className="learning-cover" style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
+                              <img 
+                                  src={module.thumbnail || defaultThumbnail} 
+                                  alt={module.title} 
+                                  onError={(e) => {
+                                      e.currentTarget.src = defaultThumbnail;
                                   }}
-                                />
-                              </div>
-                            )}
+                                  style={{ 
+                                      width: '100%', 
+                                      height: '100%', 
+                                      objectFit: 'cover',
+                                      filter: isLocked ? "grayscale(100%) contrast(80%)" : "none", 
+                                      opacity: isLocked ? 0.8 : 1,
+                                      transition: 'transform 0.5s ease',
+                                  }}
+                                  className="card-image"
+                              />
+                              {module.is_completed && (
+                                <div style={{ 
+                                    position: 'absolute', top: 12, right: 12, 
+                                    background: 'rgba(255, 255, 255, 0.95)', color: '#52c41a', 
+                                    padding: '6px 14px', borderRadius: 20, 
+                                    fontSize: 12, fontWeight: 700,
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    display: 'flex', alignItems: 'center', gap: 6
+                                }}>
+                                  <CheckCircleOutlined /> Hoàn thành
+                                </div>
+                              )}
+                              {isLocked && (
+                                 <div style={{ 
+                                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                     background: 'rgba(240, 240, 240, 0.6)'
+                                 }}>
+                                    <div style={{ 
+                                        width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.8)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                    }}>
+                                        <LockOutlined style={{ fontSize: 28, color: '#bfbfbf' }} />
+                                    </div>
+                                 </div>
+                              )}
                           </div>
-                        }
-                      />
+                      }
+                    >
+                      <div className="module-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <div className="tags" style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
+                          <Tag
+                            color={isLocked ? "default" : getDifficultyColor(module.difficulty || 'easy')}
+                            style={{ 
+                                borderRadius: 6, margin: 0, padding: '4px 12px', border: 'none',
+                                fontWeight: 600, fontSize: 11
+                            }}
+                          >
+                            {module.difficulty?.toUpperCase() || 'EASY'}
+                          </Tag>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#8c8c8c' }}>
+                             <ClockCircleOutlined /> {module.estimated_duration} phút
+                          </div>
+                        </div>
+
+                        <Title level={4} ellipsis={{ rows: 2 }} style={{ marginBottom: 12, fontSize: 18, lineHeight: 1.4, flex: 1 }}>
+                          {module.title}
+                        </Title>
+
+                        <div style={{ marginTop: 'auto' }}>
+                            {module.is_completed ? (
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+                                    <Tag color="success" style={{ borderRadius: 6, border: 'none', padding: '2px 10px', background: 'rgba(82, 196, 26, 0.1)', color: '#52c41a' }}>
+                                        Đã nhận thưởng
+                                    </Tag>
+                                    <div style={{ fontSize: 24, fontWeight: 800, color: module.score && module.score >= 80 ? '#52c41a' : '#faad14', lineHeight: 1 }}>
+                                        {module.score}<span style={{ fontSize: 12, fontWeight: 500, color: '#8c8c8c', marginLeft: 4 }}>/100</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ height: 28, marginBottom: 20 }}>
+                                    {isLocked && <div style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}><LockOutlined /> Yêu cầu hoàn thành bài trước</div>}
+                                    {!isLocked && <Tag color="processing" style={{ borderRadius: 6, border: 'none' }}>Chưa học</Tag>}
+                                </div>
+                            )}
+                            
+                            <Button
+                                block
+                                size="large"
+                                disabled={isLocked}
+                                onClick={() => !isLocked && handlesNavigate(`/game/learning/${module.id}`)}
+                                type={module.is_completed ? "default" : "primary"}
+                                style={{ 
+                                    borderRadius: 12, 
+                                    height: 48, 
+                                    fontWeight: 700,
+                                    fontSize: 16,
+                                    border: module.is_completed ? '1px solid #d9d9d9' : 'none',
+                                    background: isLocked 
+                                        ? '#e6e6e6' 
+                                        : (module.is_completed ? '#fff' : 'linear-gradient(90deg, #A31D1D 0%, #800000 100%)'), // Premium Red/Brown
+                                    color: isLocked ? '#bfbfbf' : (module.is_completed ? '#595959' : '#fff'),
+                                    boxShadow: !isLocked && !module.is_completed ? '0 8px 20px rgba(163, 29, 29, 0.25)' : 'none'
+                                }}
+                                icon={isLocked ? <LockOutlined /> : (module.is_completed ? <BookOutlined /> : <PlayCircleOutlined />)}
+                            >
+                                {isLocked ? "Chưa mở khóa" : (module.is_completed ? "Ôn lại" : "Học ngay")}
+                            </Button>
+                        </div>
+                      </div>
                     </Card>
                   </motion.div>
                 </Col>
-              ))}
+              );})}
             </Row>
           )}
         </motion.div>
