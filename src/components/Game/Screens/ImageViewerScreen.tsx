@@ -1,9 +1,7 @@
 import React from "react";
-import { Card, Button, Typography, Image } from "antd";
+import { Button, Image } from "antd";
 import { ArrowRightOutlined, EyeOutlined } from "@ant-design/icons";
 import type { Screen } from "@/types/game.types";
-
-const { Paragraph } = Typography;
 
 interface Props {
   data: Screen & {

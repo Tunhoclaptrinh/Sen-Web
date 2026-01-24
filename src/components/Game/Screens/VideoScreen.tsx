@@ -1,4 +1,5 @@
-import { Button, Typography } from "antd";
+import React from "react";
+import { Button } from "antd";
 import { PlayCircleOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import type { Screen } from "@/types/game.types";
 import "./styles.less";

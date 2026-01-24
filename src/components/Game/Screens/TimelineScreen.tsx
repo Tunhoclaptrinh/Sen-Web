@@ -166,7 +166,7 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
                             {data.content?.title || "Dòng Chảy Lịch Sử"}
                         </Title>
                         <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 16 }}>
-                            {data.description || "Kéo thả các sự kiện để sắp xếp theo đúng trình tự thời gian."}
+                            {data.content?.description || "Kéo thả các sự kiện để sắp xếp theo đúng trình tự thời gian."}
                         </Text>
                     </div>
 
