@@ -39,7 +39,7 @@ const LearningManagement: React.FC = () => {
     return (
         <>
             <DataTable
-                title="Quản lý Bài học & Lộ trình (Learning)"
+                title="Quản lý Bài học ôn"
                 loading={model.loading}
                 columns={columns}
                 dataSource={model.data}

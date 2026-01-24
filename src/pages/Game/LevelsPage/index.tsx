@@ -11,6 +11,11 @@ import type { Level } from "@/types";
 import LevelDetailCard from "./LevelDetailCard";
 import "./styles.less";
 
+// BACKGROUND ASSETS
+import bronze_drum from "@/assets/images/background/bronze-drum.png";
+import lotus_1 from "@/assets/images/background/lotus-1.png";
+import lotus_2 from "@/assets/images/background/lotus-2.png";
+
 const { Title } = Typography;
 
 // CẤU HÌNH BẢN ĐỒ
@@ -31,7 +36,7 @@ const LevelsPage: React.FC = () => {
   );
   
   // Controls validity of card "Always On" mode
-  const [showDetailCards, setShowDetailCards] = React.useState(false);
+  const [showDetailCards, setShowDetailCards] = React.useState(true);
 
   useEffect(() => {
     if (chapterId) {
@@ -87,9 +92,18 @@ const LevelsPage: React.FC = () => {
   if (!levels || levels.length === 0) return null;
 
   const mapHeight = levels.length * MAP_CONFIG.VERTICAL_SPACING + 200;
+  const numDrums = Math.max(1, Math.floor(mapHeight / 400)); // At least 1 drum, every 400px
 
   return (
     <div className="levels-page-container">
+      {/* --- FIXED DECORATIONS (Overlay/Underlay) --- */}
+      <div className="decorative-background">
+          <div className="bg-lotus-container">
+             <img src={lotus_1} className="bg-lotus lotus-1" alt="Lotus" />
+             <img src={lotus_2} className="bg-lotus lotus-2" alt="Lotus" />
+          </div>
+      </div>
+
       {/* HEADER */}
       <div className="fixed-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* Left: Back Button */}
@@ -101,7 +115,7 @@ const LevelsPage: React.FC = () => {
           Trở về
         </Button>
 
-        {/* Center: Chapter Info (Absolute centering might be better, but flex works if sides are balanced. Let's try simple flex for now) */}
+        {/* Center: Chapter Info */}
         {currentChapter && (
            <div className="chapter-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Title level={5} style={{ margin: 0 }}>
@@ -132,6 +146,34 @@ const LevelsPage: React.FC = () => {
 
       {/* MAP AREA */}
       <div className="map-scroll-area">
+        {/* LỚP 00: HỌA TIẾT TRỐNG ĐỒNG (Lặp lại dọc map - Full Width) */}
+        <div className="repeating-drums-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: mapHeight, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+             {Array.from({ length: numDrums }).map((_, i) => {
+                 const isLeft = i % 2 === 0;
+                 return (
+                    <div 
+                        key={`drum-${i}`} 
+                        className="scrolling-drum"
+                        style={{ 
+                            position: 'absolute',
+                            top: 200 + (i * 400),
+                            left: isLeft ? '-250px' : 'auto', // Push to edge
+                            right: !isLeft ? '-250px' : 'auto', // Push to edge
+                            transform: 'translateY(-50%)',
+                            width: '800px',
+                            opacity: 0.12
+                        }}
+                    >
+                        <img 
+                            src={bronze_drum} 
+                            alt="" 
+                            style={{ width: '100%', animation: 'drumRotate 60s linear infinite' }} 
+                        />
+                    </div>
+                 );
+             })}
+        </div>
+
         <div
           className="map-content"
           style={{ height: mapHeight, width: MAP_CONFIG.CONTAINER_WIDTH }}

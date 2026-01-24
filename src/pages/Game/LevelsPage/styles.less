@@ -1,6 +1,6 @@
 @import "@/styles/variables.less";
 // Variables Colors - THEME SEN VIỆT NAM
-@color-active: #EDE7DA; // Beige active color
+@color-active: #ede7da; // Beige active color
 @shadow-active: #c5bba8; // Darker beige for shadow
 @color-locked: #e5e5e5;
 @shadow-locked: #afafaf;
@@ -9,10 +9,10 @@
 @bg-color: #f0e9e9;
 
 // Card Specific Colors
-@story-bar-bg: #2C0C0C;
+@story-bar-bg: #2c0c0c;
 @story-bar-border: #000000;
-@card-bg: #EDE7DA;
-@card-border: #7F6262;
+@card-bg: #ede7da;
+@card-border: #7f6262;
 
 .levels-page-container {
   display: flex;
@@ -20,23 +20,21 @@
   background-color: @bg-color;
   position: relative;
   width: 100%;
-
 }
 
 // --- HEADER ---
 .fixed-header {
-  
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    position: sticky; // Sticky keeps it "inside" the map flow
-    top: 70px; // Sticks to top of viewport/container
-    width: 100%;
-    box-sizing: border-box;
-    z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: sticky; // Sticky keeps it "inside" the map flow
+  top: 70px; // Sticks to top of viewport/container
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 100;
+  background: transparent;
 }
-
 // --- MAP SCROLL ---
 .map-scroll-area {
   flex: 1;
@@ -56,6 +54,95 @@
   margin: 0 auto; // Căn giữa container cố định
   position: relative;
   padding-bottom: 150px;
+}
+
+// --- DECORATIVE BACKGROUND ---
+.decorative-background {
+  position: absolute; // Changed from fixed to absolute to confine to container
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; // Click through to map
+  z-index: 0; // Behind everything
+  overflow: hidden;
+
+  // Clouds
+  .bg-cloud {
+    position: absolute;
+    opacity: 0.6;
+    mix-blend-mode: multiply; // Blend nicely with bg
+  }
+
+  .bg-cloud-1 {
+    top: 5%;
+    right: -10%;
+    width: 40%;
+    animation: floatCloud 20s ease-in-out infinite alternate;
+  }
+
+  .bg-cloud-2 {
+    bottom: 20%;
+    left: -10%;
+    width: 50%;
+    animation: floatCloud 25s ease-in-out infinite alternate-reverse;
+  }
+
+  // Lotus
+  .bg-lotus-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 300px; // Increased height for larger flowers
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 0; // Remove padding to let them touch corners
+  }
+
+  .bg-lotus {
+    width: 300px; // Base size increased
+    opacity: 0.9;
+    margin-bottom: -30px;
+
+    &.lotus-1 {
+      animation: lotusSway 6s ease-in-out infinite;
+    }
+    &.lotus-2 {
+      width: 400px; // Much bigger
+      animation: lotusSway 7s ease-in-out infinite reverse;
+    }
+  }
+}
+
+// --- ANIMATIONS ---
+@keyframes drumRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatCloud {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(20px);
+  }
+}
+
+@keyframes lotusSway {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(5deg) translateY(-5px);
+  }
 }
 
 // --- SVG ---
@@ -89,8 +176,8 @@
     height: 100%;
     border-radius: 50%;
     background-color: @color-active; // Using new Beige color
-    border: 4px solid #fff; 
-    
+    border: 4px solid #fff;
+
     // Shadow này tạo độ dày (đế nút)
     box-shadow:
       0 8px 0 @shadow-active,
@@ -100,7 +187,7 @@
     justify-content: center;
     position: relative;
   }
-// ... icon styles follow ...
+  // ... icon styles follow ...
 
   // 2. Icon bên trong
   .icon-active,
@@ -161,7 +248,6 @@
   &.current {
     z-index: 3; // Nổi lên trên cùng
   }
-
 
   // --- SCORE STARS ---
   .level-stars-container {
@@ -228,7 +314,7 @@
   border: 4px solid @card-border;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 
   .card-header {
     background-color: @story-bar-bg;
@@ -237,7 +323,7 @@
     text-align: center;
 
     .level-name {
-      color: #EDE7DA; // Light beige text on dark background
+      color: #ede7da; // Light beige text on dark background
       font-weight: 800;
       font-size: 18px;
       text-transform: uppercase;
@@ -283,7 +369,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.6);
+        background: rgba(0, 0, 0, 0.6);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -304,16 +390,16 @@
         background-color: #1f5f25;
         border-color: #1f5f25;
         font-weight: 700;
-        
+
         &:hover {
-           background-color: #2a7a30;
-           border-color: #2a7a30;
+          background-color: #2a7a30;
+          border-color: #2a7a30;
         }
 
         &[disabled] {
-            background-color: #ccc;
-            border-color: #ccc;
-            color: #666;
+          background-color: #ccc;
+          border-color: #ccc;
+          color: #666;
         }
       }
     }
@@ -327,7 +413,7 @@
   background-color: transparent;
   border-radius: 12px;
   overflow: visible; // Allow play button overflow
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   box-sizing: border-box; // Ensure padding/border included in size
@@ -340,21 +426,21 @@
     width: 0;
     height: 0;
     z-index: 1;
-    
+
     // Size of arrow: 30px protruding
     border-top: 20px solid transparent;
     border-bottom: 20px solid transparent;
 
     &.right {
-        // Card is on the RIGHT side, so arrow points LEFT
-        left: -18px; 
-        border-right: 20px solid @card-border; // Pointing Left
+      // Card is on the RIGHT side, so arrow points LEFT
+      left: -18px;
+      border-right: 20px solid @card-border; // Pointing Left
     }
 
     &.left {
-       // Card is on the LEFT side, so arrow points RIGHT
-       right: -18px;
-       border-left: 20px solid @card-border; // Pointing Right
+      // Card is on the LEFT side, so arrow points RIGHT
+      right: -18px;
+      border-left: 20px solid @card-border; // Pointing Right
     }
   }
 
@@ -362,12 +448,12 @@
     background-color: @story-bar-bg; // #2C0C0C
     border: 1px solid @story-bar-border; // #000000
     border-radius: 12px 12px 0 0;
-    
+
     padding: 0 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px; 
+    height: 50px;
     min-height: 50px; // Enforce min height
     flex-shrink: 0; // Prevent header from shrinking
 
@@ -393,7 +479,7 @@
     border: 2px solid @card-border; // #7F6262
     border-top: none;
     border-radius: 0 0 12px 12px;
-    
+
     padding: 12px;
     display: flex;
     align-items: center;
@@ -407,7 +493,7 @@
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid rgba(127, 98, 98, 0.3);
-      background: rgba(0,0,0,0.05);
+      background: rgba(0, 0, 0, 0.05);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -418,40 +504,44 @@
         height: 100%;
         position: relative;
         overflow: hidden; // Clip the blurred edges
-        
+
         .level-thumbnail-backdrop {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: blur(15px) brightness(0.9); // Blur and slightly darken
-            transform: scale(1.2); // Zoom in to avoid blurry edges showing white space
-            z-index: 1;
-            opacity: 0.8;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: blur(15px) brightness(0.9); // Blur and slightly darken
+          transform: scale(
+            1.2
+          ); // Zoom in to avoid blurry edges showing white space
+          z-index: 1;
+          opacity: 0.8;
         }
 
         .level-thumbnail-main {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            object-fit: contain; // KEY: Show full image
-            z-index: 2;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); // Make it pop from background
+          position: relative;
+          width: 100%;
+          height: 100%;
+          object-fit: contain; // KEY: Show full image
+          z-index: 2;
+          filter: drop-shadow(
+            0 4px 8px rgba(0, 0, 0, 0.3)
+          ); // Make it pop from background
         }
       }
-      
+
       .level-thumbnail-placeholder {
-         width: 100%;
-         height: 100%;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         background-color: #e3dccf;
-         position: absolute;
-         top: 0;
-         left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e3dccf;
+        position: absolute;
+        top: 0;
+        left: 0;
       }
     }
 
@@ -461,14 +551,14 @@
       right: -15px;
       width: 56px;
       height: 56px;
-      background-color: #4a4036; 
+      background-color: #4a4036;
       border: 3px solid #dacbb1;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
       z-index: 10;
-      
+
       .anticon {
         font-size: 24px;
         color: #dacbb1;
