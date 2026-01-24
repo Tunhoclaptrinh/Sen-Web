@@ -64,6 +64,13 @@ const LearningForm: React.FC<LearningFormProps> = ({
     }, [visible, initialValues, form]);
 
     const handleFinish = (values: any) => {
+        // Auto-generate IDs for questions if missing
+        if (values.quiz && values.quiz.questions) {
+            values.quiz.questions = values.quiz.questions.map((q: any, idx: number) => ({
+                ...q,
+                id: q.id || Date.now() + idx // Simple ID generation
+            }));
+        }
         onSubmit(values);
     };
 
