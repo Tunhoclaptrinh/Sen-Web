@@ -28,8 +28,9 @@ export const useLearningModel = () => {
 
     const openEdit = (record: any) => {
         const formValues = { ...record };
-        if (formValues.quiz && typeof formValues.quiz === 'object') {
-            formValues.quiz = JSON.stringify(formValues.quiz, null, 2);
+        // Quiz is already an object, pass it directly to form
+        if (!formValues.quiz) {
+            formValues.quiz = { passing_score: 80, questions: [] };
         }
         setCurrentRecord(formValues);
         setFormVisible(true);
@@ -41,17 +42,14 @@ export const useLearningModel = () => {
     };
 
     const handleSubmit = async (values: any) => {
-        // Transform quiz string to object if needed
         const submissionData = { ...values };
-        if (typeof submissionData.quiz === 'string' && submissionData.quiz.trim()) {
-            try {
-                submissionData.quiz = JSON.parse(submissionData.quiz);
-            } catch (e) {
-                message.error('Cấu trúc Quiz JSON không hợp lệ');
-                return false;
-            }
-        } else if (!submissionData.quiz) {
-            submissionData.quiz = undefined;
+        
+        // Clean up empty quiz data if necessary
+        if (submissionData.quiz && (!submissionData.quiz.questions || submissionData.quiz.questions.length === 0)) {
+             // Optional: Decide to keep empty quiz or remove. 
+             // If content_type is 'quiz', we keep it. 
+             // If 'article', maybe we want to allow attaching a quiz.
+             // We'll keep it as is.
         }
 
         let success = false;

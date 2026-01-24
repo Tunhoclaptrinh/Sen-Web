@@ -115,7 +115,7 @@ export const adminMenu: IMenuItem[] = [
             {
                 key: 'learning',
                 path: '/admin/learning',
-                name: 'Bài học & Lộ trình',
+                name: 'Bài ôn tập',
             },
             {
                 key: 'reviews',
@@ -153,7 +153,7 @@ export const customerMenu: IMenuItem[] = [
     {
         key: 'learning',
         path: '/game/learning',
-        name: 'Học tập',
+        name: 'Ôn tập',
         icon: <BookOutlined />,
     },
     {
