@@ -1,38 +1,15 @@
-@import "../../../styles/variables.less";
-// CULTURAL THEME VARIABLES
-@paper-bg: #fffcf5;
-@gold-border: #c5a065;
-@text-color-primary: #5d4037;
-@seal-red: #8b1d1d;
-@seal-border: #5a1212;
-
-@gold-color: #ffd700;
-@silver-color: #c0c0c0;
-@bronze-color: #cd7f32;
+@import "../common.less";
 
 .leaderboard-page {
     padding: 24px;
-    min-height: 100vh;
-    background-color: #f4efe4;
-    background-image: 
-        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
-    background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
+    .game-page-background();
 
     .leaderboard-header {
         text-align: center;
         margin-bottom: 40px;
 
         .main-title {
-            font-family: "Merriweather", "Playfair Display", "Times New Roman", serif;
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: @seal-red;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            .game-title-style();
 
             .title-icon {
                 margin-right: 12px;
@@ -41,10 +18,7 @@
         }
 
         .subtitle {
-            font-family: "Merriweather", serif;
-            font-size: 1.2rem;
-            font-style: italic;
-            color: @text-color-primary;
+            .game-subtitle-style();
         }
     }
 
@@ -54,15 +28,11 @@
     }
 
     .statistics-item {
-        background-color: @paper-bg !important;
-        border: 2px solid @gold-border !important;
-        border-radius: 8px !important;
-        box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
-        transition: all 0.3s ease;
+        .game-card-style();
         
         .text {
             color: @text-color-primary !important;
-            font-family: "Merriweather", serif;
+            font-family: @font-serif;
             font-weight: 700;
             
             .anticon {
@@ -74,22 +44,15 @@
         
         .num {
             color: @seal-red !important;
-            font-family: "Merriweather", serif;
+            font-family: @font-serif;
             text-shadow: none !important;
         }
 
-        &:hover {
-            transform: translateY(-4px);
-            box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
-            border-color: @seal-red !important;
-        }
+        .hover-lift-shadow();
     }
 
     .glass-morphism {
-        background: @paper-bg; // Replace glass with paper
-        border: 2px solid @gold-border;
-        box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
-        border-radius: 8px;
+        .game-card-style(); // Replaced custom glass/paper style with standard game card style
     }
 
     .tabs-container {
@@ -110,7 +73,7 @@
             padding: 12px 24px;
             transition: all 0.3s ease;
             font-weight: 600;
-            font-family: "Merriweather", serif;
+            font-family: @font-serif;
 
             &-active {
                 .ant-tabs-tab-btn {
@@ -219,7 +182,7 @@
             .player-name {
                 display: block;
                 font-size: 20px;
-                font-family: "Merriweather", serif;
+                font-family: @font-serif;
                 font-weight: 800;
                 margin-bottom: 4px;
                 white-space: nowrap;
@@ -265,7 +228,7 @@
                     font-size: 16px;
                     font-weight: 700;
                     color: @seal-red;
-                    font-family: "Merriweather", serif;
+                    font-family: @font-serif;
                 }
             }
         }
@@ -363,7 +326,7 @@
             font-weight: 700;
             color: #262626;
             font-size: 15px;
-            font-family: "Inter", sans-serif;
+            font-family: @font-sans;
         }
 
         .level {
@@ -418,7 +381,7 @@
 
 @media (max-width: 768px) {
     .leaderboard-header .main-title {
-        font-size: 2.2rem;
+        // Can rely on game-title-style media query or override if needed
     }
 
     .podium-container {

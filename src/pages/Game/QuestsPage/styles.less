@@ -1,38 +1,15 @@
-@import "../../../styles/variables.less";
-// CULTURAL THEME VARIABLES
-@paper-bg: #fffcf5;
-@gold-border: #c5a065;
-@text-color-primary: #5d4037;
-@seal-red: #8b1d1d;
-@seal-border: #5a1212;
-@success-color: #52c41a;
-@gold-color: #faad14;
+@import "../common.less";
 
 .premium-quests-page {
   padding: 24px;
-  min-height: 100vh;
-  background-color: #f4efe4;
-  background-image:
-    radial-gradient(#c5a065 0.5px, transparent 0.5px),
-    radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
-  background-size: 20px 20px;
-  background-position:
-    0 0,
-    10px 10px;
+  .game-page-background();
 
   .page-header {
     text-align: center;
     margin-bottom: 40px;
 
     .main-title {
-      font-family: "Merriweather", "Playfair Display", serif;
-      font-size: 3.5rem;
-      font-weight: 800;
-      color: @seal-red;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+      .game-title-style();
 
       .title-icon {
         margin-right: 12px;
@@ -41,10 +18,7 @@
     }
 
     .subtitle {
-      font-family: "Merriweather", serif;
-      font-size: 1.2rem;
-      font-style: italic;
-      color: @text-color-primary;
+      .game-subtitle-style();
     }
   }
 
@@ -54,23 +28,16 @@
 
     // Force override StatisticsCard styles
     .ant-card {
-      background: transparent !important;
-      box-shadow: none !important;
-      .ant-card-body {
-        padding: 0 !important;
-      }
+      .transparent-card-override();
     }
 
     .statistics-item {
-      background-color: @paper-bg !important;
-      border: 2px solid @gold-border !important;
+      .game-card-style();
       border-radius: 8px !important;
-      box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
-      transition: all 0.3s ease;
 
       .text {
         color: @text-color-primary !important;
-        font-family: "Merriweather", serif;
+        font-family: @font-serif;
         font-weight: 700;
 
         .anticon {
@@ -82,23 +49,16 @@
 
       .num {
         color: @seal-red !important;
-        font-family: "Merriweather", serif;
+        font-family: @font-serif;
         text-shadow: none !important;
       }
 
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
-        border-color: @seal-red !important;
-      }
+      .hover-lift-shadow();
     }
   }
 
   .glass-morphism {
-    background: @paper-bg;
-    border: 2px solid @gold-border;
-    box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
-    border-radius: 8px;
+    .game-card-style(); // Replaced glass effect with paper style
   }
 
   .tabs-container {
@@ -119,7 +79,7 @@
       padding: 12px 24px;
       transition: all 0.3s ease;
       font-weight: 600;
-      font-family: "Merriweather", serif;
+      font-family: @font-serif;
 
       &-active {
         .ant-tabs-tab-btn {
@@ -196,7 +156,7 @@
     .quest-title {
       margin: 16px 0 12px;
       font-weight: 800;
-      font-family: "Merriweather", serif;
+      font-family: @font-serif;
       color: @seal-red;
       font-size: 1.1rem;
       text-transform: uppercase;
@@ -206,7 +166,7 @@
       color: @text-color-primary;
       margin-bottom: 20px;
       min-height: 44px;
-      font-family: "Merriweather", serif;
+      font-family: @font-serif;
       font-size: 0.9rem;
     }
 
@@ -260,7 +220,7 @@
       .action-btn {
         height: 44px;
         border-radius: 6px;
-        font-family: "Merriweather", serif;
+        font-family: @font-serif;
         font-weight: 700;
         font-size: 1rem;
         text-transform: uppercase;
@@ -298,8 +258,8 @@
 
         &.claimed-btn {
           background: transparent;
-          border: 2px solid @success-color;
-          color: @success-color;
+          border: 2px solid #52c41a; // success color inline or variable
+          color: #52c41a;
           box-shadow: none;
           cursor: default;
           &:hover {
@@ -321,7 +281,7 @@
     }
 
     &.completed {
-      border: 2px solid @success-color;
+      border: 2px solid #52c41a; // success color
     }
   }
 }

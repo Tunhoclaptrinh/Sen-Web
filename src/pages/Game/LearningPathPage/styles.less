@@ -1,22 +1,8 @@
-@import "../../../styles/variables.less";
-
-// CULTURAL THEME VARIABLES
-@paper-bg: #fffcf5;
-@gold-border: #c5a065;
-@text-color-primary: #5d4037;
-@seal-red: #8b1d1d;
-@seal-border: #5a1212;
-@gold-color: #ffd700;
+@import "../common.less";
 
 .learning-path-page {
     padding: 24px;
-    min-height: 100vh;
-    background-color: #f4efe4;
-    background-image: 
-        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
-    background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
+    .game-page-background();
 
     .loading-container {
         display: flex;
@@ -44,7 +30,7 @@
                 margin-top: 16px;
                 font-weight: 500;
                 color: @text-color-secondary;
-                font-family: "Merriweather", serif;
+                font-family: @font-serif;
             }
         }
     }
@@ -54,14 +40,8 @@
         margin-bottom: 40px;
 
         .main-title {
-            font-family: "Merriweather", "Playfair Display", serif;
-            font-size: 3rem;
-            font-weight: 800;
-            color: @seal-red;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            .game-title-style();
+            font-size: 3rem; // Override specific size for this page if needed, or stick to mixin default (3.5rem)
 
             .title-icon {
                 margin-right: 12px;
@@ -70,10 +50,7 @@
         }
 
         .subtitle {
-            font-family: "Merriweather", serif;
-            font-size: 1.1rem;
-            font-style: italic;
-            color: @text-color-primary;
+            .game-subtitle-style();
         }
     }
 
@@ -83,25 +60,17 @@
 
         // Force override StatisticsCard styles
         .ant-card {
-            background: transparent !important; // container card is transparent
-            box-shadow: none !important;
-            
-            .ant-card-body {
-                padding: 0 !important;
-            }
+           .transparent-card-override();
         }
 
         .statistics-item {
-            background-color: @paper-bg !important;
-            border: 2px solid @gold-border !important;
-            border-radius: 8px !important; // Less rounded
-            box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
-            transition: all 0.3s ease;
+            .game-card-style();
+            border-radius: 8px !important; // Match local preference
             
             // Override text colors
             .text {
                 color: @text-color-primary !important;
-                font-family: "Merriweather", serif;
+                font-family: @font-serif;
                 font-weight: 700;
                 
                 .anticon {
@@ -113,15 +82,11 @@
             
             .num {
                 color: @seal-red !important; // Force number to red
-                font-family: "Merriweather", serif;
+                font-family: @font-serif;
                 text-shadow: none !important;
             }
 
-            &:hover {
-                transform: translateY(-4px);
-                box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
-                border-color: @seal-red !important;
-            }
+            .hover-lift-shadow();
         }
     }
 
@@ -211,7 +176,7 @@
                         align-items: center;
                         gap: 6px;
                         border: 1px solid #52c41a;
-                        font-family: "Merriweather", serif;
+                        font-family: @font-serif;
                     }
 
                     .locked-overlay {
@@ -262,12 +227,8 @@
                             border: 1px solid fade(@gold-border, 50%);
                             background: fade(@gold-border, 10%);
                             color: @text-color-primary;
-                            font-family: "Merriweather", serif;
+                            font-family: @font-serif;
                         }
-                    }
-
-                    .completion-info {
-                        // margin-top: 12px;
                     }
 
                     .score-display {
@@ -283,14 +244,14 @@
                             text-transform: uppercase;
                             letter-spacing: 0.5px;
                             font-weight: 700;
-                            font-family: "Merriweather", serif;
+                            font-family: @font-serif;
                         }
 
                         .score-value {
                             font-size: 2rem;
                             font-weight: 800;
                             line-height: 1;
-                            font-family: "Merriweather", serif;
+                            font-family: @font-serif;
 
                             &.high { color: #52c41a; }
                             &.normal { color: @seal-red; }
@@ -300,31 +261,23 @@
 
 
                 .ant-btn {
-                    height: 48px;
-                    border-radius: 8px;
-                    font-weight: 700;
-                    font-family: "Merriweather", serif;
-                    font-size: 1rem;
-                    text-transform: uppercase;
+                    .game-btn-primary();
                     width: 100%;
                     margin-top: 16px;
+                    font-size: 1rem;
                     
-                    // Primary / Default state (Learn Now)
+                    // Primary / Default state (Learn Now) - handled by mixin mostly, but specific overrides here
                     &.ant-btn-primary {
                         background: #a31d1d; // Deep red
-                        color: #ffffff;
-                        border: none; // No border, rely on shadow for depth
                         box-shadow: 0 6px 0 #5a1212; // Deep dark shadow for 3D effect
                         text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
                         font-weight: 800;
-                        letter-spacing: 0.5px;
                         transition: all 0.1s; // Fast transition for click feel
 
                         &:hover {
                             transform: translateY(2px) !important;
                             box-shadow: 0 4px 0 #5a1212 !important;
                             background: lighten(#a31d1d, 5%) !important;
-                            color: #ffffdd;
                         }
                         
                         &:active {
@@ -347,11 +300,7 @@
                     }
                     
                     &:disabled {
-                        box-shadow: none !important;
-                        background: #ccc !important;
-                        border-color: #999 !important;
-                        color: #666 !important;
-                        transform: none !important;
+                        // Mixin handles this, effectively
                     }
                 }
             }
@@ -372,11 +321,10 @@
 // LEARNING DETAIL PAGE STYLES
 .learning-detail-page {
     background-color: @paper-bg !important;
+    .game-page-background();
     background-image: 
         radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important;
-    background-size: 20px 20px !important;
-    background-position: 0 0, 10px 10px !important;
+        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important; // Override if mixin has specific priorities
 
     // Override Card Styles
     .ant-card {
@@ -399,7 +347,7 @@
 
     // Quiz/Content Title
     h1.ant-typography, h2.ant-typography {
-        font-family: "Merriweather", "Playfair Display", serif !important;
+        font-family: @font-serif !important;
         color: @seal-red !important;
     }
     
@@ -412,40 +360,23 @@
 
     // Submit Button / Next Button
     .ant-btn-primary {
-         background: @seal-red !important;
-         border: 2px solid @seal-border !important;
-         box-shadow: 0 4px 0 @seal-border !important;
-         color: #fff9e6 !important;
-         border-radius: 8px !important;
+         .game-btn-primary();
          height: 48px !important;
-         font-family: "Merriweather", serif !important;
-         font-weight: 700 !important;
-         text-transform: uppercase;
          
          &:hover {
              transform: translateY(2px);
              box-shadow: 0 2px 0 @seal-border !important;
-             background: lighten(@seal-red, 5%) !important;
          }
          
          &:active {
              transform: translateY(4px);
              box-shadow: none !important;
          }
-         
-         // Disabled state
-         &[disabled] {
-             background: #ccc !important;
-             border-color: #999 !important;
-             box-shadow: none !important;
-             color: #666 !important;
-             transform: none !important;
-         }
     }
     
     // Back Button
     .ant-btn-text {
-        font-family: "Merriweather", serif;
+        font-family: @font-serif;
         font-weight: 700;
         color: @seal-red !important;
         
@@ -456,14 +387,14 @@
     
     // Tags
     .ant-tag {
-        font-family: "Merriweather", serif;
+        font-family: @font-serif;
         border: 1px solid fade(@gold-border, 50%) !important;
     }
 
     // Radio Quiz
     .custom-radio {
         .ant-radio-wrapper {
-            span { font-family: "Merriweather", serif; }
+            span { font-family: @font-serif; }
         }
     }
 }
@@ -484,15 +415,8 @@
     }
 
     .ant-btn-primary {
-         background: @seal-red !important;
-         border: 2px solid @seal-border !important;
-         box-shadow: 0 4px 0 @seal-border !important;
-         color: #fff9e6 !important;
-         border-radius: 8px !important;
+         .game-btn-primary();
          height: 44px !important;
-         font-family: "Merriweather", serif !important;
-         text-transform: uppercase;
-         font-weight: 700;
          
          &:hover {
              transform: translateY(2px);

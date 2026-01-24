@@ -1,11 +1,4 @@
-@import "@/styles/variables.less";
-// CULTURAL THEME VARIABLES
-@paper-bg: #fffcf5;
-@gold-border: #c5a065;
-@text-color-primary: #5d4037;
-@seal-red: #8b1d1d;
-@seal-border: #5a1212;
-@gold-color: #ffd700;
+@import "../common.less";
 
 @color-active: #fffcf5; 
 @shadow-active: #c5bba8;
@@ -24,12 +17,7 @@
 .levels-page-container {
   display: flex;
   flex-direction: column;
-  background-color: @bg-color;
-  background-image: 
-        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
-  background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
+  .game-page-background();
   position: relative;
   width: 100%;
 }
@@ -281,7 +269,7 @@
   white-space: nowrap;
   animation: float 2s infinite ease-in-out;
   z-index: 10;
-  font-family: "Merriweather", serif;
+  font-family: @font-serif;
 
   .tooltip-arrow {
     position: absolute;
@@ -366,7 +354,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-family: "Merriweather", serif;
+      font-family: @font-serif;
     }
   }
 
@@ -436,14 +424,16 @@
       right: -15px;
       width: 56px;
       height: 56px;
-      background-color: @seal-red; // Seal Red Button
+      
+      // Inherit seal button styles logic
+      background-color: @seal-red; 
       border: 2px solid @seal-border;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 0 @seal-border; // Hard shadow
+      box-shadow: 0 4px 0 @seal-border; 
       z-index: 10;
-      border-radius: 8px; // Square-ish seal style
+      border-radius: 8px; 
 
       .anticon {
         font-size: 24px;

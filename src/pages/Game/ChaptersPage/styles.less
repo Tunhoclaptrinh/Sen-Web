@@ -1,23 +1,8 @@
-@import "@/styles/variables.less";
-
-@import "@/styles/variables.less";
-
-// CULTURAL THEME VARIABLES
-@paper-bg: #fffcf5; // Màu giấy gió/giấy điệp
-@gold-border: #c5a065; // Màu vàng đồng
-@text-color-primary: #5d4037; // Nâu đất
-@seal-red: #8b1d1d; // Đỏ son
-@seal-border: #5a1212;
+@import "../common.less";
 
 .chapters-page {
     padding: 24px;
-    min-height: 100vh;
-    background-color: #f4efe4; // Nền tổng thể màu kem ấm
-    background-image: 
-        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
-    background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
+    .game-page-background();
     
     .chapters-header {
         text-align: center;
@@ -29,14 +14,7 @@
         }
 
         .main-title {
-            font-family: "Merriweather", "Playfair Display", "Times New Roman", serif;
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: @seal-red; // Tiêu đề đỏ son
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            .game-title-style();
 
             .title-icon {
                 margin-right: 12px;
@@ -45,10 +23,7 @@
         }
 
         .subtitle {
-            font-family: "Merriweather", serif;
-            font-size: 1.2rem;
-            font-style: italic;
-            color: @text-color-primary;
+            .game-subtitle-style();
         }
     }
 
@@ -58,22 +33,16 @@
         
          // Force override StatisticsCard styles
         .ant-card {
-            background: transparent !important;
-            box-shadow: none !important;
-            .ant-card-body { padding: 0 !important; }
+            .transparent-card-override();
         }
 
         .statistics-item {
-            background-color: @paper-bg !important;
-            border: 2px solid @gold-border !important;
-            border-radius: 8px !important;
-            box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
-            transition: all 0.3s ease;
+            .game-card-style();
             
             // Override text colors
             .text {
                 color: @text-color-primary !important;
-                font-family: "Merriweather", serif;
+                font-family: @font-serif;
                 font-weight: 700;
                 
                 .anticon {
@@ -85,16 +54,11 @@
             
             .num {
                 color: @seal-red !important;
-                font-family: "Merriweather", serif;
+                font-family: @font-serif;
                 text-shadow: none !important;
             }
 
-            &:hover {
-                transform: translateY(-4px);
-                box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
-                border-color: @seal-red !important;
-                cursor: pointer;
-            }
+            .hover-lift-shadow();
         }
     }
 
@@ -105,11 +69,12 @@
 
     .chapters-grid {
         .chapter-card {
-            border-radius: 8px; // Bo góc ít hơn (kiểu giấy)
+            // Base card styles similar to game-card-style but customized for chapters
+            border-radius: 8px; 
             overflow: hidden;
-            border: 2px solid @gold-border; // Viền vàng đồng
+            border: 2px solid @gold-border; 
             background: @paper-bg;
-            box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15); // Bóng đổ gắt kiểu retro
+            box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15); 
             transition: all 0.3s ease;
             height: 100%;
             position: relative;
@@ -118,6 +83,15 @@
                 transform: translateY(-4px);
                 box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2); // Bóng đỏ khi hover
                 border-color: @seal-red;
+                
+                 &::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 20px;
+                    box-shadow: inset 0 0 20px fade(@seal-red, 10%); // Adjusted to use seal-red for theme consistency
+                    pointer-events: none;
+                }
             }
 
             &.locked {
@@ -171,7 +145,7 @@
                     
                     .ant-tag {
                         border-radius: 4px;
-                        font-family: "Merriweather", serif;
+                        font-family: @font-serif;
                         font-weight: 700;
                         margin: 0;
                         padding: 4px 12px;
@@ -192,7 +166,7 @@
                     text-align: center; // Căn giữa tiêu đề
 
                     h4.ant-typography {
-                        font-family: "Merriweather", serif;
+                        font-family: @font-serif;
                         font-size: 1.4rem;
                         font-weight: 800;
                         color: @seal-red; // Tiêu đề đỏ
@@ -211,7 +185,7 @@
                     flex-direction: column;
                     
                     .ant-typography {
-                        font-family: "Merriweather", serif; // Font chữ có chân
+                        font-family: @font-serif; 
                         color: @text-color-primary;
                         font-size: 0.95rem;
                         line-height: 1.6;
@@ -259,32 +233,8 @@
                 }
 
                 .ant-btn {
-                    height: 48px;
-                    border-radius: 8px;
-                    font-family: "Merriweather", serif;
-                    font-weight: 700;
-                    font-size: 1.1rem;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    
-                    // Style nút kiểu "Con Triện"
-                    background: @seal-red;
-                    border: 2px solid @seal-border;
-                    color: #fff9e6; // Vàng nhạt
-                    box-shadow: 0 4px 0 @seal-border; 
-                    margin-top: 0;
-
-                    &:hover {
-                        background: lighten(@seal-red, 5%);
-                        transform: translateY(2px); // Nhấn xuống hiệu ứng cơ học
-                        box-shadow: 0 2px 0 @seal-border;
-                        color: white !important;
-                    }
-                    
-                    &:active {
-                         transform: translateY(4px);
-                         box-shadow: none;
-                    }
+                   .game-btn-primary();
+                   margin-top: 0;
                 }
             }
 
@@ -330,25 +280,5 @@
 @media (max-width: 768px) {
     .chapters-page {
         padding: 16px;
-        
-        .chapters-header {
-            .main-title {
-                font-size: 2rem;
-            }
-        }
-    }
-}
-
-.chapter-card {
-    // Add a more pronounced inner glow on hover
-    &:hover {
-        &::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            box-shadow: inset 0 0 20px fade(@primary-color, 10%);
-            pointer-events: none;
-        }
     }
 }
