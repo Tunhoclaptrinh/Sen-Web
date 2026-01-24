@@ -91,12 +91,25 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
 
   // Storyteller Layout: No history visible, just current message.
 
+  const getImageUrl = (path?: string): string => {
+      // ⚡ FIX: Hardcode background for intro screen if missing from DB (due to revert issues)
+      if (data.id === 'ho_intro' && !path) {
+         // Recursive call to resolve the local path properly
+         return getImageUrl("/uploads/general/file-1769165881586.jpeg");
+      }
+
+      if (!path) return "https://via.placeholder.com/1200x600?text=Background";
+      if (path.startsWith('http')) return path;
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      return `${baseUrl}${path}`;
+  };
+
   return (
     <div className="dialogue-screen" onClick={handleNextDialogue}>
       <div
         className="dialogue-background"
         style={{
-          backgroundImage: `url(${data.background_image || "https://via.placeholder.com/1200x600?text=Background"})`,
+          backgroundImage: `url(${getImageUrl(data.background_image)})`,
         }}
       />
 

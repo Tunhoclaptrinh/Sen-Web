@@ -67,6 +67,7 @@ class GameService extends BaseService {
         };
         level_finished?: boolean;
         final_score?: number;
+        points_earned?: number; // ⚡ Added for animation
     }> {
         const response = await this.post(`/sessions/${sessionId}/next-screen`);
         return response.data;

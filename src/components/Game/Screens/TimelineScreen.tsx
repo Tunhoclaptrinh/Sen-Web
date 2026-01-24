@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Typography, message, List } from 'antd';
-import { ClockCircleOutlined, CheckOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { Card, Button, Typography, message } from 'antd';
+import { CheckOutlined, HolderOutlined } from '@ant-design/icons';
+import { 
+    DndContext, 
+    closestCenter, 
+    KeyboardSensor, 
+    PointerSensor, 
+    useSensor, 
+    useSensors, 
+    DragEndEvent,
+    TouchSensor
+} from '@dnd-kit/core';
+import { 
+    arrayMove, 
+    SortableContext, 
+    sortableKeyboardCoordinates, 
+    verticalListSortingStrategy, 
+    useSortable 
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { TimelineScreen as TimelineScreenType } from '@/types/game.types';
 import './styles.less';
 
@@ -10,7 +28,49 @@ interface Props {
     data: TimelineScreenType;
     onNext: () => void;
     onSubmit: (order: string[]) => Promise<{ isCorrect: boolean; correct_order?: string[] }>;
+    fallbackImage?: string;
 }
+
+// Sub-component for Sortable Item
+const SortableItem = ({ id, event, isCorrect }: { id: string, event: any, isCorrect: boolean | null }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id });
+
+    // Apply transform and transition
+    const style: React.CSSProperties = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 100 : 'auto',
+        position: 'relative',
+        touchAction: 'none' // Important for touch devices
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            className={`timeline-event-item ${isDragging ? 'dragging' : ''}`}
+        >
+            <div className={`drag-handle ${isCorrect ? 'disabled' : ''}`} {...(isCorrect ? {} : listeners)}>
+                <HolderOutlined style={{ fontSize: 18 }} />
+            </div>
+            <div className="event-year">
+                {isCorrect ? event.year : '????'}
+            </div>
+            <div className="event-content">
+                <h4>{event.title}</h4>
+                <p>{event.description}</p>
+            </div>
+        </div>
+    );
+};
 
 // Transform events from any data format
 const transformEvents = (data: TimelineScreenType) => {
@@ -20,10 +80,26 @@ const transformEvents = (data: TimelineScreenType) => {
     return [];
 };
 
-const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit }) => {
+const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage }) => {
     const [events, setEvents] = useState(() => transformEvents(data));
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [submitting, setSubmitting] = useState(false);
+
+    // Computed background
+    const bgImage = data.background_image || fallbackImage;
+
+    // Sensors setup
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5, // Require move of 5px to start drag (prevents accidental clicks)
+            },
+        }),
+        useSensor(TouchSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     // Reset state when data changes
     useEffect(() => {
@@ -32,15 +108,16 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit }) => {
         setSubmitting(false);
     }, [data]);
 
-    // Move item up/down in list
-    const moveItem = (index: number, direction: 'up' | 'down') => {
-        if (isCorrect) return;
-        const newIndex = direction === 'up' ? index - 1 : index + 1;
-        if (newIndex < 0 || newIndex >= events.length) return;
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
         
-        const items = [...events];
-        [items[index], items[newIndex]] = [items[newIndex], items[index]];
-        setEvents(items);
+        if (active.id !== over?.id && !isCorrect) {
+            setEvents((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over?.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
     };
 
     const handleCheck = async () => {
@@ -50,16 +127,18 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit }) => {
         }
         setSubmitting(true);
         const currentOrder = events.map(e => e.id);
+        
         try {
             const result = await onSubmit(currentOrder);
             setIsCorrect(result.isCorrect);
 
             if (result.isCorrect) {
-                message.success('Chính xác! Bạn đã sắp xếp đúng dòng lịch sử.');
+                 message.success({ content: 'Chính xác! Bạn đã sắp xếp đúng dòng lịch sử.', key: 'timeline_check' });
             } else {
-                message.error('Chưa chính xác. Hãy thử lại!');
+                 message.error({ content: 'Chưa chính xác. Hãy thử lại!', key: 'timeline_check' });
             }
         } catch (error) {
+            console.error(error);
             message.error('Lỗi kiểm tra đáp án');
         } finally {
             setSubmitting(false);
@@ -68,76 +147,78 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit }) => {
 
     if (events.length === 0) {
         return (
-            <div style={{ padding: 24, textAlign: 'center' }}>
-                <Card>
-                    <Title level={4}>Timeline</Title>
-                    <Text type="secondary">No events available</Text>
-                    <div style={{ marginTop: 16 }}>
-                        <Button type="primary" onClick={onNext}>Continue</Button>
-                    </div>
-                </Card>
+            <div style={{ padding: 24, textAlign: 'center', color: 'white' }}>
+                 <h3>Không có dữ liệu sự kiện</h3>
+                 <Button onClick={onNext}>Bỏ qua</Button>
             </div>
         );
     }
 
     return (
-        <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100%' }}>
-            <Card title={<Title level={4}><ClockCircleOutlined /> Sắp xếp sự kiện theo thời gian</Title>}>
-                <List
-                    dataSource={events}
-                    renderItem={(event, index) => (
-                        <List.Item
-                            style={{
-                                background: isCorrect ? '#f6ffed' : 'white',
-                                marginBottom: 8,
-                                borderRadius: 8,
-                                padding: '12px 16px'
-                            }}
-                            actions={!isCorrect ? [
-                                <Button 
-                                    key="up"
-                                    icon={<ArrowUpOutlined />} 
-                                    disabled={index === 0}
-                                    onClick={() => moveItem(index, 'up')}
-                                />,
-                                <Button 
-                                    key="down"
-                                    icon={<ArrowDownOutlined />} 
-                                    disabled={index === events.length - 1}
-                                    onClick={() => moveItem(index, 'down')}
-                                />
-                            ] : []}
-                        >
-                            <List.Item.Meta
-                                avatar={
-                                    <div style={{ 
-                                        fontWeight: 'bold', 
-                                        color: '#1890ff',
-                                        fontSize: 16,
-                                        minWidth: 50
-                                    }}>
-                                        {isCorrect ? event.year : '????'}
-                                    </div>
-                                }
-                                title={event.title}
-                                description={event.description}
-                            />
-                        </List.Item>
-                    )}
-                />
+        <div className="timeline-screen">
+            {/* Background reused from parent container */}
+            <div className="game-background" style={{ backgroundImage: bgImage ? `url("${bgImage}")` : undefined }} />
+            
+            <div className="screen-content-wrapper">
+                <Card className="timeline-card">
+                    <div className="timeline-header">
+                        <Title level={3} style={{ margin: 0 }}>
+                            {data.content?.title || "Dòng Chảy Lịch Sử"}
+                        </Title>
+                        <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 16 }}>
+                            {data.description || "Kéo thả các sự kiện để sắp xếp theo đúng trình tự thời gian."}
+                        </Text>
+                    </div>
 
-                <div style={{ marginTop: 24, textAlign: 'center' }}>
-                    {isCorrect ? (
-                        <Button type="primary" size="large" onClick={onNext} icon={<CheckOutlined />}>
-                            Tiếp tục
-                        </Button>
-                    ) : (
-                        <Button type="primary" size="large" onClick={handleCheck} loading={submitting}>
-                            Kiểm tra kết quả
-                        </Button>
-                    )}
-                </div>
-            </Card>
+                    <div className="timeline-events-container">
+                        <div className="timeline-drop-zone">
+                            <DndContext 
+                                sensors={sensors} 
+                                collisionDetection={closestCenter} 
+                                onDragEnd={handleDragEnd}
+                            >
+                                <SortableContext 
+                                    items={events.map(e => e.id)} 
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    {events.map((event) => (
+                                        <SortableItem 
+                                            key={event.id} 
+                                            id={event.id} 
+                                            event={event} 
+                                            isCorrect={isCorrect} 
+                                        />
+                                    ))}
+                                </SortableContext>
+                            </DndContext>
+                        </div>
+                    </div>
+
+                    <div className="timeline-actions" style={{ textAlign: 'center', marginTop: 24 }}>
+                        {isCorrect ? (
+                            <Button 
+                                type="primary" 
+                                size="large" 
+                                onClick={onNext} 
+                                icon={<CheckOutlined />}
+                                className="continue-btn"
+                            >
+                                Tiếp tục hành trình
+                            </Button>
+                        ) : (
+                            <Button 
+                                type="primary" 
+                                size="large" 
+                                onClick={handleCheck} 
+                                loading={submitting}
+                                disabled={submitting}
+                            >
+                                Kiểm tra kết quả
+                            </Button>
+                        )}
+                    </div>
+                </Card>
+            </div>
         </div>
     );
 };

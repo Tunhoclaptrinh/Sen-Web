@@ -10,9 +10,10 @@ interface Props {
     data: QuizScreenType;
     onNext: () => void;
     onSubmitAnswer: (answerId: string) => Promise<{ is_correct: boolean; explanation?: string }>;
+    fallbackImage?: string;
 }
 
-const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer }) => {
+const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackImage }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [result, setResult] = useState<{ is_correct: boolean; explanation?: string } | null>(null);
     const [submitting, setSubmitting] = useState(false);
@@ -57,7 +58,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer }) => {
         <div className="quiz-screen">
             <div
                 className="game-background"
-                style={{ backgroundImage: `url(${data.background_image || 'https://via.placeholder.com/1200x600?text=Quiz+Background'})` }}
+                style={{ backgroundImage: `url("${data.background_image || fallbackImage || 'https://via.placeholder.com/1200x600?text=Quiz+Background'}")` }}
             />
 
             <div className="screen-content-wrapper">

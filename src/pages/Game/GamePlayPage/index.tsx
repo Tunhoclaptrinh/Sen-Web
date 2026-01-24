@@ -6,7 +6,6 @@ import {
   Typography,
   Spin,
   Modal,
-  Result,
   message,
   Progress,
 } from "antd";
@@ -49,11 +48,20 @@ const GamePlayPage: React.FC = () => {
   const [completionData, setCompletionData] = useState<any>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const [pointsGained, setPointsGained] = useState<number | null>(null);
+
   useEffect(() => {
     if (levelId) {
       initGame(parseInt(levelId));
     }
   }, [levelId]);
+
+  const triggerScoreAnimation = (points: number) => {
+      if (points > 0) {
+          setPointsGained(points);
+          setTimeout(() => setPointsGained(null), 1500);
+      }
+  };
 
   const initGame = async (id: number) => {
     try {
@@ -76,8 +84,6 @@ const GamePlayPage: React.FC = () => {
   const handleNextScreen = async () => {
     if (!sessionId) return;
 
-
-
     try {
       setLoading(true);
       const response = await gameService.navigateToNextScreen(sessionId);
@@ -92,6 +98,14 @@ const GamePlayPage: React.FC = () => {
         completed: response.progress.completed_screens,
         total: response.progress.total_screens,
       });
+      
+      // ⚡ Animation
+      if (response.points_earned && response.points_earned > 0) {
+          const points = response.points_earned;
+          setScore(prev => prev + points);
+          triggerScoreAnimation(points);
+      }
+
     } catch (error) {
       console.error(error);
       message.error("Lỗi khi chuyển màn");
@@ -165,6 +179,7 @@ const GamePlayPage: React.FC = () => {
             data={currentScreen as any}
             {...commonProps}
             onSubmitAnswer={handleAnswerSubmit}
+            fallbackImage={levelInfo?.thumbnail}
           />
         );
       case SCREEN_TYPES.HIDDEN_OBJECT:
@@ -181,6 +196,7 @@ const GamePlayPage: React.FC = () => {
             data={currentScreen as any}
             {...commonProps}
             onSubmit={handleTimelineSubmit}
+            fallbackImage={levelInfo?.thumbnail}
           />
         );
       case SCREEN_TYPES.IMAGE_VIEWER:
@@ -216,93 +232,126 @@ const GamePlayPage: React.FC = () => {
     return (
       <div className="game-completion">
         <Card className="completion-card">
-          <Result
-            icon={
-              <TrophyTwoTone twoToneColor="#faad14" style={{ fontSize: 72 }} />
-            }
-            status={completionData.passed === false ? "warning" : "success"}
-            title={completionData.passed === false ? "RẤT TIẾC!" : "HOÀN THÀNH MÀN CHƠI!"}
-            subTitle={completionData.passed === false 
-              ? `Bạn chưa đủ điểm qua màn. Hãy thử lại nhé!` 
-              : `Bạn đã xuất sắc vượt qua màn chơi này với số điểm: ${completionData.score}`}
-            extra={[
-              <Button
-                type="primary"
-                key="console"
-                size="large"
-                icon={<ArrowLeftOutlined />}
-                onClick={() => navigate("/game/chapters")}
-              >
-                Quay về Sảnh
-              </Button>,
-              <Button
-                key="buy"
-                size="large"
-                icon={<RedoOutlined />}
-                onClick={() => window.location.reload()}
-              >
-                Chơi Lại
-              </Button>,
-              (completionData.new_totals || completionData.passed || completionData.is_completed) && (
-                  <Button
-                    type="primary"
-                    key="next"
-                    size="large"
-                    className="next-level-btn"
-                    onClick={() => {
-                        if (completionData.next_level_id) {
-                          navigate(`/game/play/${completionData.next_level_id}`);
-                        } else {
-                          message.success("Chúc mừng! Bạn đã hoàn thành chương này.");
-                          navigate("/game/chapters");
-                        }
-                    }}
-                  >
-                    {completionData.next_level_id ? "Màn tiếp theo" : "Danh sách chương"}
-                  </Button>
-              )
-            ]}
-          >
-            {completionData.passed === false ? (
-              <div className="rewards-summary">
-                 <Title level={4} style={{ color: "#ff4d4f" }}>
-                  😢 Chưa đạt yêu cầu
-                 </Title>
-                 <Paragraph style={{ fontSize: 16 }}>
-                    Bạn cần đạt {completionData.required_score} điểm để qua màn.
-                    <br />
-                    Điểm của bạn: {completionData.score}
-                 </Paragraph>
-              </div>
-            ) : completionData.rewards ? (
-              <div className="rewards-summary">
-                <Title level={4}>Phần thưởng nhận được:</Title>
-                <div className="rewards-grid">
-                  <div className="reward-item">
-                    <span className="reward-icon">🪙</span>
-                    <span className="reward-value">
-                      +{completionData.rewards.coins} Xu
-                    </span>
-                  </div>
-                  <div className="reward-item">
-                    <span className="reward-icon">🌸</span>
-                    <span className="reward-value">
-                      +{completionData.rewards.petals} Cánh Sen
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="rewards-summary">
-                <Title level={4} style={{ color: "#faad14" }}>
-                  🔄 Chế độ ôn tập
-                </Title>
-                <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>
-                  Bạn đã hoàn thành màn chơi này rồi! Lần chơi này không nhận thêm phần thưởng.
-                </Paragraph>
-              </div>
-            )}
-          </Result>
+          <div className="custom-completion-layout">
+            <div className="completion-header">
+               <TrophyTwoTone twoToneColor="#faad14" style={{ fontSize: 80 }} />
+               <Title level={2} className="completion-title">
+                  {completionData.passed === false ? "RẤT TIẾC!" : "HOÀN THÀNH MÀN CHƠI!"}
+               </Title>
+               <Paragraph className="completion-subtitle">
+                  {completionData.passed === false 
+                    ? `Bạn chưa đủ điểm qua màn. Hãy thử lại nhé!` 
+                    : `Bạn đã xuất sắc vượt qua màn chơi này với số điểm: ${completionData.score}`}
+               </Paragraph>
+            </div>
+
+            <div className="completion-body-row">
+               {/* LEFT: Score Breakdown */}
+               <div className="completion-section">
+                  {completionData.passed === false ? (
+                    <div className="score-breakdown">
+                         <div className="breakdown-row">
+                              <span>Điểm đạt được:</span>
+                              <span>{completionData.score}</span>
+                          </div>
+                          <div className="breakdown-divider"></div>
+                          <div className="breakdown-row total">
+                              <span>Cần đạt:</span>
+                              <span>{completionData.required_score}</span>
+                          </div>
+                    </div>
+                  ) : (
+                    <div className="score-breakdown success">
+                        {completionData.breakdown && (
+                           <>
+                            <div className="breakdown-row">
+                                <span>Điểm màn chơi:</span>
+                                <span>{completionData.breakdown.base_score}</span>
+                            </div>
+                            {completionData.breakdown.time_bonus > 0 && (
+                                <div className="breakdown-row bonus">
+                                    <span>Thưởng tốc độ:</span>
+                                    <span>+{completionData.breakdown.time_bonus}</span>
+                                </div>
+                            )}
+                            <div className="breakdown-divider"></div>
+                           </>
+                        )}
+                        <div className="breakdown-row total">
+                            <span>Tổng điểm:</span>
+                            <span>{completionData.score}</span>
+                        </div>
+                    </div>
+                  )}
+               </div>
+
+               {/* RIGHT: Rewards or Status */}
+               <div className="completion-section">
+                  {completionData.rewards ? (
+                    <div className="rewards-summary">
+                        <Title level={4}>Phần thưởng nhận được:</Title>
+                        <div className="rewards-grid">
+                          <div className="reward-item">
+                            <span className="reward-icon">🪙</span>
+                            <span className="reward-value coins">
+                              +{completionData.rewards.coins} Xu
+                            </span>
+                          </div>
+                          <div className="reward-item">
+                            <span className="reward-icon">🌸</span>
+                            <span className="reward-value">
+                              +{completionData.rewards.petals} Cánh Sen
+                            </span>
+                          </div>
+                        </div>
+                    </div>
+                  ) : (
+                    <div className="rewards-summary info-only">
+                        <Title level={4} style={{ color: "#faad14" }}>
+                          🔄 Chế độ ôn tập
+                        </Title>
+                        <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>
+                          Bạn đã hoàn thành màn chơi này rồi! <br/> Lần chơi này không nhận thêm phần thưởng.
+                        </Paragraph>
+                    </div>
+                  )}
+               </div>
+            </div>
+
+            <div className="completion-footer">
+               <Button
+                 type="primary"
+                 key="console"
+                 size="large"
+                 icon={<ArrowLeftOutlined />}
+                 onClick={() => navigate("/game/chapters")}
+               >
+                 Quay về Sảnh
+               </Button>
+               <Button
+                 key="buy"
+                 size="large"
+                 icon={<RedoOutlined />}
+                 onClick={() => window.location.reload()}
+               >
+                 Chơi Lại
+               </Button>
+               {(completionData.new_totals || completionData.passed || completionData.is_completed) && (
+                   <Button
+                     type="primary"
+                     key="next"
+                     size="large"
+                     className="next-level-btn"
+                     onClick={() => {
+                         const chapterId = levelInfo?.chapter_id || 1;
+                         navigate(`/game/chapters/${chapterId}/levels`);
+                     }}
+                   >
+                     Về Bản đồ
+                   </Button>
+               )}
+            </div>
+          </div>
         </Card>
       </div>
     );
@@ -344,7 +393,17 @@ const GamePlayPage: React.FC = () => {
             />
           </div>
 
-          <div className="score-display">Điểm: {score}</div>
+          <div className="score-display">
+            <span className="current-score">Điểm: {score}</span>
+            {currentScreen?.potential_score && !currentScreen.is_completed && (
+                <span className="potential-score" title="Điểm có thể đạt được">
+                    (+{currentScreen.potential_score})
+                </span>
+            )}
+            {pointsGained && (
+                <div className="score-gained-popup">+{pointsGained}</div>
+            )}
+          </div>
         </div>
 
         <div className="game-viewport">{renderScreen()}</div>

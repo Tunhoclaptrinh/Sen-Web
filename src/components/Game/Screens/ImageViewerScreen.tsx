@@ -18,74 +18,57 @@ interface Props {
 
 const ImageViewerScreen: React.FC<Props> = ({ data, onNext }) => {
   const imageUrl = data.content?.image_url || data.background_image;
+  const title = data.content?.title || "Hình ảnh chi tiết";
   const description =
     data.content?.description ||
     "Khám phá hình ảnh này để tìm hiểu thêm về di sản văn hóa Việt Nam.";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#000",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 24,
-      }}
-    >
-      {imageUrl && (
-        <div style={{ 
-          textAlign: 'center',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center'
-        }}>
-          <Image
-            src={imageUrl}
-            alt="Heritage"
-            preview={{
-              mask: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <EyeOutlined />
-                  <span>Xem trước</span>
-                </div>
-              ),
-            }}
-            style={{
-              maxWidth: "85%",
-              maxHeight: "70vh",
-              objectFit: "contain",
-              borderRadius: 8,
-              cursor: 'pointer',
-              display: 'block',
-              margin: '0 auto',
-            }}
-          />
-        </div>
-      )}
+    <div className="image-viewer-screen">
+      <div 
+        className="game-background" 
+        style={{ 
+            backgroundImage: `url("${data.background_image || imageUrl || 'https://via.placeholder.com/1920x1080'}")` 
+        }} 
+      />
 
-      <Card
-        style={{ width: "100%", maxWidth: 900 }}
-        bodyStyle={{ padding: 24 }}
-      >
-        <div>
-          <Paragraph style={{ fontSize: 16, marginBottom: 16 }}>
-            {description}
-          </Paragraph>
-        </div>
+      <div className="viewer-container">
+        <div className="image-card">
+          <div className="image-display-area">
+             {imageUrl ? (
+                <Image
+                    src={imageUrl}
+                    alt={title}
+                    preview={{
+                        mask: (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <EyeOutlined />
+                                <span>Phóng to</span>
+                            </div>
+                        )
+                    }}
+                />
+             ) : (
+                 <div style={{ color: '#8c8c8c' }}>Không có hình ảnh</div>
+             )}
+          </div>
 
-        <div style={{ textAlign: "right" }}>
-          <Button
-            type="primary"
-            size="large"
-            icon={<ArrowRightOutlined />}
-            onClick={onNext}
-          >
-            Tiếp tục
-          </Button>
+          <div className="viewer-info">
+            <div className="info-content">
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </div>
+            <Button
+              type="primary"
+              size="large"
+              icon={<ArrowRightOutlined />}
+              onClick={onNext}
+            >
+              Tiếp tục
+            </Button>
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

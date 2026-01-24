@@ -82,6 +82,8 @@ export interface Screen {
     background_image?: string;
     skip_allowed?: boolean;
     content?: any; // Varies by screen type
+    potential_score?: number; // ⚡ Max points available for this screen
+    is_completed?: boolean;
 }
 
 // Dialogue Screen
