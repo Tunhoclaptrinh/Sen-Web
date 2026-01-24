@@ -99,7 +99,7 @@ export const fetchModuleDetail = createAsyncThunk(
     'learning/fetchModuleDetail',
     async (params: { pathId: number; moduleId: number }, { rejectWithValue }) => {
         try {
-            const data = await learningService.getModuleDetail(params.pathId, params.moduleId);
+            const data = await learningService.getModuleDetail(params.moduleId);
             return data;
         } catch (error: any) {
             return rejectWithValue(error.message || 'Failed to fetch module detail');
@@ -115,7 +115,7 @@ export const completeModule = createAsyncThunk(
         { rejectWithValue, dispatch }
     ) => {
         try {
-            const result = await learningService.completeModule(params.pathId, params.moduleId, params.data);
+            const result = await learningService.completeModule(params.moduleId, params.data);
             // Refresh progress after completing module
             dispatch(fetchPathProgress(params.pathId));
             return result;

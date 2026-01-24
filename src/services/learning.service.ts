@@ -83,6 +83,46 @@ class LearningService extends BaseService {
         return response;
     }
 
+    // Get all learning paths
+    async getPaths(params?: { difficulty?: string; category?: string }): Promise<LearningPath[]> {
+        const response = await this.get<LearningPath[]>('/paths', { params });
+        return response;
+    }
+
+    // Get path detail
+    async getPathDetail(id: number): Promise<LearningPath> {
+        const response = await this.get<LearningPath>(`/paths/${id}`);
+        return response;
+    }
+
+    // Enroll in path
+    async enrollPath(id: number): Promise<any> {
+        const response = await this.post(`/paths/${id}/enroll`);
+        return response;
+    }
+
+    // Get enrolled paths
+    async getEnrolledPaths(): Promise<LearningPath[]> {
+        const response = await this.get<LearningPath[]>('/paths/enrolled');
+        return response;
+    }
+
+    // Get path progress
+    async getProgress(pathId: number): Promise<any> {
+        const response = await this.get(`/paths/${pathId}/progress`);
+        return response;
+    }
+
+    // Submit Quiz
+    async submitQuiz(pathId: number, moduleId: number, answers: Record<number, number>): Promise<{
+        score: number;
+        passed: boolean;
+        points_earned: number;
+    }> {
+        const response = await this.post(`/paths/${pathId}/modules/${moduleId}/quiz/submit`, { answers });
+        return response as any;
+    }
+
     // Get module detail
     async getModuleDetail(moduleId: number): Promise<LearningModule> {
         const response = await this.getById(moduleId);

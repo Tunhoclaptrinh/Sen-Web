@@ -5,7 +5,8 @@ import React, {
   Suspense,
   lazy,
 } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams,
+} from "react-router-dom";
 import {
   Row,
   Col,
@@ -23,7 +24,6 @@ import {
   CheckCircleOutlined,
   TrophyOutlined,
   PlayCircleOutlined,
-  FireOutlined,
   LockOutlined,
 } from "@ant-design/icons";
 import learningService, { LearningModule } from "@/services/learning.service";
@@ -41,7 +41,6 @@ const { Title, Paragraph } = Typography;
 const LearningPathPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [learningPath, setLearningPath] = useState<LearningModule[]>([]);
   const [progress, setProgress] = useState<any>(null);

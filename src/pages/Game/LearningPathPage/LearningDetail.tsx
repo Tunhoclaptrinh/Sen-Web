@@ -629,7 +629,7 @@ const LearningDetail: React.FC = () => {
                                                             format={() => (
                                                                 <div style={{ fontSize: 12, fontWeight: 800, color: '#A31D1D', lineHeight: 1 }}>
                                                                     {Object.keys(answers).length}
-                                                                    <div style={{ fontSize: 10, color: '#bfbfbf', fontWeight: 600 }}>/{module.quiz.questions.length}</div>
+                                                                    <div style={{ fontSize: 10, color: '#bfbfbf', fontWeight: 600 }}>/{module.quiz?.questions?.length || 0}</div>
                                                                 </div>
                                                             )}
                                                         />
