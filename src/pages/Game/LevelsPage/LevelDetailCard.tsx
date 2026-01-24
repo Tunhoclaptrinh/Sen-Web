@@ -7,9 +7,10 @@ import "./styles.less";
 interface LevelDetailCardProps {
   level: Level;
   onPlay: () => void;
+  side: 'left' | 'right';
 }
 
-const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay }) => {
+const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }) => {
   const { name, thumbnail, is_locked } = level;
 
   const [imageError, setImageError] = React.useState(false);
@@ -17,16 +18,25 @@ const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay }) => {
   // Fallback placeholder logic
   const renderThumbnail = () => {
     // Check for thumbnail, or potentially other image fields from API that might not be in strict type yet
-    const imgSrc = thumbnail || (level as any).image || (level as any).background_image;
+    const imgSrc = thumbnail || (level as any).image;
     
     if (imgSrc && !imageError) {
       return (
-        <img 
-          src={imgSrc} 
-          alt={name} 
-          className="level-thumbnail" 
-          onError={() => setImageError(true)} 
-        />
+        <div className="level-image-wrapper">
+            {/* Ambient Backdrop Layer */}
+            <img 
+              src={imgSrc} 
+              alt="" 
+              className="level-thumbnail-backdrop" 
+            />
+            {/* Main Image Layer */}
+            <img 
+              src={imgSrc} 
+              alt={name} 
+              className="level-thumbnail-main" 
+              onError={() => setImageError(true)} 
+            />
+        </div>
       );
     }
     
@@ -41,6 +51,9 @@ const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay }) => {
 
   return (
     <div className="level-detail-card">
+      {/* Custom Big Arrow */}
+      <div className={`custom-card-arrow ${side}`} />
+
       {/* Header: Level Name */}
       <div className="card-header">
         <Typography.Text className="level-name-header" ellipsis={{ tooltip: name }}>

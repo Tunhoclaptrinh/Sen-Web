@@ -5,7 +5,7 @@ import {
   fetchLevelsByChapter,
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
-import { Button, Spin, Typography, Progress, Popover, Switch, Space } from "antd";
+import { Button, Spin, Typography, Progress, Popover, Switch, Tooltip } from "antd";
 import { CheckOutlined, LockFilled, StarFilled, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import type { Level } from "@/types";
 import LevelDetailCard from "./LevelDetailCard";
@@ -91,10 +91,10 @@ const LevelsPage: React.FC = () => {
   return (
     <div className="levels-page-container">
       {/* HEADER */}
-      <div className="fixed-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
+      <div className="fixed-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* Left: Back Button */}
         <Button
-          type="text"
+          type="link"
           icon={<span>←</span>}
           onClick={() => navigate("/game/chapters")}
         >
@@ -119,15 +119,15 @@ const LevelsPage: React.FC = () => {
         )}
 
         {/* Right: Toggle Switch */}
-        <Space>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
            <Typography.Text style={{ fontSize: 12 }}>Chi tiết</Typography.Text>
-           <Switch 
+           <Tooltip title="Bấm vào đây để thêm thẻ màn chơi"><Switch 
               checkedChildren={<EyeOutlined />}
               unCheckedChildren={<EyeInvisibleOutlined />}
               checked={showDetailCards}
               onChange={(checked) => setShowDetailCards(checked)}
-           />
-        </Space>
+           /></Tooltip>
+        </div>
       </div>
 
       {/* MAP AREA */}
@@ -193,6 +193,7 @@ const LevelsPage: React.FC = () => {
                     <LevelDetailCard 
                       level={level} 
                       onPlay={() => handleStartLevel(level)} 
+                      side={index % 2 === 0 ? "right" : "left"}
                     />
                   }
                   trigger="hover"
@@ -202,9 +203,9 @@ const LevelsPage: React.FC = () => {
                   align={{
                     offset: index % 2 === 0 ? [50, 0] : [-50, 0]
                   }}
-                  autoAdjustOverflow={true}
-                  overlayInnerStyle={{ padding: 0, backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
-                  zIndex={1050}
+                  autoAdjustOverflow={false}
+                  rootClassName="transparent-popover"
+                  zIndex={900}
                   getPopupContainer={(trigger) => trigger.parentElement || document.body}
                   {...popoverProps}
                 >

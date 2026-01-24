@@ -1,0 +1,12 @@
+services:
+  sen-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: sen-tunnel
+    restart: unless-stopped
+    command: tunnel --url http://sen-frontend:80
+    networks:
+      - sen-network
+
+networks:
+  sen-network:
+    external: true

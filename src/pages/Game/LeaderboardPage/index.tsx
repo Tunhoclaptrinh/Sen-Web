@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { fetchLeaderboard, fetchProgress } from "@/store/slices/gameSlice";
+import { fetchLeaderboard } from "@/store/slices/gameSlice";
 import { Card, Table, Avatar, Tag, Tabs, Spin, Typography } from "antd";
 import {
   TrophyOutlined,
@@ -67,7 +67,6 @@ const LeaderboardPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchLeaderboard({ type: activeTab, limit: 50 }));
-    dispatch(fetchProgress());
   }, [dispatch, activeTab]);
 
   const handleTabChange = (key: string) => {

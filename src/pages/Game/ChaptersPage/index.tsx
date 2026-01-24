@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchChapters, fetchProgress } from '@/store/slices/gameSlice';
+import { fetchChapters } from '@/store/slices/gameSlice';
 import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal, message } from 'antd';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import gameService from '@/services/game.service';
@@ -21,7 +21,6 @@ const ChaptersPage: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchChapters());
-        dispatch(fetchProgress());
     }, [dispatch]);
 
     const handleChapterClick = (chapter: Chapter) => {
@@ -45,7 +44,6 @@ const ChaptersPage: React.FC = () => {
                     content: `Bạn đã mở khóa chương mới và chi tiêu ${result.data.petals_spent} cánh sen.`,
                     onOk: () => {
                         dispatch(fetchChapters());
-                        dispatch(fetchProgress());
                     }
                 });
             } else {
@@ -208,7 +206,18 @@ const ChaptersPage: React.FC = () => {
                                             ] : []}
                                             cover={
                                                 <div className="chapter-cover">
-                                                    <img src={getChapterImage(chapter)} alt={chapter.name} />
+                                                    <div className="chapter-image-wrapper">
+                                                        <img 
+                                                            src={getChapterImage(chapter)} 
+                                                            alt="" 
+                                                            className="chapter-img-backdrop" 
+                                                        />
+                                                        <img 
+                                                            src={getChapterImage(chapter)} 
+                                                            alt={chapter.name} 
+                                                            className="chapter-img-main" 
+                                                        />
+                                                    </div>
                                                     <div className="chapter-theme-tag">
                                                         <Tag color={getChapterColor(chapter)}>
                                                             Chủ đề: {chapter.theme || "Không có"}

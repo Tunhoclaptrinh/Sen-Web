@@ -31,8 +31,6 @@ import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultThumbnail from "@/assets/images/background/senhoacum.png";
 import "./styles.less";
-import { useAppDispatch } from "@/store/hooks";
-import { fetchProgress } from "@/store/slices/gameSlice";
 
 const LearningDetail = lazy(() => import("./LearningDetail"));
 
@@ -45,12 +43,9 @@ const LearningPathPage: React.FC = () => {
   const [learningPath, setLearningPath] = useState<LearningModule[]>([]);
   const [progress, setProgress] = useState<any>(null);
 
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
     if (!id) {
       fetchLearningPath();
-      dispatch(fetchProgress());
     }
   }, [id]);
 

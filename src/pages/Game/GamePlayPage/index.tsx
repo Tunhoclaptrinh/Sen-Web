@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/store/hooks";
 import {
   Card,
   Button,
@@ -19,7 +18,6 @@ import {
   FullscreenExitOutlined,
 } from "@ant-design/icons";
 import gameService from "@/services/game.service";
-import { fetchProgress } from "@/store/slices/gameSlice";
 import type { Screen, Level } from "@/types/game.types";
 import { SCREEN_TYPES } from "@/types/game.types";
 
@@ -38,7 +36,6 @@ const { Title, Paragraph } = Typography;
 const GamePlayPage: React.FC = () => {
   const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   // State
   const [loading, setLoading] = useState(true);
@@ -142,8 +139,7 @@ const GamePlayPage: React.FC = () => {
       setCompletionData(result);
       setGameCompleted(true);
       
-      // Sync global progress (coins, petals) immediately
-      dispatch(fetchProgress());
+
       
     } catch (error) {
       message.error("Lỗi khi hoàn thành màn chơi");
