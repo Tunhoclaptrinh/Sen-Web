@@ -315,6 +315,18 @@ const LearningDetail: React.FC = () => {
                         color: #5c0011;
                     }
 
+                    /* Video Responsive Styles */
+                    .video-wrapper iframe,
+                    .video-wrapper object,
+                    .video-wrapper embed {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 12px;
+                    }
+                    
                     /* Custom Radio Styles - Hide default Ant Radio */
                     .custom-radio .ant-radio {
                         display: none;
@@ -364,6 +376,7 @@ const LearningDetail: React.FC = () => {
                                         </div>
                                         
                                         <Title level={1} style={{ marginBottom: 16, fontSize: 36, fontFamily: 'serif', color: '#1f1f1f', lineHeight: 1.3 }}>{module.title}</Title>
+                                        
                                         <Paragraph type="secondary" style={{ fontSize: 18, lineHeight: 1.7, marginBottom: 32, maxWidth: '90%' }}>
                                             {module.description}
                                         </Paragraph>
@@ -371,28 +384,35 @@ const LearningDetail: React.FC = () => {
                                         <Divider style={{ margin: '24px 0', borderTop: '1px solid #f0f0f0' }} />
 
                                         {/* Content Renderer */}
-                                        {module.content_type === 'video' && (
+                                        {/* Content Renderer */}
+                                        {module.content_type === 'video' ? (
                                             <div style={{ 
                                                 position: 'relative', 
-                                                paddingBottom: '56.25%', 
+                                                paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
                                                 height: 0, 
-                                                borderRadius: 16, 
-                                                overflow: 'hidden', 
-                                                boxShadow: '0 12px 36px rgba(0,0,0,0.1)',
-                                                background: '#000',
-                                                marginBottom: 32
-                                            }}>
-                                                <iframe 
-                                                    src={module.content_url} 
-                                                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                                                    frameBorder="0" 
-                                                    allowFullScreen 
-                                                    title={module.title}
-                                                />
+                                                marginBottom: 32,
+                                                borderRadius: 16,
+                                                overflow: 'hidden',
+                                                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                                                background: '#000'
+                                            }} className="video-wrapper">
+                                                {module.content_url?.trim().startsWith('<') ? (
+                                                    <div 
+                                                        dangerouslySetInnerHTML={{ __html: module.content_url }} 
+                                                        style={{ width: '100%', height: '100%' }}
+                                                    />
+                                                ) : (
+                                                    <iframe 
+                                                        src={module.content_url} 
+                                                        title={module.title}
+                                                        frameBorder="0" 
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                        allowFullScreen 
+                                                    />
+                                                )}
                                             </div>
-                                        )}
-
-                                        {module.content_type === 'article' && (
+                                        ) : (
+                                            /* Render other types (article, quiz text, etc.) as HTML content */
                                             <div className="article-content" style={{ marginTop: 24 }}>
                                                 <div dangerouslySetInnerHTML={{ __html: module.content_url || '' }} />
                                             </div>
@@ -502,7 +522,7 @@ const LearningDetail: React.FC = () => {
 
                                                     {module.quiz.questions.map((q, idx) => (
                                                         <div 
-                                                            key={q.id} 
+                                                            key={q.id || idx} 
                                                             style={{ marginBottom: 24 }}
                                                         >
                                                             <div style={{ marginBottom: 12 }}>
@@ -524,8 +544,8 @@ const LearningDetail: React.FC = () => {
                                                             </div>
                                                             
                                                             <Radio.Group 
-                                                                onChange={e => handleAnswerChange(q.id, e.target.value)} 
-                                                                value={answers[q.id]} 
+                                                                onChange={e => handleAnswerChange(q.id || idx, e.target.value)} 
+                                                                value={answers[q.id || idx]} 
                                                                 style={{ width: '100%' }}
                                                             >
                                                                 <Row gutter={[12, 12]}>
