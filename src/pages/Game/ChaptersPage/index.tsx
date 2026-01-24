@@ -206,7 +206,18 @@ const ChaptersPage: React.FC = () => {
                                             ] : []}
                                             cover={
                                                 <div className="chapter-cover">
-                                                    <img src={getChapterImage(chapter)} alt={chapter.name} />
+                                                    <div className="chapter-image-wrapper">
+                                                        <img 
+                                                            src={getChapterImage(chapter)} 
+                                                            alt="" 
+                                                            className="chapter-img-backdrop" 
+                                                        />
+                                                        <img 
+                                                            src={getChapterImage(chapter)} 
+                                                            alt={chapter.name} 
+                                                            className="chapter-img-main" 
+                                                        />
+                                                    </div>
                                                     <div className="chapter-theme-tag">
                                                         <Tag color={getChapterColor(chapter)}>
                                                             Chủ đề: {chapter.theme || "Không có"}

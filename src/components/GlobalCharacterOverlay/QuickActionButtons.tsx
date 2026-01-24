@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { Tooltip } from "antd";
@@ -29,6 +29,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
   onToggleMinimize,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
   );
@@ -64,6 +65,9 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
         );
 
       case "customer":
+        // Hide "Explore Game" (Rocket) button if already in game module
+        if (location.pathname.startsWith('/game')) return null;
+        
         return (
           <>
             <Tooltip title="Khám phá game" placement="left">

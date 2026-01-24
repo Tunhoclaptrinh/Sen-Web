@@ -81,15 +81,38 @@
             }
 
             .chapter-cover {
-                height: 160px;
+                height: 220px;
                 position: relative;
                 overflow: hidden;
 
-                img {
+                .chapter-image-wrapper {
                     width: 100%;
                     height: 100%;
-                    object-fit: cover;
-                    transition: transform 0.5s ease;
+                    position: relative;
+                    overflow: hidden;
+
+                    .chapter-img-backdrop {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        filter: blur(15px) brightness(0.9);
+                        transform: scale(1.2);
+                        z-index: 1;
+                        opacity: 0.8;
+                    }
+
+                    .chapter-img-main {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        z-index: 2;
+                        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+                        transition: transform 0.5s ease;
+                    }
                 }
 
                 .chapter-theme-tag {
@@ -127,7 +150,9 @@
 
                 .chapter-description-wrapper {
                     margin-bottom: 20px;
-                    flex: 1;
+                    height: 80px; // Fixed height for exactly 3 lines consistency
+                    flex-shrink: 0; // Prevent shrinking
+                    
                     .ant-typography {
                         color: #64748b;
                         font-size: 0.95rem;
@@ -139,6 +164,9 @@
                         font-weight: 700;
                         cursor: pointer;
                         font-size: 0.85rem;
+                        display: inline-block;
+                        margin-top: 4px;
+                        
                         &:hover {
                             text-decoration: underline;
                         }
@@ -146,6 +174,7 @@
                 }
 
                 .chapter-stats {
+                    margin-top: auto; // KEY FIX: Push to bottom
                     .stat {
                         margin-bottom: 8px;
                         &:last-child { margin-bottom: 0; }

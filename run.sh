@@ -5,6 +5,7 @@
 
 DOCKER_DEV="Docker/Dev/docker-compose.yml"
 DOCKER_PROD="Docker/Production/docker-compose.yml"
+DOCKER_TUNNEL="Docker/Tunnel/docker-compose.yml"
 
 # Cleanup background jobs on exit
 trap "kill 0 2>/dev/null" EXIT
@@ -28,7 +29,8 @@ show_menu() {
     echo "  [3] Start Prod     (docker-compose up -d)"
     echo "  [4] View Logs"
     echo "  [5] Stop All       (docker-compose down)"
-    echo "  [6] Exit"
+    echo "  [6] Start Tunnel   (Public Internet Access)"
+    echo "  [7] Exit"
     echo ""
 }
 
@@ -63,6 +65,19 @@ start_docker() {
             echo "[OK] Production server running at http://localhost"
             open_browser "http://localhost"
             ;;
+        tunnel)
+            # Check if sen-frontend is running
+            if ! docker ps --format '{{.Names}}' | grep -q "^sen-frontend$"; then
+                echo "[Error] 'sen-frontend' (Prod) is NOT running."
+                echo "Please select [3] Start Prod first."
+                return
+            fi
+
+            echo "[Info] Starting Cloudflare Tunnel..."
+            echo "[Info] The public URL will appear below (look for trycloudflare.com):"
+            echo ""
+            docker-compose -f $DOCKER_TUNNEL up
+            ;;
         logs)
             # Check for any sen-frontend containers
             CONTAINERS=$(docker ps --filter "name=sen-frontend" --format "{{.Names}}" 2>/dev/null)
@@ -78,6 +93,7 @@ start_docker() {
         down)
             docker-compose -f $DOCKER_DEV down 2>/dev/null
             docker-compose -f $DOCKER_PROD down 2>/dev/null
+            docker-compose -f $DOCKER_TUNNEL down 2>/dev/null
             echo "[OK] All containers stopped"
             ;;
     esac
@@ -86,7 +102,7 @@ start_docker() {
 # If argument provided
 if [ $# -gt 0 ]; then
     case $1 in
-        build|dev|prod|logs|down)
+        build|dev|prod|logs|down|tunnel)
             start_docker $1
             exit 0
             ;;
@@ -100,10 +116,7 @@ if [ $# -gt 0 ]; then
             echo "  prod   - Start production server (Nginx)"
             echo "  logs   - View container logs"
             echo "  down   - Stop all containers"
-            echo ""
-            echo "First time setup:"
-            echo "  bash run.sh build"
-            echo "  bash run.sh dev"
+            echo "  tunnel - Start public tunnel"
             echo ""
             exit 0
             ;;
@@ -118,7 +131,7 @@ fi
 # Interactive menu
 while true; do
     show_menu
-    read -p "Select [1-6]: " choice
+    read -p "Select [1-7]: " choice
     
     case $choice in
         1) start_docker "build" ;;
@@ -126,7 +139,8 @@ while true; do
         3) start_docker "prod"; break ;;
         4) start_docker "logs" ;;
         5) start_docker "down" ;;
-        6) 
+        6) start_docker "tunnel"; break ;;
+        7) 
             echo ""
             echo "Goodbye!"
             echo ""
@@ -139,7 +153,7 @@ while true; do
             ;;
     esac    
     # Wait before showing menu again
-    if [ "$choice" != "6" ]; then
+    if [ "$choice" != "7" ]; then
         echo ""
         read -p "Press Enter to continue..."
     fi

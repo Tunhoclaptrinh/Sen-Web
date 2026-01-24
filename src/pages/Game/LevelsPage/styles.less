@@ -1,3 +1,4 @@
+@import "@/styles/variables.less";
 // Variables Colors - THEME SEN VIỆT NAM
 @color-active: #EDE7DA; // Beige active color
 @shadow-active: #c5bba8; // Darker beige for shadow
@@ -14,47 +15,34 @@
 @card-border: #7F6262;
 
 .levels-page-container {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: @bg-color;
-  overflow: hidden;
+  position: relative;
+  width: 100%;
 
-  // Global override for Popover within this page to remove padding/defaults if needed
-  // But usually better to target the prompt content itself
 }
 
 // --- HEADER ---
 .fixed-header {
-  flex-shrink: 0;
-  height: 56px;
-  border-bottom: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  background: rgba(240, 233, 233, 0.95); // Opaque background to cover cards
-  backdrop-filter: blur(10px);
-  z-index: 1100!important; // Above Popover (default 1050)
-  position: relative;
   
-  .ant-btn {
-    border: 2px solid rgba(0, 0, 0, 0.4);
-    border-radius: 8px;
-    position: relative;
-    z-index: 1001;
-    
-    &:hover {
-      border-color: rgba(0, 0, 0, 0.6);
-    }
-  }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    position: sticky; // Sticky keeps it "inside" the map flow
+    top: 70px; // Sticks to top of viewport/container
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 100;
 }
 
 // --- MAP SCROLL ---
 .map-scroll-area {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  // padding-top: 60px; // No longer needed with sticky
+  // overflow-y: auto;
+  // overflow-x: hidden;
   position: relative;
   // Nền Sen: gradient nhẹ từ màu Sen
   background: linear-gradient(180deg, #f0e9e9 0%, #faf6f6 100%);
@@ -333,11 +321,9 @@
 }
 
 // --- HOVER CARD ---
-// --- HOVER CARD ---
-// --- HOVER CARD ---
 .level-detail-card {
-  width: 280px;
-  height: 160px;
+  width: 320px;
+  height: 220px;
   background-color: transparent;
   border-radius: 12px;
   overflow: visible; // Allow play button overflow
@@ -346,6 +332,31 @@
   flex-direction: column;
   box-sizing: border-box; // Ensure padding/border included in size
   flex-shrink: 0; // Prevent shrinking
+
+  .custom-card-arrow {
+    position: absolute;
+    top: 50%; // Center vertically relative to FULL CARD
+    transform: translateY(-50%); // Centering exact
+    width: 0;
+    height: 0;
+    z-index: 1;
+    
+    // Size of arrow: 30px protruding
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+
+    &.right {
+        // Card is on the RIGHT side, so arrow points LEFT
+        left: -18px; 
+        border-right: 20px solid @card-border; // Pointing Left
+    }
+
+    &.left {
+       // Card is on the LEFT side, so arrow points RIGHT
+       right: -18px;
+       border-left: 20px solid @card-border; // Pointing Right
+    }
+  }
 
   .card-header {
     background-color: @story-bar-bg; // #2C0C0C
@@ -402,11 +413,33 @@
       justify-content: center;
       position: relative; // Ensure content stays inside
 
-      .level-thumbnail {
+      .level-image-wrapper {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        display: block; // Remove inline gap
+        position: relative;
+        overflow: hidden; // Clip the blurred edges
+        
+        .level-thumbnail-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(15px) brightness(0.9); // Blur and slightly darken
+            transform: scale(1.2); // Zoom in to avoid blurry edges showing white space
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .level-thumbnail-main {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; // KEY: Show full image
+            z-index: 2;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); // Make it pop from background
+        }
       }
       
       .level-thumbnail-placeholder {
@@ -446,5 +479,15 @@
         transform: scale(1.05);
       }
     }
+  }
+}
+
+// Transparent Popover overrides
+.transparent-popover {
+  .ant-popover-inner {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
   }
 }
