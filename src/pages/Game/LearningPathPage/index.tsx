@@ -149,12 +149,7 @@ const LearningPathPage: React.FC = () => {
             ]}
             colSpan={{ xs: 12, sm: 12, md: 6 }}
             hideCard
-            cardStyle={{
-              borderRadius: 20,
-              backdropFilter: "blur(8px)",
-              background: "rgba(255, 255, 255, 0.7)",
-              border: "1px solid rgba(255, 255, 255, 0.3)",
-            }}
+            cardStyle={{}}
           />
         </div>
       )}
@@ -200,20 +195,7 @@ const LearningPathPage: React.FC = () => {
                       className={`learning-card ${
                         module.is_completed ? "completed" : ""
                       } ${isLocked ? "locked" : ""}`}
-                      style={{ 
-                          borderRadius: 20, 
-                          border: 'none', 
-                          boxShadow: isLocked 
-                              ? 'none' 
-                              : (module.is_completed ? '0 10px 30px rgba(82, 196, 26, 0.15)' : '0 10px 30px rgba(0,0,0,0.08)'),
-                          background: isLocked ? '#f5f5f5' : '#fff',
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          overflow: 'hidden',
-                          position: 'relative',
-                          transition: 'all 0.3s ease'
-                      }}
+                      style={{ height: '100%' }}
                       bodyStyle={{ 
                           flex: 1, 
                           display: 'flex', 
@@ -311,18 +293,7 @@ const LearningPathPage: React.FC = () => {
                                 disabled={isLocked}
                                 onClick={() => !isLocked && handlesNavigate(`/game/learning/${module.id}`)}
                                 type={module.is_completed ? "default" : "primary"}
-                                style={{ 
-                                    borderRadius: 12, 
-                                    height: 48, 
-                                    fontWeight: 700,
-                                    fontSize: 16,
-                                    border: module.is_completed ? '1px solid #d9d9d9' : 'none',
-                                    background: isLocked 
-                                        ? '#e6e6e6' 
-                                        : (module.is_completed ? '#fff' : 'linear-gradient(90deg, #A31D1D 0%, #800000 100%)'), // Premium Red/Brown
-                                    color: isLocked ? '#bfbfbf' : (module.is_completed ? '#595959' : '#fff'),
-                                    boxShadow: !isLocked && !module.is_completed ? '0 8px 20px rgba(163, 29, 29, 0.25)' : 'none'
-                                }}
+                                className="action-button"
                                 icon={isLocked ? <LockOutlined /> : (module.is_completed ? <BookOutlined /> : <PlayCircleOutlined />)}
                             >
                                 {isLocked ? "Chưa mở khóa" : (module.is_completed ? "Ôn lại" : "Học ngay")}

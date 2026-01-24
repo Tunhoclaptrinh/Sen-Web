@@ -182,12 +182,6 @@ const QuestsPage: React.FC = () => {
           data={statsData}
           hideCard
           colSpan={{ xs: 12, sm: 12, md: 6 }}
-          cardStyle={{
-            borderRadius: 20,
-            backdropFilter: "blur(8px)",
-            background: "rgba(255, 255, 255, 0.7)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-          }}
         />
       </div>
 

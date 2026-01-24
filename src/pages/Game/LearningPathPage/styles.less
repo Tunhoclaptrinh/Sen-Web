@@ -1,15 +1,22 @@
 @import "../../../styles/variables.less";
 
-@glass-bg: fade(white, 70%);
-@glass-border: fade(white, 30%);
-@glass-shadow: 0 8px 32px 0 fade(@primary-color, 10%);
-@dynamic-bg-start: tint(@primary-color, 95%);
-@dynamic-bg-end: tint(@primary-color, 85%);
+// CULTURAL THEME VARIABLES
+@paper-bg: #fffcf5;
+@gold-border: #c5a065;
+@text-color-primary: #5d4037;
+@seal-red: #8b1d1d;
+@seal-border: #5a1212;
+@gold-color: #ffd700;
 
 .learning-path-page {
     padding: 24px;
     min-height: 100vh;
-    background: linear-gradient(135deg, @dynamic-bg-start 0%, @dynamic-bg-end 100%);
+    background-color: #f4efe4;
+    background-image: 
+        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
+        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
 
     .loading-container {
         display: flex;
@@ -37,6 +44,7 @@
                 margin-top: 16px;
                 font-weight: 500;
                 color: @text-color-secondary;
+                font-family: "Merriweather", serif;
             }
         }
     }
@@ -46,27 +54,75 @@
         margin-bottom: 40px;
 
         .main-title {
+            font-family: "Merriweather", "Playfair Display", serif;
             font-size: 3rem;
             font-weight: 800;
-            color: @primary-color;
+            color: @seal-red;
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
 
             .title-icon {
                 margin-right: 12px;
-                color: @primary-color;
-                filter: drop-shadow(0 4px 8px fade(@primary-color, 30%));
+                color: @gold-border;
             }
         }
 
         .subtitle {
+            font-family: "Merriweather", serif;
             font-size: 1.1rem;
-            color: #64748b;
+            font-style: italic;
+            color: @text-color-primary;
         }
     }
 
     .stats-container {
         max-width: 1200px;
         margin: 0 auto 32px;
+
+        // Force override StatisticsCard styles
+        .ant-card {
+            background: transparent !important; // container card is transparent
+            box-shadow: none !important;
+            
+            .ant-card-body {
+                padding: 0 !important;
+            }
+        }
+
+        .statistics-item {
+            background-color: @paper-bg !important;
+            border: 2px solid @gold-border !important;
+            border-radius: 8px !important; // Less rounded
+            box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
+            transition: all 0.3s ease;
+            
+            // Override text colors
+            .text {
+                color: @text-color-primary !important;
+                font-family: "Merriweather", serif;
+                font-weight: 700;
+                
+                .anticon {
+                    color: @seal-red !important; // Force icon to red
+                    margin-right: 8px;
+                    font-size: 1.2rem;
+                }
+            }
+            
+            .num {
+                color: @seal-red !important; // Force number to red
+                font-family: "Merriweather", serif;
+                text-shadow: none !important;
+            }
+
+            &:hover {
+                transform: translateY(-4px);
+                box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
+                border-color: @seal-red !important;
+            }
+        }
     }
 
     .learning-content {
@@ -82,31 +138,52 @@
 
         .learning-grid {
             .learning-card {
-                border-radius: 24px; // Rounded corners
+                border-radius: 8px;
                 overflow: hidden;
-                border: 1px solid fade(white, 60%); // Subtler border
-                background: fade(white, 80%); // More opaque for readability
-                box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); // Smooth shadow
-                backdrop-filter: blur(12px);
-                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Bouncy effect
+                border: 2px solid @gold-border;
+                background: @paper-bg;
+                box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                position: relative;
 
                 &:hover {
-                    transform: translateY(-8px) scale(1.02);
-                    box-shadow: 0 20px 40px -10px fade(@primary-color, 20%);
-                    border-color: @primary-color;
+                    transform: translateY(-8px);
+                    box-shadow: 12px 12px 0 rgba(139, 29, 29, 0.2);
+                    border-color: @seal-red;
+                }
+                
+                &.locked {
+                     border-color: #ccc;
+                     background: #f0f0f0;
+                     box-shadow: none;
+                     opacity: 0.8;
+                     
+                     &:hover {
+                         transform: none;
+                         box-shadow: none;
+                         border-color: #ccc;
+                     }
+                     
+                     .learning-cover img {
+                         filter: grayscale(1);
+                     }
                 }
 
                 &.completed {
                     border-color: #52c41a;
                     .learning-cover img {
-                        // filter: brightness(0.9); // Removed for vibrancy
+                        // filter: brightness(0.9);
                     }
                 }
 
                 .learning-cover {
-                    height: 180px; // Slightly taller
+                    height: 180px;
                     position: relative;
                     overflow: hidden;
+                    border-bottom: 2px solid @gold-border;
 
                     img {
                         width: 100%;
@@ -123,7 +200,7 @@
                         position: absolute;
                         top: 12px;
                         right: 12px;
-                        background: rgba(255, 255, 255, 0.95);
+                        background: @paper-bg;
                         color: #52c41a;
                         padding: 6px 16px;
                         border-radius: 100px;
@@ -133,7 +210,8 @@
                         display: flex;
                         align-items: center;
                         gap: 6px;
-                        backdrop-filter: blur(4px);
+                        border: 1px solid #52c41a;
+                        font-family: "Merriweather", serif;
                     }
 
                     .locked-overlay {
@@ -146,31 +224,27 @@
                          flex-direction: column;
                          justify-content: center;
                          align-items: center;
-                         background: rgba(255,255,255,0.3);
-                         backdrop-filter: blur(8px); // Frosted glass lock
-                         color: #595959;
+                         background: rgba(255,255,255,0.5);
+                         color: @text-color-primary;
                          
                          .anticon {
                              padding: 20px;
-                             background: rgba(255,255,255,0.5);
+                             background: @paper-bg;
                              border-radius: 50%;
-                             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                             border: 2px solid @gold-border;
                          }
                     }
                 }
                 
                 &.locked {
-                    filter: grayscale(0.8); // Grayscale the whole card
+                    filter: grayscale(0.8);
                     opacity: 0.8;
-                    pointer-events: none; // Disable interaction
-                    
-                    .ant-card-actions {
-                        display: none; // Hide actions for locked
-                    }
+                    pointer-events: none;
                 }
 
                 .ant-card-body {
-                    padding: 24px;
+                    padding: 20px;
                 }
 
                 .module-meta {
@@ -181,11 +255,14 @@
                         margin-bottom: 16px;
 
                         .ant-tag {
-                            border-radius: 8px;
+                            border-radius: 4px;
                             font-weight: 600;
                             margin: 0;
-                            border: none;
                             padding: 2px 10px;
+                            border: 1px solid fade(@gold-border, 50%);
+                            background: fade(@gold-border, 10%);
+                            color: @text-color-primary;
+                            font-family: "Merriweather", serif;
                         }
                     }
 
@@ -198,48 +275,83 @@
                         display: flex;
                         align-items: baseline;
                         gap: 8px;
-                        justify-content: flex-end; // Align score to right
+                        justify-content: flex-end;
 
                         .score-label {
                             font-size: 0.85rem;
-                            color: @text-color-secondary;
+                            color: @text-color-primary;
                             text-transform: uppercase;
                             letter-spacing: 0.5px;
-                            font-weight: 600;
+                            font-weight: 700;
+                            font-family: "Merriweather", serif;
                         }
 
                         .score-value {
                             font-size: 2rem;
                             font-weight: 800;
                             line-height: 1;
+                            font-family: "Merriweather", serif;
 
-                            &.high { color: #52c41a; text-shadow: 0 4px 12px fade(#52c41a, 30%); }
-                            &.normal { color: @primary-color; }
+                            &.high { color: #52c41a; }
+                            &.normal { color: @seal-red; }
                         }
                     }
                 }
 
-                .ant-card-actions {
-                    background: transparent;
-                    border: none;
-                    padding: 0 24px 24px;
+
+                .ant-btn {
+                    height: 48px;
+                    border-radius: 8px;
+                    font-weight: 700;
+                    font-family: "Merriweather", serif;
+                    font-size: 1rem;
+                    text-transform: uppercase;
+                    width: 100%;
+                    margin-top: 16px;
                     
-                    li {
-                        margin: 0;
-                        padding: 0;
-                        width: 100% !important;
+                    // Primary / Default state (Learn Now)
+                    &.ant-btn-primary {
+                        background: #a31d1d; // Deep red
+                        color: #ffffff;
+                        border: none; // No border, rely on shadow for depth
+                        box-shadow: 0 6px 0 #5a1212; // Deep dark shadow for 3D effect
+                        text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+                        font-weight: 800;
+                        letter-spacing: 0.5px;
+                        transition: all 0.1s; // Fast transition for click feel
+
+                        &:hover {
+                            transform: translateY(2px) !important;
+                            box-shadow: 0 4px 0 #5a1212 !important;
+                            background: lighten(#a31d1d, 5%) !important;
+                            color: #ffffdd;
+                        }
+                        
+                        &:active {
+                            transform: translateY(6px) !important;
+                            box-shadow: 0 0 0 #5a1212 !important;
+                        }
                     }
 
-                    .ant-btn {
-                        height: 48px;
-                        border-radius: 12px;
-                        font-weight: 700;
-                        font-size: 1rem;
-                        box-shadow: 0 8px 20px -6px fade(@primary-color, 40%);
-                        
-                        &:disabled {
-                            box-shadow: none;
+                    // Completed state (Default button type)
+                    &.ant-btn-default {
+                        background: transparent;
+                        border: 2px solid fade(@gold-border, 50%);
+                        color: @text-color-primary;
+                        box-shadow: none;
+
+                        &:hover {
+                            color: @seal-red;
+                            border-color: @seal-red;
                         }
+                    }
+                    
+                    &:disabled {
+                        box-shadow: none !important;
+                        background: #ccc !important;
+                        border-color: #999 !important;
+                        color: #666 !important;
+                        transform: none !important;
                     }
                 }
             }
@@ -247,20 +359,144 @@
     }
 }
 
-@media (max-width: 768px) {
-    .learning-path-page {
-        padding: 16px;
+// Transparent Popover overrides
+.transparent-popover {
+  .ant-popover-inner {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+}
 
-        .page-header {
-            .main-title {
-                font-size: 2rem;
-            }
-        }
+// LEARNING DETAIL PAGE STYLES
+.learning-detail-page {
+    background-color: @paper-bg !important;
+    background-image: 
+        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
+        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important;
+    background-size: 20px 20px !important;
+    background-position: 0 0, 10px 10px !important;
 
-        .stats-container {
-            .ant-col {
-                margin-bottom: 8px;
-            }
+    // Override Card Styles
+    .ant-card {
+        background: @paper-bg !important;
+        border: 2px solid @gold-border !important;
+        box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15) !important;
+        border-radius: 8px !important;
+        
+        // Remove glass effects if present
+        backdrop-filter: none !important; 
+    }
+    
+    // Video wrapper might need exclusion from card style overrides if it's special
+    .video-wrapper {
+         border: none !important;
+         box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+         border-radius: 16px !important;
+         background: black !important;
+    }
+
+    // Quiz/Content Title
+    h1.ant-typography, h2.ant-typography {
+        font-family: "Merriweather", "Playfair Display", serif !important;
+        color: @seal-red !important;
+    }
+    
+    h1.ant-typography {
+        text-transform: uppercase;
+        border-bottom: 2px solid fade(@gold-border, 30%);
+        padding-bottom: 16px;
+        margin-bottom: 24px !important;
+    }
+
+    // Submit Button / Next Button
+    .ant-btn-primary {
+         background: @seal-red !important;
+         border: 2px solid @seal-border !important;
+         box-shadow: 0 4px 0 @seal-border !important;
+         color: #fff9e6 !important;
+         border-radius: 8px !important;
+         height: 48px !important;
+         font-family: "Merriweather", serif !important;
+         font-weight: 700 !important;
+         text-transform: uppercase;
+         
+         &:hover {
+             transform: translateY(2px);
+             box-shadow: 0 2px 0 @seal-border !important;
+             background: lighten(@seal-red, 5%) !important;
+         }
+         
+         &:active {
+             transform: translateY(4px);
+             box-shadow: none !important;
+         }
+         
+         // Disabled state
+         &[disabled] {
+             background: #ccc !important;
+             border-color: #999 !important;
+             box-shadow: none !important;
+             color: #666 !important;
+             transform: none !important;
+         }
+    }
+    
+    // Back Button
+    .ant-btn-text {
+        font-family: "Merriweather", serif;
+        font-weight: 700;
+        color: @seal-red !important;
+        
+        &:hover {
+            background: fade(@seal-red, 10%) !important;
         }
+    }
+    
+    // Tags
+    .ant-tag {
+        font-family: "Merriweather", serif;
+        border: 1px solid fade(@gold-border, 50%) !important;
+    }
+
+    // Radio Quiz
+    .custom-radio {
+        .ant-radio-wrapper {
+            span { font-family: "Merriweather", serif; }
+        }
+    }
+}
+
+// Completion Modal
+.completion-modal {
+    .ant-modal-content {
+        background: @paper-bg !important;
+        border: 2px solid @gold-border;
+        border-radius: 8px !important;
+        box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    .ant-modal-body {
+        padding: 24px;
+    }
+
+    .ant-btn-primary {
+         background: @seal-red !important;
+         border: 2px solid @seal-border !important;
+         box-shadow: 0 4px 0 @seal-border !important;
+         color: #fff9e6 !important;
+         border-radius: 8px !important;
+         height: 44px !important;
+         font-family: "Merriweather", serif !important;
+         text-transform: uppercase;
+         font-weight: 700;
+         
+         &:hover {
+             transform: translateY(2px);
+             box-shadow: 0 2px 0 @seal-border !important;
+         }
     }
 }

@@ -1,23 +1,35 @@
 @import "@/styles/variables.less";
-// Variables Colors - THEME SEN VIỆT NAM
-@color-active: #ede7da; // Beige active color
-@shadow-active: #c5bba8; // Darker beige for shadow
+// CULTURAL THEME VARIABLES
+@paper-bg: #fffcf5;
+@gold-border: #c5a065;
+@text-color-primary: #5d4037;
+@seal-red: #8b1d1d;
+@seal-border: #5a1212;
+@gold-color: #ffd700;
+
+@color-active: #fffcf5; 
+@shadow-active: #c5bba8;
 @color-locked: #e5e5e5;
 @shadow-locked: #afafaf;
 @color-completed: #d4b070;
 @shadow-completed: #b89850;
-@bg-color: #f0e9e9;
+@bg-color: #f4efe4;
 
 // Card Specific Colors
-@story-bar-bg: #2c0c0c;
-@story-bar-border: #000000;
-@card-bg: #ede7da;
-@card-border: #7f6262;
+@story-bar-bg: @seal-red; // Changed to Red
+@story-bar-border: @seal-border;
+@card-bg: @paper-bg;
+@card-border: @gold-border;
 
 .levels-page-container {
   display: flex;
   flex-direction: column;
   background-color: @bg-color;
+  background-image: 
+        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
+        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
   position: relative;
   width: 100%;
 }
@@ -28,8 +40,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  position: sticky; // Sticky keeps it "inside" the map flow
-  top: 70px; // Sticks to top of viewport/container
+  position: sticky;
+  top: 70px;
   width: 100%;
   box-sizing: border-box;
   z-index: 100;
@@ -38,40 +50,36 @@
 // --- MAP SCROLL ---
 .map-scroll-area {
   flex: 1;
-  // padding-top: 60px; // No longer needed with sticky
-  // overflow-y: auto;
-  // overflow-x: hidden;
   position: relative;
-  // Nền Sen: gradient nhẹ từ màu Sen
-  background: linear-gradient(180deg, #f0e9e9 0%, #faf6f6 100%);
+  background: transparent; // Let container bg show through
 
   &::-webkit-scrollbar {
     width: 0px;
-  } // Ẩn scrollbar cho giống app
+  }
 }
 
 .map-content {
-  margin: 0 auto; // Căn giữa container cố định
+  margin: 0 auto;
   position: relative;
   padding-bottom: 150px;
 }
 
 // --- DECORATIVE BACKGROUND ---
 .decorative-background {
-  position: absolute; // Changed from fixed to absolute to confine to container
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; // Click through to map
-  z-index: 0; // Behind everything
+  pointer-events: none;
+  z-index: 0;
   overflow: hidden;
 
   // Clouds
   .bg-cloud {
     position: absolute;
     opacity: 0.6;
-    mix-blend-mode: multiply; // Blend nicely with bg
+    mix-blend-mode: multiply;
   }
 
   .bg-cloud-1 {
@@ -94,15 +102,15 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 300px; // Increased height for larger flowers
+    height: 300px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 0 0; // Remove padding to let them touch corners
+    padding: 0 0;
   }
 
   .bg-lotus {
-    width: 300px; // Base size increased
+    width: 300px;
     opacity: 0.9;
     margin-bottom: -30px;
 
@@ -110,7 +118,7 @@
       animation: lotusSway 6s ease-in-out infinite;
     }
     &.lotus-2 {
-      width: 400px; // Much bigger
+      width: 400px;
       animation: lotusSway 7s ease-in-out infinite reverse;
     }
   }
@@ -163,22 +171,19 @@
 // --- NODE BUTTON (QUAN TRỌNG NHẤT) ---
 .level-node-wrapper {
   position: absolute;
-  width: 75px; // Kích thước nút
+  width: 75px;
   height: 75px;
-  transform: translate(-50%, -50%); // Tâm nút trùng toạ độ x,y
+  transform: translate(-50%, -50%);
   z-index: 2;
   cursor: pointer;
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-  // 1. Tạo hình tròn và khối 3D
   .level-circle {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-color: @color-active; // Using new Beige color
+    background-color: @color-active;
     border: 4px solid #fff;
-
-    // Shadow này tạo độ dày (đế nút)
     box-shadow:
       0 8px 0 @shadow-active,
       0 15px 20px rgba(0, 0, 0, 0.2);
@@ -187,40 +192,33 @@
     justify-content: center;
     position: relative;
   }
-  // ... icon styles follow ...
 
-  // 2. Icon bên trong
   .icon-active,
   .icon-completed,
   .icon-locked {
     font-size: 32px;
-    color: #fff;
-    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.2)); // Bóng đổ nhẹ cho icon
+    color: #5d4037; // Dark brown for icons
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5));
   }
 
-  // 3. Hiệu ứng ánh sáng (Highlight) ở góc trên
   .shine-effect {
     position: absolute;
     top: 10%;
     left: 15%;
     width: 25%;
     height: 15%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 50%;
     transform: rotate(-45deg);
   }
 
-  // --- STATES ---
-
-  // Trạng thái nhấn (Lún xuống)
   &:active:not(.locked) {
-    transform: translate(-50%, calc(-50% + 8px)); // Dịch xuống 8px
+    transform: translate(-50%, calc(-50% + 8px));
     .level-circle {
-      box-shadow: 0 0 0 @shadow-active; // Mất bóng đế
+      box-shadow: 0 0 0 @shadow-active;
     }
   }
 
-  // Trạng thái KHÓA
   &.locked {
     cursor: default;
     filter: grayscale(100%);
@@ -231,10 +229,9 @@
     }
     &:active {
       transform: translate(-50%, -50%);
-    } // Không lún
+    }
   }
 
-  // Trạng thái HOÀN THÀNH
   &.completed {
     .level-circle {
       background-color: @color-completed;
@@ -244,12 +241,13 @@
     }
   }
 
-  // Trạng thái HIỆN TẠI (Đang chơi)
   &.current {
-    z-index: 3; // Nổi lên trên cùng
+    z-index: 3;
+    .level-circle {
+        border-color: @seal-red; // Highlight current node with red border
+    }
   }
 
-  // --- SCORE STARS ---
   .level-stars-container {
     position: absolute;
     bottom: -25px;
@@ -257,10 +255,11 @@
     transform: translateX(-50%);
     display: flex;
     gap: 2px;
-    background: rgba(255, 255, 255, 0.9);
+    background: @paper-bg;
     padding: 2px 6px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid @gold-border;
   }
 }
 
@@ -270,18 +269,19 @@
   top: -55px;
   left: 50%;
   transform: translateX(-50%);
-  background: #fff;
-  color: #1f5f25;
+  background: @paper-bg;
+  color: @seal-red;
   padding: 8px 16px;
-  border-radius: 16px;
+  border-radius: 4px; // Square-ish for paper look
   font-weight: 800;
   font-size: 14px;
   letter-spacing: 0.5px;
-  border: 2px solid #e0d5d5;
+  border: 2px solid @gold-border;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
   animation: float 2s infinite ease-in-out;
   z-index: 10;
+  font-family: "Merriweather", serif;
 
   .tooltip-arrow {
     position: absolute;
@@ -290,9 +290,9 @@
     margin-left: -7px;
     width: 14px;
     height: 14px;
-    background: #fff;
-    border-bottom: 2px solid #e0d5d5;
-    border-right: 2px solid #e0d5d5;
+    background: @paper-bg;
+    border-bottom: 2px solid @gold-border;
+    border-right: 2px solid @gold-border;
     transform: rotate(45deg);
   }
 }
@@ -309,156 +309,54 @@
 
 // --- HOVER CARD ---
 .level-detail-card {
-  width: 280px;
-  background-color: @card-bg;
-  border: 4px solid @card-border;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-
-  .card-header {
-    background-color: @story-bar-bg;
-    border-bottom: 2px solid @story-bar-border;
-    padding: 12px 16px;
-    text-align: center;
-
-    .level-name {
-      color: #ede7da; // Light beige text on dark background
-      font-weight: 800;
-      font-size: 18px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-  }
-
-  .card-content {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    .level-image-container {
-      width: 100%;
-      height: 140px;
-      border: 2px solid @card-border;
-      border-radius: 8px;
-      overflow: hidden;
-      position: relative;
-      background: #dacbb1;
-
-      .level-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .level-image-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 64px;
-        color: rgba(44, 12, 12, 0.2);
-        font-weight: 900;
-      }
-
-      .lock-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-size: 32px;
-      }
-    }
-
-    .level-description {
-      color: #5a4b4b;
-      font-size: 14px;
-      text-align: center;
-      margin: 0;
-    }
-
-    .card-actions {
-      .play-button {
-        background-color: #1f5f25;
-        border-color: #1f5f25;
-        font-weight: 700;
-
-        &:hover {
-          background-color: #2a7a30;
-          border-color: #2a7a30;
-        }
-
-        &[disabled] {
-          background-color: #ccc;
-          border-color: #ccc;
-          color: #666;
-        }
-      }
-    }
-  }
-}
-
-// --- HOVER CARD ---
-.level-detail-card {
   width: 320px;
   height: 220px;
   background-color: transparent;
-  border-radius: 12px;
-  overflow: visible; // Allow play button overflow
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: visible;
+  box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15); // Retro shadow
   display: flex;
   flex-direction: column;
-  box-sizing: border-box; // Ensure padding/border included in size
-  flex-shrink: 0; // Prevent shrinking
+  box-sizing: border-box;
+  flex-shrink: 0;
 
   .custom-card-arrow {
     position: absolute;
-    top: 50%; // Center vertically relative to FULL CARD
-    transform: translateY(-50%); // Centering exact
+    top: 50%;
+    transform: translateY(-50%);
     width: 0;
     height: 0;
     z-index: 1;
-
-    // Size of arrow: 30px protruding
     border-top: 20px solid transparent;
     border-bottom: 20px solid transparent;
 
     &.right {
-      // Card is on the RIGHT side, so arrow points LEFT
       left: -18px;
-      border-right: 20px solid @card-border; // Pointing Left
+      border-right: 20px solid @gold-border; // Gold arrow
     }
 
     &.left {
-      // Card is on the LEFT side, so arrow points RIGHT
       right: -18px;
-      border-left: 20px solid @card-border; // Pointing Right
+      border-left: 20px solid @gold-border;
     }
   }
 
   .card-header {
-    background-color: @story-bar-bg; // #2C0C0C
-    border: 1px solid @story-bar-border; // #000000
-    border-radius: 12px 12px 0 0;
+    background-color: @seal-red; // Seal Red Header
+    border: 2px solid @seal-border;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
 
     padding: 0 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 50px;
-    min-height: 50px; // Enforce min height
-    flex-shrink: 0; // Prevent header from shrinking
+    min-height: 50px;
+    flex-shrink: 0;
 
     .level-name-header {
-      color: #fff;
+      color: #fff9e6; // Cream text
       font-weight: 700;
       font-size: 14px;
       text-transform: uppercase;
@@ -468,17 +366,18 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      font-family: "Merriweather", serif;
     }
   }
 
   .card-content {
     flex: 1;
-    height: 0; // CRITICAL: Allow flex child to shrink below content size if needed
-    min-height: 0; // Firefox fix for flex child scrolling/overflow
-    background-color: @card-bg; // #EDE7DA
-    border: 2px solid @card-border; // #7F6262
+    height: 0;
+    min-height: 0;
+    background-color: @paper-bg; // Paper BG
+    border: 2px solid @gold-border;
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 8px 8px;
 
     padding: 12px;
     display: flex;
@@ -490,45 +389,31 @@
     .thumbnail-container {
       width: 100%;
       height: 100%;
-      border-radius: 8px;
+      border-radius: 4px;
       overflow: hidden;
-      border: 1px solid rgba(127, 98, 98, 0.3);
+      border: 1px solid fade(@gold-border, 50%);
       background: rgba(0, 0, 0, 0.05);
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative; // Ensure content stays inside
+      position: relative;
 
       .level-image-wrapper {
         width: 100%;
         height: 100%;
         position: relative;
-        overflow: hidden; // Clip the blurred edges
+        overflow: hidden;
 
         .level-thumbnail-backdrop {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          filter: blur(15px) brightness(0.9); // Blur and slightly darken
-          transform: scale(
-            1.2
-          ); // Zoom in to avoid blurry edges showing white space
-          z-index: 1;
-          opacity: 0.8;
+           display: none; // Remove backdrop for cleaner look
         }
 
         .level-thumbnail-main {
           position: relative;
           width: 100%;
           height: 100%;
-          object-fit: contain; // KEY: Show full image
+          object-fit: cover;
           z-index: 2;
-          filter: drop-shadow(
-            0 4px 8px rgba(0, 0, 0, 0.3)
-          ); // Make it pop from background
         }
       }
 
@@ -551,22 +436,29 @@
       right: -15px;
       width: 56px;
       height: 56px;
-      background-color: #4a4036;
-      border: 3px solid #dacbb1;
+      background-color: @seal-red; // Seal Red Button
+      border: 2px solid @seal-border;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 0 @seal-border; // Hard shadow
       z-index: 10;
+      border-radius: 8px; // Square-ish seal style
 
       .anticon {
         font-size: 24px;
-        color: #dacbb1;
+        color: #fff9e6;
       }
 
       &:hover {
-        background-color: #5d5045;
-        transform: scale(1.05);
+        background-color: lighten(@seal-red, 5%);
+        transform: translateY(2px); // Mechanical press
+        box-shadow: 0 2px 0 @seal-border;
+      }
+      
+      &:active {
+          transform: translateY(4px);
+          box-shadow: none;
       }
     }
   }
@@ -579,5 +471,8 @@
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
+  }
+  .ant-popover-arrow {
+       display: none !important; // Hide default arrow as we use custom one
   }
 }

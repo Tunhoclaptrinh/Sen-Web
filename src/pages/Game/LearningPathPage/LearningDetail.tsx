@@ -250,7 +250,6 @@ const LearningDetail: React.FC = () => {
     return (
         <div className="learning-detail-page" style={{ 
             minHeight: '100vh', 
-            background: 'linear-gradient(135deg, #F9F3F3 0%, #EEDDDD 100%)',
             paddingBottom: 40
         }}>
             
@@ -358,11 +357,7 @@ const LearningDetail: React.FC = () => {
                                         style={{ 
                                             maxWidth: 880,
                                             margin: '0 auto 32px auto',
-                                            borderRadius: 20, 
-                                            boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
                                             overflow: 'hidden',
-                                            background: 'rgba(255, 255, 255, 0.98)',
-                                            backdropFilter: 'blur(10px)'
                                         }}
                                         bodyStyle={{ padding: '40px' }}
                                     >
@@ -426,12 +421,7 @@ const LearningDetail: React.FC = () => {
                                                 style={{ 
                                                     height: 48, 
                                                     padding: '0 48px', 
-                                                    borderRadius: 24, 
                                                     fontSize: 16,
-                                                    fontWeight: 600,
-                                                    background: 'linear-gradient(90deg, #A31D1D 0%, #800000 100%)',
-                                                    border: 'none',
-                                                    boxShadow: '0 10px 25px rgba(163, 29, 29, 0.25)',
                                                     transition: 'all 0.3s'
                                                 }}
                                             >
@@ -460,7 +450,6 @@ const LearningDetail: React.FC = () => {
                                                     borderRadius: 20, 
                                                     padding: 0, 
                                                     overflow: 'hidden', 
-                                                    boxShadow: '0 10px 30px rgba(0,0,0,0.06)' 
                                                 }}
                                                 bodyStyle={{ padding: 0 }}
                                             >

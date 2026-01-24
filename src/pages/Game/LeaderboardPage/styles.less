@@ -1,48 +1,95 @@
 @import "../../../styles/variables.less";
+// CULTURAL THEME VARIABLES
+@paper-bg: #fffcf5;
+@gold-border: #c5a065;
+@text-color-primary: #5d4037;
+@seal-red: #8b1d1d;
+@seal-border: #5a1212;
+
 @gold-color: #ffd700;
 @silver-color: #c0c0c0;
 @bronze-color: #cd7f32;
-@glass-bg: fade(white, 70%);
-@glass-border: fade(white, 30%);
-@glass-shadow: 0 8px 32px 0 fade(@primary-color, 10%);
-@dynamic-bg-start: tint(@primary-color, 95%);
-@dynamic-bg-end: tint(@primary-color, 85%);
 
 .leaderboard-page {
     padding: 24px;
     min-height: 100vh;
-    background: linear-gradient(135deg, @dynamic-bg-start 0%, @dynamic-bg-end 100%);
+    background-color: #f4efe4;
+    background-image: 
+        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
+        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
 
     .leaderboard-header {
         text-align: center;
         margin-bottom: 40px;
 
         .main-title {
-            font-size: 3rem;
+            font-family: "Merriweather", "Playfair Display", "Times New Roman", serif;
+            font-size: 3.5rem;
             font-weight: 800;
-            color: @primary-color;
+            color: @seal-red;
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
 
             .title-icon {
                 margin-right: 12px;
-                color: @primary-color;
-                filter: drop-shadow(0 4px 8px fade(@primary-color, 30%));
+                color: @gold-border;
             }
         }
 
         .subtitle {
-            font-size: 1.1rem;
-            color: #64748b;
+            font-family: "Merriweather", serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: @text-color-primary;
+        }
+    }
+
+    // Cultural Theme for Statistics Cards
+    .ant-card {
+        &.bg-transparent { background: transparent !important; }
+    }
+
+    .statistics-item {
+        background-color: @paper-bg !important;
+        border: 2px solid @gold-border !important;
+        border-radius: 8px !important;
+        box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
+        transition: all 0.3s ease;
+        
+        .text {
+            color: @text-color-primary !important;
+            font-family: "Merriweather", serif;
+            font-weight: 700;
+            
+            .anticon {
+                color: @seal-red !important;
+                margin-right: 8px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        .num {
+            color: @seal-red !important;
+            font-family: "Merriweather", serif;
+            text-shadow: none !important;
+        }
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
+            border-color: @seal-red !important;
         }
     }
 
     .glass-morphism {
-        background: @glass-bg;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid @glass-border;
-        box-shadow: @glass-shadow;
-        border-radius: 20px;
+        background: @paper-bg; // Replace glass with paper
+        border: 2px solid @gold-border;
+        box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+        border-radius: 8px;
     }
 
     .tabs-container {
@@ -63,10 +110,11 @@
             padding: 12px 24px;
             transition: all 0.3s ease;
             font-weight: 600;
+            font-family: "Merriweather", serif;
 
             &-active {
                 .ant-tabs-tab-btn {
-                    color: @primary-color;
+                    color: @seal-red;
                 }
             }
         }
@@ -94,9 +142,9 @@
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
         &:hover {
-            transform: translateY(-12px) scale(1.02);
+            transform: translateY(-8px);
             .podium-card {
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+                 box-shadow: 12px 12px 0 rgba(139, 29, 29, 0.2);
             }
         }
 
@@ -105,18 +153,10 @@
             z-index: 10;
             .podium-card {
                 height: 360px;
-                background: linear-gradient(135deg, #fff 0%, #fffdf0 100%);
+                background: linear-gradient(135deg, @paper-bg 0%, #fffdf0 100%);
                 border: 2px solid @gold-color;
-                &::after {
-                    content: "";
-                    position: absolute;
-                    top: -2px; left: -2px; right: -2px; bottom: -2px;
-                    border-radius: 24px;
-                    background: linear-gradient(45deg, @gold-color, transparent, @gold-color);
-                    z-index: -1;
-                    opacity: 0.3;
-                    filter: blur(8px);
-                }
+                // Add a more prominent effect for Rank 1
+                box-shadow: 0 0 15px fade(@gold-color, 30%), 6px 6px 0 rgba(93, 64, 55, 0.15);
             }
             .crown-icon {
                 position: absolute;
@@ -129,47 +169,47 @@
                 padding: 10px;
                 border-radius: 50%;
             }
-            .player-name { color: #856404; }
+            .player-name { color: @seal-red; }
         }
 
         &.rank-2 {
             order: 1;
             .podium-card {
                 height: 310px;
-                background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+                background: @paper-bg;
                 border: 2px solid @silver-color;
             }
-            .player-name { color: #495057; }
+            .player-name { color: @text-color-primary; }
         }
 
         &.rank-3 {
             order: 3;
             .podium-card {
                 height: 280px;
-                background: linear-gradient(135deg, #fff 0%, #fff5f0 100%);
+                background: @paper-bg;
                 border: 2px solid @bronze-color;
             }
-            .player-name { color: #855d3a; }
+            .player-name { color: @text-color-primary; }
         }
     }
 
     .podium-card {
         width: 100%;
         position: relative;
-        border-radius: 24px;
+        border-radius: 8px;
         padding: 32px 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-        background: #fff;
+        box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+        background: @paper-bg;
         overflow: hidden;
 
         .ant-avatar {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
-            background: #f0f2f5;
+            border: 2px solid white;
         }
 
         .player-info {
@@ -179,22 +219,23 @@
             .player-name {
                 display: block;
                 font-size: 20px;
+                font-family: "Merriweather", serif;
                 font-weight: 800;
                 margin-bottom: 4px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                font-family: "Inter", sans-serif;
             }
 
             .player-level {
                 display: inline-block;
                 padding: 4px 12px;
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 12px;
+                background: fade(@gold-border, 20%);
+                border-radius: 4px;
                 font-size: 12px;
-                font-weight: 600;
-                color: rgba(0, 0, 0, 0.45);
+                font-weight: 700;
+                color: @text-color-primary;
+                border: 1px solid fade(@gold-border, 30%);
             }
         }
 
@@ -204,7 +245,7 @@
             justify-content: space-around;
             width: 100%;
             padding-top: 20px;
-            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            border-top: 1px dashed @text-color-primary;
 
             .stat-item {
                 display: flex;
@@ -214,7 +255,7 @@
 
                 .stat-label {
                     font-size: 10px;
-                    color: rgba(0, 0, 0, 0.4);
+                    color: fade(@text-color-primary, 60%);
                     text-transform: uppercase;
                     font-weight: 700;
                     letter-spacing: 1px;
@@ -223,7 +264,8 @@
                 .stat-value {
                     font-size: 16px;
                     font-weight: 700;
-                    color: #262626;
+                    color: @seal-red;
+                    font-family: "Merriweather", serif;
                 }
             }
         }

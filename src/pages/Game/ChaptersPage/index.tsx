@@ -16,8 +16,6 @@ const ChaptersPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { chapters, chaptersLoading, progress, progressLoading } = useAppSelector((state) => state.game);
-    const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
-    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         dispatch(fetchChapters());
@@ -27,12 +25,6 @@ const ChaptersPage: React.FC = () => {
         if (chapter.petal_state === 'blooming' || chapter.petal_state === 'full') {
             navigate(`/game/chapters/${chapter.id}/levels`);
         }
-    };
-
-    const handleShowDetail = (chapter: Chapter, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setSelectedChapter(chapter);
-        setModalVisible(true);
     };
 
     const handleUnlockChapter = async (chapterId: number) => {
@@ -73,19 +65,6 @@ const ChaptersPage: React.FC = () => {
                 return "https://images.unsplash.com/photo-1555169062-013468b47731?w=600"; 
             case 3:
                 return "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=600";
-        }
-    };
-
-    const getPetalStateIcon = (state: string) => {
-        switch (state) {
-            case 'full':
-                return '🌸';
-            case 'blooming':
-                return '🌺';
-            case 'closed':
-                return '🌹';
-            case 'locked':
-                return '🔒';
         }
     };
 
@@ -147,7 +126,6 @@ const ChaptersPage: React.FC = () => {
                         colSpan={{ xs: 12, sm: 12, md: 6 }}
                         hideCard
                         rowGutter={24}
-                        cardStyle={{ borderRadius: 20, backdropFilter: 'blur(8px)', background: 'rgba(255, 255, 255, 0.7)', border: '1px solid rgba(255, 255, 255, 0.3)' }}
                     />
                 </div>
             )}
@@ -233,17 +211,9 @@ const ChaptersPage: React.FC = () => {
                                                 </div>
 
                                                 <div className="chapter-description-wrapper">
-                                                    <Paragraph ellipsis={{ rows: 3 }}>
+                                                    <Paragraph ellipsis={{ rows: 4 }}>
                                                         {chapter.description}
                                                     </Paragraph>
-                                                    {chapter.description && chapter.description.length > 80 && (
-                                                        <span 
-                                                            className="chapter-read-more"
-                                                            onClick={(e) => handleShowDetail(chapter, e)}
-                                                        >
-                                                            Xem thêm
-                                                        </span>
-                                                    )}
                                                 </div>
 
                                                 <div className="chapter-stats">
@@ -295,69 +265,6 @@ const ChaptersPage: React.FC = () => {
                     </Row>
                 </motion.div>
             </AnimatePresence>
-
-            <Modal
-                title={
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <span style={{ fontSize: 32 }}>
-                            {selectedChapter && getPetalStateIcon(selectedChapter.petal_state)}
-                        </span>
-                        <span className="modal-title">{selectedChapter?.name}</span>
-                    </div>
-                }
-                open={modalVisible}
-                onCancel={() => setModalVisible(false)}
-                className="premium-chapter-modal"
-                footer={[
-                    <Button key="close" onClick={() => setModalVisible(false)} className="detail-btn">
-                        Đóng
-                    </Button>,
-                    (selectedChapter?.petal_state === 'blooming' || selectedChapter?.petal_state === 'full') && (
-                        <Button 
-                            key="play" 
-                            type="primary"
-                            className="play-button"
-                            onClick={() => {
-                                if (selectedChapter) {
-                                    navigate(`/game/chapters/${selectedChapter.id}/levels`);
-                                }
-                            }}
-                        >
-                            Chơi ngay
-                        </Button>
-                    ),
-                ]}
-                width={600}
-                centered
-            >
-                {selectedChapter && (
-                    <div className="chapter-modal-content">
-                        <Tag 
-                            color={getChapterColor(selectedChapter)}
-                            style={{ marginBottom: 16, borderRadius: 8, fontWeight: 700 }}
-                        >
-                            {selectedChapter.theme}
-                        </Tag>
-                        <Paragraph className="modal-desc">
-                            {selectedChapter.description}
-                        </Paragraph>
-                        <div className="modal-section">
-                            <Text strong>Tiến độ: </Text>
-                            <Progress 
-                                percent={selectedChapter.completion_rate} 
-                                status={selectedChapter.completion_rate === 100 ? 'success' : 'active'}
-                                strokeColor={{
-                                    '0%': '#8b1d1d',
-                                    '100%': '#ff4d4f',
-                                }}
-                            />
-                            <Text type="secondary">
-                                {selectedChapter.completed_levels}/{selectedChapter.total_levels} màn đã hoàn thành
-                            </Text>
-                        </div>
-                    </div>
-                )}
-            </Modal>
         </div>
     );
 };
