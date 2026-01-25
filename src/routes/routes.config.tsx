@@ -92,6 +92,7 @@ const MuseumPage = lazy(() => import("@/pages/Game/MuseumPage"));
 const LeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
 const QuestsPage = lazy(() => import("@/pages/Game/QuestsPage"));
 const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
+const GameDashboard = lazy(() => import("@/pages/Game/DashboardPage"));
 
 // Wrapper component for Suspense
 const LazyLoadWrapper: React.FC<{ children: React.ReactNode }> = ({
@@ -190,6 +191,15 @@ const routes: RouteObject[] = [
       </RoleGuard>
     ),
     children: [
+      {
+        path: "dashboard",
+        element: <GameDashboard />,
+      },
+      {
+        index: true, 
+        element: <GameDashboard />, // Keep index as dashboard for convenience, or redirect? User wants explicit path.
+        // Let's keep both or just redirect. For now, rendering component at index is fine, but menu should point to /dashboard.
+      },
       {
         path: "chapters",
         element: <ChaptersPage />,

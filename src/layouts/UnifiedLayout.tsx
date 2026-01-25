@@ -54,6 +54,24 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
       }}
       onMenuHeaderClick={() => navigate('/')}
       menuItemRender={(item, dom) => {
+        if (item.disabled) {
+            return (
+                <div 
+                    style={{ 
+                        cursor: 'default', 
+                        color: 'rgba(80, 80, 80, 0.3)',
+                        fontWeight: 'bold', 
+                        textTransform: 'uppercase',
+                        fontSize: '12px',
+                        marginTop: '16px',
+                        marginBottom: '8px',
+                        pointerEvents: 'none', // Put this to make sure hover effects don't trigger if any
+                    }}
+                >
+                    {dom}
+                </div>
+            );
+        }
         if (item.isUrl || !item.path || (item as any).children) {
           return dom;
         }

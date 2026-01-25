@@ -8,7 +8,7 @@ import {
     BookOutlined,
     DollarOutlined
 } from '@ant-design/icons';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
@@ -22,7 +22,6 @@ import AIChat from '@/components/AIChat';
 
 const CustomerLayout: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const dispatch = useDispatch();
     const { user } = useSelector((state: RootState) => state.auth);
     const { progress } = useSelector((state: RootState) => state.game);
@@ -42,11 +41,6 @@ const CustomerLayout: React.FC = () => {
         dispatch(logout() as any);
         navigate('/login');
     };
-
-    const isGameModule = location.pathname.startsWith('/game');
-    const filteredMenu = isGameModule 
-        ? customerMenu.filter(item => item.key !== 'home' && item.key !== 'heritage')
-        : customerMenu;
 
     const userMenuExtraItems = [
         {
@@ -69,7 +63,7 @@ const CustomerLayout: React.FC = () => {
     return (
         <>
             <UnifiedLayout
-                menu={{ request: async () => filteredMenu }}
+                menu={{ request: async () => customerMenu }}
                 user={user || undefined}
                 onLogout={handleLogout}
                 userMenuExtraItems={userMenuExtraItems}

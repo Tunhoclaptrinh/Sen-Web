@@ -22,6 +22,7 @@ export interface IMenuItem {
     children?: IMenuItem[]; // Some versions of ProLayout use children
     accessFilter?: string[];
     hideInMenu?: boolean;
+    disabled?: boolean;
 }
 
 // ================= ADMIN MENU =================
@@ -134,13 +135,20 @@ export const adminMenu: IMenuItem[] = [
 
 // ================= CUSTOMER MENU =================
 export const customerMenu: IMenuItem[] = [
+    // GROUP TITLE
     {
-        key: 'home',
-        path: '/',
-        name: 'Trang chủ',
-        icon: <HomeOutlined />,
+        name: 'DASHBOARD & HỌC TẬP',
+        path: '/__group__/dashboard',
+        disabled: true,
+        key: 'group-dashboard'
     },
     {
+        key: 'dashboard',
+        path: '/game/dashboard',
+        name: 'Dashboard',
+        icon: <DashboardOutlined />,
+    },
+     {
         key: 'game',
         name: 'Trò chơi',
         icon: <TrophyOutlined />,
@@ -150,6 +158,21 @@ export const customerMenu: IMenuItem[] = [
             { key: 'leaderboard', path: '/game/leaderboard', name: 'Bảng xếp hạng' },
         ],
     },
+    
+    // GROUP TITLE
+    {
+        name: 'KHÁC',
+        path: '/__group__/others',
+        disabled: true,
+        key: 'group-others'
+    },
+     {
+        key: 'quests',
+        path: '/game/quests',
+        name: 'Nhiệm vụ',
+        icon: <FlagOutlined />,
+    },
+    
     {
         key: 'learning',
         path: '/game/learning',
@@ -157,15 +180,10 @@ export const customerMenu: IMenuItem[] = [
         icon: <BookOutlined />,
     },
     {
-        key: 'quests',
-        path: '/game/quests',
-        name: 'Nhiệm vụ',
-        icon: <FlagOutlined />,
-    },
-    {
-        key: 'heritage',
-        path: '/heritage-sites',
-        name: 'Di sản',
+        key: 'books',
+        path: '/undefined',
+        name: 'Sách & Truyện',
+        disabled: true,
         icon: <BankOutlined />,
     },
 ];

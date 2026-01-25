@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Row,
   Col,
@@ -34,10 +35,12 @@ import {
 } from "@/store/slices/questSlice";
 import type { Quest } from "@/types/quest.types";
 import "./styles.less";
+import { getImageUrl } from "@/utils/image.helper";
 
 const { Title, Paragraph } = Typography;
 
 const QuestsPage: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { activeQuests, activeLoading, error, successMessage } = useAppSelector(
     (state) => state.quest,
@@ -69,14 +72,48 @@ const QuestsPage: React.FC = () => {
     dispatch(claimQuestRewards(questId));
   };
 
+  const handleNavigate = (quest: Quest) => {
+    const type = quest.requirements?.[0]?.type;
+    switch (type) {
+      case "complete_chapter":
+        navigate("/game/chapters");
+        break;
+      case "collect_artifact":
+        navigate("/game/museum");
+        break;
+      case "perfect_quiz":
+        navigate("/game/learning");
+        break;
+      case "visit_museum":
+        navigate("/game/museum");
+        break;
+      default:
+        navigate("/game");
+    }
+  };
+
   const handleViewDetail = (quest: Quest) => {
     setSelectedQuest(quest);
     setDetailModalVisible(true);
   };
 
   const getQuestsByTab = () => {
-    if (activeTab === "all") return activeQuests;
-    return activeQuests.filter((q) => q.type === activeTab);
+    let filtered = activeQuests;
+    if (activeTab !== "all") {
+      filtered = activeQuests.filter((q) => q.type === activeTab);
+    }
+
+    // Sort: Completed (not claimed) > In Progress > Not Started > Claimed
+    return [...filtered].sort((a, b) => {
+      const getScore = (q: Quest) => {
+        if (q.progress?.status === "completed") return 3; // Top priority (Claim now)
+        if (q.progress?.status === "in_progress") return 2;
+        if (!q.progress) return 1; // Not started
+        if (q.progress?.status === "claimed") return 0; // Bottom
+        return 0;
+      };
+      return getScore(b) - getScore(a);
+    });
   };
 
   const getTypeIcon = (type: string) => {
@@ -224,7 +261,7 @@ const QuestsPage: React.FC = () => {
                           <div className="quest-image-container">
                             <img
                               alt={quest.title}
-                              src={quest.thumbnail}
+                              src={getImageUrl(quest.thumbnail)}
                               className="quest-image"
                             />
                             <div className="quest-overlay" />
@@ -329,15 +366,23 @@ const QuestsPage: React.FC = () => {
                             <CheckCircleOutlined /> Đã Hoàn Thành
                           </Button>
                         ) : (
-                          <Button
-                            ghost
-                            type="primary"
-                            block
-                            className="action-btn detail-btn"
-                            onClick={() => handleViewDetail(quest)}
-                          >
-                            Chi Tiết
-                          </Button>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <Button
+                              ghost
+                              type="primary"
+                              onClick={() => handleViewDetail(quest)}
+                              style={{ flex: 1 }}
+                            >
+                              Chi Tiết
+                            </Button>
+                            <Button
+                              type="primary"
+                              onClick={() => handleNavigate(quest)}
+                              style={{ flex: 1 }}
+                            >
+                              Thực Hiện
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </Card>
