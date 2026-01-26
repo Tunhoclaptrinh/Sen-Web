@@ -37,12 +37,15 @@ export default defineConfig({
     },
     proxy: {
       "/api": {
-        target: "http://host.docker.internal:3000",
+        target: "http://sen-backend-dev:3000",
         changeOrigin: true,
         secure: false,
       },
     },
-    allowedHosts: ["ac7f4b803724.ngrok-free.app"],
+    allowedHosts: true,
+  },
+  optimizeDeps: {
+    include: ["pixi.js", "@pixi/react"],
   },
   build: {
     outDir: "dist",

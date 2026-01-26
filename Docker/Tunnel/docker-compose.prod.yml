@@ -1,7 +1,7 @@
 services:
-  sen-tunnel:
+  sen-tunnel-prod:
     image: cloudflare/cloudflared:latest
-    container_name: sen-tunnel
+    container_name: sen-tunnel-prod
     restart: unless-stopped
     command: tunnel --url http://sen-frontend:80
     networks:
