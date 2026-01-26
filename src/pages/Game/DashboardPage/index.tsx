@@ -22,9 +22,10 @@ import {
   HistoryOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import questService from "@/services/quest.service";
+import { claimQuestRewards } from "@/store/slices/questSlice";
 import { Quest } from "@/types/quest.types";
 import "./styles.less";
 import { getImageUrl } from "@/utils/image.helper";
@@ -33,6 +34,7 @@ const { Title, Text } = Typography;
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
   const { progress } = useSelector((state: RootState) => state.game);
   const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
@@ -61,7 +63,7 @@ const DashboardPage: React.FC = () => {
 
   const handleClaim = async (questId: number) => {
     try {
-      await questService.claimRewards(questId);
+      await dispatch(claimQuestRewards(questId) as any).unwrap();
       message.success("Đã nhận thưởng thành công!");
       fetchActiveQuests(); // Refresh
     } catch (error) {
@@ -91,7 +93,7 @@ const DashboardPage: React.FC = () => {
           <Col xs={24} md={16}>
             <div className="hero-content">
               <Title level={2} style={{ color: "#fff", marginBottom: 8 }}>
-                Xin chào, {user?.name || "Nhà thám hiểm"}! 👋
+                Xin chào, {user?.name || "Nhà thám hiểm"}!
               </Title>
               <Text style={{ color: "rgba(255,255,255,0.9)", fontSize: 16 }}>
                 Hành trình khám phá di sản của bạn đang chờ đợi. Hãy tiếp tục

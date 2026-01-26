@@ -92,7 +92,7 @@ const DashboardPage = () => {
       <Card style={{ marginBottom: 24 }}>
         <Space direction="vertical" size="small">
           <Title level={2} style={{ margin: 0 }}>
-            Xin chào, {user?.name}! 👋
+            Xin chào, {user?.name}!
           </Title>
           <Paragraph type="secondary" style={{ margin: 0, fontSize: 16 }}>
             Chào mừng bạn đến với hệ thống quản lý di sản văn hóa SEN

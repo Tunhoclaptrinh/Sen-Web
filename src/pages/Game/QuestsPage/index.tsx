@@ -69,7 +69,14 @@ const QuestsPage: React.FC = () => {
   };
 
   const handleClaimRewards = (questId: number) => {
-    dispatch(claimQuestRewards(questId));
+    dispatch(claimQuestRewards(questId))
+      .unwrap()
+      .then(() => {
+        message.success("Phần thưởng đã được chuyển vào túi đồ!");
+      })
+      .catch(() => {
+        // Error handled by global state
+      });
   };
 
   const handleNavigate = (quest: Quest) => {
@@ -229,10 +236,10 @@ const QuestsPage: React.FC = () => {
           centered
           items={[
             { key: "all", label: "Tất Cả" },
-            { key: "daily", label: "Hằng Ngày" },
-            { key: "weekly", label: "Hằng Tuần" },
-            { key: "achievement", label: "Thành Tích" },
-            { key: "exploration", label: "Thám Hiểm" },
+            { key: "daily", label: "Hằng ngày" },
+            { key: "weekly", label: "Hằng tuần" },
+            { key: "achievement", label: "Thành tích" },
+            { key: "exploration", label: "Thám hiểm" },
           ]}
         />
       </div>

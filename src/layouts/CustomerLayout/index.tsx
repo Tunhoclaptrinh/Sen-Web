@@ -8,7 +8,7 @@ import {
     BookOutlined,
     DollarOutlined
 } from '@ant-design/icons';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
@@ -31,11 +31,13 @@ const CustomerLayout: React.FC = () => {
 
     // Initial Data Fetching (Persistent Game Data)
     // Ensures stats (Coins, Petals) are available on direct navigation or refresh
+    const location = useLocation();
+
+    // Initial Data Fetching (Persistent Game Data)
+    // Ensures stats (Coins, Petals) are available and FRESH on navigation
     React.useEffect(() => {
-        if (!progress) {
-            dispatch(fetchProgress() as any);
-        }
-    }, [dispatch, progress]);
+         dispatch(fetchProgress() as any);
+    }, [dispatch, location.pathname]);
 
     const handleLogout = () => {
         dispatch(logout() as any);

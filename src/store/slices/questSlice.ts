@@ -148,8 +148,8 @@ const questSlice = createSlice({
 
         // Claim Quest Rewards
         builder
-            .addCase(claimQuestRewards.fulfilled, (state) => {
-                state.successMessage = 'Phần thưởng đã được chuyển vào túi đồ!';
+            .addCase(claimQuestRewards.fulfilled, () => {
+                // Handled in UI components to avoid duplicates
             })
             .addCase(claimQuestRewards.rejected, (state, action) => {
                 state.error = action.payload as string;
