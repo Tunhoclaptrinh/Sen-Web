@@ -1,0 +1,12 @@
+services:
+  sen-tunnel-dev:
+    image: cloudflare/cloudflared:latest
+    container_name: sen-tunnel-dev
+    restart: unless-stopped
+    command: tunnel --url http://sen-frontend-dev:3001
+    networks:
+      - sen-network-dev
+
+networks:
+  sen-network-dev:
+    external: true
