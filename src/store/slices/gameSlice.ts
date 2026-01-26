@@ -379,6 +379,12 @@ const gameSlice = createSlice({
                 state.sessionLoading = false;
                 state.currentSession = null;
                 state.successMessage = `Level completed! Score: ${action.payload.score}`;
+                // Optimistic Update: Update stats immediately
+                if (state.progress && action.payload.new_totals) {
+                    state.progress.coins = action.payload.new_totals.coins;
+                    state.progress.total_sen_petals = action.payload.new_totals.petals;
+                    state.progress.total_points = action.payload.new_totals.points;
+                }
             })
             .addCase(completeLevel.rejected, (state, action) => {
                 state.sessionLoading = false;
@@ -408,6 +414,18 @@ const gameSlice = createSlice({
             .addCase(claimDailyReward.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
+            
+        // Listen to Quest Claim Rewards (from questSlice)
+        builder.addCase(
+            'quest/claimRewards/fulfilled',
+            (state, action: any) => {
+                // Support both unwrapped structures to be safe
+                const newProgress = action.payload?.new_progress || action.payload?.data?.new_progress;
+                if (newProgress) {
+                     state.progress = newProgress;
+                }
+            }
+        );
 
         // Fetch Museum
         builder

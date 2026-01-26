@@ -35,6 +35,9 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
   );
   const [aiChatVisible, setAiChatVisible] = useState(false);
 
+  // Hide AI Chat in active gameplay routes
+  const isGameplayRoute = location.pathname.includes('/game/play') || location.pathname.includes('/game/learning');
+
   // Default AI character (Sen - the tour guide)
   const defaultCharacter = {
     id: 1,
@@ -73,7 +76,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
             <Tooltip title="Khám phá game" placement="left">
               <button
                 className="quick-action-btn quick-action-btn--game"
-                onClick={() => navigate("/game/chapters")}
+                onClick={() => navigate("/game/dashboard")}
               >
                 <RocketOutlined />
               </button>
@@ -139,6 +142,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
         {renderRoleButtons()}
 
         {/* AI Chat Button */}
+        {!isGameplayRoute && (
         <Tooltip title="Chat với AI" placement="left">
           <button
             className="quick-action-btn"
@@ -154,6 +158,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
             <CommentOutlined />
           </button>
         </Tooltip>
+        )}
 
         {/* Sen Toggle Button */}
         <div
