@@ -111,7 +111,7 @@ export interface StatisticsCardProps {
 	autoBackground?: AutoBackgroundConfig;
 
 	/** Căn chỉnh Row theo chiều ngang (start, end, center, space-around, space-between) */
-	justify?: import('antd').RowProps['justify'];
+	// justify?: import('antd').RowProps['justify'];
 }
 
 /*

@@ -12,7 +12,6 @@ import { fetchShopData, purchaseItem, clearMessages } from '@/store/slices/shopS
 import { ShopItem } from '@/types/game.types';
 import './styles.less';
 import { getImageUrl } from '@/utils/image.helper';
-import { StatisticsCard } from '@/components/common';
 
 const { Title, Text } = Typography;
 

@@ -241,7 +241,7 @@ const MuseumPage: React.FC = () => {
                             icon: <TrophyOutlined />
                         },
                         {
-                            title: 'Thu nhập/h',
+                            title: 'Thu nhập theo giờ',
                             value: `${museum?.income_per_hour || 0}/h`,
                             valueColor: '#52c41a',
                             icon: <RiseOutlined />
@@ -269,7 +269,6 @@ const MuseumPage: React.FC = () => {
                         }
                     ]}
                     hideCard
-                    justify="center"
                     colSpan={{ xs: 24, sm: 8, md: 8 }}
                 />
             </div>
