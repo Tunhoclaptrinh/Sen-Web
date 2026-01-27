@@ -91,6 +91,7 @@ const GamePlayPage = lazy(() => import("@/pages/Game/GamePlayPage"));
 const MuseumPage = lazy(() => import("@/pages/Game/MuseumPage"));
 const LeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
 const QuestsPage = lazy(() => import("@/pages/Game/QuestsPage"));
+const ShopPage = lazy(() => import("@/pages/Game/ShopPage"));
 const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
 const GameDashboard = lazy(() => import("@/pages/Game/DashboardPage"));
 
@@ -219,6 +220,10 @@ const routes: RouteObject[] = [
       {
         path: "leaderboard",
         element: <LeaderboardPage />,
+      },
+      {
+         path: "shop",
+         element: <ShopPage />,
       },
       {
         path: "quests",

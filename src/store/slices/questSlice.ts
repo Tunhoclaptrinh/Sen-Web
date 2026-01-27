@@ -3,7 +3,7 @@ import { questService } from '@/services';
 import type { Quest } from '@/types/quest.types';
 
 // State interface
-interface QuestState {
+export interface QuestState {
     activeQuests: Quest[];
     activeLoading: boolean;
     error: string | null;

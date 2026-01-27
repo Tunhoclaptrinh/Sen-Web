@@ -13,7 +13,7 @@ export interface StatisticsItem {
 	/** Giá trị hiển thị, có thể là số hoặc chuỗi (đã format)
 	 * @example 100, '1,234 VNĐ', '50%'
 	 */
-	value: string | number;
+	value: string | number | React.ReactNode;
 
 	/** Icon hiển thị bên trái item */
 	icon?: JSX.Element;
@@ -109,6 +109,9 @@ export interface StatisticsCardProps {
 	 * @default { enabled: true, lightenAmount: 0.4, alphaAmount: 0.15 }
 	 */
 	autoBackground?: AutoBackgroundConfig;
+
+	/** Căn chỉnh Row theo chiều ngang (start, end, center, space-around, space-between) */
+	// justify?: import('antd').RowProps['justify'];
 }
 
 /*

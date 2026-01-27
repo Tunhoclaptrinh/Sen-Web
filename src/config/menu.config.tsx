@@ -11,6 +11,7 @@ import {
     TrophyOutlined,
     BookOutlined,
     FlagOutlined,
+    ShopOutlined,
 } from '@ant-design/icons';
 
 export interface IMenuItem {
@@ -134,13 +135,14 @@ export const adminMenu: IMenuItem[] = [
 ];
 
 // ================= CUSTOMER MENU =================
+// ================= CUSTOMER MENU =================
 export const customerMenu: IMenuItem[] = [
-    // GROUP TITLE
+    // 1. KHÁM PHÁ
     {
-        name: 'DASHBOARD & HỌC TẬP',
-        path: '/__group__/dashboard',
+        name: 'KHÁM PHÁ',
+        path: '/__group__/discovery',
         disabled: true,
-        key: 'group-dashboard'
+        key: 'group-discovery'
     },
     {
         key: 'dashboard',
@@ -148,31 +150,26 @@ export const customerMenu: IMenuItem[] = [
         name: 'Dashboard',
         icon: <DashboardOutlined />,
     },
-     {
-        key: 'game',
-        name: 'Trò chơi',
-        icon: <TrophyOutlined />,
-        children: [
-            { key: 'chapters', path: '/game/chapters', name: 'Sen Hoa' },
-            { key: 'museum', path: '/game/museum', name: 'Bảo tàng' },
-            { key: 'leaderboard', path: '/game/leaderboard', name: 'Bảng xếp hạng' },
-        ],
-    },
-    
-    // GROUP TITLE
     {
-        name: 'KHÁC',
-        path: '/__group__/others',
-        disabled: true,
-        key: 'group-others'
+        key: 'chapters',
+        path: '/game/chapters',
+        name: 'Sen Hoa',
+        icon: <TrophyOutlined />, // or maybe a refined icon like CompassOutlined if available, but staying safe
     },
-     {
+
+    // 2. HOẠT ĐỘNG
+    {
+        name: 'HOẠT ĐỘNG',
+        path: '/__group__/activities',
+        disabled: true,
+        key: 'group-activities'
+    },
+    {
         key: 'quests',
         path: '/game/quests',
         name: 'Nhiệm vụ',
         icon: <FlagOutlined />,
     },
-    
     {
         key: 'learning',
         path: '/game/learning',
@@ -184,7 +181,40 @@ export const customerMenu: IMenuItem[] = [
         path: '/undefined',
         name: 'Sách & Truyện',
         disabled: true,
-        icon: <BankOutlined />,
+    },
+
+    // 3. TIỆN ÍCH
+    {
+        name: 'TIỆN ÍCH',
+        path: '/__group__/assets',
+        disabled: true,
+        key: 'group-assets'
+    },
+    {
+        key: 'shop',
+        path: '/game/shop',
+        name: 'Cửa hàng',
+        icon: <ShopOutlined />,
+    },
+    {
+        key: 'museum',
+        path: '/game/museum',
+        name: 'Bảo tàng',
+        icon: <BankOutlined />, // Using Bank as Museum icon (or BuildOutlined)
+    },
+
+    // 4. CỘNG ĐỒNG (Optional visual separation)
+    {
+        name: 'CỘNG ĐỒNG',
+        path: '/__group__/community',
+        disabled: true,
+        key: 'group-community'
+    },
+    {
+        key: 'leaderboard',
+        path: '/game/leaderboard',
+        name: 'Bảng xếp hạng',
+        icon: <TrophyOutlined />,
     },
 ];
 

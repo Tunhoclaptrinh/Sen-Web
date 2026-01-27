@@ -9,6 +9,7 @@ import uiReducer from "./slices/uiSlice";
 import gameReducer from "./slices/gameSlice";
 import aiReducer from "./slices/aiSlice";
 import learningReducer from "./slices/learningSlice";
+import shopReducer from "./slices/shopSlice";
 import questReducer from "./slices/questSlice";
 
 export const store = configureStore({
@@ -24,6 +25,7 @@ export const store = configureStore({
     ai: aiReducer,
     learning: learningReducer,
     quest: questReducer,
+    shop: shopReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
