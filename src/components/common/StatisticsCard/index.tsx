@@ -55,6 +55,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
 	borderleft = false,
 	statShadow = true,
 	autoBackground = { enabled: true, lightenAmount: 0.1, alphaAmount: 0.1 },
+	justify,
 }) => {
 	const renderStatisticItem = ({
 		title,
@@ -114,7 +115,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
 			<div style={{ ...containerStyle }}>
 				{title && <div style={{ fontWeight: 600, marginBottom: 8 }}>{title}</div>}
 
-				<Row gutter={[rowGutter, rowGutter]}>
+				<Row gutter={[rowGutter, rowGutter]} justify={justify}>
 					{data.map((item, index) => (
 						<Col {...(item.colSpan || colSpan)} key={index}>
 							{renderStatisticItem(item)}
@@ -131,7 +132,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
 		>
 			{title && <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>{title}</div>}
 
-			<Row gutter={[rowGutter, rowGutter]} wrap>
+			<Row gutter={[rowGutter, rowGutter]} wrap justify={justify}>
 				{data.map((item, index) => (
 					<Col {...(item.colSpan || colSpan)} key={index}>
 						{renderStatisticItem(item)}

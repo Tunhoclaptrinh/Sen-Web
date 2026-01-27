@@ -200,6 +200,7 @@ const DashboardPage: React.FC = () => {
             >
               <List
                 loading={loadingQuests}
+                rowKey="id"
                 itemLayout="horizontal"
                 dataSource={activeQuests}
                 locale={{

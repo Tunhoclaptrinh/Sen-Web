@@ -427,6 +427,20 @@ const gameSlice = createSlice({
             }
         );
 
+        // Listen to Shop Purchase (from shopSlice)
+        builder.addCase(
+            'shop/purchase/fulfilled',
+            (state, action: any) => {
+                if (state.progress && action.payload.new_balance) {
+                    state.progress.coins = action.payload.new_balance.coins;
+                    state.progress.total_sen_petals = action.payload.new_balance.petals;
+                } else if (state.progress && action.payload.remaining_coins !== undefined) {
+                    // Fallback for legacy/alternative structure if any
+                    state.progress.coins = action.payload.remaining_coins;
+                }
+            }
+        );
+
         // Fetch Museum
         builder
             .addCase(fetchMuseum.pending, (state) => {

@@ -32,6 +32,7 @@ import {
   claimQuestRewards,
   clearSuccessMessage,
   clearError,
+  QuestState,
 } from "@/store/slices/questSlice";
 import type { Quest } from "@/types/quest.types";
 import "./styles.less";
@@ -43,7 +44,7 @@ const QuestsPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { activeQuests, activeLoading, error, successMessage } = useAppSelector(
-    (state) => state.quest,
+    (state) => (state.quest || { activeQuests: [], activeLoading: false, error: null, successMessage: null }) as QuestState
   );
   const [activeTab, setActiveTab] = useState("all");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
@@ -107,11 +108,11 @@ const QuestsPage: React.FC = () => {
   const getQuestsByTab = () => {
     let filtered = activeQuests;
     if (activeTab !== "all") {
-      filtered = activeQuests.filter((q) => q.type === activeTab);
+      filtered = filtered.filter((q: Quest) => q.type === activeTab);
     }
 
     // Sort: Completed (not claimed) > In Progress > Not Started > Claimed
-    return [...filtered].sort((a, b) => {
+    return [...filtered].sort((a: Quest, b: Quest) => {
       const getScore = (q: Quest) => {
         if (q.progress?.status === "completed") return 3; // Top priority (Claim now)
         if (q.progress?.status === "in_progress") return 2;
@@ -235,7 +236,7 @@ const QuestsPage: React.FC = () => {
           onChange={setActiveTab}
           centered
           items={[
-            { key: "all", label: "Tất Cả" },
+            { key: "all", label: "Tất cả" },
             { key: "daily", label: "Hằng ngày" },
             { key: "weekly", label: "Hằng tuần" },
             { key: "achievement", label: "Thành tích" },

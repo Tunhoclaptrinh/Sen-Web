@@ -294,9 +294,16 @@ export interface ShopItem {
     id: number;
     name: string;
     description: string;
-    type: 'hint' | 'boost' | 'cosmetic' | 'other';
+    type: 'hint' | 'boost' | 'cosmetic' | 'premium_ai' | 'character' | 'character_skin' | 'theme' | 'decoration' | 'other';
     price: number;
+    currency: 'coins' | 'petals';
+    image?: string;
     icon?: string;
+    is_active?: boolean;
+    is_available?: boolean;
+    is_consumable: boolean;
+    max_stack?: number;
+    created_at?: string;
 }
 
 export interface PurchaseItemResponse {
