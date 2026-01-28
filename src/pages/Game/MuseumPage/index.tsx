@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchMuseum } from '@/store/slices/gameSlice';
 import { fetchShopData } from '@/store/slices/shopSlice';
-import { Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card } from 'antd';
+import { Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card, Modal } from 'antd'; // Added Modal
 import { TrophyOutlined, RiseOutlined, GoldOutlined } from '@ant-design/icons';
 import { getImageUrl } from '@/utils/image.helper';
 import { StatisticsCard } from '@/components/common';
@@ -14,7 +14,11 @@ const MuseumPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const { museum, museumLoading } = useAppSelector((state) => state.game);
     const { inventory, items: shopItems, loading: shopLoading } = useAppSelector((state) => state.shop);
-    const [activeTab, setActiveTab] = useState('inventory');
+    const [activeTab, setActiveTab] = useState('all'); // Changed initial tab to 'all'
+
+    // Modal state
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<any>(null);
 
     useEffect(() => {
         dispatch(fetchMuseum());
@@ -31,23 +35,65 @@ const MuseumPage: React.FC = () => {
         return { ...invItem, ...itemDetail };
     });
 
-    const renderInventoryTab = () => (
-        <Row gutter={[24, 24]}>
-            {enrichedInventory.length === 0 ? (
-                <Col span={24}>
-                    <Empty description="Túi đồ trống" image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                        <Button type="primary" href="/game/shop">Đến Cửa Hàng</Button>
-                    </Empty>
-                </Col>
-            ) : enrichedInventory.map((item, idx) => {
-                const itemImage = item.image ? getImageUrl(item.image) : '/images/placeholder.png';
-                return (
-                    <Col xs={24} sm={12} md={8} lg={6} key={idx}>
-                        <Card
-                            hoverable
-                            className="museum-card"
-                            cover={
-                                <div className="card-cover">
+    // Combine all items into a unified list
+    const allItems = [
+        ...enrichedInventory.map(item => ({
+            type: 'inventory',
+            id: `inv-${item.item_id}`,
+            name: item.name,
+            description: item.description,
+            image: item.image,
+            original: item,
+            quantity: item.quantity
+        })),
+        ...(museum?.artifacts || []).map(art => ({
+            type: 'artifact',
+            id: `art-${art.artifact_id}`,
+            name: art.name,
+            description: `Thu thập ngày ${new Date(art.acquired_at).toLocaleDateString()}`,
+            image: art.image,
+            original: art,
+            quantity: 1
+        })),
+        ...(museum?.characters || []).map((charName, idx) => ({
+            type: 'character',
+            id: `char-${idx}`,
+            name: charName,
+            description: 'Nhân vật đồng hành cùng bạn',
+            image: null, 
+            original: charName,
+            quantity: 1
+        }))
+    ];
+
+    const filteredItems = activeTab === 'all' 
+        ? allItems 
+        : allItems.filter(i => i.type === activeTab);
+
+    const handleItemClick = (item: any) => {
+        setSelectedItem(item);
+        setDetailModalVisible(true);
+    };
+
+    const renderMuseumItem = (item: any) => {
+        // Resolve image URL based on type
+        let itemImage: string | null = null;
+        if (item.type === 'character') {
+             itemImage = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${item.name}`;
+        } else {
+             itemImage = item.image ? getImageUrl(item.image) : null;
+        }
+
+        return (
+            <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
+                <Card
+                    hoverable
+                    className="museum-card"
+                    onClick={() => handleItemClick(item)}
+                    cover={
+                        <div className="card-cover">
+                            {itemImage ? (
+                                <>
                                     <div 
                                         className="blur-background"
                                         style={{ backgroundImage: `url(${itemImage})` }}
@@ -57,153 +103,80 @@ const MuseumPage: React.FC = () => {
                                         alt={item.name} 
                                         className="item-image"
                                         onError={(e) => {
-                                            e.currentTarget.src = '/images/placeholder.png';
+                                            e.currentTarget.style.display = 'none';
+                                            e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
                                             e.currentTarget.parentElement?.querySelector('.blur-background')?.setAttribute('style', 'display: none');
                                         }} 
                                     />
-                                    <div className="item-quantity-tag">x{item.quantity}</div>
+                                </>
+                            ) : (
+                                <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', background: '#f5f5f5'}}>
+                                    No image
                                 </div>
-                            }
-                        >
-                            <div className="item-info">
-                                <div className="item-name">{item.name}</div>
-                                <div className="item-desc" title={item.description}>{item.description || 'Vật phẩm sưu tầm'}</div>
-                                <div className="action-btn-wrapper">
-                                    <Button 
-                                        size="middle" 
-                                        className="action-btn" 
-                                        disabled={!item.is_consumable}
-                                    >
-                                        {item.is_consumable ? 'Sử dụng' : 'Trang trí'}
-                                    </Button>
-                                </div>
+                            )}
+                            {/* Tags - Always show Type Tag at top right */}
+                            <div className="item-type-tag">
+                                {(() => {
+                                    let color = 'gold';
+                                    let text = 'Vật phẩm';
+                                    
+                                    if (item.type === 'artifact') {
+                                        color = 'gold';
+                                        text = 'HIỆN VẬT';
+                                    } else if (item.type === 'character') {
+                                        color = 'magenta';
+                                        text = 'ĐỒNG HÀNH';
+                                    } else if (item.type === 'inventory') {
+                                        // Map shop types
+                                        const shopType = item.original?.type;
+                                        if (['powerup', 'hint', 'boost'].includes(shopType)) {
+                                            color = 'blue';
+                                            text = 'HỖ TRỢ';
+                                        } else if (['decoration', 'theme'].includes(shopType)) {
+                                            color = 'purple';
+                                            text = 'TRANG TRÍ';
+                                        } else {
+                                            color = 'cyan';
+                                            text = 'SƯU TẦM';
+                                        }
+                                    }
+
+                                    return <Tag color={color}>{text}</Tag>;
+                                })()}
                             </div>
-                        </Card>
-                    </Col>
-                );
-            })}
-        </Row>
-    );
+                        </div>
+                    }
+                >
+                    <div className="item-info">
+                        <div className="item-name">{item.name}</div>
+                        <div className="item-desc" title={item.description}>
+                            {item.description || 'Vật phẩm sưu tầm'}
+                        </div>
 
-    const renderArtifactsTab = () => (
-        <Row gutter={[24, 24]}>
-            {!museum?.artifacts || museum.artifacts.length === 0 ? (
-                <Col span={24}>
-                    <Empty description="Chưa có hiện vật nào" image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                        <Button type="primary" href="/game/chapters">Chơi game để tìm kiếm</Button>
-                    </Empty>
-                </Col>
-            ) : museum.artifacts.map((artifact) => {
-                const artifactImage = artifact.image ? getImageUrl(artifact.image) : '/images/placeholder.png';
-                return (
-                    <Col xs={24} sm={12} md={8} lg={6} key={artifact.artifact_id}>
-                        <Card
-                            hoverable
-                            className="museum-card"
-                            cover={
-                                <div className="card-cover">
-                                    <div 
-                                        className="blur-background"
-                                        style={{ backgroundImage: `url(${artifactImage})` }}
-                                    />
-                                    <img 
-                                        src={artifactImage} 
-                                        alt={artifact.name} 
-                                        className="item-image"
-                                        onError={(e) => {
-                                            e.currentTarget.src = '/images/placeholder.png';
-                                            e.currentTarget.parentElement?.querySelector('.blur-background')?.setAttribute('style', 'display: none');
-                                        }} 
-                                    />
-                                    <div className="item-type-tag">
-                                        <Tag color="gold">Hiện vật</Tag>
-                                    </div>
-                                </div>
-                            }
-                        >
-                            <div className="item-info">
-                                <div className="item-name">{artifact.name}</div>
-                                <div className="item-desc">Thu thập ngày {new Date(artifact.acquired_at).toLocaleDateString()}</div>
+                        {/* Quantity Badge in Body - Strictly matching Shop style */}
+                        {(item.quantity > 0 && item.type === 'inventory' && item.original?.is_consumable) && (
+                            <div className="owned-quantity" style={{ 
+                                fontSize: '0.8rem', 
+                                color: '#8b1d1d', // @seal-red
+                                background: 'rgba(139, 29, 29, 0.08)',
+                                border: '1px solid rgba(139, 29, 29, 0.2)',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                display: 'inline-block',
+                                fontWeight: 700,
+                                marginBottom: 0, // Tight spacing
+                                marginTop: 'auto', // Push to bottom if flex
+                                fontFamily: '"Merriweather", serif',
+                                width: 'fit-content'
+                            }}>
+                                Đang có: {item.quantity}
                             </div>
-                        </Card>
-                    </Col>
-                );
-            })}
-        </Row>
-    );
-
-    const renderCharactersTab = () => (
-        <Row gutter={[24, 24]}>
-             {!museum?.characters || museum.characters.length === 0 ? (
-                <Col span={24}>
-                    <Empty description="Chưa có nhân vật nào" image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                        <Button type="primary" href="/game/shop">Chiêu mộ ngay</Button>
-                    </Empty>
-                </Col>
-            ) : museum.characters.map((charName, idx) => {
-                const charImage = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${charName}`;
-                return (
-                    <Col xs={24} sm={12} md={8} lg={6} key={idx}>
-                         <Card
-                            hoverable
-                            className="museum-card"
-                            cover={
-                                <div className="card-cover">
-                                    <div 
-                                        className="blur-background"
-                                        style={{ backgroundImage: `url(${charImage})` }}
-                                    />
-                                    <img 
-                                        src={charImage} 
-                                        alt={charName} 
-                                        className="item-image"
-                                    />
-                                    <div className="item-type-tag">
-                                        <Tag color="magenta">Đồng hành</Tag>
-                                    </div>
-                                </div>
-                            }
-                        >
-                            <div className="item-info">
-                                <div className="item-name">{charName}</div>
-                                <div className="item-desc">Nhân vật đồng hành cùng bạn</div>
-                            </div>
-                        </Card>
-                    </Col>
-                );
-            })}
-        </Row>
-    );
-
-    const renderAllTab = () => (
-        <div className="all-tab-content">
-            {/* Inventory Section */}
-            {enrichedInventory.length > 0 && (
-                <div style={{ marginBottom: 32 }}>
-                    {renderInventoryTab()}
-                </div>
-            )}
-
-            {/* Artifacts Section */}
-            {museum?.artifacts && museum.artifacts.length > 0 && (
-                <div style={{ marginBottom: 32 }}>
-                    {renderArtifactsTab()}
-                </div>
-            )}
-
-            {/* Characters Section */}
-            {museum?.characters && museum.characters.length > 0 && (
-                <div style={{ marginBottom: 32 }}>
-                    {renderCharactersTab()}
-                </div>
-            )}
-
-            {/* Empty State if everything is empty */}
-            {enrichedInventory.length === 0 && (!museum?.artifacts || museum.artifacts.length === 0) && (!museum?.characters || museum.characters.length === 0) && (
-                <Empty description="Bảo tàng trống trơn" />
-            )}
-        </div>
-    );
+                        )}
+                    </div>
+                </Card>
+            </Col>
+        );
+    };
 
     if (museumLoading || shopLoading) {
         return (
@@ -241,8 +214,8 @@ const MuseumPage: React.FC = () => {
                             icon: <TrophyOutlined />
                         },
                         {
-                            title: 'Thu nhập theo giờ',
-                            value: `${museum?.income_per_hour || 0}/h`,
+                            title: 'Thu nhập trong 1 giờ',
+                            value: `${museum?.income_per_hour || 0}`,
                             valueColor: '#52c41a',
                             icon: <RiseOutlined />
                         },
@@ -282,18 +255,60 @@ const MuseumPage: React.FC = () => {
                     items={[
                         { label: <span>Tất cả</span>, key: 'all' },
                         { label: <span>Túi đồ</span>, key: 'inventory' },
-                        { label: <span>Hiện vật</span>, key: 'artifacts' },
-                        { label: <span>Nhân vật</span>, key: 'characters' },
+                        { label: <span>Hiện vật</span>, key: 'artifact' },
+                        { label: <span>Nhân vật</span>, key: 'character' },
                     ]}
                 />
             </div>
 
             <div className="museum-content">
-                {activeTab === 'all' && renderAllTab()}
-                {activeTab === 'inventory' && renderInventoryTab()}
-                {activeTab === 'artifacts' && renderArtifactsTab()}
-                {activeTab === 'characters' && renderCharactersTab()}
+                {filteredItems.length > 0 ? (
+                    <Row gutter={[24, 24]}>
+                        {filteredItems.map(renderMuseumItem)}
+                    </Row>
+                ) : (
+                    <Empty description="Trống trơn" />
+                )}
             </div>
+
+             <Modal
+                title={<Title level={4} style={{ margin: 0 }}>{selectedItem?.name}</Title>}
+                open={detailModalVisible}
+                onCancel={() => setDetailModalVisible(false)}
+                footer={[
+                    <Button key="close" onClick={() => setDetailModalVisible(false)}>
+                        Đóng
+                    </Button>,
+                    selectedItem?.type === 'inventory' && selectedItem?.original.is_consumable && (
+                        <Button key="use" type="primary">
+                            Sử dụng
+                        </Button>
+                    )
+                ]}
+                centered
+            >
+                {selectedItem && (
+                    <div style={{ textAlign: 'center' }}>
+                         <div style={{ marginBottom: 16, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9f9f9', borderRadius: 8 }}>
+                            {(() => {
+                                let img = null;
+                                if (selectedItem.type === 'character') {
+                                    img = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${selectedItem.name}`;
+                                } else {
+                                    img = selectedItem.image ? getImageUrl(selectedItem.image) : null;
+                                }
+                                
+                                if (img) return <img src={img} alt={selectedItem.name} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />;
+                                return <div style={{ color: '#999' }}>No image</div>;
+                            })()}
+                         </div>
+                         <div style={{ textAlign: 'left' }}>
+                            <p><strong>Mô tả:</strong> {selectedItem.description || 'Không có mô tả'}</p>
+                            {selectedItem.quantity && <p><strong>Số lượng:</strong> {selectedItem.quantity}</p>}
+                         </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 };

@@ -381,14 +381,14 @@ const QuestsPage: React.FC = () => {
                               onClick={() => handleViewDetail(quest)}
                               style={{ flex: 1 }}
                             >
-                              Chi Tiết
+                              Chi tiết
                             </Button>
                             <Button
                               type="primary"
                               onClick={() => handleNavigate(quest)}
                               style={{ flex: 1 }}
                             >
-                              Thực Hiện
+                              Thực hiện
                             </Button>
                           </div>
                         )}
