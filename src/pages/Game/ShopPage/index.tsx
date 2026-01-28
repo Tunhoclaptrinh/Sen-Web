@@ -146,19 +146,38 @@ const ShopPage: React.FC = () => {
                                     />
                                 </>
                             ) : (
-                                <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', background: '#f5f5f5'}}>
-                                    {item.icon}
+                                <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', background: '#f5f5f5'}}>
+                                    No image
                                 </div>
                             )}
-                            {/* Fallback icon container hidden by default unless image error */}
-                            <div className="fallback-icon hidden" style={{position: 'absolute', inset: 0, display: 'none', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', background: '#f5f5f5'}}>
-                                 {item.icon}
+                            {/* Fallback container hidden by default unless image error */}
+                            <div className="fallback-icon hidden" style={{position: 'absolute', inset: 0, display: 'none', alignItems: 'center', justifyContent: 'center', color: '#999', background: '#f5f5f5'}}>
+                                 No image
                             </div>
 
                             <div className="item-type-tag">
-                                 <Tag color={item.type === 'boost' ? 'blue' : item.type === 'decoration' ? 'purple' : 'gold'}>
-                                    {item.type.toUpperCase()}
-                                </Tag>
+                                {(() => {
+                                    let color = 'gold';
+                                    let text = 'VẬT PHẨM';
+                                    
+                                    if (['powerup', 'hint', 'boost'].includes(item.type)) {
+                                        color = 'blue';
+                                        text = 'HỖ TRỢ';
+                                    } else if (['decoration', 'theme'].includes(item.type)) {
+                                        color = 'purple';
+                                        text = 'TRANG TRÍ';
+                                    } else if (['character', 'character_skin', 'premium_ai'].includes(item.type)) {
+                                        color = 'magenta';
+                                        text = 'ĐỒNG HÀNH';
+                                    } else if ((item.type as string) === 'collectible') {
+                                        color = 'cyan';
+                                        text = 'SƯU TẦM';
+                                    } else {
+                                        text = item.type.toUpperCase();
+                                    }
+
+                                    return <Tag color={color}>{text}</Tag>;
+                                })()}
                             </div>
                          </div>
                     }
@@ -168,6 +187,24 @@ const ShopPage: React.FC = () => {
                         <div className="item-desc" title={item.description}>
                             {item.description}
                         </div>
+
+                        {ownedItem && item.is_consumable && (
+                            <div className="owned-quantity" style={{ 
+                                fontSize: '0.8rem', 
+                                color: '#8b1d1d', // @seal-red
+                                background: 'rgba(139, 29, 29, 0.08)', // Light fade of seal-red
+                                border: '1px solid rgba(139, 29, 29, 0.2)',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                display: 'inline-block',
+                                fontWeight: 700,
+                                marginBottom: 8,
+                                fontFamily: '"Merriweather", serif',
+                                width: 'fit-content'
+                            }}>
+                                Đang có: {ownedItem.quantity}
+                            </div>
+                        )}
                         
                         <div className="price-section">
                             <span>Giá bán:</span>
@@ -265,6 +302,28 @@ const ShopPage: React.FC = () => {
                             )}
                             <Title level={5}>{selectedItem.name}</Title>
                             <Text type="secondary">{selectedItem.description}</Text>
+                            
+                            {(() => {
+                                const owned = inventory.find(i => i.item_id === selectedItem.id);
+                                if (owned && selectedItem.is_consumable) {
+                                    return (
+                                        <div style={{ 
+                                            marginTop: 12, 
+                                            color: '#8b1d1d', // @seal-red
+                                            background: 'rgba(139, 29, 29, 0.08)', 
+                                            padding: '4px 12px', 
+                                            borderRadius: '16px',
+                                            display: 'inline-block',
+                                            fontWeight: 700,
+                                            border: '1px solid rgba(139, 29, 29, 0.2)',
+                                            fontFamily: '"Merriweather", serif'
+                                        }}>
+                                            Bạn đang có: {owned.quantity}
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
                          </div>
 
                          <div className="quantity-control" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginBottom: 24 }}>

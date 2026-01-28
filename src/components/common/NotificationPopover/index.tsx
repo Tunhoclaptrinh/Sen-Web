@@ -300,20 +300,21 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
             onOpenChange={handleOpenChange}
             placement="bottomRight"
             arrow={false}
-            overlayStyle={{ padding: 0 }}
-            overlayInnerStyle={{ borderRadius: 12, padding: 0, boxShadow: '0 9px 28px 8px rgba(0, 0, 0, 0.05), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12)' }}
         >
-            <Badge count={unreadCount} overflowCount={99} size="small" offset={[-6, 6]}>
-                <Button
-                    type="text"
-                    shape="circle"
-                    style={{
-                        width: 40, height: 40,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: visible ? '#1890ff' : '#64748b'
-                    }}
-                    icon={<BellOutlined style={{ fontSize: 22 }} />}
-                />
+            <Badge 
+                count={unreadCount} 
+                overflowCount={99} 
+                size="small" 
+                offset={[-4, 4]}
+                style={{ boxShadow: 'none' }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', height: 34 }}>
+                    <Button
+                        type="text"
+                        className={`header-action-btn ${visible ? 'active' : ''}`}
+                        icon={<BellOutlined style={{ fontSize: 20}} />}
+                    />
+                </div>
             </Badge>
         </Popover>
     );

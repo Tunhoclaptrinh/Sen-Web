@@ -372,7 +372,7 @@ const HeritageDetailPage = () => {
                       <Row gutter={[48, 24]}>
                         <Col xs={24} md={12}>
                           <h3 className="info-section-title">
-                            Chi Tiết Tham Quan
+                            Chi tiết Tham quan
                           </h3>
                           <ul className="info-grid-list">
                             <li>

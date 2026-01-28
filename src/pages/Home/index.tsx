@@ -10,7 +10,6 @@ import {
 import { fetchHeritageSites } from "@store/slices/heritageSlice";
 import { fetchArtifacts } from "@store/slices/artifactSlice";
 import { RootState, AppDispatch } from "@/store";
-import { getImageUrl } from "@/utils/image.helper";
 import FeatureCard from "@/components/common/cards/FeatureCard";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
@@ -248,7 +247,7 @@ const Home: React.FC = () => {
           {sites?.[0] && (
             <div className="circle-img-wrapper side">
               <img
-                src={getImageUrl(sites[0].image || sites[0].main_image)}
+                src={"/images/Ellipse_3.png"}
                 alt="Deco"
               />
             </div>
@@ -256,7 +255,7 @@ const Home: React.FC = () => {
           {sites?.[1] && (
             <div className="circle-img-wrapper center">
               <img
-                src={getImageUrl(sites[1].image || sites[1].main_image)}
+                src={"/images/Ellipse_4.png"}
                 alt="Deco Main"
               />
             </div>
@@ -264,7 +263,7 @@ const Home: React.FC = () => {
           {sites?.[2] && (
             <div className="circle-img-wrapper side">
               <img
-                src={getImageUrl(sites[2].image || sites[2].main_image)}
+                src={"/images/Ellipse_5.png"}
                 alt="Deco"
               />
             </div>

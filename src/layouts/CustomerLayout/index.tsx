@@ -71,7 +71,7 @@ const CustomerLayout: React.FC = () => {
                 userMenuExtraItems={userMenuExtraItems}
                 navTheme="light"
                 actionsRender={() => [
-                    <div className="progress-stats" key="stats" style={{ display: 'flex', gap: 16, alignItems: 'center', marginRight: 16 }}>
+                    <div className="progress-stats" key="stats" style={{ display: 'flex', gap: 16, alignItems: 'center', marginRight: 12 }}>
                         <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                             <TrophyOutlined style={{ color: '#ffd700' }} />
                             <span>{progress?.total_points || 0}</span>
@@ -85,19 +85,21 @@ const CustomerLayout: React.FC = () => {
                             <span>{progress?.coins || 0}</span>
                         </div>
                     </div>,
-                    <Button
-                        key="gift"
-                        type="text"
-                        icon={<GiftOutlined />}
-                        onClick={() => setDailyRewardVisible(true)}
-                    />,
-                    <Button
-                        key="chat"
-                        type="text"
-                        icon={<MessageOutlined />}
-                        onClick={() => dispatch(setOverlayOpen(true))}
-                    />,
-                    <NotificationPopover key="notifications" />
+                    <div key="actions" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Button
+                            type="text"
+                            className="header-action-btn"
+                            icon={<GiftOutlined />}
+                            onClick={() => setDailyRewardVisible(true)}
+                        />
+                        <Button
+                            type="text"
+                            className="header-action-btn"
+                            icon={<MessageOutlined />}
+                            onClick={() => dispatch(setOverlayOpen(true))}
+                        />
+                        <NotificationPopover />
+                    </div>
                 ]}
             >
                 <Outlet />

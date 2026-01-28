@@ -124,3 +124,32 @@
     gap: 8px;
   }
 }
+
+.header-action-btn {
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 0 !important;
+    font-size: 18px;
+    color: #64748b;
+    transition: all 0.3s;
+    background: transparent;
+    border: none !important;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.04);
+        color: #1890ff;
+    }
+
+    &.active {
+        background: rgba(24, 144, 255, 0.1);
+        color: #1890ff;
+    }
+    
+    .anticon {
+        font-size: 18px;
+    }
+}
