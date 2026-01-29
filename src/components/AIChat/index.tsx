@@ -50,6 +50,8 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     height: window.innerHeight,
   });
 
+  const topMargin = (dimensions.height * 0.2) + (35 * (senSettings?.scale || 0.2));
+
   // Fetch history when opening
   useEffect(() => {
     if (open && user && currentCharacter) {
@@ -351,43 +353,40 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                   height={dimensions.height}
                   options={{ backgroundAlpha: 0, antialias: true }}
                 >
-                  {(() => {
-                    const topMargin = (dimensions.height * 0.2) + (35 * senSettings.scale);
-                    return senSettings.isChibi ? (
-                      <SenChibi
-                          x={dimensions.width * 0.2}
-                          y={topMargin} 
-                          scale={senSettings.scale * 1.45} 
-                          origin="head"
-                          isTalking={loading || !!streamingText || isSpeaking}
-                          gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
-                          eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
-                          mouthState={senSettings.mouthState as any}
-                          showHat={senSettings.accessories.hat}
-                          showGlasses={senSettings.accessories.glasses}
-                          showCoat={senSettings.accessories.coat}
-                          isBlinking={senSettings.isBlinking}
-                      />
-                    ) : (
-                      <SenCharacter
-                          x={dimensions.width * 0.2}
-                          y={topMargin}
-                          scale={senSettings.scale * 1.45}
-                          origin="head"
-                          isTalking={loading || !!streamingText || isSpeaking}
-                          eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
-                          mouthState={senSettings.mouthState as any}
-                          showHat={senSettings.accessories.hat}
-                          showGlasses={senSettings.accessories.glasses}
-                          showCoat={senSettings.accessories.coat}
-                          showBag={senSettings.accessories.bag}
-                          isBlinking={senSettings.isBlinking}
-                          draggable={false}
-                          onPositionChange={() => { }}
-                          onClick={() => { }}
-                      />
-                    );
-                  })()}
+                  {senSettings.isChibi ? (
+                    <SenChibi
+                        x={dimensions.width * 0.2}
+                        y={topMargin} 
+                        scale={senSettings.scale * 1.45} 
+                        origin="head"
+                        isTalking={loading || !!streamingText || isSpeaking}
+                        gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
+                        eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
+                        mouthState={senSettings.mouthState as any}
+                        showHat={senSettings.accessories.hat}
+                        showGlasses={senSettings.accessories.glasses}
+                        showCoat={senSettings.accessories.coat}
+                        isBlinking={senSettings.isBlinking}
+                    />
+                  ) : (
+                    <SenCharacter
+                        x={dimensions.width * 0.2}
+                        y={topMargin}
+                        scale={senSettings.scale * 1.45}
+                        origin="head"
+                        isTalking={loading || !!streamingText || isSpeaking}
+                        eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
+                        mouthState={senSettings.mouthState as any}
+                        showHat={senSettings.accessories.hat}
+                        showGlasses={senSettings.accessories.glasses}
+                        showCoat={senSettings.accessories.coat}
+                        showBag={senSettings.accessories.bag}
+                        isBlinking={senSettings.isBlinking}
+                        draggable={false}
+                        onPositionChange={() => { }}
+                        onClick={() => { }}
+                    />
+                  )}
                 </Stage>
               </div>
 
