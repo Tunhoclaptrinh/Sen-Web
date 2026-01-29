@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -12,7 +12,8 @@ import {
   CommentOutlined,
 } from "@ant-design/icons";
 import senHead from "@/assets/images/SenChibi/face.png";
-import AIChatPanel from "@/components/common/AIChatPanel";
+import { setOverlayOpen } from "@/store/slices/aiSlice";
+import { useDispatch } from "react-redux";
 import "./QuickActions.less";
 
 /**
@@ -30,23 +31,14 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated } = useSelector(
-    (state: RootState) => state.auth,
-  );
-  const [aiChatVisible, setAiChatVisible] = useState(false);
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isOverlayOpen, layoutMode } = useSelector((state: RootState) => state.ai);
 
   // Hide AI Chat in active gameplay routes
   const isGameplayRoute = location.pathname.includes('/game/play') || location.pathname.includes('/game/learning');
 
-  // Default AI character (Sen - the tour guide)
-  const defaultCharacter = {
-    id: 1,
-    name: "Sen",
-    avatar: "/images/characters/sen-avatar.png",
-    personality: "Thân thiện, nhiệt tình, giàu kiến thức về văn hóa Việt Nam",
-    state: "restored" as const,
-    description: "Hướng dẫn viên AI chuyên gia về di sản văn hóa Việt Nam",
-  };
+
 
   // Role-based buttons (lowercase to match enum values)
   const renderRoleButtons = () => {
@@ -143,16 +135,16 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
 
         {/* AI Chat Button */}
         {!isGameplayRoute && (
-        <Tooltip title="Chat với AI" placement="left">
+        <Tooltip title="Chat với AI Hub" placement="left">
           <button
             className="quick-action-btn"
-            onClick={() => setAiChatVisible(!aiChatVisible)}
+            onClick={() => dispatch(setOverlayOpen({ open: true, mode: 'fixed' }))}
             style={{
-              background: aiChatVisible
+              background: isOverlayOpen && layoutMode === 'fixed'
                 ? "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)"
                 : "white",
-              border: aiChatVisible ? "none" : "2px solid var(--primary-color)",
-              color: aiChatVisible ? "white" : "var(--primary-color)",
+              border: isOverlayOpen && layoutMode === 'fixed' ? "none" : "2px solid var(--primary-color)",
+              color: isOverlayOpen && layoutMode === 'fixed' ? "white" : "var(--primary-color)",
             }}
           >
             <CommentOutlined />
@@ -175,12 +167,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
       </div>
     </div>
 
-    {/* AI Chat Panel */}
-    <AIChatPanel 
-      visible={aiChatVisible} 
-      onClose={() => setAiChatVisible(false)}
-      defaultCharacter={defaultCharacter}
-    />
+
   </>
   );
 };

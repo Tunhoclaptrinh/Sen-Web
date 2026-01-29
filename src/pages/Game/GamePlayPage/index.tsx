@@ -17,11 +17,14 @@ import {
   FullscreenExitOutlined,
   SoundOutlined,
   MutedOutlined,
+  CommentOutlined,
 } from "@ant-design/icons";
 import gameService from "@/services/game.service";
 import type { Screen, Level } from "@/types/game.types";
 import { SCREEN_TYPES } from "@/types/game.types";
 import { getImageUrl } from "@/utils/image.helper";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import AIChat from "@/components/AIChat";
 
 // Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -31,6 +34,7 @@ import TimelineScreen from "@/components/Game/Screens/TimelineScreen";
 import ImageViewerScreen from "@/components/Game/Screens/ImageViewerScreen";
 import VideoScreen from "@/components/Game/Screens/VideoScreen";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
+import { setOverlayOpen, setActiveContext } from "@/store/slices/aiSlice";
 
 import "./styles.less";
 
@@ -39,6 +43,9 @@ const { Title, Paragraph } = Typography;
 const GamePlayPage: React.FC = () => {
   const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { isOverlayOpen, layoutMode } = useAppSelector((state) => state.ai);
+  const isChatOpen = isOverlayOpen && layoutMode === 'absolute';
 
   // State
   const [loading, setLoading] = useState(true);
@@ -457,6 +464,25 @@ const GamePlayPage: React.FC = () => {
                 <div className="score-gained-popup">+{pointsGained}</div>
             )}
           </div>
+
+          <Button
+              className="ai-chat-trigger-btn"
+              icon={<CommentOutlined style={{ fontSize: 24, color: 'white' }} />}
+              size="large"
+              style={{ 
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  marginLeft: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'auto'
+              }}
+              onClick={() => {
+                  dispatch(setActiveContext({ level_id: levelInfo?.id }));
+                  dispatch(setOverlayOpen({ open: true, mode: 'absolute' }));
+              }}
+          />
         </div>
 
         <div className="game-viewport">{renderScreen()}</div>
@@ -488,6 +514,11 @@ const GamePlayPage: React.FC = () => {
           title={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
         />
       </div>
+      <AIChat 
+        open={isChatOpen} 
+        onClose={() => dispatch(setOverlayOpen(false))} 
+        position="absolute"
+      />
     </div>
   );
 };

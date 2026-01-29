@@ -9,7 +9,10 @@ import {
     PauseCircleOutlined,
     SettingOutlined,
     UserOutlined,
-    EditOutlined
+    EditOutlined,
+    DeleteOutlined,
+    BulbOutlined,
+    InfoCircleOutlined
 } from "@ant-design/icons";
 import { Stage } from "@pixi/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +24,7 @@ import {
   addUserMessage,
   setCurrentCharacter,
   setMuted,
+  clearChatHistory,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
 import SenChibi from "@/components/SenChibi";
@@ -31,11 +35,12 @@ import "./styles.less";
 interface AIChatProps {
   open: boolean;
   onClose: () => void;
+  position?: 'fixed' | 'absolute';
 }
 
-const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
+const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) => {
   const dispatch = useAppDispatch();
-  const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings } = useAppSelector((state) => state.ai);
+  const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings, activeContext } = useAppSelector((state) => state.ai);
   const { user } = useAppSelector((state) => state.auth);
 
   const [input, setInput] = useState("");
@@ -44,10 +49,11 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
   const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [streamingText, setStreamingText] = useState("");
   const [dimensions, setDimensions] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1000, // Default fallback
+    height: 800,
   });
 
   const topMargin = (dimensions.height * 0.2) + (35 * (senSettings?.scale || 0.2));
@@ -87,15 +93,23 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+    if (!open || !containerRef.current) return;
+
+    const updateSize = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        });
+      }
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(containerRef.current);
+    updateSize();
+
+    return () => observer.disconnect();
+  }, [open]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -277,6 +291,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
       const action: any = await dispatch(sendChatMessage({
         character_id: currentCharacter.id,
         message: userText,
+        context: activeContext || undefined,
       })).unwrap();
 
       // Extracted from ChatResponse
@@ -295,7 +310,8 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     <AnimatePresence>
       {open && (
         <motion.div 
-          className="ai-chat-overlay"
+          ref={containerRef}
+          className={`ai-chat-overlay ${position === 'fixed' ? 'is-fixed' : 'is-absolute'}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -308,6 +324,15 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <div className="controls-group">
+                <Button 
+                    className="control-button delete-button"
+                    icon={<DeleteOutlined />} 
+                    onClick={() => {
+                        if (currentCharacter) dispatch(clearChatHistory(currentCharacter.id));
+                    }}
+                    type="text"
+                    disabled={chatHistory.length === 0}
+                />
                 <Button 
                     className="control-button mute-button"
                     icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />} 
@@ -456,7 +481,23 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+
+              {/* Suggestions Overlay */}
+              <div className="suggestions-overlay">
+                <div className="suggestions-container">
+                    {position === 'absolute' && activeContext?.level_id && (
+                        <div className="suggestion-chip" onClick={() => { setInput("Gợi ý giúp mình với"); handleSend(); }}>
+                            <BulbOutlined /> Gợi ý bài học
+                        </div>
+                    )}
+                    {(activeContext?.artifact_id || activeContext?.heritage_site_id) && (
+                        <div className="suggestion-chip" onClick={() => { setInput("Bạn hãy giải thích thêm về nội dung này"); handleSend(); }}>
+                            <InfoCircleOutlined /> Giải thích thêm
+                        </div>
+                    )}
                 </div>
               </div>
             </div>

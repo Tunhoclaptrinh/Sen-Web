@@ -32,11 +32,19 @@ interface AIState {
 
     // UI State
     isOverlayOpen: boolean;
+    layoutMode: 'fixed' | 'absolute';
     isMuted: boolean;
     error: string | null;
 
     // Sen Specific Settings
     senSettings: SenSettings;
+
+    // Active Context for Global Overlay
+    activeContext: {
+        level_id?: number;
+        artifact_id?: number;
+        heritage_site_id?: number;
+    } | null;
 }
 
 const initialState: AIState = {
@@ -47,6 +55,7 @@ const initialState: AIState = {
     chatLoading: false,
     isTyping: false,
     isOverlayOpen: false,
+    layoutMode: 'fixed',
     isMuted: false,
     error: null,
     senSettings: {
@@ -63,6 +72,7 @@ const initialState: AIState = {
         gesture: 'normal',
         isBlinking: true,
     },
+    activeContext: null,
 };
 
 // Async Thunks
@@ -183,8 +193,13 @@ const aiSlice = createSlice({
         setTyping: (state, action: PayloadAction<boolean>) => {
             state.isTyping = action.payload;
         },
-        setOverlayOpen: (state, action: PayloadAction<boolean>) => {
-            state.isOverlayOpen = action.payload;
+        setOverlayOpen: (state, action: PayloadAction<boolean | { open: boolean, mode: 'fixed' | 'absolute' }>) => {
+            if (typeof action.payload === 'boolean') {
+                state.isOverlayOpen = action.payload;
+            } else {
+                state.isOverlayOpen = action.payload.open;
+                state.layoutMode = action.payload.mode;
+            }
         },
         setMuted: (state, action: PayloadAction<boolean>) => {
             state.isMuted = action.payload;
@@ -199,6 +214,9 @@ const aiSlice = createSlice({
         },
         toggleSenAccessory: (state, action: PayloadAction<keyof SenSettings['accessories']>) => {
             state.senSettings.accessories[action.payload] = !state.senSettings.accessories[action.payload];
+        },
+        setActiveContext: (state, action: PayloadAction<AIState['activeContext']>) => {
+            state.activeContext = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -328,6 +346,7 @@ export const {
     setMuted,
     updateSenSettings,
     toggleSenAccessory,
+    setActiveContext,
 } = aiSlice.actions;
 
 export default aiSlice.reducer;

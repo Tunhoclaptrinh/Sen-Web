@@ -9,6 +9,7 @@ import {
   HeartOutlined,
   MailOutlined,
   FacebookOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
 import { Layout, Typography, Menu, Input, Dropdown, Button, Drawer, Space, Avatar } from 'antd';
 import type { MenuProps } from 'antd';
@@ -18,6 +19,7 @@ import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
 import logo from '@/assets/images/logo.png';
 import NotificationPopover from '@/components/common/NotificationPopover';
+import { setOverlayOpen } from '@/store/slices/aiSlice';
 import { getImageUrl } from "@/utils/image.helper";
 import './styles.less';
 
@@ -203,6 +205,15 @@ const Header: React.FC = () => {
           {/* Notifications */}
           {!isMobile && (
             <NotificationPopover />
+          )}
+
+          {/* AI Chat Button */}
+          {!isMobile && (
+            <Button
+              type="text"
+              icon={<MessageOutlined style={{ fontSize: 20 }} />}
+              onClick={() => dispatch(setOverlayOpen({ open: true, mode: 'fixed' }))}
+            />
           )}
 
           {/* User Menu / Auth Buttons */}

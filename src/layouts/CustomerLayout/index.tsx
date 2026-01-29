@@ -18,7 +18,7 @@ import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
 import NotificationPopover from '@/components/common/NotificationPopover';
-import AIChat from '@/components/AIChat';
+// AIChat removed, now handled globally in GlobalCharacterOverlay
 
 const CustomerLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -26,7 +26,6 @@ const CustomerLayout: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const { progress } = useSelector((state: RootState) => state.game);
 
-    const { isOverlayOpen } = useSelector((state: RootState) => state.ai);
     const [dailyRewardVisible, setDailyRewardVisible] = useState(false);
 
     // Initial Data Fetching (Persistent Game Data)
@@ -38,6 +37,8 @@ const CustomerLayout: React.FC = () => {
     React.useEffect(() => {
          dispatch(fetchProgress() as any);
     }, [dispatch, location.pathname]);
+
+
 
     const handleLogout = () => {
         dispatch(logout() as any);
@@ -96,7 +97,7 @@ const CustomerLayout: React.FC = () => {
                             type="text"
                             className="header-action-btn"
                             icon={<MessageOutlined />}
-                            onClick={() => dispatch(setOverlayOpen(true))}
+                            onClick={() => dispatch(setOverlayOpen({ open: true, mode: 'fixed' }))}
                         />
                         <NotificationPopover />
                     </div>
@@ -125,11 +126,7 @@ const CustomerLayout: React.FC = () => {
                 </Card>
             </Drawer>
 
-            {/* AI Chat Overlay */}
-            <AIChat 
-                open={isOverlayOpen} 
-                onClose={() => dispatch(setOverlayOpen(false))} 
-            />
+            {/* AI Chat Overlay (Global) - Now handled by GlobalCharacterOverlay in App.tsx */}
         </>
     );
 };
