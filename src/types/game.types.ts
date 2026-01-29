@@ -36,7 +36,6 @@ export interface Chapter {
     description: string;
     theme: string;
     order: number;
-    layer_index: 1 | 2 | 3;
     petal_state: 'closed' | 'blooming' | 'full' | 'locked';
     color: string;
     image?: string;
@@ -70,6 +69,7 @@ export interface Level {
     total_screens?: number;
     screens?: Screen[];
     knowledge_base?: string;
+    background_music?: string;
 }
 
 // ==================== Screen Types ====================

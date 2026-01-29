@@ -15,10 +15,18 @@ const MediaEditor: React.FC<MediaEditorProps> = ({ type }) => {
         <div>
             <Form.Item 
                 name={isVideo ? "video_url" : "image"} 
-                label={isVideo ? "Đường dẫn Video (URL)" : "Đường dẫn Hình ảnh (URL)"}
+                label={isVideo ? "Đường dẫn Video (URL) hoặc Mã nhúng (Embed Code)" : "Đường dẫn Hình ảnh (URL)"}
                 rules={[{ required: true }]}
+                help={isVideo ? "Hỗ trợ link YouTube hoặc mã nhúng iframe từ YouTube" : undefined}
             >
-                <Input placeholder="https://..." />
+                {isVideo ? (
+                    <Input.TextArea 
+                        rows={4} 
+                        placeholder={'https://www.youtube.com/watch?v=...\nHOẶC\n<iframe width="560" height="315" src="..."></iframe>'} 
+                    />
+                ) : (
+                    <Input placeholder="https://..." />
+                )}
             </Form.Item>
 
             <Form.Item name="caption" label="Tiêu đề / Caption">

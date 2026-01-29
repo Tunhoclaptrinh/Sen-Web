@@ -12,6 +12,8 @@ const LearningManagement: React.FC = () => {
             title: 'Tiêu đề bài học',
             dataIndex: 'title',
             key: 'title',
+            align: 'left' ,
+            searchable: true,
         },
         {
             title: 'Độ khó',

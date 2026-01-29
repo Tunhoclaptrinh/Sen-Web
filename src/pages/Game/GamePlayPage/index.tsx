@@ -15,10 +15,13 @@ import {
   RedoOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
+  SoundOutlined,
+  MutedOutlined,
 } from "@ant-design/icons";
 import gameService from "@/services/game.service";
 import type { Screen, Level } from "@/types/game.types";
 import { SCREEN_TYPES } from "@/types/game.types";
+import { getImageUrl } from "@/utils/image.helper";
 
 // Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -27,6 +30,7 @@ import HiddenObjectScreen from "@/components/Game/Screens/HiddenObjectScreen";
 import TimelineScreen from "@/components/Game/Screens/TimelineScreen";
 import ImageViewerScreen from "@/components/Game/Screens/ImageViewerScreen";
 import VideoScreen from "@/components/Game/Screens/VideoScreen";
+import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
 
 import "./styles.less";
 
@@ -47,14 +51,63 @@ const GamePlayPage: React.FC = () => {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [completionData, setCompletionData] = useState<any>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const bgmAudioRef = React.useRef<HTMLAudioElement | null>(null);
 
   const [pointsGained, setPointsGained] = useState<number | null>(null);
+  
+  // Audio State
+  const [bgmVolume, setBgmVolume] = useState(0.5);
+  const [sfxVolume, setSfxVolume] = useState(1.0);
 
   useEffect(() => {
     if (levelId) {
       initGame(parseInt(levelId));
     }
+    return () => {
+        // Cleanup BGM
+        if (bgmAudioRef.current) {
+            bgmAudioRef.current.pause();
+            bgmAudioRef.current = null;
+        }
+    };
   }, [levelId]);
+
+  // Handle BGM Playback
+  useEffect(() => {
+      if (!levelInfo?.background_music) return;
+
+      const bgmUrl = getImageUrl(levelInfo.background_music);
+      
+      if (!bgmAudioRef.current) {
+          bgmAudioRef.current = new Audio(bgmUrl);
+          bgmAudioRef.current.loop = true;
+      } else if (bgmAudioRef.current.src !== bgmUrl) {
+          bgmAudioRef.current.src = bgmUrl;
+      }
+
+      // Update volume
+      bgmAudioRef.current.volume = bgmVolume;
+
+      const isVideoScreen = currentScreen?.type === SCREEN_TYPES.VIDEO;
+
+      if (isMuted || isVideoScreen) {
+          bgmAudioRef.current.pause();
+      } else {
+          // Play only if game is not loading and not completed
+          if (!loading && !gameCompleted) {
+              const playPromise = bgmAudioRef.current.play();
+              if (playPromise !== undefined) {
+                  playPromise.catch(error => {
+                      console.warn("Autoplay prevented:", error);
+                      // Interaction needed mainly
+                  });
+              }
+          } else {
+               bgmAudioRef.current.pause();
+          }
+      }
+  }, [levelInfo?.background_music, isMuted, bgmVolume, loading, gameCompleted, currentScreen?.type]);
 
   const triggerScoreAnimation = (points: number) => {
       if (points > 0) {
@@ -407,6 +460,23 @@ const GamePlayPage: React.FC = () => {
         </div>
 
         <div className="game-viewport">{renderScreen()}</div>
+
+        <AudioSettingsPopover
+            isMuted={isMuted}
+            onMuteToggle={setIsMuted}
+            bgmVolume={bgmVolume}
+            onBgmVolumeChange={setBgmVolume}
+            sfxVolume={sfxVolume}
+            onSfxVolumeChange={setSfxVolume}
+        >
+            <Button
+              icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
+              className="sound-button"
+              size="large"
+              title="Cài đặt âm thanh"
+              style={{ position: 'absolute', bottom: 20, right: 80, zIndex: 100 }}
+            />
+        </AudioSettingsPopover>
 
         <Button
           icon={

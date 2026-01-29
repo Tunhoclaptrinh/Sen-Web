@@ -75,6 +75,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onExport,
   title,
   extra,
+  rightExtra,
   rowKey = "id",
   size = "middle",
   bordered = false,
@@ -507,7 +508,7 @@ const DataTable: React.FC<DataTableProps> = ({
     Object.keys(filterValues).some((key) => filterValues[key]);
 
   return (
-    <div className="data-table-wrapper">
+    <div className={`data-table-wrapper${hideCard ? ' hide-card-mode' : ''}`}>
       {/* Separate Title */}
       {title && (
         <div className="data-table-title">
@@ -676,6 +677,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
           {/* Right Side: Tools (Search, Filter, Refresh, Total) */}
           <Space wrap align="center" className="right-tools">
+            {rightExtra}
             {searchable && !tableProps.hideGlobalSearch && (
               <Input
                 placeholder={searchPlaceholder}

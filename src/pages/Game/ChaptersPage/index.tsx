@@ -57,15 +57,9 @@ const ChaptersPage: React.FC = () => {
 
     const getChapterImage = (chapter: Chapter) => {
         if (chapter.image) return chapter.image;
-
-        switch (chapter.layer_index) {
-            case 1:
-                return "https://media.licdn.com/dms/image/v2/D5612AQE8NiooxTxA3w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1695825196046?e=1770249600&v=beta&t=Oy9UgJswkfS4zaALRlZyxKH9xh3Cga6Mb5aWMOSJBtw";
-            case 2:
-                return "https://images.unsplash.com/photo-1555169062-013468b47731?w=600"; 
-            case 3:
-                return "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=600";
-        }
+        
+        // Return a default image if no image is set
+        return "https://media.licdn.com/dms/image/v2/D5612AQE8NiooxTxA3w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1695825196046?e=1770249600&v=beta&t=Oy9UgJswkfS4zaALRlZyxKH9xh3Cga6Mb5aWMOSJBtw";
     };
 
     if (chaptersLoading || progressLoading) {

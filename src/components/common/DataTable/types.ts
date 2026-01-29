@@ -70,6 +70,7 @@ export interface DataTableProps {
     onExport?: (options?: any) => void;
     title?: React.ReactNode;
     extra?: React.ReactNode;
+    rightExtra?: React.ReactNode;
     rowKey?: string;
     size?: "small" | "middle" | "large";
     bordered?: boolean;

@@ -30,6 +30,7 @@ interface ScreenEditorProps {
     chapter_name?: string;
     level_name?: string;
     order: number;
+    background_music?: string;
   };
   screensCount?: number;
   screen?: Screen | null;
@@ -215,7 +216,15 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
                         </Button>
                         <Button 
                             type="primary" 
-                            onClick={() => form.submit()} 
+                            onClick={() => {
+                                form.validateFields()
+                                    .then(values => {
+                                        handleSubmit(values);
+                                    })
+                                    .catch(info => {
+                                        console.log('Validate Failed:', info);
+                                    });
+                            }}
                             loading={loading}
                             style={{ borderRadius: 8, minWidth: 120, boxShadow: '0 4px 10px rgba(var(--primary-color-rgb), 0.2)' }}
                         >
@@ -350,6 +359,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
             onClose={() => setPreviewVisible(false)}
             screens={[{...form.getFieldsValue(), type, id: screen?.id || 'preview'} as any]} 
             title="Xem trước màn hình kịch bản"
+            bgmUrl={levelMetadata?.background_music}
         />
     </>
   );

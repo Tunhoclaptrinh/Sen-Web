@@ -4,9 +4,13 @@ import { ViewModal } from "@/components/common";
 import { 
     RedoOutlined, 
     StepForwardOutlined,
-    FullscreenOutlined 
+    FullscreenOutlined,
+    SoundOutlined,
+    MutedOutlined
 } from "@ant-design/icons";
 import { Screen, SCREEN_TYPES } from "@/types/game.types";
+import { getImageUrl } from "@/utils/image.helper";
+import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
 
 // Import actual Game Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -25,6 +29,7 @@ interface GameSimulatorProps {
     screens: Screen[];
     initialScreenIndex?: number;
     title?: string;
+    bgmUrl?: string; // New Prop
 }
 
 const GameSimulator: React.FC<GameSimulatorProps> = ({ 
@@ -32,10 +37,49 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     onClose, 
     screens, 
     initialScreenIndex = 0,
-    title = "Chạy thử (Preview Mode)"
+    title = "Chạy thử (Preview Mode)",
+    bgmUrl
 }) => {
     const [currentIndex, setCurrentIndex] = useState(initialScreenIndex);
     const [score, setScore] = useState(0);
+    const [isMuted, setIsMuted] = useState(false);
+    const [bgmVolume, setBgmVolume] = useState(0.5);
+    const [sfxVolume, setSfxVolume] = useState(1.0);
+    const bgmAudioRef = React.useRef<HTMLAudioElement | null>(null);
+
+    // BGM Logic
+    useEffect(() => {
+        if (!bgmUrl || !visible) {
+             if (bgmAudioRef.current) {
+                 bgmAudioRef.current.pause();
+                 bgmAudioRef.current = null;
+             }
+             return;
+        }
+
+        const url = getImageUrl(bgmUrl);
+        if (!bgmAudioRef.current) {
+            bgmAudioRef.current = new Audio(url);
+            bgmAudioRef.current.loop = true;
+        } else if (bgmAudioRef.current.src !== url) {
+             bgmAudioRef.current.src = url;
+        }
+
+        // Apply volume
+        bgmAudioRef.current.volume = bgmVolume;
+
+        if (visible && !isMuted) {
+            bgmAudioRef.current.play().catch(e => console.warn("Preview Autoplay blocked:", e));
+        } else {
+            bgmAudioRef.current.pause();
+        }
+
+        return () => {
+             if (bgmAudioRef.current) {
+                 bgmAudioRef.current.pause();
+             }
+        };
+    }, [bgmUrl, visible, isMuted, bgmVolume]);
 
     // Reset when opening
     useEffect(() => {
@@ -269,6 +313,22 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                             }
                         }}
                     />
+                    
+                     
+                     <AudioSettingsPopover
+                        isMuted={isMuted}
+                        onMuteToggle={setIsMuted}
+                        bgmVolume={bgmVolume}
+                        onBgmVolumeChange={setBgmVolume}
+                        sfxVolume={sfxVolume}
+                        onSfxVolumeChange={setSfxVolume}
+                     >
+                         <Button
+                            size="small"
+                            icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
+                            title="Cài đặt âm thanh"
+                        />
+                     </AudioSettingsPopover>
                 </div>
 
                 <div style={{

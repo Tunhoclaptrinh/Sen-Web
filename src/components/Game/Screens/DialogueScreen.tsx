@@ -127,7 +127,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
             >
               <SenChibi
                 x={140}
-                y={316}
+                y={200}
                 scale={0.16}
                 visible={true}
                 mouthState={isSenSpeaking && isTyping ? "open" : "smile"}
