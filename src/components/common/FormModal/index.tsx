@@ -1,5 +1,6 @@
-import React from 'react';
-import { Modal, Form, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Modal, Form, Spin, Button } from 'antd';
+import { FullscreenOutlined, FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { FormModalProps } from './types';
 
 /**
@@ -30,12 +31,15 @@ const FormModal: React.FC<FormModalProps> = ({
   destroyOnClose = true,
   maskClosable = false,
   preserve = true,
+  fullscreen: initialFullscreen = false,
 
   // Footer
   footer,
 
   ...modalProps
 }) => {
+  const [isFullscreen, setIsFullscreen] = useState(initialFullscreen);
+
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
@@ -49,25 +53,56 @@ const FormModal: React.FC<FormModalProps> = ({
 
   const handleCancel = () => {
     form.resetFields();
+    setIsFullscreen(initialFullscreen); // Reset fullscreen state on close
     if (onCancel) {
       onCancel();
     }
   };
 
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  // Custom title with fullscreen toggle button
+  const modalTitle = (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '8px' }}>
+      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
+      <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+        <Button
+          type="text"
+          size="small"
+          icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+          onClick={toggleFullscreen}
+          title={isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
+        />
+        <Button
+          type="text"
+          size="small"
+          icon={<CloseOutlined />}
+          onClick={handleCancel}
+          title="Đóng"
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Modal
-      title={title}
+      title={modalTitle}
       open={open}
       onCancel={handleCancel}
       onOk={handleOk}
-      width={width}
+      width={isFullscreen ? '100vw' : width}
       okText={okText}
       cancelText={cancelText}
       confirmLoading={loading}
-      centered={centered}
+      centered={!isFullscreen && centered}
       destroyOnClose={destroyOnClose}
       maskClosable={maskClosable}
       footer={footer}
+      closable={false}
+      style={isFullscreen ? { top: 0, paddingBottom: 0, maxWidth: '100vw' } : {}}
+      bodyStyle={isFullscreen ? { height: 'calc(100vh - 110px)', overflowY: 'auto' } : {}}
       {...modalProps}
     >
       <Spin spinning={loading}>

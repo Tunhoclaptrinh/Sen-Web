@@ -22,6 +22,8 @@ import { CSS } from '@dnd-kit/utilities';
 import type { TimelineScreen as TimelineScreenType } from '@/types/game.types';
 import './styles.less';
 
+import { getImageUrl } from '@/utils/image.helper';
+
 const { Title, Text } = Typography;
 
 interface Props {
@@ -157,7 +159,7 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
     return (
         <div className="timeline-screen">
             {/* Background reused from parent container */}
-            <div className="game-background" style={{ backgroundImage: bgImage ? `url("${bgImage}")` : undefined }} />
+            <div className="game-background" style={{ backgroundImage: `url("${getImageUrl(bgImage, 'https://via.placeholder.com/1200x600?text=Timeline+Background')}")` }} />
             
             <div className="screen-content-wrapper">
                 <Card className="timeline-card">

@@ -11,6 +11,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
   x = 0,
   y = 0,
   scale = 0.5,
+  origin = 'torso',
   visible = true,
   showHat = true,
   showGlasses = true,
@@ -142,12 +143,23 @@ const SenChibi: React.FC<SenChibiProps> = ({
     );
   };
 
+  // Calculate pivot based on requested origin
+  const pivotY = useMemo(() => {
+    switch (origin) {
+      case 'head': return -1450; // Balanced top (no clipping)
+      case 'feet': return 500;   // Feet/Shoes
+      case 'torso':
+      default: return -300;    // Visual center (stable for dragging)
+    }
+  }, [origin]);
+
   if (!visible) return null;
 
   return (
     <Container
       x={x}
       y={y + breathingY}
+      pivot={{ x: 0, y: pivotY }}
       scale={{ x: scale, y: scale * breathingScale }}
       sortableChildren={true}
       interactive={interactive}

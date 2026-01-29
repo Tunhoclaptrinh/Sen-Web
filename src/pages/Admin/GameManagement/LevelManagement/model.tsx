@@ -4,124 +4,22 @@ import { Level } from "@/types";
 import adminLevelService from "@/services/admin-level.service";
 import { useCRUD } from "@/hooks/useCRUD";
 
-// Default screens based on level type
-const getDefaultScreens = (type: string) => {
-    switch (type) {
-        case 'story':
-            return [
-                {
-                    id: 'intro',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Chào mừng bạn đến với màn chơi mới!' }
-                    ],
-                    next_screen_id: 'story'
-                },
-                {
-                    id: 'story',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Đây là nội dung câu chuyện...' }
-                    ]
-                }
-            ];
-
-        case 'quiz':
-            return [
-                {
-                    id: 'intro',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Hãy trả lời câu hỏi để hoàn thành màn chơi!' }
-                    ],
-                    next_screen_id: 'quiz1'
-                },
-                {
-                    id: 'quiz1',
-                    type: 'QUIZ',
-                    question: 'Câu hỏi mẫu?',
-                    options: [
-                        { text: 'Đáp án A', is_correct: false },
-                        { text: 'Đáp án B', is_correct: true },
-                        { text: 'Đáp án C', is_correct: false },
-                        { text: 'Đáp án D', is_correct: false }
-                    ]
-                }
-            ];
-
-        case 'hidden_object':
-            return [
-                {
-                    id: 'intro',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Hãy tìm các vật phẩm ẩn trong hình!' }
-                    ],
-                    next_screen_id: 'gameplay'
-                },
-                {
-                    id: 'gameplay',
-                    type: 'HIDDEN_OBJECT',
-                    guide_text: 'Tìm các vật phẩm',
-                    items: [
-                        {
-                            id: 'item1',
-                            name: 'Vật phẩm mẫu',
-                            coordinates: { x: 20, y: 30, width: 10, height: 10 },
-                            fact_popup: 'Đây là mô tả về vật phẩm',
-                            points: 10
-                        }
-                    ],
-                    required_items: 1,
-                    next_screen_id: 'completion'
-                },
-                {
-                    id: 'completion',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Chúc mừng! Bạn đã hoàn thành màn chơi!' }
-                    ]
-                }
-            ];
-
-        case 'timeline':
-            return [
-                {
-                    id: 'intro',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Hãy sắp xếp các sự kiện theo thời gian!' }
-                    ],
-                    next_screen_id: 'timeline'
-                },
-                {
-                    id: 'timeline',
-                    type: 'TIMELINE',
-                    events: [
-                        {
-                            id: 'event1',
-                            title: 'Sự kiện 1',
-                            date: '1900',
-                            description: 'Mô tả sự kiện'
-                        }
-                    ]
-                }
-            ];
-
-        default:
-            return [
-                {
-                    id: 'default',
-                    type: 'DIALOGUE',
-                    content: [
-                        { speaker: 'AI', text: 'Màn chơi đang được phát triển...' }
-                    ]
-                }
-            ];
-    }
+// Default screens for new level
+const getDefaultScreens = () => {
+    return [
+        {
+            id: 'intro',
+            type: 'DIALOGUE',
+            content: [
+                { speaker: 'AI', text: 'Chào mừng bạn đến với màn chơi mới!' }
+            ],
+            is_first: true,
+            is_last: true
+        }
+    ];
 };
 
-export const useLevelModel = () => {
+export const useLevelModel = (initialFilters?: Record<string, any>) => {
     // UI State
     const [currentRecord, setCurrentRecord] = useState<Level | null>(null);
     const [formVisible, setFormVisible] = useState(false);
@@ -130,22 +28,49 @@ export const useLevelModel = () => {
     const crudOptions = useMemo(() => ({
         pageSize: 10,
         autoFetch: true,
+        initialFilters: initialFilters, 
+        defaultSort: 'order',
+        defaultOrder: 'ascend',
         onError: (action: string, error: any) => {
             console.error(`Error ${action} level:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
         },
-    }), []);
+    }), [JSON.stringify(initialFilters)]); // Re-memoize if filters change
 
     const crud = useCRUD(adminLevelService, crudOptions);
 
     // UI Handlers
     const openCreate = () => {
-        setCurrentRecord(null);
+        // Pre-fill with initialFilters (e.g. chapter_id) - Clone to avoid mutation
+        const defaults: any = initialFilters ? { ...initialFilters } : {};
+        
+        // IMPORTANT: Explicitly remove 'id' to ensure it's a "Create" operation
+        if (defaults.id) delete defaults.id;
+
+        // Calculate auto-increment order and suggest required_level
+        if (defaults.chapter_id && crud.data) {
+             const existingInChapter = crud.data.filter((l: Level) => l.chapter_id === defaults.chapter_id);
+             // Sort by order to find the last one
+             const sortedLevels = [...existingInChapter].sort((a, b) => (b.order || 0) - (a.order || 0));
+             const lastLevel = sortedLevels[0];
+             
+             const maxOrder = lastLevel ? (lastLevel.order || 0) : 0;
+             defaults.order = maxOrder + 1;
+             
+             // If there's a last level, suggest it as the required_level
+             if (lastLevel) {
+                 defaults.required_level = lastLevel.id;
+             }
+        } else {
+             defaults.order = (crud.data?.length || 0) + 1;
+        }
+
+        setCurrentRecord(defaults);
         setFormVisible(true);
     };
 
     const openEdit = (record: Level) => {
-        setCurrentRecord(record);
+        setCurrentRecord({ ...record }); // Clone it
         setFormVisible(true);
     };
 
@@ -157,14 +82,22 @@ export const useLevelModel = () => {
     const handleSubmit = async (values: any) => {
         let success = false;
 
-        if (currentRecord) {
+        // Determine if it's an update or create based on ID in currentRecord
+        const recordId = (currentRecord as any)?.id;
+        
+        console.log("Submit Level:", { recordId, values, currentRecord });
+
+        if (recordId) {
             // Update existing level
-            success = await crud.update(currentRecord.id, values);
+            success = await crud.update(recordId, values);
         } else {
-            // Create new level - add default screens based on type
-            const defaultScreens = getDefaultScreens(values.type);
+            // Create new level - add default screens
+            // Ensure we don't accidentally send an ID field during creation
+            const { id: _, ...createData } = values; 
+            
+            const defaultScreens = getDefaultScreens();
             const createValues = {
-                ...values,
+                ...createData,
                 screens: defaultScreens
             };
             success = await crud.create(createValues);
@@ -174,6 +107,37 @@ export const useLevelModel = () => {
             closeForm();
         }
         return success;
+    };
+
+    // Screen Management State
+    const [isScreenMode, setIsScreenMode] = useState(false);
+    const [currentLevel, setCurrentLevel] = useState<Level | null>(null);
+
+    const enterScreenMode = (level: Level) => {
+        setCurrentLevel(level);
+        setIsScreenMode(true);
+    };
+
+    const exitScreenMode = () => {
+        setIsScreenMode(false);
+        setCurrentLevel(null);
+    };
+
+    const reorderLevels = async (newOrderIds: number[]) => {
+        if (!initialFilters?.chapter_id) {
+            message.error("Không xác định được chương để sắp xếp");
+            return;
+        }
+
+        try {
+            await adminLevelService.reorder(initialFilters.chapter_id, newOrderIds);
+            message.success("Cập nhật thứ tự thành công");
+            crud.refresh(); // Refresh list to update 'order' column
+        } catch (error: any) {
+            console.error("Reorder error:", error);
+            message.error("Lỗi khi sắp xếp: " + (error.message || "Unknown error"));
+            throw error;
+        }
     };
 
     return {
@@ -186,5 +150,12 @@ export const useLevelModel = () => {
         openCreate,
         openEdit,
         closeForm,
+        // Screen Mode
+        isScreenMode,
+        currentLevel,
+        enterScreenMode,
+        exitScreenMode,
+        // Reorder
+        reorderLevels,
     };
 };

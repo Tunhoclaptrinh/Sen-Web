@@ -1,4 +1,4 @@
-import { Input, InputNumber, Row, Col, Form, ColorPicker } from "antd";
+import { Input, InputNumber, Row, Col, Form } from "antd";
 import { FormModal } from "@/components/common";
 import { useEffect } from "react";
 
@@ -76,7 +76,7 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
             </Form.Item>
 
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={24}>
           <Form.Item
             name="theme"
             label="Chủ đề"
@@ -85,15 +85,7 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
             <Input placeholder="Chủ đề (VD: Văn hóa Đại Việt)" />
           </Form.Item>
         </Col>
-        <Col span={12}>
-          <Form.Item
-            name="color"
-            label="Màu sắc chủ đạo"
-            getValueFromEvent={(color) => (typeof color === 'string' ? color : color.toHexString())}
-          >
-            <ColorPicker showText />
-          </Form.Item>
-        </Col>
+
       </Row>
 
       <Row gutter={16}>

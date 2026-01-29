@@ -14,6 +14,7 @@ const SenCharacter = ({
   x,
   y,
   scale,
+  origin = 'torso',
   showHat = true,
   showGlasses = true,
   showBag = true,
@@ -246,6 +247,16 @@ const SenCharacter = ({
     );
   };
 
+  // Calculate pivot based on requested origin
+  const pivotY = useMemo(() => {
+    switch (origin) {
+      case 'head': return -950; // Balanced top (no clipping)
+      case 'feet': return 1416;  // Ground level
+      case 'torso':
+      default: return 380;     // Visual center (stable for dragging)
+    }
+  }, [origin]);
+
   return (
     <Container
       x={position.x}
@@ -256,7 +267,7 @@ const SenCharacter = ({
       pointerdown={handlePointerDown}
       pointermove={handlePointerMove}
       pointerup={handlePointerUp}
-      pivot={{ x: 0, y: 380 }}
+      pivot={{ x: 0, y: pivotY }}
       pointerupoutside={handlePointerUp}
       cursor={draggable ? (isDragging ? "grabbing" : "grab") : "default"}
       onclick={() => {

@@ -47,6 +47,13 @@ export interface DataTableProps {
     showActions?: boolean;
     actionsWidth?: number;
     customActions?: (record: any) => React.ReactNode;
+  
+  // Prop to hide the outer card (for embedding in modals/other components)
+  hideCard?: boolean;
+
+  /**
+   * Action column props override
+   */
     actionColumnProps?: any; // Allow overriding action column config
     actionPosition?: "left" | "right";
     batchOperations?: boolean;

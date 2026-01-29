@@ -50,6 +50,8 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     height: window.innerHeight,
   });
 
+  const topMargin = (dimensions.height * 0.2) + (35 * (senSettings?.scale || 0.2));
+
   // Fetch history when opening
   useEffect(() => {
     if (open && user && currentCharacter) {
@@ -354,8 +356,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                   {senSettings.isChibi ? (
                     <SenChibi
                         x={dimensions.width * 0.2}
-                        y={dimensions.height * 0.69} 
+                        y={topMargin} 
                         scale={senSettings.scale * 1.45} 
+                        origin="head"
                         isTalking={loading || !!streamingText || isSpeaking}
                         gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
                         eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
@@ -368,8 +371,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                   ) : (
                     <SenCharacter
                         x={dimensions.width * 0.2}
-                        y={dimensions.height * 0.49}
+                        y={topMargin}
                         scale={senSettings.scale * 1.45}
+                        origin="head"
                         isTalking={loading || !!streamingText || isSpeaking}
                         eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
                         mouthState={senSettings.mouthState as any}
