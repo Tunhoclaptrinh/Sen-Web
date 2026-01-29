@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, Card, Space, Row, Col, InputNumber } from 'antd';
+import { Form, Input, Button, Card, Row, Col, InputNumber } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
