@@ -3,6 +3,7 @@ import { Card, Typography, message, Modal, Button } from 'antd';
 import { CheckCircleFilled, SearchOutlined } from '@ant-design/icons';
 import type { HiddenObjectScreen as HiddenObjectScreenType } from '@/types/game.types';
 import './styles.less';
+import { getImageUrl } from '@/utils/image.helper';
 
 const { Title } = Typography;
 
@@ -54,13 +55,6 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
         setFoundItems([]);
         setProgress({ collected: 0, required: data.required_items || data.items?.length || 0 });
     }, [data]);
-
-    const getImageUrl = (path?: string) => {
-        if (!path) return "https://placehold.co/800x600?text=No+Image";
-        if (path.startsWith('http')) return path;
-        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-        return `${baseUrl}${path}`;
-    };
 
     const handleSceneClick = async (e: React.MouseEvent<HTMLDivElement>) => {
         if (!sceneRef.current || loading) return;

@@ -1,4 +1,4 @@
-import { Modal } from "antd";
+import { ViewModal } from "@/components/common";
 import { useState } from "react";
 import ScreenList from "./ScreenList";
 import { Level, Screen } from "@/types/game.types";
@@ -43,13 +43,14 @@ const ScreensDrawer: React.FC<ScreensDrawerProps> = ({ open, onClose, level }) =
   return (
     <>
       {/* Modal Danh sách Màn chơi */}
-      <Modal
-        title={`Quản lý Màn chơi: ${level?.name || '...'}`}
+      <ViewModal
+        title={`${level?.name || '...'} - Quản lý Screens`}
         open={open && isListOpen}
-        onCancel={handleCloseAll}
+        onClose={handleCloseAll}
         width={1200}
         footer={null}
         destroyOnClose
+        fullscreen={false}
       >
         {level && (
           <ScreenList 
@@ -58,28 +59,20 @@ const ScreensDrawer: React.FC<ScreensDrawerProps> = ({ open, onClose, level }) =
               onAdd={handleAdd}
           />
         )}
-      </Modal>
+      </ViewModal>
 
       {/* Modal Chỉnh sửa Màn chơi */}
-      <Modal
-        title={editingScreen ? "Chỉnh sửa Màn chơi" : "Thêm Màn chơi mới"}
-        open={open && isEditorOpen}
-        onCancel={closeEditor}
-        width={800}
-        footer={null}
-        destroyOnClose
-      >
-        {level && (
-          <ScreenEditor
-              levelId={level.id}
-              screen={editingScreen}
-              onSuccess={() => {
-                  closeEditor();
-              }}
-              onCancel={closeEditor}
-          />
-        )}
-      </Modal>
+      {level && (
+        <ScreenEditor
+            open={isEditorOpen}
+            levelId={level.id}
+            screen={editingScreen}
+            onSuccess={() => {
+                closeEditor();
+            }}
+            onCancel={closeEditor}
+        />
+      )}
     </>
   );
 };

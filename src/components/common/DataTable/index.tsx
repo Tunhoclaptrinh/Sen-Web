@@ -84,7 +84,8 @@ const DataTable: React.FC<DataTableProps> = ({
   showAlert = false,
   alertMessage,
   alertType = "info",
-  actionColumnProps, // New Prop
+  actionColumnProps,
+  hideCard, // New prop
   ...tableProps
 }) => {
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
@@ -515,9 +516,12 @@ const DataTable: React.FC<DataTableProps> = ({
       )}
 
       <Card
-        styles={{body: { borderRadius: 12, padding: 0 }}}
+        styles={{ body: { borderRadius: hideCard ? 0 : 12, padding: 0 } }}
         hoverable={false}
+        bordered={!hideCard}
+        style={hideCard ? { boxShadow: 'none', background: 'transparent' } : undefined}
       >
+
         {/* Header Content inside Card for seamless look */}
         {tableProps.headerContent && <div>{tableProps.headerContent}</div>}
 

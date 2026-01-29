@@ -44,8 +44,8 @@ const GlobalCharacterOverlay = () => {
   const [isMinimized, setIsMinimized] = useState(false); // New: Minimized state
   const [showModal, setShowModal] = useState(false);
 
-  const CHAR_WIDTH = isChibi ? 800 * (scale * 2.5) : 400 * (scale * 4);
-  const CHAR_HEIGHT = isChibi ? 1100 * (scale * 2.5) : 900 * (scale * 4);
+  const CHAR_WIDTH = isChibi ? 580 * (scale * 2.5) : 260 * (scale * 4);
+  const CHAR_HEIGHT = isChibi ? 940 * (scale * 2.5) : 646 * (scale * 4);
 
   // Drag logic
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -92,8 +92,8 @@ const GlobalCharacterOverlay = () => {
         <div
           className={`global-char-overlay ${isDragging ? "dragging" : ""}`}
           style={{
-            left: position.x,
-            top: position.y,
+            left: position.x - CHAR_WIDTH / 2,
+            top: position.y - CHAR_HEIGHT / 2,
             width: CHAR_WIDTH,
             height: CHAR_HEIGHT,
           }}
@@ -108,8 +108,9 @@ const GlobalCharacterOverlay = () => {
             {isChibi ? (
               <SenChibi
                 x={CHAR_WIDTH / 2}
-                y={CHAR_HEIGHT / 2 + 266 * scale}
+                y={CHAR_HEIGHT / 2}
                 scale={scale}
+                origin="torso"
                 showHat={accessories.hat}
                 showGlasses={accessories.glasses}
                 showCoat={accessories.coat}
@@ -124,6 +125,7 @@ const GlobalCharacterOverlay = () => {
                 x={CHAR_WIDTH / 2}
                 y={CHAR_HEIGHT / 2}
                 scale={scale}
+                origin="torso"
                 showHat={accessories.hat}
                 showGlasses={accessories.glasses}
                 showCoat={accessories.coat}

@@ -9,6 +9,7 @@ export interface SenChibiProps {
     x?: number;
     y?: number;
     scale?: number;
+    origin?: 'torso' | 'head' | 'feet';
     visible?: boolean;
 
     // Customization

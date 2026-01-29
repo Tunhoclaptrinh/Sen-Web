@@ -4,6 +4,8 @@ import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { QuizScreen as QuizScreenType } from '@/types/game.types';
 import './styles.less';
 
+import { getImageUrl } from '@/utils/image.helper';
+
 const { Title } = Typography;
 
 interface Props {
@@ -58,7 +60,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
         <div className="quiz-screen">
             <div
                 className="game-background"
-                style={{ backgroundImage: `url("${data.background_image || fallbackImage || 'https://via.placeholder.com/1200x600?text=Quiz+Background'}")` }}
+                style={{ backgroundImage: `url("${getImageUrl(data.background_image || fallbackImage, 'https://via.placeholder.com/1200x600?text=Quiz+Background')}")` }}
             />
 
             <div className="screen-content-wrapper">

@@ -7,6 +7,8 @@ import "./styles.less";
 
 // const { Text, Paragraph } = Typography; // Unused
 
+import { getImageUrl } from "@/utils/image.helper";
+
 interface Props {
   data: DialogueScreenType;
   onNext: () => void;
@@ -39,8 +41,12 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
       
       if (currentDialogue.audio) {
           try {
-              audioRef.current = new Audio(currentDialogue.audio);
-              audioRef.current.play().catch(e => console.error("Audio play failed", e));
+              const audioUrl = getImageUrl(currentDialogue.audio);
+              console.log("Playing dialogue audio:", audioUrl);
+              audioRef.current = new Audio(audioUrl);
+              audioRef.current.play().catch(e => {
+                  console.warn("Audio play failed (interaction required or invalid file):", e);
+              });
           } catch (err) {
               console.error("Invalid audio data", err);
           }
@@ -91,19 +97,6 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
 
   // Storyteller Layout: No history visible, just current message.
 
-  const getImageUrl = (path?: string): string => {
-      // ⚡ FIX: Hardcode background for intro screen if missing from DB (due to revert issues)
-      if (data.id === 'ho_intro' && !path) {
-         // Recursive call to resolve the local path properly
-         return getImageUrl("/uploads/general/file-1769165881586.jpeg");
-      }
-
-      if (!path) return "https://via.placeholder.com/1200x600?text=Background";
-      if (path.startsWith('http')) return path;
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      return `${baseUrl}${path}`;
-  };
-
   return (
     <div className="dialogue-screen" onClick={handleNextDialogue}>
       <div
@@ -134,7 +127,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
             >
               <SenChibi
                 x={140}
-                y={260}
+                y={316}
                 scale={0.16}
                 visible={true}
                 mouthState={isSenSpeaking && isTyping ? "open" : "smile"}

@@ -66,8 +66,10 @@ export interface Level {
     rewards: Rewards;
     time_limit?: number;
     passing_score?: number;
+    required_level?: number | null;
     total_screens?: number;
     screens?: Screen[];
+    knowledge_base?: string;
 }
 
 // ==================== Screen Types ====================

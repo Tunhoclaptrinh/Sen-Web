@@ -11,4 +11,5 @@ export interface FormModalProps extends ModalProps {
     layout?: FormLayout;
     children?: ReactNode;
     preserve?: boolean;
+    fullscreen?: boolean;
 }

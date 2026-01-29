@@ -3,6 +3,8 @@ import { Button, Image } from "antd";
 import { ArrowRightOutlined, EyeOutlined } from "@ant-design/icons";
 import type { Screen } from "@/types/game.types";
 
+import { getImageUrl } from "@/utils/image.helper";
+
 interface Props {
   data: Screen & {
     content?: {
@@ -26,7 +28,7 @@ const ImageViewerScreen: React.FC<Props> = ({ data, onNext }) => {
       <div 
         className="game-background" 
         style={{ 
-            backgroundImage: `url("${data.background_image || imageUrl || 'https://via.placeholder.com/1920x1080'}")` 
+            backgroundImage: `url("${getImageUrl(data.background_image || imageUrl, 'https://via.placeholder.com/1920x1080')}")` 
         }} 
       />
 
@@ -35,7 +37,7 @@ const ImageViewerScreen: React.FC<Props> = ({ data, onNext }) => {
           <div className="image-display-area">
              {imageUrl ? (
                 <Image
-                    src={imageUrl}
+                    src={getImageUrl(imageUrl)}
                     alt={title}
                     preview={{
                         mask: (
