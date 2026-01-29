@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Drawer, Statistic, Card } from 'antd';
+import { Button } from 'antd';
 import {
     TrophyOutlined,
     GiftOutlined,
@@ -18,6 +18,7 @@ import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
 import NotificationPopover from '@/components/common/NotificationPopover';
+import DailyRewardModal from '@/components/common/DailyRewardModal';
 import AIChat from '@/components/AIChat';
 
 const CustomerLayout: React.FC = () => {
@@ -106,24 +107,10 @@ const CustomerLayout: React.FC = () => {
             </UnifiedLayout>
 
             {/* Daily Reward Modal */}
-            <Drawer
-                title="🎁 Phần thưởng hàng ngày"
-                placement="right"
-                onClose={() => setDailyRewardVisible(false)}
-                open={dailyRewardVisible}
-                width={400}
-            >
-                <Card>
-                    <Statistic
-                        title="Ngày đăng nhập liên tiếp"
-                        value={7}
-                        suffix="ngày"
-                    />
-                    <Button type="primary" block style={{ marginTop: 16 }}>
-                        Nhận thưởng
-                    </Button>
-                </Card>
-            </Drawer>
+            <DailyRewardModal 
+                visible={dailyRewardVisible} 
+                onClose={() => setDailyRewardVisible(false)} 
+            />
 
             {/* AI Chat Overlay */}
             <AIChat 
