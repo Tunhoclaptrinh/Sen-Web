@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, Card, Row, Col, InputNumber, Divider } from 'antd';
 import { PlusOutlined, DeleteOutlined, PictureOutlined } from '@ant-design/icons';
-import { FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd';
 import ImageUpload from '@/components/common/Upload/ImageUpload';
 import { getImageUrl } from '@/utils/image.helper';
 

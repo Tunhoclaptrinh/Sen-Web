@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, InputNumber } from 'antd';
-import { FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd';
 import { SCREEN_TYPES, ScreenType } from '@/types/game.types';
 import ImageUpload from '@/components/common/Upload/ImageUpload';
 import { CloudUploadOutlined, LinkOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ interface MediaEditorProps {
     type: ScreenType;
 }
 
-const MediaEditor: React.FC<MediaEditorProps> = ({ type }) => {
+const MediaEditor: React.FC<MediaEditorProps> = ({ form, type }) => {
     const isVideo = type === SCREEN_TYPES.VIDEO;
 
     return (

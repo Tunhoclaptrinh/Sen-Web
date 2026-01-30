@@ -133,11 +133,20 @@ export interface HiddenObjectScreen extends Screen {
     items: Array<{
         id: string;
         name: string;
-        x: number;
-        y: number;
+        image?: string;
+        coordinates?: {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        };
+        // Legacy support if needed
+        x?: number;
+        y?: number;
         fact_popup: string;
     }>;
     required_items: number;
+    guide_text?: string;
 }
 
 // ==================== Session Responses ====================

@@ -7,7 +7,6 @@ import {
   HeartFilled,
   CalendarOutlined,
   UserOutlined,
-  CommentOutlined,
   ShareAltOutlined,
   ReadOutlined,
   RocketOutlined,

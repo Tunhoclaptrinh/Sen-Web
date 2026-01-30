@@ -145,7 +145,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
    */
   async getPopular(limit: number = 10): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.getAll({
-      _sort: 'view_count',
+      _sort: 'views',
       _order: 'desc',
       _limit: limit,
     });
