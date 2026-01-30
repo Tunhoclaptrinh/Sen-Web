@@ -7,7 +7,7 @@ interface QuizEditorProps {
     form: FormInstance;
 }
 
-const QuizEditor: React.FC<QuizEditorProps> = ({ form }) => {
+const QuizEditor: React.FC<QuizEditorProps> = () => {
     return (
         <div>
             <Row gutter={16}>

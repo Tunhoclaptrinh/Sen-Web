@@ -11,7 +11,7 @@ interface MediaEditorProps {
     type: ScreenType;
 }
 
-const MediaEditor: React.FC<MediaEditorProps> = ({ form, type }) => {
+const MediaEditor: React.FC<MediaEditorProps> = ({ type }) => {
     const isVideo = type === SCREEN_TYPES.VIDEO;
 
     return (
