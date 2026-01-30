@@ -87,9 +87,12 @@ const HistoryManagement = () => {
     },
     {
       title: "Tác giả",
-      dataIndex: "author",
-      key: "author",
+      dataIndex: "author_name",
+      key: "author_name",
       width: 150,
+      render: (authorName: string, record: any) => (
+        <Tag color="orange">{authorName || record.author || 'Hệ thống'}</Tag>
+      )
     },
     {
       title: "Ngày đăng",

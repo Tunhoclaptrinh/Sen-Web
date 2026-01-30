@@ -256,9 +256,10 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   main_image?: string;
   rating?: number;
   total_reviews?: number;
-  view_count?: number;
+  views?: number;
   is_active?: boolean;
   author?: string;
+  author_name?: string;
   publishDate?: string;
   commentCount?: number;
   timeline?: TimelineEvent[];

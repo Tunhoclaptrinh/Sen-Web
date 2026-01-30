@@ -9,6 +9,7 @@ import {
     EnvironmentOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import './styles.less';
 
 const { Paragraph } = Typography;
@@ -60,10 +61,10 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                         ) : (
                             <>
                                 <span className="meta-item">
-                                    <CalendarOutlined /> {data.publishDate ? new Date(data.publishDate).toLocaleDateString() : 'N/A'}
+                                    <CalendarOutlined /> {dayjs(data.publishDate || data.created_at || data.createdAt).format('DD/MM/YYYY')}
                                 </span>
                                 <span className="meta-item">
-                                    <UserOutlined /> {data.author || 'Admin'}
+                                    <UserOutlined /> {data.author_name || data.author || 'Hệ thống'}
                                 </span>
                                 <span className="meta-item">
                                     <CommentOutlined /> {data.commentCount || 0}

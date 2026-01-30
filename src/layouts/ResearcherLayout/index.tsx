@@ -9,6 +9,8 @@ import {
     ClockCircleOutlined,
     CheckCircleOutlined,
     BellOutlined,
+    BookOutlined,
+    TrophyOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,6 +61,18 @@ const ResearcherLayout: React.FC = () => {
             icon: <PictureOutlined />,
             label: 'Tạo triển lãm',
             onClick: () => navigate('/researcher/exhibitions/create'),
+        },
+        {
+            key: 'create-article',
+            icon: <BookOutlined />,
+            label: 'Viết bài mới',
+            onClick: () => navigate('/researcher/history/create'),
+        },
+        {
+            key: 'create-level',
+            icon: <TrophyOutlined />,
+            label: 'Tạo màn chơi',
+            onClick: () => navigate('/researcher/levels'),
         },
     ];
 

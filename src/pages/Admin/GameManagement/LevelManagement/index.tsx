@@ -1,4 +1,4 @@
-import { Space, Tooltip, Button as AntButton, Image, Select, Card } from "antd";
+import { Space, Tooltip, Button as AntButton, Image, Select, Card, Tag } from "antd";
 import { Button, DataTable } from "@/components/common";
 import { useState, useEffect } from "react";
 import LevelForm from "./components/Form";
@@ -148,13 +148,20 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
           return <span style={{color: colors[val] || 'black'}}>{val?.toUpperCase()}</span>
       }
     },
-     {
+      {
       title: "Thứ tự",
       dataIndex: "order",
       width: 20,
       sorter: true,
       defaultSortOrder: chapterId ? 'ascend' as const : undefined,
-    }
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "author_name",
+      key: "author_name",
+      width: 120,
+      render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
+    },
   ];
 
   // --- RENDER ---

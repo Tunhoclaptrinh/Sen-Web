@@ -5,6 +5,7 @@ export interface HistoryArticle extends BaseEntity {
   image?: string;
   content: string; // HTML content
   author?: string;
+  author_name?: string;
   publishDate?: string;
   category?: string;
   

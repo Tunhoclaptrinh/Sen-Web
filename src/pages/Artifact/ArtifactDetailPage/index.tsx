@@ -43,6 +43,7 @@ import ArticleCard from "@/components/common/cards/ArticleCard";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import type { Artifact } from "@/types";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import "./styles.less";
 
 const { Paragraph, Title } = Typography;
@@ -63,6 +64,9 @@ const ArtifactDetailPage = () => {
   const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+
+  // Track view
+  useViewTracker('artifact', id);
 
   useEffect(() => {
     if (id) {
@@ -244,7 +248,10 @@ const ArtifactDetailPage = () => {
                 <CalendarOutlined /> {artifact.year_created}
               </span>
               <span>
-                <UserOutlined /> {artifact.creator || "Không rõ"}
+                <UserOutlined /> {artifact.author_name || artifact.author || artifact.creator || "Hệ thống"}
+              </span>
+              <span>
+                <HistoryOutlined /> {artifact.views || 0} lượt xem
               </span>
             </div>
           </div>
@@ -298,7 +305,10 @@ const ArtifactDetailPage = () => {
                           <CalendarOutlined /> {artifact.year_created}
                         </span>
                         <span>
-                          <UserOutlined /> {artifact.creator || "Không rõ"}
+                          <UserOutlined /> {artifact.author_name || artifact.author || artifact.creator || "Hệ thống"}
+                        </span>
+                        <span>
+                          <HistoryOutlined /> {artifact.views || 0} lượt xem
                         </span>
                       </div>
                       <div className="action-row" style={{ display: 'flex', gap: 8 }}>
