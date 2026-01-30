@@ -11,11 +11,6 @@ import "./assets/styles/variables.css";
 import "./styles/global.less";
 import "./styles/antd-custom.less";
 import "./assets/styles/antd-override.css"; // Ensure overrides are loaded
-import { seedData } from './utils/seeder';
-
-// Expose seeder for demo purposes
-(window as any).seedDemoData = seedData;
-
 // Inject store vào axios config để tránh circular dependency
 injectStore(store);
 

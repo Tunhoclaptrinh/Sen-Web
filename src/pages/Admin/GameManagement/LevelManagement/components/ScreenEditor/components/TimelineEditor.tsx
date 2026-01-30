@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, Card, Row, Col, InputNumber } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd';
 
 interface TimelineEditorProps {
     form: FormInstance;

@@ -54,7 +54,7 @@ class HistoryService extends BaseService<HistoryArticle, HistoryArticleDTO, Hist
     return this.getAll({
       is_featured: true,
       _limit: limit,
-      _sort: 'view_count',
+      _sort: 'views',
       _order: 'desc'
     });
   }

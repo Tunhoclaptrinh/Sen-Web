@@ -8,7 +8,7 @@ import {
     LinkOutlined,
     PlayCircleOutlined
 } from '@ant-design/icons';
-import { FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd';
 import { message } from 'antd';
 import FileUpload from '@/components/common/Upload/FileUpload';
 import { getImageUrl } from '@/utils/image.helper';
