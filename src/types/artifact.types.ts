@@ -80,8 +80,10 @@ export interface Artifact extends BaseEntity, TimestampEntity {
   story?: string;
   rating?: number;
   total_reviews?: number;
-  view_count?: number;
+  views?: number;
   is_active?: boolean;
+  author?: string;
+  author_name?: string;
   // Related items (admin-managed)
   related_heritage_ids?: number[];
   related_history_ids?: number[];

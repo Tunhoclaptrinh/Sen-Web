@@ -67,7 +67,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
                     )}
                     {type !== 'collection' && (
                         <span className="meta-item">
-                            <UserOutlined /> {data.author || 'Admin'}
+                            <UserOutlined /> {data.author_name || data.author || 'Hệ thống'}
                         </span>
                     )}
                     {(data.commentCount !== undefined && type !== 'collection') && (

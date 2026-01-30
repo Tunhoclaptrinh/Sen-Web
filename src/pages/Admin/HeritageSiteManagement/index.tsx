@@ -166,6 +166,13 @@ const HeritageSiteManagement = () => {
         <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
       ),
     },
+    {
+      title: "Tác giả",
+      dataIndex: "author_name",
+      key: "author_name",
+      width: 120,
+      render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
+    },
   ];
 
   return (

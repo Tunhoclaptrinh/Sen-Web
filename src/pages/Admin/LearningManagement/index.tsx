@@ -36,6 +36,13 @@ const LearningManagement: React.FC = () => {
             width: 150,
             render: (val: number) => `${val} phút`
         },
+        {
+            title: "Tác giả",
+            dataIndex: "author_name",
+            key: "author_name",
+            width: 120,
+            render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
+        },
     ];
 
     return (
