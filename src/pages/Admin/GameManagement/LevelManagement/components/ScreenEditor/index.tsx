@@ -315,20 +315,20 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
                                         <Radio.Button value="link" style={{ borderRadius: '0 6px 6px 0' }}><LinkOutlined /> Link</Radio.Button>
                                     </Radio.Group>
                                     
-                                    <Form.Item name="background_image" noStyle>
-                                        {bgMode === "upload" ? (
-                                            <div style={{ marginTop: 4 }}>
-                                                <ImageUpload maxCount={1} />
-                                            </div>
-                                        ) : (
+                                    {bgMode === "upload" ? (
+                                        <Form.Item name="background_image" noStyle>
+                                            <ImageUpload maxCount={1} />
+                                        </Form.Item>
+                                    ) : (
+                                        <Form.Item name="background_image" noStyle>
                                             <Input 
                                                 prefix={<PictureOutlined style={{color: '#bfbfbf'}} />} 
                                                 placeholder="Dán đường dẫn ảnh (https://...)" 
                                                 size="large"
                                                 style={{ borderRadius: 8 }} 
                                             />
-                                        )}
-                                    </Form.Item>
+                                        </Form.Item>
+                                    )}
                                 </Space>
                             </Form.Item>
                         </div>

@@ -36,7 +36,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const isUploading = fileList.some((file) => file.status === "uploading");
     if (isUploading) return;
 
-    const urls = Array.isArray(value) ? value : value ? [value] : [];
+    const rawUrls = Array.isArray(value) ? value : value ? [value] : [];
+    const urls = rawUrls.filter(url => typeof url === 'string' && !url.includes('fakepath'));
     const apiBase =
       import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
     const apiHost = apiBase.replace(/\/api$/, "");
@@ -119,7 +120,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
     setLoading(true);
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file);
 
     try {
       const token = localStorage.getItem("sen_token");
