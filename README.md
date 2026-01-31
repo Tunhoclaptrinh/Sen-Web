@@ -60,10 +60,10 @@ Menu sẽ hiện ra:
   Select mode:
 
   [1] Build Images   (First time / Rebuild only)
-  [2] Start Dev      (docker-compose up)
-  [3] Start Prod     (docker-compose up -d)
+  [2] Start Dev      (docker compose up)
+  [3] Start Prod     (docker compose up -d)
   [4] View Logs
-  [5] Stop All       (docker-compose down)
+  [5] Stop All       (docker compose down)
   [6] Exit
 
 Select [1-6]:
@@ -198,8 +198,6 @@ sen-web/
 │   │   │   ├── SearchBar/
 │   │   │   ├── Loading/
 │   │   │   ├── EmptyState/
-│   │   │   ├── AIChatPanel/         # 🆕 AI Chat interface
-│   │   │   ├── AIChatFloatingButton/ # 🆕 Floating chat button
 │   │   │   └── guards/
 │   │   ├── Background/       # Animated background
 │   │   ├── SenCharacter/     # Sen mascot component
@@ -231,7 +229,6 @@ sen-web/
 │   │   ├── Profile/          # User profile
 │   │   ├── Admin/            # Admin pages
 │   │   ├── CharacterShowcase/ # Character demo
-│   │   ├── AIChatDemo/       # 🆕 AI Chat demo page
 │   │   └── NotFound/
 │   ├── routes/            # Routing configuration
 │   │   └── routes.config.tsx
@@ -336,20 +333,15 @@ sen-web/
 
 ### 4. AI Chat System
 
-- **AIChatPanel**: Full-featured chat interface
+- **AIChat**: Giao diện chat thông minh tích hợp Voice Mode
   - Real-time messaging với Redux state management
+  - **Voice Mode**: Hỗ trợ nhập liệu bằng giọng nói (Hands-free)
   - Audio playback (base64 → HTMLAudioElement)
   - Message history với auto-scroll
   - Typing indicator & loading states
   - Minimize/maximize panel
   - Clear history
   - Keyboard shortcuts (Enter: send, Shift+Enter: new line)
-  
-- **AIChatFloatingButton**: Global floating button
-  - Badge hiển thị unread count
-  - Tooltip & hover effects
-  - Typing indicator animation
-  - Context-aware (level, artifact, heritage)
 
 - **Redux Integration**:
   - `aiSlice`: State management (chatHistory, currentCharacter, isTyping, error)
@@ -363,6 +355,7 @@ sen-web/
   - Saves to `db.json` for persistence
 
 ### 5. Game System
+
 - **Sequential Chapters**
 - **Purchase Mechanism**
 - **Interactive Gameplay**
@@ -417,13 +410,13 @@ Sen AI là trợ lý thông minh giúp người dùng tìm hiểu về di sản 
 **Thêm vào bất kỳ trang nào:**
 
 ```tsx
-import { AIChatFloatingButton } from '@/components/common';
+import AIChat from '@/components/AIChat';
 
 function MyPage() {
   return (
     <div>
       {/* Your page content */}
-      <AIChatFloatingButton />
+      <AIChat />
     </div>
   );
 }
@@ -433,33 +426,23 @@ function MyPage() {
 
 ```tsx
 // Trong trang Game
-<AIChatFloatingButton 
-  context={{ level_id: currentLevel.id }} 
-/>
+<AIChat context={{ level_id: currentLevel.id }} />
 
 // Trong trang Artifact
-<AIChatFloatingButton 
-  context={{ artifact_id: artifact.id }} 
-/>
+<AIChat context={{ artifact_id: artifact.id }} />
 
 // Trong trang Heritage
-<AIChatFloatingButton 
-  context={{ heritage_site_id: site.id }} 
-/>
+<AIChat context={{ heritage_site_id: site.id }} />
 ```
 
 #### 📁 Components
 
-**1. AIChatFloatingButton** (`src/components/common/AIChatFloatingButton/`)
-- Floating button mở chat panel
-- Badge hiển thị số tin nhắn chưa đọc
-- Typing indicator khi AI đang trả lời
+**1. AIChat** (`src/components/AIChat/`)
 
-**2. AIChatPanel** (`src/components/common/AIChatPanel/`)
-- Giao diện chat đầy đủ
-- Bubble messages (user/assistant)
-- Audio playback controls
-- Auto-scroll, minimize, clear history
+- Giao diện chính tích hợp nút chat floating và panel chat
+- Hỗ trợ Voice Mode với visualizer sóng âm
+- Tự động phát hiện im lặng để gửi tin nhắn
+
 
 #### 🔄 Architecture Flow
 
@@ -492,6 +475,7 @@ Frontend hiển thị + phát audio
 #### 📋 API Format
 
 **Request tới Backend:**
+
 ```json
 {
   "message": "Múa rối nước là gì?",
@@ -504,6 +488,7 @@ Frontend hiển thị + phát audio
 ```
 
 **Response từ Backend:**
+
 ```json
 {
   "success": true,
@@ -564,6 +549,7 @@ curl -X POST http://localhost:8000/process_query \
 ```
 
 **3. Test trên Frontend:**
+
 - Mở http://localhost:5173
 - Click nút chat floating (góc phải dưới)
 - Gửi câu hỏi: "Múa rối nước là gì?"
@@ -585,33 +571,22 @@ curl -X POST http://localhost:8000/process_query \
 #### ⚙️ Configuration
 
 **Backend** (`Backend/.env`):
+
 ```env
 PYTHON_SERVICE_URL=http://localhost:8000/process_query
 ```
 
 **Frontend** (`Frontend/.env`):
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 **Sen_AI** (`Sen_AI/.env`):
+
 ```env
 OPENAI_API_KEY=your_openai_key
 MONGODB_URI=your_mongodb_uri
-```
-
-#### 🎓 Demo Page
-
-Demo page đầy đủ tại: `/ai-demo` (cần thêm route trong `routes.config.tsx`)
-
-```tsx
-import AIChatDemoPage from '@/pages/AIChatDemo';
-
-// Thêm vào routes
-{
-  path: '/ai-demo',
-  element: <AIChatDemoPage />
-}
 ```
 
 #### 🔮 Future Enhancements
@@ -724,6 +699,7 @@ VITE_API_TIMEOUT=30000
 ### Files Used
 
 Vercel tự động:
+
 - `vercel.json` → Rewrite rules (SPA routing)
 - `package.json` → Build command: `npm run build`
 - Build output: `dist/`
@@ -747,6 +723,7 @@ https://sen-frontend-xxx.vercel.app
 ### Features
 
 Vercel cung cấp:
+
 - **Global CDN**: Fast worldwide
 - **Auto HTTPS**: Free SSL
 - **Preview Deploys**: Test PRs before merge
@@ -822,8 +799,8 @@ This project is licensed under the MIT License.
 **Status**: Production Ready
 
 **New in v2.0.0**:
+
 - 🤖 AI Chat Assistant với RAG Pipeline
 - 🎵 Text-to-Speech tiếng Việt
 - 📱 Responsive chat interface
 - 🔄 Real-time messaging với Redux
-

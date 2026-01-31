@@ -8,6 +8,12 @@ export interface AICharacter {
     personality: string;
     state: 'amnesia' | 'restored';
     description: string;
+    is_default?: boolean;
+    is_owned?: boolean;
+    rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+    price?: number;
+    unlock_level_id?: number | null;
+    can_unlock?: boolean;
 }
 
 // Chat Message
@@ -122,9 +128,28 @@ class AIService extends BaseService {
         return response.data || { success: true };
     }
 
-    // Get available characters
+    // Get owned characters
     async getCharacters(): Promise<AICharacter[]> {
         const response = await this.get('/characters');
+        return response.data;
+    }
+
+    // Get characters available for purchase (unlocked but not owned)
+    async getAvailableCharacters(): Promise<AICharacter[]> {
+        const response = await this.get('/characters/available');
+        return response.data;
+    }
+
+    // Purchase a character
+    async purchaseCharacter(characterId: number): Promise<{
+        success: boolean;
+        message: string;
+        data?: {
+            character: AICharacter;
+            new_balance: number;
+        };
+    }> {
+        const response = await this.post(`/characters/${characterId}/purchase`, {});
         return response.data;
     }
 }
