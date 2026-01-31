@@ -51,7 +51,7 @@ const FavoritesPage: React.FC = () => {
     // Stats state
     const [stats, setStats] = useState({
         total: 0,
-        heritage_sites: 0,
+        heritageSites: 0,
         artifacts: 0,
         exhibitions: 0,
         articles: 0
@@ -110,7 +110,7 @@ const FavoritesPage: React.FC = () => {
             if (res.success && res.data) {
                 setStats({
                     total: res.data.total,
-                    heritage_sites: res.data.byType.heritage_site || 0,
+                    heritageSites: res.data.byType.heritageSite || 0,
                     artifacts: res.data.byType.artifact || 0,
                     exhibitions: res.data.byType.exhibition || 0,
                     articles: res.data.byType.article || 0
@@ -127,7 +127,7 @@ const FavoritesPage: React.FC = () => {
             const params: any = {
                 page,
                 limit: pageSize,
-                sort: 'created_at',
+                sort: 'createdAt',
                 order: sortOrder
             };
             
@@ -181,7 +181,7 @@ const FavoritesPage: React.FC = () => {
     };
 
     const handleNavigate = (type: string, id: number) => {
-        if (type === 'heritage_site') {
+        if (type === 'heritageSite') {
             navigate(`/heritage-sites/${id}`);
         } else if (type === 'artifact') {
             navigate(`/artifacts/${id}`);
@@ -194,7 +194,7 @@ const FavoritesPage: React.FC = () => {
 
     const getTypeIcon = (type: string) => {
         switch (type) {
-            case 'heritage_site': return <HomeOutlined />;
+            case 'heritageSite': return <HomeOutlined />;
             case 'artifact': return <PictureOutlined />;
             case 'exhibition': return <CalendarOutlined />;
             case 'article': return <ReadOutlined />;
@@ -301,7 +301,7 @@ const FavoritesPage: React.FC = () => {
                         },
                         {
                             title: "Di Tích",
-                            value: stats.heritage_sites,
+                            value: stats.heritageSites,
                             icon: <HomeOutlined />,
                             valueColor: "#d48806",
                         },
@@ -338,7 +338,7 @@ const FavoritesPage: React.FC = () => {
                         style={{ marginBottom: 0, flex: 1 }}
                         items={[
                             { key: 'all', label: `Tất cả (${stats.total})` },
-                            { key: 'heritage_site', label: `Di Tích (${stats.heritage_sites})` },
+                            { key: 'heritage_site', label: `Di Tích (${stats.heritageSites})` },
                             { key: 'artifact', label: `Hiện Vật (${stats.artifacts})` },
                             { key: 'article', label: `Bài Viết (${stats.articles})` },
                             { key: 'exhibition', label: `Triển Lãm (${stats.exhibitions})` },
@@ -406,7 +406,7 @@ const FavoritesPage: React.FC = () => {
                                                     <div className="favorite-cover">
                                                         <img
                                                             src={
-                                                                favorite.item?.main_image ||
+                                                                favorite.item?.mainImage ||
                                                                 favorite.item?.images?.[0] ||
                                                                 'https://via.placeholder.com/300x200'
                                                             }
@@ -418,7 +418,7 @@ const FavoritesPage: React.FC = () => {
                                                                 shape="circle"
                                                                 icon={<EyeOutlined />}
                                                                 size="large"
-                                                                onClick={() => handleNavigate(favorite.type, favorite.reference_id)}
+                                                                onClick={() => handleNavigate(favorite.type, favorite.referenceId)}
                                                             />
                                                         </div>
                                                     </div>
@@ -429,7 +429,7 @@ const FavoritesPage: React.FC = () => {
                                                             type="text"
                                                             danger
                                                             icon={<DeleteOutlined />}
-                                                            onClick={() => handleRemoveFavorite(favorite.type, favorite.reference_id)}
+                                                            onClick={() => handleRemoveFavorite(favorite.type, favorite.referenceId)}
                                                         >
                                                             Xóa
                                                         </Button>
@@ -468,7 +468,7 @@ const FavoritesPage: React.FC = () => {
                                                         icon={<DeleteOutlined />} 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleRemoveFavorite(favorite.type, favorite.reference_id);
+                                                            handleRemoveFavorite(favorite.type, favorite.referenceId);
                                                         }}
                                                     />
                                                 </Tooltip>

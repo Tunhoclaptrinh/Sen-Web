@@ -40,10 +40,11 @@ interface AIState {
     senSettings: SenSettings;
 
     // Active Context for Global Overlay
+    // Active Context for Global Overlay
     activeContext: {
-        level_id?: number;
-        artifact_id?: number;
-        heritage_site_id?: number;
+        levelId?: number;
+        artifactId?: number;
+        heritageSiteId?: number;
     } | null;
 }
 
@@ -108,12 +109,12 @@ export const sendChatMessage = createAsyncThunk(
     'ai/sendChatMessage',
     async (
         params: {
-            character_id?: number;
+            characterId?: number;
             message: string;
             context?: {
-                level_id?: number;
-                artifact_id?: number;
-                heritage_site_id?: number;
+                levelId?: number;
+                artifactId?: number;
+                heritageSiteId?: number;
             };
         },
         { rejectWithValue }
@@ -181,8 +182,8 @@ const aiSlice = createSlice({
         addUserMessage: (state, action: PayloadAction<string>) => {
             const userMessage: ChatMessage = {
                 id: Date.now(),
-                character_id: state.currentCharacter?.id || 0,
-                user_id: 0, // Will be set from auth
+                characterId: state.currentCharacter?.id || 0,
+                userId: 0, // Will be set from auth
                 role: 'user',
                 content: action.payload,
                 timestamp: new Date().toISOString(),
@@ -286,8 +287,8 @@ const aiSlice = createSlice({
                 // Add hint as a system message
                 const hintMessage: ChatMessage = {
                     id: Date.now(),
-                    character_id: action.payload.character.id,
-                    user_id: 0,
+                    characterId: action.payload.character.id,
+                    userId: 0,
                     role: 'assistant',
                     content: action.payload.hint,
                     timestamp: new Date().toISOString(),
@@ -312,8 +313,8 @@ const aiSlice = createSlice({
                 // Add explanation as a system message
                 const explanationMessage: ChatMessage = {
                     id: Date.now(),
-                    character_id: action.payload.character.id,
-                    user_id: 0,
+                    characterId: action.payload.character.id,
+                    userId: 0,
                     role: 'assistant',
                     content: action.payload.explanation,
                     timestamp: new Date().toISOString(),

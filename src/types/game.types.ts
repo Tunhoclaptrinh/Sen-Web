@@ -8,24 +8,26 @@ export * from '../services/learning.service';
 
 // ==================== Game Progress ====================
 export interface GameProgress {
-    user_id: number;
+    userId: number;
     level: number;
-    total_points: number;
+    totalPoints: number;
     coins: number;
-    total_sen_petals: number;
-    unlocked_chapters: number[];
-    completed_levels: number[];
-    collected_characters: string[];
+    totalSenPetals: number;
+    unlockedChapters: number[];
+    completedLevels: number[];
+    collectedCharacters: string[];
     badges: Badge[];
     achievements: Achievement[];
-    museum_open: boolean;
-    museum_income: number;
+    museumOpen: boolean;
+    museumIncome: number;
+    streakDays: number;
+    lastRewardClaim: string | null;
     stats: {
-        completion_rate: number;
-        chapters_unlocked: number;
-        total_chapters: number;
-        characters_collected: number;
-        total_badges: number;
+        completionRate: number;
+        chaptersUnlocked: number;
+        totalChapters: number;
+        charactersCollected: number;
+        totalBadges: number;
     };
 }
 
@@ -36,40 +38,40 @@ export interface Chapter {
     description: string;
     theme: string;
     order: number;
-    petal_state: 'closed' | 'blooming' | 'full' | 'locked';
+    petalState: 'closed' | 'blooming' | 'full' | 'locked';
     color: string;
     image?: string;
-    required_petals: number;
-    total_levels: number;
-    completed_levels: number;
-    completion_rate: number;
-    can_unlock: boolean;
-    is_active: boolean;
+    requiredPetals: number;
+    totalLevels: number;
+    completedLevels: number;
+    completionRate: number;
+    canUnlock: boolean;
+    isActive: boolean;
     levels?: Level[];
 }
 
 // ==================== Level ====================
 export interface Level {
     id: number;
-    chapter_id: number;
+    chapterId: number;
     name: string;
     description: string;
     type: 'story' | 'quiz' | 'mixed';
     difficulty: 'easy' | 'medium' | 'hard';
     order: number;
     thumbnail?: string;
-    is_completed: boolean;
-    is_locked: boolean;
-    player_best_score?: number;
-    play_count?: number;
+    isCompleted: boolean;
+    isLocked: boolean;
+    playerBestScore?: number;
+    playCount?: number;
     rewards: Rewards;
-    time_limit?: number;
-    passing_score?: number;
-    required_level?: number | null;
-    total_screens?: number;
+    timeLimit?: number;
+    passingScore?: number;
+    requiredLevel?: number | null;
+    totalScreens?: number;
     screens?: Screen[];
-    knowledge_base?: string;
-    background_music?: string;
+    knowledgeBase?: string;
+    backgroundMusic?: string;
 }
 
 // ==================== Screen Types ====================
@@ -79,13 +81,13 @@ export interface Screen {
     id: string;
     type: ScreenType;
     index: number;
-    is_first: boolean;
-    is_last: boolean;
-    background_image?: string;
-    skip_allowed?: boolean;
+    isFirst: boolean;
+    isLast: boolean;
+    backgroundImage?: string;
+    skipAllowed?: boolean;
     content?: any; // Varies by screen type
-    potential_score?: number; // ⚡ Max points available for this screen
-    is_completed?: boolean;
+    potentialScore?: number; // ⚡ Max points available for this screen
+    isCompleted?: boolean;
 }
 
 // Dialogue Screen
@@ -107,9 +109,9 @@ export interface QuizScreen extends Screen {
     description?: string;
     options: Array<{
         text: string;
-        is_correct: boolean;
+        isCorrect: boolean;
     }>;
-    time_limit?: number;
+    timeLimit?: number;
     points?: number;
 }
 
@@ -122,13 +124,13 @@ export interface TimelineScreen extends Screen {
         year: number;
         description: string;
     }>;
-    correct_order: string[];
+    correctOrder: string[];
 }
 
 // Hidden Object Screen
 export interface HiddenObjectScreen extends Screen {
     type: 'HIDDEN_OBJECT';
-    background_image: string;
+    backgroundImage: string;
     description?: string;
     items: Array<{
         id: string;
@@ -143,52 +145,52 @@ export interface HiddenObjectScreen extends Screen {
         // Legacy support if needed
         x?: number;
         y?: number;
-        fact_popup: string;
+        factPopup: string;
     }>;
-    required_items: number;
-    guide_text?: string;
+    requiredItems: number;
+    guideText?: string;
 }
 
 // ==================== Session Responses ====================
 export interface SessionProgress {
-    completed_screens: number;
-    total_screens: number;
+    completedScreens: number;
+    totalScreens: number;
     percentage: number;
 }
 
 export interface NavigateScreenResponse {
-    session_id: number;
-    current_screen: Screen;
+    sessionId: number;
+    currentScreen: Screen;
     progress: SessionProgress;
 }
 
 export interface SubmitAnswerResponse {
-    is_correct: boolean;
-    points_earned: number;
-    total_score: number;
+    isCorrect: boolean;
+    pointsEarned: number;
+    totalScore: number;
     explanation?: string;
-    correct_answer?: string;
+    correctAnswer?: string;
 }
 
 export interface SubmitTimelineResponse {
     isCorrect: boolean;
-    points_earned?: number;
-    total_score?: number;
-    correct_order?: string[];
+    pointsEarned?: number;
+    totalScore?: number;
+    correctOrder?: string[];
 }
 
 export interface CollectClueResponse {
     item: {
         id: string;
         name: string;
-        fact_popup: string;
+        factPopup: string;
     };
-    points_earned: number;
-    total_score: number;
+    pointsEarned: number;
+    totalScore: number;
     progress: {
         collected: number;
         required: number;
-        all_collected: boolean;
+        allCollected: boolean;
     };
 }
 
@@ -200,7 +202,7 @@ export interface CompleteLevelResponse {
         coins: number;
         character?: string;
     };
-    new_totals: {
+    newTotals: {
         petals: number;
         points: number;
         coins: number;
@@ -213,7 +215,7 @@ export interface Rewards {
     petals?: number;
     character?: string;
     badge?: string;
-    museum_item?: number;
+    museumItem?: number;
 }
 
 // ==================== Badge ====================
@@ -223,7 +225,7 @@ export interface Badge {
     description: string;
     icon: string;
     category: 'completion' | 'collection' | 'exploration' | 'achievement';
-    earned_at?: string;
+    earnedAt?: string;
 }
 
 // ==================== Achievement ====================
@@ -238,67 +240,67 @@ export interface Achievement {
 
 // ==================== Game Session ====================
 export interface GameSession {
-    session_id: number;
-    level_id: number;
-    user_id: number;
-    current_screen_index: number;
+    sessionId: number;
+    levelId: number;
+    userId: number;
+    currentScreenIndex: number;
     score: number;
-    started_at: string;
-    completed_at?: string;
+    startedAt: string;
+    completedAt?: string;
 }
 
 // ==================== Leaderboard ====================
 export interface LeaderboardEntry {
     rank: number;
-    user_id: number;
-    user_name: string;
-    user_avatar?: string;
-    total_points: number;
+    userId: number;
+    userName: string;
+    userAvatar?: string;
+    totalPoints: number;
     level: number;
-    sen_petals: number;
-    characters_count: number;
+    senPetals: number;
+    charactersCount: number;
 }
 
 // ==================== Museum ====================
 export interface Museum {
-    is_open: boolean;
+    isOpen: boolean;
     level: number;
-    income_per_hour: number;
-    total_income_generated: number;
-    pending_income: number;
-    hours_accumulated: number;
+    incomePerHour: number;
+    totalIncomeGenerated: number;
+    pendingIncome: number;
+    hoursAccumulated: number;
     capped: boolean;
     characters: string[];
     artifacts: {
-        artifact_id: number;
+        artifactId: number;
         name: string;
         image: string;
-        acquired_at: string;
+        acquiredAt: string;
     }[];
-    visitor_count: number;
-    can_collect: boolean;
-    next_collection_in: string;
+    visitorCount: number;
+    canCollect: boolean;
+    nextCollectionIn: string;
 }
 
 export interface MuseumToggleResponse {
-    is_open: boolean;
-    income_per_hour: number;
+    isOpen: boolean;
+    incomePerHour: number;
 }
 
 export interface MuseumCollectResponse {
     collected: number;
-    total_coins: number;
-    total_museum_income: number;
-    next_collection_in: string;
+    totalCoins: number;
+    totalMuseumIncome: number;
+    nextCollectionIn: string;
 }
 
 // ==================== Inventory ====================
 export interface InventoryItem {
-    item_id: number;
+    itemId: number;
     name: string;
     type: string;
     quantity: number;
-    acquired_at: string;
+    acquiredAt: string;
 }
 
 export interface ShopItem {
@@ -310,11 +312,11 @@ export interface ShopItem {
     currency: 'coins' | 'petals';
     image?: string;
     icon?: string;
-    is_active?: boolean;
-    is_available?: boolean;
-    is_consumable: boolean;
-    max_stack?: number;
-    created_at?: string;
+    isActive?: boolean;
+    isAvailable?: boolean;
+    isConsumable: boolean;
+    maxStack?: number;
+    createdAt?: string;
 }
 
 export interface PurchaseItemResponse {
@@ -324,8 +326,8 @@ export interface PurchaseItemResponse {
         type: string;
     };
     quantity: number;
-    total_cost: number;
-    remaining_coins: number;
+    totalCost: number;
+    remainingCoins: number;
 }
 
 export interface UseItemResponse {
@@ -349,11 +351,11 @@ export interface ScanObjectResponse {
         petals: number;
         character?: string;
     };
-    new_totals: {
+    newTotals: {
         coins: number;
         petals: number;
     };
-    is_new_discovery: boolean;
+    isNewDiscovery: boolean;
 }
 
 // ==================== Constants ====================

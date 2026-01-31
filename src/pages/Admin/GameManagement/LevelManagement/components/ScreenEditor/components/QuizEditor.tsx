@@ -17,8 +17,8 @@ const QuizEditor: React.FC<QuizEditorProps> = () => {
                     </Form.Item>
                 </Col>
                 <Col span={8}>
-                     <Form.Item name="time_limit" label="Thời gian (giây)">
-                        <InputNumber style={{width: '100%'}} min={0} defaultValue={60} />
+                     <Form.Item name="requiredItems" label="Số lượng cần tìm">
+                        <InputNumber min={1} style={{width: '100%'}} />
                     </Form.Item>
                     <Form.Item name={['reward', 'points']} label="Điểm thường">
                          <InputNumber style={{width: '100%'}} min={0} defaultValue={10} />
@@ -36,7 +36,7 @@ const QuizEditor: React.FC<QuizEditorProps> = () => {
                                 <Col flex="40px" style={{textAlign: 'center'}}>
                                      <Form.Item
                                         {...restField}
-                                        name={[name, 'is_correct']}
+                                        name={[name, 'isCorrect']}
                                         valuePropName="checked"
                                         style={{marginBottom: 0}}
                                     >

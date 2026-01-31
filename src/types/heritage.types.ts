@@ -233,72 +233,71 @@ export const ProvincesByRegion: Record<HeritageRegion, HeritageProvince[]> = {
 // Heritage Site
 export interface HeritageSite extends BaseEntity, TimestampEntity {
   name: string;
-  short_description?: string;
-  shortDescription?: string; // Legacy field support
+  shortDescription?: string;
   description: string;
   type: HeritageType;
-  cultural_period?: string;
+  culturalPeriod?: string;
   region: HeritageRegion | string; // Allow string for backward compat
   province?: HeritageProvince | string; // New province field
   address?: string;
   latitude?: number;
   longitude?: number;
-  year_established?: number;
-  unesco_listed?: boolean;
+  yearEstablished?: number;
+  unescoListed?: boolean;
   significance?: SignificanceLevel;
-  visit_hours?: string;
-  entrance_fee?: number;
-  contact_info?: string;
+  visitHours?: string;
+  entranceFee?: number;
+  contactInfo?: string;
   website?: string;
   image?: string;
   images?: string[];
   gallery?: string[];
-  main_image?: string;
+  mainImage?: string;
   rating?: number;
-  total_reviews?: number;
+  totalReviews?: number;
   views?: number;
-  is_active?: boolean;
+  isActive?: boolean;
   author?: string;
-  author_name?: string;
+  authorName?: string;
   publishDate?: string;
   commentCount?: number;
   timeline?: TimelineEvent[];
-  related_artifact_ids?: number[];
-  related_history_ids?: number[];
-  related_artifacts?: any[]; // Full objects if needed
-  related_levels?: any[];
-  related_products?: any[];
-  related_history?: any[];
+  relatedArtifactIds?: number[];
+  relatedHistoryIds?: number[];
+  relatedArtifacts?: any[]; // Full objects if needed
+  relatedLevels?: any[];
+  relatedProducts?: any[];
+  relatedHistory?: any[];
 }
 
 // Heritage Site Create/Update DTO
 export interface HeritageSiteDTO {
   name: string;
-  short_description?: string;
+  shortDescription?: string;
   description: string;
   type: HeritageType;
-  cultural_period?: string;
+  culturalPeriod?: string;
   region: HeritageRegion | string;
   province?: HeritageProvince | string; // New province field
   address?: string;
   latitude?: number;
   longitude?: number;
-  year_established?: number;
-  unesco_listed?: boolean;
+  yearEstablished?: number;
+  unescoListed?: boolean;
   significance?: SignificanceLevel;
-  visit_hours?: string;
-  entrance_fee?: number;
-  contact_info?: string;
+  visitHours?: string;
+  entranceFee?: number;
+  contactInfo?: string;
   website?: string;
   images?: string[];
   gallery?: string[];
   timeline?: TimelineEvent[];
-  related_artifact_ids?: number[];
+  relatedArtifactIds?: number[];
 }
 
 // Timeline Event
 export interface TimelineEvent extends BaseEntity {
-  heritage_site_id?: number;
+  heritageSiteId?: number;
   title: string;
   description: string;
   year: number;
@@ -328,13 +327,13 @@ export const TimelineCategoryLabels: Record<TimelineCategory, string> = {
 export interface Exhibition extends BaseEntity, TimestampEntity {
   name: string;
   description: string;
-  heritage_site_id: number;
+  heritageSiteId: number;
   theme?: string;
-  start_date: string;
-  end_date?: string;
+  startDate: string;
+  endDate?: string;
   curator?: string;
-  artifact_ids?: number[];
-  is_active: boolean;
+  artifactIds?: number[];
+  isActive: boolean;
 }
 
 // Nearby Heritage Query
@@ -354,8 +353,8 @@ export interface HeritageFilters {
   type?: HeritageType;
   region?: string;
   province?: string; // New province filter
-  cultural_period?: string;
-  unesco_listed?: boolean;
+  culturalPeriod?: string;
+  unescoListed?: boolean;
   significance?: SignificanceLevel;
   minRating?: number;
   maxEntranceFee?: number;

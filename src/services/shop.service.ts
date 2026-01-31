@@ -8,8 +8,8 @@ export interface ShopItem {
     currency: 'coins' | 'petals';
     type: 'avatar' | 'title' | 'theme' | 'collectible';
     image: string;
-    stock?: number;
-    is_active: boolean;
+    isAvailable?: boolean;
+    isActive: boolean;
 }
 
 class ShopService extends BaseService<ShopItem> {

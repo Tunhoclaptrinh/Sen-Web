@@ -29,8 +29,8 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
         pageSize: 10,
         autoFetch: true,
         initialFilters: initialFilters, 
-        defaultSort: initialFilters?.chapter_id ? 'order' : undefined,
-        defaultOrder: initialFilters?.chapter_id ? 'ascend' : undefined,
+        defaultSort: initialFilters?.chapterId ? 'order' : undefined,
+        defaultOrder: initialFilters?.chapterId ? 'ascend' : undefined,
         onError: (action: string, error: any) => {
             console.error(`Error ${action} level:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
@@ -41,15 +41,15 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
 
     // UI Handlers
     const openCreate = () => {
-        // Pre-fill with initialFilters (e.g. chapter_id) - Clone to avoid mutation
+        // Pre-fill with initialFilters (e.g. chapterId) - Clone to avoid mutation
         const defaults: any = initialFilters ? { ...initialFilters } : {};
         
         // IMPORTANT: Explicitly remove 'id' to ensure it's a "Create" operation
         if (defaults.id) delete defaults.id;
 
         // Calculate auto-increment order and suggest required_level
-        if (defaults.chapter_id && crud.data) {
-             const existingInChapter = crud.data.filter((l: Level) => l.chapter_id === defaults.chapter_id);
+        if (defaults.chapterId && crud.data) {
+             const existingInChapter = crud.data.filter((l: Level) => l.chapterId === defaults.chapterId);
              // Sort by order to find the last one
              const sortedLevels = [...existingInChapter].sort((a, b) => (b.order || 0) - (a.order || 0));
              const lastLevel = sortedLevels[0];
@@ -59,7 +59,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
              
              // If there's a last level, suggest it as the required_level
              if (lastLevel) {
-                 defaults.required_level = lastLevel.id;
+                 defaults.requiredLevel = lastLevel.id;
              }
         } else {
              defaults.order = (crud.data?.length || 0) + 1;
@@ -124,13 +124,13 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     };
 
     const reorderLevels = async (newOrderIds: number[]) => {
-        if (!initialFilters?.chapter_id) {
+        if (!initialFilters?.chapterId) {
             message.error("Không xác định được chương để sắp xếp");
             return;
         }
 
         try {
-            await adminLevelService.reorder(initialFilters.chapter_id, newOrderIds);
+            await adminLevelService.reorder(initialFilters.chapterId, newOrderIds);
             message.success("Cập nhật thứ tự thành công");
             crud.refresh(); // Refresh list to update 'order' column
         } catch (error: any) {

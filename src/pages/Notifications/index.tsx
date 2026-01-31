@@ -31,11 +31,11 @@ const NotificationsPage: React.FC = () => {
     const fetchNotifications = async () => {
         setLoading(true);
         try {
-            const filter = activeTab === 'unread' ? { is_read: false } : {};
+            const filter = activeTab === 'unread' ? { isRead: false } : {};
             const data = await notificationService.getNotifications(page, limit, filter);
             setNotifications(data.items);
             setTotal(data.total);
-            setUnreadTotal(data.unread_count);
+            setUnreadTotal(data.unreadCount);
         } catch (error) {
             console.error('Failed to fetch notifications', error);
             message.error('Không thể tải thông báo');
@@ -49,11 +49,11 @@ const NotificationsPage: React.FC = () => {
     }, [page, activeTab]);
 
     const handleMarkAsRead = async (item: Notification) => {
-        if (item.is_read) return;
+        if (item.isRead) return;
         try {
             await notificationService.markAsRead(item.id);
             // Optimistic update
-            setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, is_read: true } : n));
+            setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
             // If we are in 'unread' tab, we might want to keep showing it but mark as read, or remove it?
             // Standard behavior: keep it until refresh or let it fade. 
             // If using server side filter, removing it might affect pagination sequence.
@@ -68,7 +68,7 @@ const NotificationsPage: React.FC = () => {
     const handleMarkAllRead = async () => {
         try {
             await notificationService.markAllAsRead();
-            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             setUnreadTotal(0);
             message.success('Đã đánh dấu tất cả là đã đọc');
             // If in unread tab, refreshing would empty the list.
@@ -239,7 +239,7 @@ const NotificationsPage: React.FC = () => {
                         renderItem={(item) => (
                             <List.Item
                                 actions={[
-                                    !item.is_read && (
+                                    !item.isRead && (
                                         <Tooltip title="Đánh dấu đã đọc">
                                             <Button
                                                 type="text"
@@ -263,14 +263,14 @@ const NotificationsPage: React.FC = () => {
                                 style={{
                                     padding: '24px',
                                     transition: 'all 0.3s',
-                                    background: !item.is_read ? 'linear-gradient(to right, rgba(230, 247, 255, 0.4), rgba(255, 255, 255, 0))' : 'transparent',
+                                    background: !item.isRead ? 'linear-gradient(to right, rgba(230, 247, 255, 0.4), rgba(255, 255, 255, 0))' : 'transparent',
                                     borderBottom: '1px solid #f5f5f5',
                                     position: 'relative'
                                 }}
                                 className="notification-list-item"
                             >
                                 {/* Active indicator strip */}
-                                {!item.is_read && (
+                                {!item.isRead && (
                                     <div style={{
                                         position: 'absolute',
                                         left: 0,
@@ -296,15 +296,15 @@ const NotificationsPage: React.FC = () => {
                                     }
                                     title={
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                                            <Text strong={!item.is_read} style={{ fontSize: 16, color: '#1f1f1f' }}>{item.title}</Text>
-                                            {!item.is_read && <Badge status="processing" color="#1890ff" />}
-                                            {item.is_read && <CheckCircleOutlined style={{ fontSize: 12, color: '#52c41a', opacity: 0.5 }} />}
+                                            <Text strong={!item.isRead} style={{ fontSize: 16, color: '#1f1f1f' }}>{item.title}</Text>
+                                            {!item.isRead && <Badge status="processing" color="#1890ff" />}
+                                            {item.isRead && <CheckCircleOutlined style={{ fontSize: 12, color: '#52c41a', opacity: 0.5 }} />}
                                         </div>
                                     }
                                     description={
                                         <div>
                                             <Paragraph style={{ margin: '4px 0 10px', color: '#595959', fontSize: 14, lineHeight: 1.6 }}>{item.message}</Paragraph>
-                                            <Text type="secondary" style={{ fontSize: 12 }}>{formatRelativeTime(item.created_at)}</Text>
+                                            <Text type="secondary" style={{ fontSize: 12 }}>{formatRelativeTime(item.createdAt)}</Text>
                                         </div>
                                     }
                                 />

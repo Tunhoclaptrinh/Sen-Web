@@ -10,19 +10,19 @@ export interface CollectionItem {
 }
 
 export interface Collection extends BaseEntity, TimestampEntity {
-  user_id: number;
+  userId: number;
   name: string;
   description?: string;
   items: CollectionItem[];
-  total_items: number;
-  is_public: boolean;
+  totalItems: number;
+  isPublic: boolean;
   user?: UserType; // If populated
 }
 
 export interface CollectionDTO {
   name: string;
   description?: string;
-  is_public?: boolean;
+  isPublic?: boolean;
 }
 
 export interface ShareCollectionData {
@@ -46,9 +46,9 @@ export interface CollectionState {
 
 // Favorite
 export interface Favorite extends BaseEntity {
-  user_id: number;
-  type: "artifact" | "heritage_site" | "exhibition";
-  reference_id: number;
+  userId: number;
+  type: "artifact" | "heritageSite" | "exhibition";
+  referenceId: number;
   item?: any;
 }
 
@@ -59,21 +59,21 @@ export interface FavoriteStats {
 
 // Review
 export interface Review extends BaseEntity, TimestampEntity {
-  user_id: number;
-  type: "artifact" | "heritage_site";
-  heritage_site_id?: number;
-  artifact_id?: number;
+  userId: number;
+  type: "artifact" | "heritageSite";
+  heritageSiteId?: number;
+  artifactId?: number;
   rating: number;
   comment?: string;
   images?: string[];
-  is_verified?: boolean;
+  isVerified?: boolean;
   user?: UserType;
 }
 
 export interface ReviewDTO {
-  type: "artifact" | "heritage_site";
-  heritage_site_id?: number;
-  artifact_id?: number;
+  type: "artifact" | "heritageSite";
+  heritageSiteId?: number;
+  artifactId?: number;
   rating: number;
   comment?: string;
   images?: string[];

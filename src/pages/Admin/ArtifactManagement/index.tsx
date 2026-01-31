@@ -98,7 +98,7 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
     },
     {
       title: "Loại hình",
-      dataIndex: "artifact_type",
+      dataIndex: "artifactType",
       key: "artifact_type",
       width: 150,
       filters: Object.values(ArtifactType).map(type => ({
@@ -154,7 +154,7 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
     },
     {
       title: "Tác giả",
-      dataIndex: "author_name",
+      dataIndex: "authorName",
       key: "author_name",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>

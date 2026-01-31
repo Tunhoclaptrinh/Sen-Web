@@ -92,7 +92,7 @@ const ResearcherArtifactManagement = () => {
     },
     {
       title: "Loại hình",
-      dataIndex: "artifact_type",
+      dataIndex: "artifactType",
       key: "artifact_type",
       width: 150,
       render: (type: ArtifactType) => (

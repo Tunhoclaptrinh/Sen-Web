@@ -5,26 +5,26 @@ export interface HistoryArticle extends BaseEntity {
   image?: string;
   content: string; // HTML content
   author?: string;
-  author_name?: string;
+  authorName?: string;
   publishDate?: string;
   category?: string;
   
   // Status & Metrics
-  is_active: boolean;
-  is_featured: boolean;
+  isActive: boolean;
+  isFeatured: boolean;
   views: number;
   
   // Relations
-  related_heritage_ids?: number[];
-  related_artifact_ids?: number[];
+  relatedHeritageIds?: number[];
+  relatedArtifactIds?: number[];
 
   // Populated Data (for Detail View)
   shortDescription?: string;
-  timeline_events?: any[];
-  related_heritage?: any[];
-  related_artifacts?: any[];
-  related_levels?: any[];
-  related_products?: any[];
+  timelineEvents?: any[];
+  relatedHeritage?: any[];
+  relatedArtifacts?: any[];
+  relatedLevels?: any[];
+  relatedProducts?: any[];
 }
 
 export interface HistoryArticleDTO {
@@ -34,16 +34,16 @@ export interface HistoryArticleDTO {
   author?: string;
   publishDate?: string;
   category?: string;
-  is_active?: boolean;
-  is_featured?: boolean;
-  related_heritage_ids?: number[];
-  related_artifact_ids?: number[];
+  isActive?: boolean;
+  isFeatured?: boolean;
+  relatedHeritageIds?: number[];
+  relatedArtifactIds?: number[];
 }
 
 export interface HistorySearchParams {
   title_like?: string;
   category?: string;
   author?: string;
-  is_active?: boolean;
-  is_featured?: boolean;
+  isActive?: boolean;
+  isFeatured?: boolean;
 }

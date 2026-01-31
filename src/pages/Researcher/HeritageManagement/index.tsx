@@ -118,7 +118,7 @@ const ResearcherHeritageManagement = () => {
     },
     {
       title: "UNESCO",
-      dataIndex: "unesco_listed",
+      dataIndex: "unescoListed",
       key: "unesco_listed",
       width: 100,
       render: (listed: boolean) =>

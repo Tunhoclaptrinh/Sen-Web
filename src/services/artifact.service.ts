@@ -54,7 +54,7 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
     params: QueryParams = {}
   ): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      category_id: categoryId,
+      categoryId: categoryId,
       ...params,
     });
   }
@@ -80,7 +80,7 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
     params: QueryParams = {}
   ): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      artifact_type: type,
+      artifactType: type,
       ...params,
     });
   }
@@ -138,7 +138,7 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
     params: QueryParams = {}
   ): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      heritage_site_id: heritageId,
+      heritageSiteId: heritageId,
       ...params,
     });
   }
@@ -148,7 +148,7 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
    */
   async getOnDisplay(params: QueryParams = {}): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      is_on_display: true,
+      isOnDisplay: true,
       ...params,
     });
   }

@@ -4,23 +4,23 @@
 
 export interface Notification {
     id: number;
-    user_id: number;
+    userId: number;
     type: 'system' | 'reward' | 'achievement' | 'quest' | 'social';
     title: string;
     message: string;
     data?: any;
-    is_read: boolean;
-    created_at: string;
-    read_at?: string;
+    isRead: boolean;
+    createdAt: string;
+    readAt?: string;
 }
 
 export interface NotificationPreferences {
-    user_id: number;
-    email_notifications: boolean;
-    push_notifications: boolean;
-    quest_notifications: boolean;
-    achievement_notifications: boolean;
-    social_notifications: boolean;
+    userId: number;
+    emailNotifications: boolean;
+    pushNotifications: boolean;
+    questNotifications: boolean;
+    achievementNotifications: boolean;
+    socialNotifications: boolean;
 }
 
 export type NotificationType = 'system' | 'reward' | 'achievement' | 'quest' | 'social';

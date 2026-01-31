@@ -11,10 +11,18 @@ DOCKER_TUNNEL_PROD="Docker/Tunnel/docker-compose.prod.yml"
 # Cleanup background jobs on exit
 trap "kill 0 2>/dev/null" EXIT
 
-# Function to open browser (works in WSL)
+# Function to open browser (Cross-platform)
 open_browser() {
     local url=$1
-    cmd.exe /c start "" "$url" 2>/dev/null
+    if command -v xdg-open > /dev/null; then
+        xdg-open "$url"
+    elif command -v open > /dev/null; then
+        open "$url"
+    elif grep -q Microsoft /proc/version 2>/dev/null; then
+        cmd.exe /c start "" "$url" 2>/dev/null
+    else
+        echo "Please open browser to: $url"
+    fi
 }
 
 show_menu() {
@@ -27,9 +35,9 @@ show_menu() {
     echo ""
     echo "  [1] Build Images   (First time / Rebuild only)"
     echo "  [2] Start Dev      (Hot-reload :3001)"
-    echo "  [3] Start Prod     (docker-compose up -d)"
+    echo "  [3] Start Prod     (docker compose up -d)"
     echo "  [4] View Logs"
-    echo "  [5] Stop All       (docker-compose down)"
+    echo "  [5] Stop All       (docker compose down)"
     echo "  [6] Start Tunnel   (Public Access - Auto)"
     echo "  [7] Exit"
     echo ""
@@ -45,23 +53,23 @@ start_docker() {
     case $mode in
         build)
             echo "[Docker] Building development image..."
-            docker-compose -f $DOCKER_DEV build
+            docker compose -f $DOCKER_DEV build
             echo ""
             echo "[Docker] Building production image..."
-            docker-compose -f $DOCKER_PROD build
+            docker compose -f $DOCKER_PROD build
             echo ""
             echo "[OK] All images built successfully"
             ;;
         dev)
             echo "[Docker] Starting Development Server..."
             echo "[Info] Browser will open in 5 seconds..."
-            (sleep 5 && cmd.exe /c start "" "http://localhost:3001") &
+            (sleep 5 && open_browser "http://localhost:3001") &
             BROWSER_PID=$!
-            docker-compose -f $DOCKER_DEV up
+            docker compose -f $DOCKER_DEV up
             kill $BROWSER_PID 2>/dev/null
             ;;
         prod)
-            docker-compose -f $DOCKER_PROD up -d
+            docker compose -f $DOCKER_PROD up -d
             echo ""
             echo "[OK] Production server running at http://localhost"
             open_browser "http://localhost"
@@ -72,12 +80,12 @@ start_docker() {
                 echo "[Info] Detected DEV environment."
                 echo "[Info] Starting Tunnel for Port 3001..."
                 echo "------------------------------------------------"
-                docker-compose -f $DOCKER_TUNNEL_DEV up
+                docker compose -f $DOCKER_TUNNEL_DEV up
             elif docker ps --format '{{.Names}}' | grep -q "^sen-frontend$"; then
                 echo "[Info] Detected PROD environment."
                 echo "[Info] Starting Tunnel for Port 80..."
                 echo "------------------------------------------------"
-                docker-compose -f $DOCKER_TUNNEL_PROD up
+                docker compose -f $DOCKER_TUNNEL_PROD up
             else
                 echo "[Error] No running frontend found!"
                 echo "Please select [2] Start Dev or [3] Start Prod first."
@@ -97,10 +105,10 @@ start_docker() {
             ;;
         down)
             echo "[Docker] Stopping all containers..."
-            docker-compose -f $DOCKER_DEV down 2>/dev/null
-            docker-compose -f $DOCKER_PROD down 2>/dev/null
-            docker-compose -f $DOCKER_TUNNEL_DEV down 2>/dev/null
-            docker-compose -f $DOCKER_TUNNEL_PROD down 2>/dev/null
+            docker compose -f $DOCKER_DEV down 2>/dev/null
+            docker compose -f $DOCKER_PROD down 2>/dev/null
+            docker compose -f $DOCKER_TUNNEL_DEV down 2>/dev/null
+            docker compose -f $DOCKER_TUNNEL_PROD down 2>/dev/null
             echo "[OK] Cleaned up."
             ;;
         *)

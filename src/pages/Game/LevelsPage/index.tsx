@@ -40,17 +40,17 @@ const LevelsPage: React.FC = () => {
     if (chapterId) {
        dispatch(fetchLevelsByChapter(Number(chapterId)));
     }
-  }, [dispatch, chapterId, progress?.completed_levels]); // Re-run when completion status changes
+  }, [dispatch, chapterId, progress?.completedLevels]); // Re-run when completion status changes
 
   const handleStartLevel = (level: Level) => {
-    if (!level.is_locked) {
+    if (!level.isLocked) {
       dispatch(setCurrentLevel(level));
       navigate(`/game/play/${level.id}`);
     }
   };
 
   const currentActiveLevelId = levels?.find(
-    (l) => !l.is_completed && !l.is_locked,
+    (l) => !l.isCompleted && !l.isLocked,
   )?.id;
 
   if (levelsLoading)
@@ -87,7 +87,7 @@ const LevelsPage: React.FC = () => {
               {currentChapter.name}
             </Title>
             <Progress
-              percent={currentChapter.completion_rate}
+              percent={currentChapter.completionRate}
               showInfo={false}
               strokeColor="#1f5f25"
               trailColor="#e5e5e5"
