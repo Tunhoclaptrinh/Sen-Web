@@ -163,7 +163,7 @@ export const useArtifactModel = (initialFilters: any = {}) => {
                     message.error('Vui lòng nhập lý do từ chối');
                     return Promise.reject();
                 }
-                return crud.rejectReview!(record.id, comment);
+                return crud.rejectReview?.(record.id, comment);
             }
         });
     };

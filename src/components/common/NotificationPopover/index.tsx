@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Badge, Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag } from 'antd';
+import { Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag } from 'antd';
 import {
     BellOutlined,
     CheckCircleOutlined,
