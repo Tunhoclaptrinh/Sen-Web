@@ -11,13 +11,13 @@ const { Title } = Typography;
 interface Props {
     data: QuizScreenType;
     onNext: () => void;
-    onSubmitAnswer: (answerId: string) => Promise<{ is_correct: boolean; explanation?: string }>;
+    onSubmitAnswer: (answerId: string) => Promise<{ isCorrect: boolean; explanation?: string }>;
     fallbackImage?: string;
 }
 
 const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackImage }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
-    const [result, setResult] = useState<{ is_correct: boolean; explanation?: string } | null>(null);
+    const [result, setResult] = useState<{ isCorrect: boolean; explanation?: string } | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
     // Reset state when question changes
@@ -44,7 +44,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
             const answerText = data.options[selectedOption].text;
             const response = await onSubmitAnswer(answerText);
             setResult(response);
-            if (response.is_correct) {
+            if (response.isCorrect) {
                 message.success('Chính xác! + điểm');
             } else {
                 message.error('Chưa chính xác');
@@ -60,7 +60,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
         <div className="quiz-screen">
             <div
                 className="game-background"
-                style={{ backgroundImage: `url("${getImageUrl(data.background_image || fallbackImage, 'https://via.placeholder.com/1200x600?text=Quiz+Background')}")` }}
+                style={{ backgroundImage: `url("${getImageUrl(data.backgroundImage || fallbackImage, 'https://via.placeholder.com/1200x600?text=Quiz+Background')}")` }}
             />
 
             <div className="screen-content-wrapper">
@@ -78,7 +78,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
 
                                 if (result) {
                                     if (isSelected) {
-                                        if (result.is_correct) {
+                                        if (result.isCorrect) {
                                             btnClass += ' correct';
                                             icon = <CheckCircleOutlined />;
                                         } else {
@@ -110,9 +110,9 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                     {result && (
                         <div className="quiz-feedback">
                             <Alert
-                                message={result.is_correct ? "Chính xác!" : "Sai rồi!"}
+                                message={result.isCorrect ? "Chính xác!" : "Sai rồi!"}
                                 description={result.explanation}
-                                type={result.is_correct ? "success" : "error"}
+                                type={result.isCorrect ? "success" : "error"}
                                 showIcon
                                 style={{ marginTop: 20, marginBottom: 20 }}
                             />

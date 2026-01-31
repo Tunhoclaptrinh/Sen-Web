@@ -100,9 +100,9 @@ const ArtifactDetailPage = () => {
       const currentId = currentItem.id;
 
       // 1. Fetch related artifacts (same heritage site)
-      if (currentItem.heritage_site_id) {
+      if (currentItem.heritageSiteId) {
         const res = await artifactService.getAll({
-          heritage_site_id: currentItem.heritage_site_id,
+          heritage_site_id: currentItem.heritageSiteId,
           limit: 4,
         });
         if (res.data) {
@@ -120,14 +120,14 @@ const ArtifactDetailPage = () => {
       }
 
       // 2. Fetch related heritage
-      const relHeriIds = currentItem.related_heritage_ids || [];
+      const relHeriIds = currentItem.relatedHeritageIds || [];
       if (relHeriIds.length > 0) {
         const res = await heritageService.getAll({ ids: relHeriIds.join(",") });
         if (res.data) setRelatedHeritage(res.data);
       }
 
       // 3. Fetch related history
-      const relHistIds = currentItem.related_history_ids || [];
+      const relHistIds = currentItem.relatedHistoryIds || [];
       if (relHistIds.length > 0) {
         const res = await historyService.getAll({ ids: relHistIds.join(",") });
         if (res.data) setRelatedHistory(res.data);
@@ -189,7 +189,7 @@ const ArtifactDetailPage = () => {
   if (!artifact) return <Empty description="Không tìm thấy hiện vật" />;
 
   const rawMainImage =
-    resolveImage(artifact.main_image) ||
+    resolveImage(artifact.mainImage) ||
     resolveImage(artifact.image) ||
     resolveImage(artifact.images);
   const mainImage = getImageUrl(
@@ -199,10 +199,10 @@ const ArtifactDetailPage = () => {
 
   // Aggregate all potential images
   const allRawImages = [
-    ...(artifact.main_image
-      ? Array.isArray(artifact.main_image)
-        ? artifact.main_image
-        : [artifact.main_image]
+    ...(artifact.mainImage
+      ? Array.isArray(artifact.mainImage)
+        ? artifact.mainImage
+        : [artifact.mainImage]
       : []),
     ...(artifact.image
       ? Array.isArray(artifact.image)
@@ -240,15 +240,15 @@ const ArtifactDetailPage = () => {
               color="var(--primary-color)"
               style={{ border: "none", marginBottom: 16 }}
             >
-              {artifact.artifact_type?.toUpperCase() || "ARTIFACT"}
+              {artifact.artifactType?.toUpperCase() || "ARTIFACT"}
             </Tag>
             <h1>{artifact.name}</h1>
             <div className="artifact-hero-meta">
               <span>
-                <CalendarOutlined /> {artifact.year_created}
+                <CalendarOutlined /> {artifact.yearCreated}
               </span>
               <span>
-                <UserOutlined /> {artifact.author_name || artifact.author || artifact.creator || "Hệ thống"}
+                <UserOutlined /> {artifact.authorName || artifact.author || artifact.creator || "Hệ thống"}
               </span>
               <span>
                 <HistoryOutlined /> {artifact.views || 0} lượt xem
@@ -302,10 +302,10 @@ const ArtifactDetailPage = () => {
                     <div className="article-meta-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
                       <div style={{ display: 'flex', gap: 24, color: '#888' }}>
                         <span>
-                          <CalendarOutlined /> {artifact.year_created}
+                          <CalendarOutlined /> {artifact.yearCreated}
                         </span>
                         <span>
-                          <UserOutlined /> {artifact.author_name || artifact.author || artifact.creator || "Hệ thống"}
+                          <UserOutlined /> {artifact.authorName || artifact.author || artifact.creator || "Hệ thống"}
                         </span>
                         <span>
                           <HistoryOutlined /> {artifact.views || 0} lượt xem
@@ -354,16 +354,16 @@ const ArtifactDetailPage = () => {
                     <h3 className="section-title">Câu Chuyện & Ý Nghĩa</h3>
                     <div className="description-text">
                       <Paragraph>{artifact.description}</Paragraph>
-                      {artifact.historical_context && (
+                      {artifact.historicalContext && (
                         <Paragraph>
                           <strong>Ngữ Cảnh Lịch Sử:</strong>{" "}
-                          {artifact.historical_context}
+                          {artifact.historicalContext}
                         </Paragraph>
                       )}
-                      {artifact.cultural_significance && (
+                      {artifact.culturalSignificance && (
                         <Paragraph>
                           <strong>Ý Nghĩa Văn Hóa:</strong>{" "}
-                          {artifact.cultural_significance}
+                          {artifact.culturalSignificance}
                         </Paragraph>
                       )}
                     </div>
@@ -413,7 +413,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Loại hiện vật</span>
                                 <span className="value">
-                                  {artifact.artifact_type}
+                                  {artifact.artifactType}
                                 </span>
                               </div>
                             </li>
@@ -424,7 +424,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Thời kỳ / Năm</span>
                                 <span className="value">
-                                  {artifact.year_created}
+                                  {artifact.yearCreated}
                                 </span>
                               </div>
                             </li>
@@ -474,7 +474,7 @@ const ArtifactDetailPage = () => {
                                 <span className="value">
                                   {artifact.rating || 0}/5{" "}
                                   <span className="sub">
-                                    ({artifact.total_reviews || 0} reviews)
+                                    ({artifact.totalReviews || 0} reviews)
                                   </span>
                                 </span>
                               </div>

@@ -27,11 +27,11 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
                 form.setFieldsValue({
                     name: initialValues.name,
                     description: initialValues.description,
-                    is_public: initialValues.is_public
+                    isPublic: initialValues.isPublic
                 });
             } else {
                 form.resetFields();
-                form.setFieldsValue({ is_public: true }); // Default to public
+                form.setFieldsValue({ isPublic: true }); // Default to public
             }
         }
     }, [visible, initialValues, form]);
@@ -75,7 +75,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
                 </Form.Item>
 
                 <Form.Item
-                    name="is_public"
+                    name="isPublic"
                     valuePropName="checked"
                 >
                     <Checkbox>Công khai (Mọi người có thể nhìn thấy)</Checkbox>

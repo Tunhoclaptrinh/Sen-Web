@@ -484,7 +484,7 @@ const FavoritesPage: React.FC = () => {
                             <Pagination
                                 current={page}
                                 pageSize={pageSize}
-                                total={activeTab === 'all' ? stats.total : stats[activeTab === 'heritage_site' ? 'heritage_sites' : activeTab === 'artifact' ? 'artifacts' : activeTab === 'exhibition' ? 'exhibitions' : 'articles']}
+                                total={activeTab === 'all' ? stats.total : stats[activeTab === 'heritage_site' ? 'heritageSites' : activeTab === 'artifact' ? 'artifacts' : activeTab === 'exhibition' ? 'exhibitions' : 'articles']}
                                 onChange={(p, ps) => {
                                     setPage(p);
                                     if (ps !== pageSize) setPageSize(ps);

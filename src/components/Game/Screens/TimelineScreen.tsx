@@ -88,7 +88,7 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
     const [submitting, setSubmitting] = useState(false);
 
     // Computed background
-    const bgImage = data.background_image || fallbackImage;
+    const bgImage = data.backgroundImage || fallbackImage;
 
     // Sensors setup
     const sensors = useSensors(

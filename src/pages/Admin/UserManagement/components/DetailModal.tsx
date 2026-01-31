@@ -56,7 +56,7 @@ const UserDetailModal = ({ userId, visible, onCancel }: UserDetailModalProps) =>
                     <Badge status={user.isActive ? "success" : "error"} text={user.isActive ? "Active" : "Inactive"} />
                 </Descriptions.Item>
                 <Descriptions.Item label="Ngày tham gia">
-                    {dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}
+                    {dayjs(user.createdAt).format("DD/MM/YYYY HH:mm")}
                 </Descriptions.Item>
             </Descriptions>
         );

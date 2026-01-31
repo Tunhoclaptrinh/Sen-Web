@@ -109,12 +109,12 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                     || screen.options?.find((o: any) => o.text === answerId);
         
         if (option?.is_correct) {
-            message.success("Chính xác! (+Điểm)");
+            message.success("Đúng rồi! (+Điểm)");
             setScore(prev => prev + 10);
-            return { is_correct: true, points_earned: 10, correct_answer_id: answerId };
+            return { isCorrect: true, pointsEarned: 10, explanation: "Chính xác!" };
         } else {
              message.error("Sai rồi!");
-             return { is_correct: false, points_earned: 0, correct_answer_id: screen.options?.find((o: any) => o.is_correct)?._id };
+             return { isCorrect: false, pointsEarned: 0, explanation: "Sai rồi, hãy thử lại!" };
         }
     };
 
@@ -135,9 +135,9 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         if (!item) {
              return { 
                 success: false, 
-                points_earned: 0,
-                item: { id: itemId, name: 'Unknown', fact_popup: '' },
-                progress: { collected: 0, required: 1, all_collected: false }
+                pointsEarned: 0,
+                item: { id: itemId, name: 'Unknown', factPopup: '' },
+                progress: { collected: 0, required: 1, allCollected: false }
             };
         }
 
@@ -160,16 +160,16 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
 
         return { 
             success: true, 
-            points_earned: 5,
+            pointsEarned: 5,
             item: { 
                 id: itemId, 
                 name: item.name, 
-                fact_popup: item.fact_popup || item.content || item.description || "Bạn đã tìm thấy một manh mối quan trọng!" 
+                factPopup: item.fact_popup || item.factPopup || item.content || item.description || "Bạn đã tìm thấy một manh mối quan trọng!" 
             },
             progress: { 
                 collected: newCollected.length, 
                 required: required, 
-                all_collected: isAllCollected 
+                allCollected: isAllCollected 
             }
         };
     };
@@ -183,8 +183,8 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         if (start < 0) return undefined;
         
         for (let i = start; i >= 0; i--) {
-            if (screens[i]?.background_image) {
-                return screens[i].background_image;
+            if (screens[i]?.backgroundImage) {
+                return screens[i].backgroundImage;
             }
         }
         return undefined;
@@ -202,7 +202,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         // Helper to inject background if missing
         const screenWithBg = {
             ...currentScreen,
-            background_image: currentScreen.background_image || effectiveBg
+            backgroundImage: currentScreen.backgroundImage || effectiveBg
         };
 
         switch (currentScreen.type) {

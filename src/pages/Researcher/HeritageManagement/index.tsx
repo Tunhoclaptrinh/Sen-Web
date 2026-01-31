@@ -43,8 +43,6 @@ const ResearcherHeritageManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
-    submitReview,
-
   } = useHeritageModel();
 
   const onFilterChange = (key: string, value: any) => {
@@ -178,7 +176,7 @@ const ResearcherHeritageManagement = () => {
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteHeritage}
-        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
+        onSubmitReview={undefined}
         onApprove={undefined} // Researcher cannot approve
         onReject={undefined} // Researcher cannot reject
         onBatchDelete={batchDeleteHeritages}

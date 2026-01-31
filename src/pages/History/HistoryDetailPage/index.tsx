@@ -59,10 +59,10 @@ const HistoryDetailPage = () => {
                  const data = res.data;
                  console.log('[HistoryDetail] API Data:', data);
                  setArticle(data);
-                 setRelatedHeritage(data.related_heritage || []);
-                 setRelatedArtifacts(data.related_artifacts || []);
-                 setRelatedLevels(data.related_levels || []);
-                 setRelatedProducts(data.related_products || []);
+                 setRelatedHeritage(data.relatedHeritage || []);
+                 setRelatedArtifacts(data.relatedArtifacts || []);
+                 setRelatedLevels(data.relatedLevels || []);
+                 setRelatedProducts(data.relatedProducts || []);
 
                  // Also fetch general related history items for the bottom section
                  const resRelated = await historyService.getRelated(currentId);

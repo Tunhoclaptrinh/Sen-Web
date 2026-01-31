@@ -30,8 +30,8 @@ const DetailModal: React.FC<DetailModalProps> = ({
             if (open && record?.id) {
                 setLoading(true);
                 try {
-                    const artifactsIds = record.related_artifact_ids || [];
-                    const historyIds = record.related_history_ids || [];
+                    const artifactsIds = record.relatedArtifactIds || [];
+                    const historyIds = record.relatedHistoryIds || [];
 
                     const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] = await Promise.all([
                         heritageService.getTimeline(record.id),
@@ -78,10 +78,10 @@ const DetailModal: React.FC<DetailModalProps> = ({
                     <Descriptions bordered column={2}>
                         <Descriptions.Item label="Tên gọi">{record.name}</Descriptions.Item>
                         <Descriptions.Item label="Hình ảnh">
-                             {resolveImage(record.image) || resolveImage(record.main_image) || resolveImage(record.images) ? (
+                             {resolveImage(record.image) || resolveImage(record.mainImage) || resolveImage(record.images) ? (
                                 <Image 
                                     width={100}
-                                    src={getImageUrl(resolveImage(record.image) || resolveImage(record.main_image) || resolveImage(record.images) || "")}
+                                    src={getImageUrl(resolveImage(record.image) || resolveImage(record.mainImage) || resolveImage(record.images) || "")}
                                     style={{ borderRadius: 4, objectFit: 'cover' }}
                                 />
                              ) : <span style={{color: '#999', fontStyle: 'italic'}}>Chưa có ảnh</span>}
@@ -95,7 +95,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         </Descriptions.Item>
                         <Descriptions.Item label="Tỉnh/Thành phố">{record.province || "Chưa cập nhật"}</Descriptions.Item>
                         <Descriptions.Item label="UNESCO">
-                            {record.unesco_listed ? <Tag color="green">CÓ</Tag> : "KHÔNG"}
+                            {record.unescoListed ? <Tag color="green">CÓ</Tag> : "KHÔNG"}
                         </Descriptions.Item>
                         <Descriptions.Item label="Vị trí" span={2}>
                             <Space>
@@ -104,13 +104,13 @@ const DetailModal: React.FC<DetailModalProps> = ({
                                 {record.latitude && record.longitude && ` (${record.latitude}, ${record.longitude})`}
                             </Space>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Năm thành lập">{record.year_established || "N/A"}</Descriptions.Item>
+                        <Descriptions.Item label="Năm thành lập">{record.yearEstablished || "N/A"}</Descriptions.Item>
                         <Descriptions.Item label="Đánh giá">
                             <Space><StarOutlined style={{ color: "#faad14" }} /> {record.rating || 0}</Space>
                         </Descriptions.Item>
                         <Descriptions.Item label="Mô tả ngắn" span={2}>
                             <Typography.Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
-                                {record.short_description || record.shortDescription || "Chưa có mô tả ngắn."}
+                                {record.shortDescription || "Chưa có mô tả ngắn."}
                             </Typography.Paragraph>
                         </Descriptions.Item>
                         <Descriptions.Item label="Mô tả chi tiết" span={2}>

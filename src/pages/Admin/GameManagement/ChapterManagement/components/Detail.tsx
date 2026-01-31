@@ -48,7 +48,7 @@ const ChapterDetail: React.FC<ChapterDetailProps> = ({ open, onClose, data }) =>
             {data.order}
           </Descriptions.Item>
           <Descriptions.Item label="Số cánh hoa yêu cầu">
-            {data.required_petals}
+            {data.requiredPetals}
           </Descriptions.Item>
         </Descriptions>
     </Modal>

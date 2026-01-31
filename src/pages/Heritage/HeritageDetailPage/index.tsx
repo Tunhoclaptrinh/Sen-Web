@@ -91,7 +91,7 @@ const HeritageDetailPage = () => {
 
   const checkFavoriteStatus = async (siteId: number) => {
     try {
-      const res = await favoriteService.check("heritage_site", siteId);
+      const res = await favoriteService.check("heritageSite", siteId);
       if (res.success && res.data) {
         setIsFavorite(res.data.isFavorited);
       }
@@ -114,7 +114,7 @@ const HeritageDetailPage = () => {
 
       // 2. Fetch artifacts (from backlink AND related_artifact_ids)
       const resBackArtifacts = await heritageService.getArtifacts(currentId);
-      const relArtIds = currentItem.related_artifact_ids || [];
+      const relArtIds = currentItem.relatedArtifactIds || [];
 
       let allArtifacts = resBackArtifacts.data || [];
       if (relArtIds.length > 0) {
@@ -131,7 +131,7 @@ const HeritageDetailPage = () => {
       setSiteArtifacts(allArtifacts);
 
       // 3. Fetch History (from related_history_ids)
-      const relHistIds = currentItem.related_history_ids || [];
+      const relHistIds = currentItem.relatedHistoryIds || [];
       if (relHistIds.length > 0) {
         const resHist = await historyService.getAll({
           ids: relHistIds.join(","),
@@ -163,11 +163,11 @@ const HeritageDetailPage = () => {
     if (!id) return;
     try {
       if (isFavorite) {
-        await favoriteService.remove("heritage_site", Number(id));
+        await favoriteService.remove("heritageSite", Number(id));
         setIsFavorite(false);
         message.success("Đã xóa khỏi yêu thích");
       } else {
-        await favoriteService.add("heritage_site", Number(id));
+        await favoriteService.add("heritageSite", Number(id));
         setIsFavorite(true);
         message.success("Đã thêm vào yêu thích");
       }
@@ -197,13 +197,13 @@ const HeritageDetailPage = () => {
   const relatedHistory =
     relatedHistoryArr.length > 0
       ? relatedHistoryArr
-      : site.related_history || [];
+      : site.relatedHistory || [];
 
 
 
   // Use helper to resolve main image
   const rawImage =
-    resolveImage(site.main_image) ||
+    resolveImage(site.mainImage) ||
     resolveImage(site.image) ||
     resolveImage(site.images);
   const mainImage = getImageUrl(
@@ -211,8 +211,8 @@ const HeritageDetailPage = () => {
     "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200",
   );
   const publishDate =
-    site.publishDate || site.created_at || new Date().toISOString();
-  const authorName = site.author_name || site.author || "Hệ thống";
+    site.publishDate || site.createdAt || new Date().toISOString();
+  const authorName = site.authorName || site.author || "Hệ thống";
 
   return (
     <div className="heritage-blog-page">
@@ -235,7 +235,7 @@ const HeritageDetailPage = () => {
               <span>
                 <EnvironmentOutlined /> {site.address || site.region}
               </span>
-              {site.unesco_listed && (
+              {site.unescoListed && (
                 <span className="unesco-badge">
                   <StarFilled style={{ color: "#FFD700" }} /> UNESCO World
                   Heritage
@@ -269,7 +269,7 @@ const HeritageDetailPage = () => {
             >
               {Array.from(
                 new Set([
-                  ...(site.main_image ? [resolveImage(site.main_image)] : []),
+                  ...(site.mainImage ? [resolveImage(site.mainImage)] : []),
                   ...(site.image ? [resolveImage(site.image)] : []),
                   ...(site.gallery || []),
                   ...(site.images || []),
@@ -393,7 +393,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Giờ mở cửa</span>
                                 <span className="value">
-                                  {site.visit_hours || "8:00 - 17:00"}
+                                  {site.visitHours || "8:00 - 17:00"}
                                 </span>
                               </div>
                             </li>
@@ -404,8 +404,8 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Giá vé tham quan</span>
                                 <span className="value highlight">
-                                  {site.entrance_fee
-                                    ? `${site.entrance_fee.toLocaleString()} VNĐ`
+                                  {site.entranceFee
+                                    ? `${site.entranceFee.toLocaleString()} VNĐ`
                                     : "Miễn phí"}
                                 </span>
                               </div>
@@ -417,7 +417,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Năm thành lập</span>
                                 <span className="value">
-                                  {site.year_established || "Không rõ"}
+                                  {site.yearEstablished || "Không rõ"}
                                 </span>
                               </div>
                             </li>
@@ -430,7 +430,7 @@ const HeritageDetailPage = () => {
                                   Niên đại / Thời kỳ
                                 </span>
                                 <span className="value">
-                                  {site.cultural_period || "Đang cập nhật"}
+                                  {site.culturalPeriod || "Đang cập nhật"}
                                 </span>
                               </div>
                             </li>
@@ -461,7 +461,7 @@ const HeritageDetailPage = () => {
                                 <span className="value">
                                   {site.rating || 0}/5{" "}
                                   <span className="sub">
-                                    ({site.total_reviews || 0} đánh giá)
+                                    ({site.totalReviews || 0} đánh giá)
                                   </span>
                                 </span>
                               </div>
@@ -475,7 +475,7 @@ const HeritageDetailPage = () => {
                                 <span className="value">{site.region}</span>
                               </div>
                             </li>
-                            {site.unesco_listed && (
+                            {site.unescoListed && (
                               <li>
                                 <div className="icon-wrapper unesco-icon">
                                   <SafetyCertificateFilled />
