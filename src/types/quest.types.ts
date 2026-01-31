@@ -1,11 +1,11 @@
 export interface QuestProgress {
-    current_value: number;
-    is_completed: boolean;
-    is_claimed: boolean;
-    status: 'in_progress' | 'completed' | 'claimed';
-    started_at: string;
-    completed_at?: string;
-    claimed_at?: string;
+    currentValue: number;
+    isCompleted: boolean;
+    isClaimed: boolean;
+    status: 'inProgress' | 'completed' | 'claimed';
+    startedAt: string;
+    completedAt?: string;
+    claimedAt?: string;
 }
 
 export interface QuestRewards {

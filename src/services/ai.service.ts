@@ -8,27 +8,27 @@ export interface AICharacter {
     personality: string;
     state: 'amnesia' | 'restored';
     description: string;
-    is_default?: boolean;
-    is_owned?: boolean;
+    isDefault?: boolean;
+    isOwned?: boolean;
     rarity?: 'common' | 'rare' | 'epic' | 'legendary';
     price?: number;
-    unlock_level_id?: number | null;
-    can_unlock?: boolean;
+    unlockLevelId?: number | null;
+    canUnlock?: boolean;
 }
 
 // Chat Message
 export interface ChatMessage {
     id: number;
-    character_id: number;
-    user_id: number;
+    characterId: number;
+    userId: number;
     role: 'user' | 'assistant';
     content: string;
     timestamp: string;
-    audio_base64?: string; // Add audio field
+    audioBase64?: string; // Add audio field
     context?: {
-        level_id?: number;
-        artifact_id?: number;
-        heritage_site_id?: number;
+        levelId?: number;
+        artifactId?: number;
+        heritageSiteId?: number;
     };
 }
 
@@ -46,33 +46,33 @@ class AIService extends BaseService {
 
     // Chat
     async chat(data: {
-        character_id?: number;
+        characterId?: number;
         message: string;
         context?: {
-            level_id?: number;
-            artifact_id?: number;
-            heritage_site_id?: number;
+            levelId?: number;
+            artifactId?: number;
+            heritageSiteId?: number;
         };
     }): Promise<ChatResponse> {
         const response = await this.post('/chat', {
             message: data.message,
             context: {
-                characterId: data.character_id,
-                levelId: data.context?.level_id,
-                artifactId: data.context?.artifact_id,
-                heritageSiteId: data.context?.heritage_site_id,
+                characterId: data.characterId,
+                levelId: data.context?.levelId,
+                artifactId: data.context?.artifactId,
+                heritageSiteId: data.context?.heritageSiteId,
             }
         });
         // Backend returns: { success: true, data: { message, character, timestamp, route } }
         return {
             message: {
                 id: Date.now(),
-                character_id: data.character_id || response.data.character?.id || 1,
-                user_id: 0, // Will be set from auth
+                characterId: data.characterId || response.data.character?.id || 1,
+                userId: 0, // Will be set from auth
                 role: 'assistant',
                 content: response.data.message,
                 timestamp: response.data.timestamp || new Date().toISOString(),
-                audio_base64: response.data.audio_base64, // Map audio
+                audioBase64: response.data.audioBase64, // Map audio
                 context: data.context,
             },
             character: response.data.character,
@@ -83,7 +83,7 @@ class AIService extends BaseService {
     // Get chat history
     async getChatHistory(characterId?: number, limit: number = 50): Promise<ChatMessage[]> {
         const params: any = { limit };
-        if (characterId) params.character_id = characterId;
+        if (characterId) params.characterId = characterId;
         
         const response = await this.get('/history', params);
         // Backend now returns properly formatted ChatMessage[] with role user/assistant
@@ -95,7 +95,7 @@ class AIService extends BaseService {
         hint: string;
         character: AICharacter;
     }> {
-        const response = await this.post('/hint', { level_id: levelId, screen_id: screenId });
+        const response = await this.post('/hint', { levelId: levelId, screenId: screenId });
         return response.data;
     }
 
@@ -103,7 +103,7 @@ class AIService extends BaseService {
     async explain(type: 'artifact' | 'heritage_site', id: number): Promise<{
         explanation: string;
         character: AICharacter;
-        related_info?: any;
+        relatedInfo?: any;
     }> {
         const response = await this.post('/explain', { type, id });
         return response.data;
@@ -114,7 +114,7 @@ class AIService extends BaseService {
         questions: Array<{
             question: string;
             options: string[];
-            correct_answer: number;
+            correctAnswer: number;
             explanation: string;
         }>;
     }> {
@@ -146,7 +146,7 @@ class AIService extends BaseService {
         message: string;
         data?: {
             character: AICharacter;
-            new_balance: number;
+            newBalance: number;
         };
     }> {
         const response = await this.post(`/characters/${characterId}/purchase`, {});

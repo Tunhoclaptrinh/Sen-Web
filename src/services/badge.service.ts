@@ -5,11 +5,11 @@ export interface Badge {
     name: string;
     description: string;
     icon: string;
-    condition_type: string;
-    condition_value: number;
-    reward_coins?: number;
-    reward_petals?: number;
-    is_active: boolean;
+    conditionType: string;
+    conditionValue: number;
+    rewardCoins?: number;
+    rewardPetals?: number;
+    isActive: boolean;
 }
 
 class BadgeService extends BaseService<Badge> {

@@ -26,11 +26,11 @@ import {
 interface ScreenEditorProps {
   levelId: number;
   levelMetadata?: {
-    chapter_id: number;
-    chapter_name?: string;
-    level_name?: string;
+    chapterId: number;
+    chapterName?: string;
+    levelName?: string;
     order: number;
-    background_music?: string;
+    backgroundMusic?: string;
   };
   screensCount?: number;
   screen?: Screen | null;
@@ -73,8 +73,8 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
         if (screen) {
             form.setFieldsValue(screen);
             setType(screen.type);
-            if (screen.background_image) {
-                setBgMode(screen.background_image.startsWith('http') ? 'link' : 'upload');
+            if (screen.backgroundImage) {
+                setBgMode(screen.backgroundImage.startsWith('http') ? 'link' : 'upload');
             }
         } else {
             form.resetFields();
@@ -84,8 +84,8 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
             // Auto-generate ID if metadata is available
             let generatedId = "";
             if (levelMetadata) {
-                const chapterPrefix = getInitials(levelMetadata.chapter_name) || `C${levelMetadata.chapter_id}`;
-                const levelPrefix = getInitials(levelMetadata.level_name) || `L${levelMetadata.order}`;
+                const chapterPrefix = getInitials(levelMetadata.chapterName) || `C${levelMetadata.chapterId}`;
+                const levelPrefix = getInitials(levelMetadata.levelName) || `L${levelMetadata.order}`;
                 const nextIndex = screensCount + 1;
                 generatedId = `${chapterPrefix}_${levelPrefix}_S${nextIndex}`;
             }
@@ -93,9 +93,9 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
             form.setFieldsValue({ 
                 type: SCREEN_TYPES.DIALOGUE,
                 id: generatedId,
-                is_first: screensCount === 0,
-                is_last: true, // Default to true for new screens, user can change
-                skip_allowed: true
+                isFirst: screensCount === 0,
+                isLast: true, // Default to true for new screens, user can change
+                skipAllowed: true
             });
         }
     }
@@ -292,7 +292,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
                                         <DoubleRightOutlined style={{ color: 'var(--primary-color)' }} />
                                         <span style={{ fontWeight: 600, color: '#555' }}>Cho phép Bỏ qua (Skip)</span>
                                     </Space>
-                                    <Form.Item name="skip_allowed" valuePropName="checked" noStyle>
+                                    <Form.Item name="skipAllowed" valuePropName="checked" noStyle>
                                         <Switch />
                                     </Form.Item>
                                 </div>
@@ -316,11 +316,11 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
                                     </Radio.Group>
                                     
                                     {bgMode === "upload" ? (
-                                        <Form.Item name="background_image" noStyle>
+                                        <Form.Item name="backgroundImage" noStyle>
                                             <ImageUpload maxCount={1} />
                                         </Form.Item>
                                     ) : (
-                                        <Form.Item name="background_image" noStyle>
+                                        <Form.Item name="backgroundImage" noStyle>
                                             <Input 
                                                 prefix={<PictureOutlined style={{color: '#bfbfbf'}} />} 
                                                 placeholder="Dán đường dẫn ảnh (https://...)" 
@@ -359,7 +359,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
             onClose={() => setPreviewVisible(false)}
             screens={[{...form.getFieldsValue(), type, id: screen?.id || 'preview'} as any]} 
             title="Xem trước màn hình kịch bản"
-            bgmUrl={levelMetadata?.background_music}
+            bgmUrl={levelMetadata?.backgroundMusic}
         />
     </>
   );

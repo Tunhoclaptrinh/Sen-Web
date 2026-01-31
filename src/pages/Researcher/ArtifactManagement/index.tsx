@@ -1,6 +1,4 @@
-import {
-  Tag
-} from "antd";
+import { Tag, Tabs } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import { 
@@ -11,12 +9,12 @@ import {
 } from "@/types";
 import DataTable from "@/components/common/DataTable";
 
-import ArtifactDetailModal from "./components/DetailModal";
-import ArtifactForm from "./components/Form";
-import ArtifactStats from "./components/Stats";
-import { useArtifactModel } from "./model";
+import ArtifactDetailModal from "@/pages/Admin/ArtifactManagement/components/DetailModal";
+import ArtifactForm from "@/pages/Admin/ArtifactManagement/components/Form";
 
-const ArtifactManagement = () => {
+import { useArtifactModel } from "@/pages/Admin/ArtifactManagement/model";
+
+const ResearcherArtifactManagement = () => {
   const {
     data,
     loading,
@@ -29,8 +27,6 @@ const ArtifactManagement = () => {
     updateFilters,
     filters,
     clearFilters,
-    stats,
-    statsLoading,
     deleteArtifact,
     batchDeleteArtifacts,
     exportData,
@@ -46,7 +42,9 @@ const ArtifactManagement = () => {
     openEdit,
     openDetail,
     closeForm,
-    closeDetail
+    closeDetail,
+    submitReview,
+
   } = useArtifactModel();
 
   const onFilterChange = (key: string, value: any) => {
@@ -97,25 +95,36 @@ const ArtifactManagement = () => {
       dataIndex: "artifactType",
       key: "artifact_type",
       width: 150,
-      filters: Object.values(ArtifactType).map(type => ({
-        text: ArtifactTypeLabels[type],
-        value: type
-      })),
-      filteredValue: filters.artifact_type ? (Array.isArray(filters.artifact_type) ? filters.artifact_type : [filters.artifact_type]) : null,
       render: (type: ArtifactType) => (
         <Tag color="purple">{ArtifactTypeLabels[type]?.toUpperCase() || type}</Tag>
       ),
+    },
+    {
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+        width: 120,
+        render: (status: string) => {
+            const colors: any = {
+                draft: 'default',
+                pending: 'orange',
+                published: 'green',
+                rejected: 'red'
+            };
+            const labels: any = {
+                draft: 'Nháp',
+                pending: 'Chờ duyệt',
+                published: 'Đã xuất bản',
+                rejected: 'Từ chối'
+            };
+            return <Tag color={colors[status]}>{labels[status] || status}</Tag>;
+        }
     },
     {
       title: "Tình trạng",
       dataIndex: "condition",
       key: "condition",
       width: 120,
-      filters: Object.values(ArtifactCondition).map(cond => ({
-        text: ArtifactConditionLabels[cond],
-        value: cond
-      })),
-      filteredValue: filters.condition ? (Array.isArray(filters.condition) ? filters.condition : [filters.condition]) : null,
       render: (cond: ArtifactCondition) => {
         let color = "blue";
         if (['excellent', 'EXCELLENT'].includes(cond)) color = "green";
@@ -125,44 +134,47 @@ const ArtifactManagement = () => {
         return <Tag color={color}>{ArtifactConditionLabels[cond]?.toUpperCase() || cond}</Tag>;
       }
     },
-    {
-      title: "Trưng bày",
-      dataIndex: "is_on_display",
-      key: "is_on_display",
-      width: 100,
-      render: (onDisplay: boolean) => onDisplay ? <Tag color="green">CÓ</Tag> : <Tag color="red">KHÔNG</Tag>,
-    },
-    {
-      title: "Di sản",
-      key: "heritage_count",
-      width: 100,
-      render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
-      ),
-    },
-    {
-      title: "Lịch sử",
-      key: "history_count",
-      width: 100,
-      render: (_: any, record: any) => (
-        <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
-      ),
-    },
-    {
-      title: "Tác giả",
-      dataIndex: "authorName",
-      key: "author_name",
-      width: 120,
-      render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
-    },
   ];
+
+  const tabItems = [
+    { key: 'all', label: 'Tất cả (Của tôi)' },
+    { key: 'draft', label: 'Bản nháp' },
+    { key: 'pending', label: 'Chờ duyệt' },
+    { key: 'published', label: 'Đã xuất bản' },
+    { key: 'rejected', label: 'Bị từ chối' }
+  ];
+
+  const handleTabChange = (key: string) => {
+     if (key === 'all') {
+         updateFilters({ status: undefined });
+     } else {
+         updateFilters({ status: key });
+     }
+  };
+
+  const getActiveTab = () => {
+    if (filters.status) return filters.status;
+    return 'all';
+  };
 
   return (
     <>
       <DataTable
-        title="Quản lý Hiện vật"
-        headerContent={<ArtifactStats stats={stats} loading={statsLoading} />}
+        title="Quản lý Hiện vật (Cá nhân)"
+        headerContent={
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+              <Tabs 
+                activeKey={getActiveTab()} 
+                items={tabItems} 
+                onChange={handleTabChange}
+                style={{ marginBottom: 0 }}
+              />
+            </div>
+          </div>
+        }
         loading={loading}
+        permissionResource="artifacts"
         columns={columns}
         dataSource={data}
         pagination={pagination}
@@ -177,6 +189,9 @@ const ArtifactManagement = () => {
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteArtifact}
+        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
+        onApprove={undefined} // No approve
+        onReject={undefined} // No reject
         onBatchDelete={batchDeleteArtifacts}
         batchOperations={true}
         batchActions={[
@@ -195,60 +210,6 @@ const ArtifactManagement = () => {
         onDownloadTemplate={downloadTemplate}
         onExport={exportData} 
         onRefresh={refresh}
-        filters={[
-          {
-            key: "artifact_type",
-            placeholder: "Loại hình",
-            options: Object.values(ArtifactType).map(type => ({
-                label: ArtifactTypeLabels[type],
-                value: type
-            })),
-          },
-          {
-            key: "condition",
-            placeholder: "Tình trạng",
-            options: Object.values(ArtifactCondition).map(cond => ({
-                label: ArtifactConditionLabels[cond],
-                value: cond
-            })),
-          },
-          {
-            key: "is_on_display",
-            placeholder: "Trưng bày",
-            options: [
-                { label: "Đang trưng bày", value: true },
-                { label: "Trong kho", value: false },
-            ]
-          },
-          {
-            key: "material",
-            placeholder: "Chất liệu",
-            type: "input",
-            operators: ["like", "ilike", "eq"],
-            defaultOperator: "ilike"
-          },
-          {
-            key: "technique",
-            placeholder: "Kỹ thuật chế tác",
-            type: "input",
-            operators: ["like", "ilike"],
-            defaultOperator: "ilike"
-          },
-          {
-            key: "dating",
-            placeholder: "Niên đại",
-            type: "input",
-            operators: ["like", "ilike", "eq"],
-            defaultOperator: "ilike"
-          },
-          {
-            key: "origin",
-            placeholder: "Nguồn gốc/Xuất xứ",
-            type: "input",
-            operators: ["like", "ilike"],
-            defaultOperator: "ilike"
-          }
-        ]}
         filterValues={filters}
         onFilterChange={onFilterChange}
         onClearFilters={clearFilters}
@@ -273,4 +234,4 @@ const ArtifactManagement = () => {
   );
 };
 
-export default ArtifactManagement;
+export default ResearcherArtifactManagement;

@@ -26,7 +26,7 @@ class QuestService extends BaseService {
         success: boolean;
         data: any;
     }> {
-        const response = await this.post(`/${id}/progress`, { current_value: currentValue });
+        const response = await this.post(`/${id}/progress`, { currentValue: currentValue });
         return response.data;
     }
 

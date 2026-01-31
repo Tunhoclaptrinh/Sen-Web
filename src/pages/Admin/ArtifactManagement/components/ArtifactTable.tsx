@@ -51,7 +51,7 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
     },
     {
       title: "Loại hình",
-      dataIndex: "artifact_type",
+      dataIndex: "artifactType",
       key: "artifact_type",
       width: 150,
       render: (type: string) => <Tag color="purple">{type?.toUpperCase()}</Tag>,

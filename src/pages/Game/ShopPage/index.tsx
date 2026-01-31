@@ -44,7 +44,7 @@ const ShopPage: React.FC = () => {
     }, [successMessage, error, dispatch]);
 
     const filteredItems = items.filter(item => {
-        const active = item.is_active !== undefined ? item.is_active : item.is_available;
+        const active = item.isActive !== undefined ? item.isActive : item.isAvailable;
         if (!active) return false;
         
         if (activeTab === 'all') return true;
@@ -69,7 +69,7 @@ const ShopPage: React.FC = () => {
         if (!selectedItem) return;
         
         const totalCost = selectedItem.price * purchaseQuantity;
-        const balance = selectedItem.currency === 'petals' ? (progress?.total_sen_petals || 0) : (progress?.coins || 0);
+        const balance = selectedItem.currency === 'petals' ? (progress?.totalSenPetals || 0) : (progress?.coins || 0);
 
         if (balance < totalCost) {
             message.warning(`Bạn không đủ ${selectedItem.currency === 'petals' ? 'Cánh Sen' : 'Xu'}!`);
@@ -85,13 +85,13 @@ const ShopPage: React.FC = () => {
     };
 
     const handleBuyItem = (item: ShopItem) => {
-        const balance = item.currency === 'petals' ? (progress?.total_sen_petals || 0) : (progress?.coins || 0);
+        const balance = item.currency === 'petals' ? (progress?.totalSenPetals || 0) : (progress?.coins || 0);
         if (balance < item.price) {
            message.warning(`Bạn không đủ ${item.currency === 'petals' ? 'Cánh Sen' : 'Xu'}!`);
            return;
        }
 
-       if (item.is_consumable) {
+       if (item.isConsumable) {
            handleOpenModal(item);
        } else {
            Modal.confirm({
@@ -113,8 +113,8 @@ const ShopPage: React.FC = () => {
    };
 
     const renderShopItem = (item: ShopItem) => {
-        const ownedItem = inventory.find(inv => inv.item_id === item.id);
-        const isOwned = !!ownedItem && !item.is_consumable;
+        const ownedItem = inventory.find(inv => inv.itemId === item.id);
+        const isOwned = !!ownedItem && !item.isConsumable;
 
         // Fallback image handling: use item.image if available, otherwise fallback to item.icon
         const itemImage = item.image ? getImageUrl(item.image) : null;
@@ -188,7 +188,7 @@ const ShopPage: React.FC = () => {
                             {item.description}
                         </div>
 
-                        {ownedItem && item.is_consumable && (
+                        {ownedItem && item.isConsumable && (
                             <div className="owned-quantity" style={{ 
                                 fontSize: '0.8rem', 
                                 color: '#8b1d1d', // @seal-red
@@ -304,8 +304,8 @@ const ShopPage: React.FC = () => {
                             <Text type="secondary">{selectedItem.description}</Text>
                             
                             {(() => {
-                                const owned = inventory.find(i => i.item_id === selectedItem.id);
-                                if (owned && selectedItem.is_consumable) {
+                                const owned = inventory.find(i => i.itemId === selectedItem.id);
+                                if (owned && selectedItem.isConsumable) {
                                     return (
                                         <div style={{ 
                                             marginTop: 12, 

@@ -138,7 +138,7 @@ const UserManagement = () => {
     },
     {
       title: "Ngày tạo",
-      dataIndex: "created_at",
+      dataIndex: "createdAt",
       width: 150,
       render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
     },

@@ -34,7 +34,7 @@ const MediaEditor: React.FC<MediaEditorProps> = ({ type }) => {
             )}
 
             <Form.Item 
-                name={isVideo ? "video_url" : "image"} 
+                name={isVideo ? "videoUrl" : "image"} 
                 label={isVideo ? "Đường dẫn Video (URL) hoặc Mã nhúng (Embed Code)" : "Hình ảnh"}
                 rules={[{ required: true }]}
                 help={isVideo ? "Hỗ trợ link YouTube hoặc mã nhúng iframe từ YouTube" : undefined}

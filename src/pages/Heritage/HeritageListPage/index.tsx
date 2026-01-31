@@ -121,7 +121,7 @@ const HeritageListPage = () => {
     },
     {
       title: "Năm Thành Lập",
-      dataIndex: "year_established",
+      dataIndex: "yearEstablished",
       key: "year_established",
       width: 130,
       sorter: true,
@@ -129,7 +129,7 @@ const HeritageListPage = () => {
     },
     {
       title: "Phí Vào Cửa",
-      dataIndex: "entrance_fee",
+      dataIndex: "entranceFee",
       key: "entrance_fee",
       width: 120,
       sorter: true,
@@ -146,7 +146,7 @@ const HeritageListPage = () => {
     },
     {
       title: "UNESCO",
-      dataIndex: "unesco_listed",
+      dataIndex: "unescoListed",
       key: "unesco_listed",
       width: 100,
       filters: [
@@ -246,12 +246,12 @@ const HeritageListPage = () => {
             </div>
             <div>
               <strong>Năm thành lập:</strong>{" "}
-              {viewingRecord.year_established || "N/A"}
+              {viewingRecord.yearEstablished || "N/A"}
             </div>
             <div>
               <strong>Phí vào cửa:</strong>{" "}
-              {viewingRecord.entrance_fee
-                ? `${viewingRecord.entrance_fee.toLocaleString("vi-VN")} đ`
+              {viewingRecord.entranceFee
+                ? `${viewingRecord.entranceFee.toLocaleString("vi-VN")} đ`
                 : "Miễn phí"}
             </div>
             <div>
@@ -262,8 +262,8 @@ const HeritageListPage = () => {
             </div>
             <div>
               <strong>UNESCO:</strong>{" "}
-              <Tag color={viewingRecord.unesco_listed ? "green" : "default"}>
-                {viewingRecord.unesco_listed ? "Có" : "Không"}
+              <Tag color={viewingRecord.unescoListed ? "green" : "default"}>
+                {viewingRecord.unescoListed ? "Có" : "Không"}
               </Tag>
             </div>
           </Space>

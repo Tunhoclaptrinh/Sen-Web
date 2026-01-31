@@ -47,7 +47,7 @@ class GameService extends BaseService {
         return response.data;
     }
 
-    async startLevel(id: number): Promise<{ session_id: number; level: Level; current_screen: Screen }> {
+    async startLevel(id: number): Promise<{ sessionId: number; level: Level; currentScreen: Screen }> {
         const response = await this.post(`/levels/${id}/start`);
         return response.data;
     }
@@ -58,16 +58,16 @@ class GameService extends BaseService {
      * @param sessionId - Game session ID
      */
     async navigateToNextScreen(sessionId: number): Promise<{
-        session_id: number;
-        current_screen: Screen;
+        sessionId: number;
+        currentScreen: Screen;
         progress: {
-            completed_screens: number;
-            total_screens: number;
+            completedScreens: number;
+            totalScreens: number;
             percentage: number;
         };
-        level_finished?: boolean;
-        final_score?: number;
-        points_earned?: number; // ⚡ Added for animation
+        levelFinished?: boolean;
+        finalScore?: number;
+        pointsEarned?: number; // ⚡ Added for animation
     }> {
         const response = await this.post(`/sessions/${sessionId}/next-screen`);
         return response.data;
@@ -79,11 +79,11 @@ class GameService extends BaseService {
      * @param answerId - Selected answer ID
      */
     async submitAnswer(sessionId: number, answerId: string): Promise<{
-        is_correct: boolean;
-        points_earned: number;
-        total_score: number;
+        isCorrect: boolean;
+        pointsEarned: number;
+        totalScore: number;
         explanation?: string;
-        correct_answer?: string;
+        correctAnswer?: string;
     }> {
         const response = await this.post(`/sessions/${sessionId}/submit-answer`, { answerId });
         return response.data;
@@ -96,9 +96,9 @@ class GameService extends BaseService {
      */
     async submitTimeline(sessionId: number, eventOrder: string[]): Promise<{
         isCorrect: boolean;
-        points_earned?: number;
-        total_score?: number;
-        correct_order?: string[];
+        pointsEarned?: number;
+        totalScore?: number;
+        correctOrder?: string[];
     }> {
         const response = await this.post(`/sessions/${sessionId}/submit-timeline`, { eventOrder });
         return response.data;
@@ -113,14 +113,14 @@ class GameService extends BaseService {
         item: {
             id: string;
             name: string;
-            fact_popup: string;
+            factPopup: string;
         };
-        points_earned: number;
-        total_score: number;
+        pointsEarned: number;
+        totalScore: number;
         progress: {
             collected: number;
             required: number;
-            all_collected: boolean;
+            allCollected: boolean;
         };
     }> {
         const response = await this.post(`/levels/${levelId}/collect-clue`, { clueId });
@@ -141,12 +141,12 @@ class GameService extends BaseService {
             coins: number;
             character?: string;
         };
-        new_totals: {
+        newTotals: {
             petals: number;
             points: number;
             coins: number;
         };
-        next_level_id?: number;
+        nextLevelId?: number;
     }> {
         const response = await this.post(`/levels/${levelId}/complete`, { score, timeSpent });
         return response.data;
@@ -166,23 +166,23 @@ class GameService extends BaseService {
 
     // ==================== Museum ====================
     async getMuseum(): Promise<{
-        is_open: boolean;
+        isOpen: boolean;
         level: number;
-        income_per_hour: number;
-        total_income_generated: number;
-        pending_income: number;
-        hours_accumulated: number;
+        incomePerHour: number;
+        totalIncomeGenerated: number;
+        pendingIncome: number;
+        hoursAccumulated: number;
         capped: boolean;
         characters: string[];
         artifacts: {
-            artifact_id: number;
+            artifactId: number;
             name: string;
             image: string;
-            acquired_at: string;
+            acquiredAt: string;
         }[];
-        visitor_count: number;
-        can_collect: boolean;
-        next_collection_in: string;
+        visitorCount: number;
+        canCollect: boolean;
+        nextCollectionIn: string;
     }> {
         const response = await this.get('/museum');
         return response.data;
@@ -193,8 +193,8 @@ class GameService extends BaseService {
      * @param isOpen - true to open, false to close
      */
     async toggleMuseum(isOpen: boolean): Promise<{
-        is_open: boolean;
-        income_per_hour: number;
+        isOpen: boolean;
+        incomePerHour: number;
     }> {
         const response = await this.post('/museum/toggle', { isOpen });
         return response.data;
@@ -205,9 +205,9 @@ class GameService extends BaseService {
      */
     async collectMuseumIncome(): Promise<{
         collected: number;
-        total_coins: number;
-        total_museum_income: number;
-        next_collection_in: string;
+        totalCoins: number;
+        totalMuseumIncome: number;
+        nextCollectionIn: string;
     }> {
         const response = await this.post('/museum/collect');
         return response.data;
@@ -242,8 +242,8 @@ class GameService extends BaseService {
             type: string;
         };
         quantity: number;
-        total_cost: number;
-        remaining_coins: number;
+        totalCost: number;
+        remainingCoins: number;
     }> {
         const response = await this.post('/shop/purchase', { itemId, quantity });
         return response.data;
@@ -254,11 +254,11 @@ class GameService extends BaseService {
      */
     async getInventory(): Promise<{
         items: Array<{
-            item_id: number;
+            itemId: number;
             name: string;
             type: string;
             quantity: number;
-            acquired_at: string;
+            acquiredAt: string;
         }>;
     }> {
         const response = await this.get('/inventory');
@@ -300,11 +300,11 @@ class GameService extends BaseService {
             petals: number;
             character?: string;
         };
-        new_totals: {
+        newTotals: {
             coins: number;
             petals: number;
         };
-        is_new_discovery: boolean;
+        isNewDiscovery: boolean;
     }> {
         const response = await this.post('/scan', { code, latitude, longitude });
         return response.data;

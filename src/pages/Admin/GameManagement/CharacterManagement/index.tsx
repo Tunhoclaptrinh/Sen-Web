@@ -44,7 +44,7 @@ const CharacterManagement: React.FC = () => {
         },
         {
             title: 'Sưu tầm',
-            dataIndex: 'is_collectible',
+            dataIndex: 'isCollectible',
             key: 'is_collectible',
             width: 100,
             align: 'center' as const,
@@ -52,7 +52,7 @@ const CharacterManagement: React.FC = () => {
         },
         {
             title: 'Tính cách',
-            dataIndex: 'speaking_style',
+            dataIndex: 'speakingStyle',
             key: 'speaking_style',
             ellipsis: true,
         },
