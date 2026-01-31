@@ -141,7 +141,7 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
       key: "heritage_count",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
+        <Tag color="cyan">{(record.relatedHeritageIds || []).length} DS</Tag>
       ),
     },
     {
