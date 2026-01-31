@@ -1,4 +1,4 @@
-import BaseService from './base.service';
+import ReviewableBaseService from './reviewable.service';
 import apiClient from '@/config/axios.config';
 import type {
   HeritageSite,
@@ -17,7 +17,7 @@ import { logger } from '@/utils/logger.utils';
  * Heritage Service
  * Handles all operations related to Heritage Sites
  */
-class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, HeritageSiteDTO> {
+class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDTO, HeritageSiteDTO> {
   constructor() {
     super('/heritage-sites');
   }

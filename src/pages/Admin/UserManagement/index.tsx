@@ -150,6 +150,7 @@ const UserManagement = () => {
         title="Quản lý Người Dùng"
         headerContent={<UserStatsCard stats={stats} loading={statsLoading} />}
         loading={loading}
+        permissionResource="users"
         columns={columns}
         dataSource={data}
         pagination={pagination}

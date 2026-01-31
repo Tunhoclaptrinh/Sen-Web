@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
-import { message } from "antd";
+import { message, Modal, Input } from "antd";
 import { HeritageSite } from "@/types";
 import heritageService from "@/services/heritage.service";
 import { useCRUD } from "@/hooks/useCRUD";
 
-export const useHeritageModel = () => {
+export const useHeritageModel = (initialFilters: any = {}) => {
     // Stats State
     const [stats, setStats] = useState<any>(null);
     const [statsLoading, setStatsLoading] = useState(false);
@@ -18,11 +18,12 @@ export const useHeritageModel = () => {
     const crudOptions = useMemo(() => ({
         pageSize: 10,
         autoFetch: true,
+        initialFilters,
         onError: (action: string, error: any) => {
             console.error(`Error ${action} heritage site:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
         },
-    }), []);
+    }), [initialFilters]);
 
     const crud = useCRUD(heritageService, crudOptions);
 
@@ -141,6 +142,30 @@ export const useHeritageModel = () => {
         }
     };
 
+    const handleReject = async (record: HeritageSite) => {
+        Modal.confirm({
+            title: 'Từ chối phê duyệt',
+            content: (
+                <div style={{ marginTop: 16 }}>
+                    <p>Lý do từ chối:</p>
+                    <Input.TextArea 
+                        rows={4} 
+                        placeholder="Nhập lý do từ chối nội dung này..." 
+                        id="reject-comment"
+                    />
+                </div>
+            ),
+            onOk: async () => {
+                const comment = (document.getElementById('reject-comment') as HTMLTextAreaElement)?.value;
+                if (!comment) {
+                    message.error('Vui lòng nhập lý do từ chối');
+                    return Promise.reject();
+                }
+                return crud.rejectReview?.(record.id, comment);
+            }
+        });
+    };
+
     return {
         ...crud,
         stats,
@@ -155,6 +180,7 @@ export const useHeritageModel = () => {
         importData,
         downloadTemplate,
         handleSubmit,
+        handleReject,
         openCreate,
         openEdit,
         openDetail,

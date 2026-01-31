@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Badge, FloatButton } from 'antd';
+import { Button, FloatButton, Divider } from 'antd';
 import {
     BankOutlined,
     FileImageOutlined,
@@ -8,7 +8,6 @@ import {
     PlusOutlined,
     ClockCircleOutlined,
     CheckCircleOutlined,
-    BellOutlined,
     BookOutlined,
     TrophyOutlined,
 } from '@ant-design/icons';
@@ -19,6 +18,7 @@ import { RootState } from '@/store';
 import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { researcherMenu } from '@/config/menu.config';
+import NotificationPopover from '@/components/common/NotificationPopover';
 
 const ResearcherLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -48,25 +48,25 @@ const ResearcherLayout: React.FC = () => {
             key: 'create-heritage',
             icon: <BankOutlined />,
             label: 'Tạo di sản',
-            onClick: () => navigate('/researcher/heritage/create'),
+            onClick: () => navigate('/researcher/heritage-sites'),
         },
         {
             key: 'create-artifact',
             icon: <FileImageOutlined />,
             label: 'Tạo hiện vật',
-            onClick: () => navigate('/researcher/artifacts/create'),
+            onClick: () => navigate('/researcher/artifacts'),
         },
         {
             key: 'create-exhibition',
             icon: <PictureOutlined />,
             label: 'Tạo triển lãm',
-            onClick: () => navigate('/researcher/exhibitions/create'),
+            onClick: () => navigate('/researcher/exhibitions'),
         },
         {
             key: 'create-article',
             icon: <BookOutlined />,
             label: 'Viết bài mới',
-            onClick: () => navigate('/researcher/history/create'),
+            onClick: () => navigate('/researcher/history'),
         },
         {
             key: 'create-level',
@@ -85,32 +85,26 @@ const ResearcherLayout: React.FC = () => {
                 userMenuExtraItems={userMenuExtraItems}
                 navTheme="light"
                 actionsRender={() => [
-                    <div key="status" className="status-indicators" style={{ display: 'flex', gap: 16, alignItems: 'center', marginRight: 16 }}>
-                        <Badge count={3} size="small">
-                            <Button
-                                type="text"
-                                icon={<ClockCircleOutlined />}
-                                onClick={() => navigate('/researcher/heritage/pending')}
-                            >
-                                <span className="hidden md:inline">Chờ duyệt</span>
-                            </Button>
-                        </Badge>
-                        <Badge count={5} dot color="green">
-                            <Button
-                                type="text"
-                                icon={<CheckCircleOutlined />}
-                                onClick={() => navigate('/researcher/heritage/approved')}
-                            >
-                                <span className="hidden md:inline">Đã duyệt</span>
-                            </Button>
-                        </Badge>
-                    </div>,
-                    <Badge count={2} size="small" key="notifications">
+                    <>
                         <Button
                             type="text"
-                            icon={<BellOutlined />}
-                        />
-                    </Badge>
+                            icon={<ClockCircleOutlined />}
+                            onClick={() => navigate('/researcher/heritage-sites')}
+                        >
+                            <span className="hidden md:inline">Chờ duyệt</span>
+                        </Button>
+                        <Button
+                            type="text"
+                            icon={<CheckCircleOutlined />}
+                            onClick={() => navigate('/researcher/heritage-sites')}
+                        >
+                            <span className="hidden md:inline">Đã duyệt</span>
+                        </Button>
+                        
+                        <Divider type="vertical" style={{ height: 24, margin: '0 8px' }} />
+
+                        <NotificationPopover />
+                    </>
                 ]}
             >
                 <Outlet />

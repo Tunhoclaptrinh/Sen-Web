@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Badge, Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag } from 'antd';
+import { Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag } from 'antd';
 import {
     BellOutlined,
     CheckCircleOutlined,
@@ -301,21 +301,12 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
             placement="bottomRight"
             arrow={false}
         >
-            <Badge 
-                count={unreadCount} 
-                overflowCount={99} 
-                size="small" 
-                offset={[-4, 4]}
-                style={{ boxShadow: 'none' }}
-            >
-                <div style={{ display: 'flex', alignItems: 'center', height: 34 }}>
-                    <Button
-                        type="text"
-                        className={`header-action-btn ${visible ? 'active' : ''}`}
-                        icon={<BellOutlined style={{ fontSize: 20}} />}
-                    />
-                </div>
-            </Badge>
+            <Button
+                type="text"
+                icon={<BellOutlined style={{ fontSize: 20 }} />}
+                className={visible ? 'ant-btn-text-active' : ''} // If you want to keep active state, or remove custom class entirely
+                // Actually, simple button is enough. Antd takes care of hover.
+            />
         </Popover>
     );
 };

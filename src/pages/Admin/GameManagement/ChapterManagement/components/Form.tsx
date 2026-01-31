@@ -69,6 +69,8 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
         form.resetFields();
         form.setFieldsValue({
           required_petals: 0,
+          color: '#1890ff',
+          is_active: true
         });
       }
     }

@@ -126,7 +126,7 @@ const NotificationsPage: React.FC = () => {
     };
 
     return (
-        <div style={{ maxWidth: 800, margin: '0 auto', paddingBottom: 60, paddingTop: 20 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 60, paddingTop: 20 }}>
             {/* Premium Header */}
             <div style={{
                 display: 'flex',

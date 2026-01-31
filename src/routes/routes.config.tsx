@@ -51,9 +51,6 @@ const Support = lazy(() => import("@/pages/Support"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageListPage = lazy(
-  () => import("@/pages/Heritage/HeritageListPage"),
-);
 const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
@@ -71,6 +68,15 @@ const LearningManagement = lazy(
 const ExhibitionManagement = lazy(
   () => import("@/pages/Admin/ExhibitionManagement"),
 );
+const LevelManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/LevelManagement"),
+);
+const ResearcherHeritageManagement = lazy(
+  () => import("@/pages/Researcher/HeritageManagement"),
+);
+const ResearcherArtifactManagement = lazy(
+  () => import("@/pages/Researcher/ArtifactManagement"),
+);
 const BadgeManagement = lazy(
   () => import("@/pages/Admin/GameManagement/BadgeManagement"),
 );
@@ -79,9 +85,6 @@ const ShopManagement = lazy(
 );
 const ChapterManagement = lazy(
   () => import("@/pages/Admin/GameManagement/ChapterManagement"),
-);
-const LevelManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/LevelManagement"),
 );
 
 // Game Pages
@@ -260,43 +263,23 @@ const routes: RouteObject[] = [
     ),
     children: [
       {
-        path: "heritage/my-submissions",
-        element: <HeritageListPage />,
+        path: "heritage-sites",
+        element: <ResearcherHeritageManagement />,
       },
       {
-        path: "heritage/create",
-        element: <HeritageSiteManagement />,
+        path: "artifacts",
+        element: <ResearcherArtifactManagement />,
       },
       {
-        path: "artifacts/my-artifacts",
-        element: <ArtifactManagement />,
-      },
-      {
-        path: "artifacts/create",
-        element: <ArtifactManagement />,
-      },
-      {
-        path: "exhibitions/my-exhibitions",
+        path: "exhibitions",
         element: <ExhibitionManagement />,
       },
       {
-        path: "exhibitions/create",
-        element: <ExhibitionManagement />,
-      },
-      {
-        path: "history/my-articles",
-        element: <HistoryManagement />,
-      },
-      {
-        path: "history/create",
+        path: "history",
         element: <HistoryManagement />,
       },
       {
         path: "learning",
-        element: <LearningManagement />,
-      },
-      {
-        path: "learning/create",
         element: <LearningManagement />,
       },
       {

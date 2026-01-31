@@ -24,7 +24,11 @@ export interface DataTableProps {
     onView?: (record: any) => void;
     onEdit?: (record: any) => void;
     onDelete?: (id: any) => void;
+    onSubmitReview?: (record: any) => void;
+    onApprove?: (record: any) => void;
+    onReject?: (record: any) => void;
     onRefresh?: () => void;
+    permissionResource?: string; // Optional resource for RBAC checks
     pagination?: {
         current?: number;
         pageSize?: number;
