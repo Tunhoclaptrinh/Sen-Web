@@ -153,6 +153,7 @@ const HistoryManagement = () => {
         title="Quản lý Bài viết Lịch sử"
         headerContent={<HistoryStats stats={stats} loading={statsLoading} />}
         loading={loading}
+        permissionResource="history_articles"
         columns={columns}
         dataSource={data}
         pagination={pagination}

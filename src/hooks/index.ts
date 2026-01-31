@@ -5,3 +5,4 @@ export { useLocalStorage, default as useLocalStorageDefault } from './useLocalSt
 export { usePagination, default as usePaginationDefault } from './usePagination';
 export { usePermission, default as usePermissionDefault } from './usePermission';
 export { useSearch, default as useSearchDefault } from './useSearch';
+export { useAuth, default as useAuthDefault } from './useAuth';

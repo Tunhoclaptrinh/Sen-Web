@@ -181,6 +181,7 @@ const HeritageSiteManagement = () => {
         title="Quản lý Di sản Văn hóa"
         headerContent={<HeritageStats stats={stats} loading={statsLoading} />}
         loading={loading}
+        permissionResource="heritage_sites"
         columns={columns}
         dataSource={data}
         pagination={pagination}

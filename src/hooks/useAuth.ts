@@ -47,6 +47,19 @@ export const useAuth = () => {
     [user, isAuthenticated],
   );
 
+  const hasPermission = useCallback(
+    (resource: string, action: string) => {
+      if (!user || !isAuthenticated) return false;
+      if (user.role === "admin") return true;
+      
+      const permissions = (user as any).permissions;
+      if (!permissions || !permissions[resource]) return false;
+      
+      return permissions[resource].includes(action);
+    },
+    [user, isAuthenticated],
+  );
+
   return {
     user,
     isAuthenticated,
@@ -59,6 +72,7 @@ export const useAuth = () => {
     updateUserInfo: (info: any) => dispatch(updateUserInfo(info)),
     clearError: clearAuthError,
     hasRole,
+    hasPermission,
     isAdmin: user?.role === "admin",
   };
 };

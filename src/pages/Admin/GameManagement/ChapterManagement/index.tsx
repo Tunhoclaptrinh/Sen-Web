@@ -158,6 +158,7 @@ const ChapterManagement = () => {
       <DataTable
         title="Quản lý Chương Game"
         loading={loading}
+        permissionResource="game_content"
         columns={columns}
         dataSource={data}
         pagination={pagination}

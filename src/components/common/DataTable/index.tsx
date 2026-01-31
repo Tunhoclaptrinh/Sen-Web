@@ -25,7 +25,7 @@ import {
   SearchOutlined,
   FileExcelOutlined,
 } from "@ant-design/icons";
-import { Button, toast } from "@/components/common";
+import { Button, toast, PermissionGuard } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
 import { useDebounce } from "@/hooks";
 import "./styles.less";
@@ -45,6 +45,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onEdit,
   onDelete,
   onRefresh,
+  permissionResource,
   pagination = {
     current: 1,
     pageSize: 10,
@@ -347,56 +348,62 @@ const DataTable: React.FC<DataTableProps> = ({
             return (
               <Space size={4} className="action-buttons-container">
                 {onView && (
-                  <Tooltip title="Xem chi tiết">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      onClick={() => onView(record)}
-                      className="action-btn-standard"
-                      style={{ color: "var(--primary-color)" }}
-                    >
-                      <EyeOutlined />
-                    </Button>
-                  </Tooltip>
-                )}
-
-                {onEdit && (
-                  <Tooltip title="Chỉnh sửa">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      onClick={() => onEdit(record)}
-                      className="action-btn-standard action-btn-edit"
-                      style={{ color: "var(--primary-color)" }}
-                    >
-                      <EditOutlined />
-                    </Button>
-                  </Tooltip>
-                )}
-
-                {onDelete && (
-                  <Popconfirm
-                    title="Xác nhận xóa?"
-                    description="Bạn có chắc chắn muốn xóa mục này?"
-                    onConfirm={() => onDelete(record[rowKey])}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                    okButtonProps={{ danger: true }}
-                    icon={
-                      <ExclamationCircleOutlined style={{ color: "#EF4444" }} />
-                    }
-                  >
-                    <Tooltip title="Xóa">
+                  <PermissionGuard resource={permissionResource!} action="read" fallback={null}>
+                    <Tooltip title="Xem chi tiết">
                       <Button
                         variant="ghost"
                         buttonSize="small"
-                        className="action-btn-standard action-btn-delete"
-                        style={{ color: "#ff4d4f" }}
+                        onClick={() => onView(record)}
+                        className="action-btn-standard"
+                        style={{ color: "var(--primary-color)" }}
                       >
-                        <DeleteOutlined />
+                        <EyeOutlined />
                       </Button>
                     </Tooltip>
-                  </Popconfirm>
+                  </PermissionGuard>
+                )}
+
+                {onEdit && (
+                  <PermissionGuard resource={permissionResource!} action="update" fallback={null}>
+                    <Tooltip title="Chỉnh sửa">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        onClick={() => onEdit(record)}
+                        className="action-btn-standard action-btn-edit"
+                        style={{ color: "var(--primary-color)" }}
+                      >
+                        <EditOutlined />
+                      </Button>
+                    </Tooltip>
+                  </PermissionGuard>
+                )}
+
+                {onDelete && (
+                  <PermissionGuard resource={permissionResource!} action="delete" fallback={null}>
+                    <Popconfirm
+                      title="Xác nhận xóa?"
+                      description="Bạn có chắc chắn muốn xóa mục này?"
+                      onConfirm={() => onDelete(record[rowKey])}
+                      okText="Xóa"
+                      cancelText="Hủy"
+                      okButtonProps={{ danger: true }}
+                      icon={
+                        <ExclamationCircleOutlined style={{ color: "#EF4444" }} />
+                      }
+                    >
+                      <Tooltip title="Xóa">
+                        <Button
+                          variant="ghost"
+                          buttonSize="small"
+                          className="action-btn-standard action-btn-delete"
+                          style={{ color: "#ff4d4f" }}
+                        >
+                          <DeleteOutlined />
+                        </Button>
+                      </Tooltip>
+                    </Popconfirm>
+                  </PermissionGuard>
                 )}
 
                 {customActions && customActions(record)}
@@ -531,9 +538,11 @@ const DataTable: React.FC<DataTableProps> = ({
           {/* Left Side: Primary Actions (Add, Import, Export, Batch) */}
           <Space wrap>
             {onAdd && (
-              <Button variant="primary" onClick={onAdd} buttonSize="small">
-                <PlusOutlined /> Thêm Mới
-              </Button>
+              <PermissionGuard resource={permissionResource!} action="create" fallback={null}>
+                <Button variant="primary" onClick={onAdd} buttonSize="small">
+                  <PlusOutlined /> Thêm Mới
+                </Button>
+              </PermissionGuard>
             )}
 
             {importable && onImport && (

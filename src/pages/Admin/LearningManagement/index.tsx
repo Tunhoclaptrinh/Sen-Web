@@ -50,6 +50,7 @@ const LearningManagement: React.FC = () => {
             <DataTable
                 title="Quản lý Bài học ôn"
                 loading={model.loading}
+                permissionResource="learning_modules"
                 columns={columns}
                 dataSource={model.data}
                 pagination={model.pagination}

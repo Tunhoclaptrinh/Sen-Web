@@ -163,6 +163,7 @@ const ArtifactManagement = () => {
         title="Quản lý Hiện vật"
         headerContent={<ArtifactStats stats={stats} loading={statsLoading} />}
         loading={loading}
+        permissionResource="artifacts"
         columns={columns}
         dataSource={data}
         pagination={pagination}
