@@ -5,8 +5,6 @@ import {
     FileImageOutlined,
     PictureOutlined,
     UserOutlined,
-    PlusOutlined,
-    ClockCircleOutlined,
     DashboardOutlined,
     TrophyOutlined,
     BookOutlined,
@@ -221,65 +219,55 @@ export const customerMenu: IMenuItem[] = [
 // ================= RESEARCHER MENU =================
 export const researcherMenu: IMenuItem[] = [
     {
-        key: 'home',
-        path: '/',
-        name: 'Trang chủ',
-        icon: <HomeOutlined />,
+        name: 'QUẢN LÝ NỘI DUNG',
+        path: '/__group__/content',
+        disabled: true,
+        key: 'group-content'
     },
     {
         key: 'heritage',
-        name: 'Di sản',
+        path: '/researcher/heritage-sites',
+        name: 'Di sản Văn hóa',
         icon: <BankOutlined />,
-        children: [
-            { key: 'my-submissions', path: '/researcher/heritage/my-submissions', name: 'Bài viết của tôi' },
-            { key: 'create', path: '/researcher/heritage/create', name: 'Tạo mới', icon: <PlusOutlined /> },
-            { key: 'pending', path: '/researcher/heritage/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
-        ],
     },
     {
         key: 'artifacts',
-        name: 'Hiện vật',
+        path: '/researcher/artifacts',
+        name: 'Hiện vật Lịch sử',
         icon: <FileImageOutlined />,
-        children: [
-            { key: 'my-artifacts', path: '/researcher/artifacts/my-artifacts', name: 'Hiện vật của tôi' },
-            { key: 'create-artifact', path: '/researcher/artifacts/create', name: 'Tạo mới', icon: <PlusOutlined /> },
-            { key: 'pending-artifact', path: '/researcher/artifacts/pending', name: 'Chờ duyệt', icon: <ClockCircleOutlined /> },
-        ],
     },
     {
         key: 'exhibitions',
+        path: '/researcher/exhibitions',
         name: 'Triển lãm',
         icon: <PictureOutlined />,
-        children: [
-            { key: 'my-exhibitions', path: '/researcher/exhibitions/my-exhibitions', name: 'Triển lãm của tôi' },
-            { key: 'create-exhibition', path: '/researcher/exhibitions/create', name: 'Tạo triển lãm', icon: <PlusOutlined /> },
-        ],
     },
     {
         key: 'articles',
+        path: '/researcher/history',
         name: 'Bài viết văn hóa',
         icon: <BookOutlined />,
-        children: [
-            { key: 'my-articles', path: '/researcher/history/my-articles', name: 'Bài viết của tôi' },
-            { key: 'create-article', path: '/researcher/history/create', name: 'Viết bài mới', icon: <PlusOutlined /> },
-        ],
+    },
+    {
+        name: 'QUẢN LÝ SỰ KIỆN & GAME',
+        path: '/__group__/game',
+        disabled: true,
+        key: 'group-game'
     },
     {
         key: 'learning',
+        path: '/researcher/learning',
         name: 'Bài học ôn tập',
         icon: <BookOutlined />,
-        children: [
-            { key: 'learning-list', path: '/researcher/learning', name: 'Danh sách bài học' },
-            { key: 'create-learning', path: '/researcher/learning/create', name: 'Tạo bài học mới', icon: <PlusOutlined /> },
-        ],
     },
     {
         key: 'game-content',
-        name: 'Quản lý Game',
+        name: 'Nội dung Game',
         icon: <TrophyOutlined />,
         children: [
             { key: 'chapters', path: '/researcher/chapters', name: 'Chương' },
             { key: 'levels', path: '/researcher/levels', name: 'Màn chơi' },
+            { key: 'rank', path: '/researcher/rank', name: 'Xếp hạng' },
         ],
     },
 ];

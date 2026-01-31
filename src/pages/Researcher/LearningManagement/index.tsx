@@ -1,11 +1,18 @@
+import React from 'react';
 import { Tag, Tabs } from 'antd';
 import { useAuth } from '@/hooks/useAuth';
-import { useLearningModel } from './model';
 import DataTable from '@/components/common/DataTable';
-import LearningForm from './components/Form';
+import { useLearningModel } from '@/pages/Admin/LearningManagement/model'; // Reuse model
+import LearningForm from '@/pages/Admin/LearningManagement/components/Form'; // Reuse form
 
-const LearningManagement: React.FC = () => {
+const ResearcherLearningManagement: React.FC = () => {
     const model = useLearningModel();
+    const { user } = useAuth();
+    
+    // Set default filter to 'my' on mount if not already set by Tabs
+    // Actually, Tabs default active key handling or useEffect might be better.
+    // However, since Backend ENFORCES ownership, 'all' basically means 'all my items'.
+    // So distinct tabs for Researcher might be: 'All My Items', 'Draft', 'Pending', 'Published'
 
     const columns = [
         {
@@ -30,53 +37,62 @@ const LearningManagement: React.FC = () => {
             }
         },
         {
+             title: 'Trạng thái',
+             dataIndex: 'status',
+             key: 'status',
+             width: 120,
+             render: (status: string) => {
+                 const colors: any = {
+                     draft: 'default',
+                     pending: 'orange',
+                     published: 'green',
+                     rejected: 'red'
+                 };
+                 const labels: any = {
+                     draft: 'Nháp',
+                     pending: 'Chờ duyệt',
+                     published: 'Đã xuất bản',
+                     rejected: 'Từ chối'
+                 };
+                 return <Tag color={colors[status]}>{labels[status] || status}</Tag>;
+             }
+         },
+        {
             title: 'Thời gian (phút)',
             dataIndex: 'estimated_duration',
             key: 'estimated_duration',
             width: 150,
             render: (val: number) => `${val} phút`
         },
-        {
-            title: "Tác giả",
-            dataIndex: "author_name",
-            key: "author_name",
-            width: 120,
-            render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
-        },
+        // Researcher doesn't need to see 'Author' if it's always them.
     ];
 
-    const { user } = useAuth();
-    
     const tabItems = [
-        { key: 'all', label: 'Tất cả bài học' },
-        { key: 'pending', label: 'Chờ duyệt' },
+        { key: 'all', label: 'Tất cả bài của tôi' },
+        { key: 'draft', label: 'Bản nháp' },
+        { key: 'pending', label: 'Đang chờ duyệt' },
         { key: 'published', label: 'Đã xuất bản' },
+        { key: 'rejected', label: 'Bị từ chối' },
     ];
 
     const handleTabChange = (key: string) => {
-        switch (key) {
-            case 'all':
-                model.clearFilters();
-                break;
-            case 'pending':
-                model.updateFilters({ status: 'pending', created_by: undefined });
-                break;
-            case 'published':
-                model.updateFilters({ status: 'published', created_by: undefined });
-                break;
+        // Backend enforces created_by = user.id, so we just filter by status
+        if (key === 'all') {
+            model.updateFilters({ status: undefined });
+        } else {
+            model.updateFilters({ status: key });
         }
     };
 
     const getActiveTab = () => {
-        if (model.filters.status === 'pending') return 'pending';
-        if (model.filters.status === 'published') return 'published';
-        return 'all';
+        if (!model.filters.status) return 'all';
+        return model.filters.status;
     };
 
     return (
         <>
             <DataTable
-                title="Quản lý Bài học ôn"
+                title="Quản lý Bài học ôn tập (Cá nhân)"
                 headerContent={
                     <div style={{ marginBottom: 16 }}>
                         <div style={{ background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
@@ -90,7 +106,7 @@ const LearningManagement: React.FC = () => {
                     </div>
                 }
                 loading={model.loading}
-                permissionResource="learning_modules"
+                permissionResource="learning_modules" // Check permissions
                 columns={columns}
                 dataSource={model.data}
                 pagination={model.pagination}
@@ -114,4 +130,4 @@ const LearningManagement: React.FC = () => {
     );
 };
 
-export default LearningManagement;
+export default ResearcherLearningManagement;

@@ -1,6 +1,7 @@
-import { Tag } from "antd";
+import { Tag, Tabs } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import { useAuth } from "@/hooks/useAuth";
 
 import DataTable from "@/components/common/DataTable";
 
@@ -15,7 +16,7 @@ import {
 } from "@/types";
 import { useHeritageModel } from "./model";
 
-const HeritageSiteManagement = () => {
+const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any }) => {
   const {
     data,
     loading,
@@ -46,7 +47,10 @@ const HeritageSiteManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
-  } = useHeritageModel();
+    submitReview,
+    approveReview,
+    handleReject,
+  } = useHeritageModel(initialFilters);
 
   const onFilterChange = (key: string, value: any) => {
     updateFilters({ [key]: value });
@@ -171,15 +175,56 @@ const HeritageSiteManagement = () => {
       dataIndex: "author_name",
       key: "author_name",
       width: 120,
-      render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
   ];
+
+  const { user } = useAuth();
+  
+  const tabItems = [
+    { key: 'all', label: 'Tất cả di sản' },
+    { key: 'pending', label: 'Chờ duyệt' },
+    { key: 'published', label: 'Đã xuất bản' },
+  ];
+
+  const handleTabChange = (key: string) => {
+    switch (key) {
+      case 'all':
+        clearFilters();
+        break;
+      case 'pending':
+        updateFilters({ status: 'pending', created_by: undefined });
+        break;
+      case 'published':
+        updateFilters({ status: 'published', created_by: undefined });
+        break;
+    }
+  };
+
+  const getActiveTab = () => {
+    if (filters.status === 'pending') return 'pending';
+    if (filters.status === 'published') return 'published';
+    return 'all';
+  };
 
   return (
     <>
       <DataTable
         title="Quản lý Di sản Văn hóa"
-        headerContent={<HeritageStats stats={stats} loading={statsLoading} />}
+        headerContent={
+          <>
+            <HeritageStats stats={stats} loading={statsLoading} />
+            <div style={{ marginTop: 16, background: '#fff', padding: '0 16px' }}>
+              <Tabs 
+                activeKey={getActiveTab()} 
+                items={tabItems} 
+                onChange={handleTabChange}
+                size="small"
+                style={{ marginBottom: 0 , paddingBottom: 0}}
+
+              />
+            </div>
+          </>
+        }
         loading={loading}
         permissionResource="heritage_sites"
         columns={columns}
@@ -196,6 +241,9 @@ const HeritageSiteManagement = () => {
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteHeritage}
+        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
+        onApprove={approveReview ? (record) => approveReview(record.id) : undefined}
+        onReject={handleReject}
         onBatchDelete={batchDeleteHeritages}
         batchOperations={true}
         batchActions={[

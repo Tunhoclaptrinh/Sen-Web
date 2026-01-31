@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { message } from 'antd';
 
 /**
@@ -38,27 +38,52 @@ export const useCRUD = (service: any, options: any = {}) => {
     // Search state
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Options
+    // Memoize options to prevent de-structuring from creating new object references
     const {
-        successMessage = {
-            create: 'Tạo thành công',
-            update: 'Cập nhật thành công',
-            delete: 'Xóa thành công',
-            import: 'Import thành công',
-            export: 'Export thành công',
-        },
-        errorMessage = {
-            fetch: 'Lỗi khi tải dữ liệu',
-            create: 'Lỗi khi tạo',
-            update: 'Lỗi khi cập nhật',
-            delete: 'Lỗi khi xóa',
-            import: 'Lỗi khi import',
-            export: 'Lỗi khi export',
-        },
         autoFetch = false,
         onSuccess,
         onError,
     } = options;
+
+    const fetchErrorMessage = options.errorMessage?.fetch || 'Lỗi khi tải dữ liệu';
+    const createSuccessMessage = options.successMessage?.create || 'Tạo thành công';
+    const updateSuccessMessage = options.successMessage?.update || 'Cập nhật thành công';
+    const deleteSuccessMessage = options.successMessage?.delete || 'Xóa thành công';
+    const importSuccessMessage = options.successMessage?.import || 'Import thành công';
+    const exportSuccessMessage = options.successMessage?.export || 'Export thành công';
+    
+    const fetchErrorMessageRef = useRef(fetchErrorMessage);
+    const createErrorMessage = options.errorMessage?.create || 'Lỗi khi tạo';
+    const updateErrorMessage = options.errorMessage?.update || 'Lỗi khi cập nhật';
+    const deleteErrorMessage = options.errorMessage?.delete || 'Lỗi khi xóa';
+    const importErrorMessage = options.errorMessage?.import || 'Lỗi khi import';
+    const exportErrorMessage = options.errorMessage?.export || 'Lỗi khi export';
+
+    useEffect(() => {
+        fetchErrorMessageRef.current = fetchErrorMessage;
+    }, [fetchErrorMessage]);
+
+    // Use refs for callbacks to prevent re-renders when they change
+    const onSuccessRef = useRef(onSuccess);
+    const onErrorRef = useRef(onError);
+
+    useEffect(() => {
+        onSuccessRef.current = onSuccess;
+        onErrorRef.current = onError;
+    }, [onSuccess, onError]);
+
+    // Update filters when initialFilters changes (deeply)
+    const initialFiltersStr = JSON.stringify(options.initialFilters || {});
+    useEffect(() => {
+        setFilters((prev: any) => {
+            if (JSON.stringify(prev) === initialFiltersStr) return prev;
+            return options.initialFilters || {};
+        });
+        setPagination(prev => {
+            if (prev.current === 1) return prev;
+            return { ...prev, current: 1 };
+        });
+    }, [initialFiltersStr]);
 
     /**
      * Build query parameters for API
@@ -126,29 +151,52 @@ export const useCRUD = (service: any, options: any = {}) => {
 
                 // Update pagination từ backend response
                 if (response.pagination) {
-                    setPagination((prev) => ({
-                        ...prev,
-                        current: response.pagination.page || prev.current,
-                        pageSize: response.pagination.limit || prev.pageSize,
-                        total: response.pagination.total || 0,
-                        totalPages: response.pagination.totalPages || 0,
-                        hasNext: response.pagination.hasNext || false,
-                        hasPrev: response.pagination.hasPrev || false,
-                    }));
+                    const { page, limit, total, totalPages, hasNext, hasPrev } = response.pagination;
+                    setPagination((prev) => {
+                        // Use backend values or fall back to current values to determine if an actual change occurred
+                        const nextCurrent = page !== undefined ? page : prev.current;
+                        const nextPageSize = limit !== undefined ? limit : prev.pageSize;
+                        const nextTotal = total !== undefined ? total : prev.total;
+                        const nextTotalPages = totalPages !== undefined ? totalPages : prev.totalPages;
+                        const nextHasNext = hasNext !== undefined ? hasNext : prev.hasNext;
+                        const nextHasPrev = hasPrev !== undefined ? hasPrev : prev.hasPrev;
+
+                        // Deep bailout: if all values would result in no change, return previous state identity
+                        if (
+                            prev.current === nextCurrent &&
+                            prev.pageSize === nextPageSize &&
+                            prev.total === nextTotal &&
+                            prev.totalPages === nextTotalPages &&
+                            prev.hasNext === nextHasNext &&
+                            prev.hasPrev === nextHasPrev
+                        ) {
+                            return prev;
+                        }
+
+                        return {
+                            ...prev,
+                            current: nextCurrent,
+                            pageSize: nextPageSize,
+                            total: nextTotal,
+                            totalPages: nextTotalPages,
+                            hasNext: nextHasNext,
+                            hasPrev: nextHasPrev,
+                        };
+                    });
                 }
 
-                if (onSuccess) onSuccess('fetch', response);
+                if (onSuccessRef.current) onSuccessRef.current('fetch', response);
                 return response;
             } catch (err) {
                 setError(err);
-                message.error(errorMessage.fetch);
-                if (onError) onError('fetch', err);
+                message.error(fetchErrorMessage);
+                if (onErrorRef.current) onErrorRef.current('fetch', err);
                 throw err;
             } finally {
                 setLoading(false);
             }
         },
-        [service, buildQueryParams, onSuccess, onError, errorMessage.fetch]
+        [service, buildQueryParams, fetchErrorMessage]
     );
 
     /**
@@ -159,17 +207,17 @@ export const useCRUD = (service: any, options: any = {}) => {
             try {
                 setLoading(true);
                 const response = await service.getById(id);
-                if (onSuccess) onSuccess('getById', response);
+                if (onSuccessRef.current) onSuccessRef.current('getById', response);
                 return response.data;
             } catch (err) {
-                message.error(errorMessage.fetch);
-                if (onError) onError('getById', err);
+                message.error(fetchErrorMessage);
+                if (onErrorRef.current) onErrorRef.current('getById', err);
                 throw err;
             } finally {
                 setLoading(false);
             }
         },
-        [service, onSuccess, onError, errorMessage.fetch]
+        [service, fetchErrorMessage]
     );
 
     /**
@@ -180,19 +228,19 @@ export const useCRUD = (service: any, options: any = {}) => {
             try {
                 setLoading(true);
                 const response = await service.create(values);
-                message.success(successMessage.create);
+                message.success(createSuccessMessage);
                 await fetchAll();
                 if (onSuccess) onSuccess('create', response);
                 return true;
             } catch (err) {
-                message.error(errorMessage.create);
+                message.error(createErrorMessage);
                 if (onError) onError('create', err);
                 return false;
             } finally {
                 setLoading(false);
             }
         },
-        [service, fetchAll, successMessage.create, errorMessage.create, onSuccess, onError]
+        [service, fetchAll, createSuccessMessage, createErrorMessage, onSuccess, onError]
     );
 
     /**
@@ -203,19 +251,19 @@ export const useCRUD = (service: any, options: any = {}) => {
             try {
                 setLoading(true);
                 const response = await service.update(id, values);
-                message.success(successMessage.update);
+                message.success(updateSuccessMessage);
                 await fetchAll();
                 if (onSuccess) onSuccess('update', response);
                 return true;
             } catch (err) {
-                message.error(errorMessage.update);
+                message.error(updateErrorMessage);
                 if (onError) onError('update', err);
                 return false;
             } finally {
                 setLoading(false);
             }
         },
-        [service, fetchAll, successMessage.update, errorMessage.update, onSuccess, onError]
+        [service, fetchAll, updateSuccessMessage, updateErrorMessage, onSuccess, onError]
     );
 
     /**
@@ -226,19 +274,19 @@ export const useCRUD = (service: any, options: any = {}) => {
             try {
                 setLoading(true);
                 await service.delete(id);
-                message.success(successMessage.delete);
+                message.success(deleteSuccessMessage);
                 await fetchAll();
                 if (onSuccess) onSuccess('delete', { id });
                 return true;
             } catch (err) {
-                message.error(errorMessage.delete);
+                message.error(deleteErrorMessage);
                 if (onError) onError('delete', err);
                 return false;
             } finally {
                 setLoading(false);
             }
         },
-        [service, fetchAll, successMessage.delete, errorMessage.delete, onSuccess, onError]
+        [service, fetchAll, deleteSuccessMessage, deleteErrorMessage, onSuccess, onError]
     );
 
     /**
@@ -263,8 +311,15 @@ export const useCRUD = (service: any, options: any = {}) => {
      * Update filters
      */
     const updateFilters = useCallback((newFilters: any) => {
-        setFilters((prev: any) => ({ ...prev, ...newFilters }));
-        setPagination((prev) => ({ ...prev, current: 1 })); // Reset to page 1
+        setFilters((prev: any) => {
+            const hasChange = Object.keys(newFilters).some(key => prev[key] !== newFilters[key]);
+            if (!hasChange) return prev;
+            return { ...prev, ...newFilters };
+        });
+        setPagination((prev) => {
+            if (prev.current === 1) return prev;
+            return { ...prev, current: 1 };
+        });
     }, []);
 
     /**
@@ -273,7 +328,7 @@ export const useCRUD = (service: any, options: any = {}) => {
     const clearFilters = useCallback(() => {
         setFilters(options.initialFilters || {});
         setPagination((prev) => ({ ...prev, current: 1 }));
-    }, [options.initialFilters]);
+    }, [initialFiltersStr, options.initialFilters]);
 
     /**
      * Update sorter
@@ -288,36 +343,56 @@ export const useCRUD = (service: any, options: any = {}) => {
      */
     const handleTableChange = useCallback((newPagination: any, newFilters: any, sorter: any) => {
         // Update pagination
-        setPagination((prev) => ({
-            ...prev,
-            current: newPagination.current,
-            pageSize: newPagination.pageSize,
-        }));
+        setPagination((prev) => {
+            // Bail out if values are identical
+            if (prev.current === newPagination.current && prev.pageSize === newPagination.pageSize) {
+                return prev;
+            }
+            return {
+                ...prev,
+                current: newPagination.current,
+                pageSize: newPagination.pageSize,
+            };
+        });
 
         // Update filters
-        // Ant Design filters are { key: [value] } or { key: null }
         if (newFilters) {
             setFilters((prev: any) => {
                 const updated = { ...prev };
+                let hasChanged = false;
+                
                 Object.keys(newFilters).forEach(key => {
                     const val = newFilters[key];
-                    // Check if value exists and is NOT an empty array
-                    if (val && (Array.isArray(val) ? val.length > 0 : true)) {
-                        // Store raw value (array or single)
-                        updated[key] = val;
-                    } else {
-                        delete updated[key];
+                    const currentVal = prev[key];
+                    
+                    // Simple comparison for AntD filter arrays
+                    const isValEmpty = !val || (Array.isArray(val) && val.length === 0);
+                    const isCurrentEmpty = !currentVal || (Array.isArray(currentVal) && currentVal.length === 0);
+
+                    if (isValEmpty && isCurrentEmpty) return;
+
+                    if (JSON.stringify(val) !== JSON.stringify(currentVal)) {
+                        hasChanged = true;
+                        if (!isValEmpty) {
+                            updated[key] = val;
+                        } else {
+                            delete updated[key];
+                        }
                     }
                 });
-                return updated;
+                
+                return hasChanged ? updated : prev;
             });
         }
 
         // Update sorter
         if (sorter.field) {
-            setSorter({
-                field: sorter.field as string,
-                order: sorter.order as string,
+            setSorter(prev => {
+                if (prev.field === sorter.field && prev.order === sorter.order) return prev;
+                return {
+                    field: sorter.field as string,
+                    order: sorter.order as string,
+                };
             });
         }
     }, []);
@@ -441,7 +516,7 @@ export const useCRUD = (service: any, options: any = {}) => {
                 setLoading(false);
             }
         },
-        [service, buildQueryParams, successMessage.export, errorMessage.export]
+        [service, buildQueryParams, exportSuccessMessage, exportErrorMessage]
     );
 
     /**
@@ -452,17 +527,17 @@ export const useCRUD = (service: any, options: any = {}) => {
             try {
                 setLoading(true);
                 const response = await service.import(file);
-                message.success(successMessage.import);
+                message.success(importSuccessMessage);
                 await fetchAll();
                 return response;
             } catch (err) {
-                message.error(errorMessage.import);
+                message.error(importErrorMessage);
                 return null;
             } finally {
                 setLoading(false);
             }
         },
-        [service, fetchAll, successMessage.import, errorMessage.import] 
+        [service, fetchAll, importSuccessMessage, importErrorMessage] 
     );
     /**
      * Download template
@@ -490,6 +565,60 @@ export const useCRUD = (service: any, options: any = {}) => {
             setLoading(false);
         }
     }, [service]);
+
+    const submitReview = useCallback(
+        async (id: any) => {
+            try {
+                setLoading(true);
+                await service.submitReview(id);
+                message.success('Gửi duyệt thành công');
+                await fetchAll();
+                return true;
+            } catch (err) {
+                message.error('Gửi duyệt thất bại');
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        },
+        [service, fetchAll]
+    );
+
+    const approveReview = useCallback(
+        async (id: any) => {
+            try {
+                setLoading(true);
+                await service.approveReview(id);
+                message.success('Phê duyệt thành công');
+                await fetchAll();
+                return true;
+            } catch (err) {
+                message.error('Phê duyệt thất bại');
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        },
+        [service, fetchAll]
+    );
+
+    const rejectReview = useCallback(
+        async (id: any, comment: string) => {
+            try {
+                setLoading(true);
+                await service.rejectReview(id, comment);
+                message.success('Đã từ chối bản ghi');
+                await fetchAll();
+                return true;
+            } catch (err) {
+                message.error('Thao tác thất bại');
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        },
+        [service, fetchAll]
+    );
 
     useEffect(() => {
         if (autoFetch) {
@@ -529,6 +658,11 @@ export const useCRUD = (service: any, options: any = {}) => {
         update,
         remove,
         refresh,
+
+        // Review Actions
+        submitReview: typeof service.submitReview === 'function' ? submitReview : undefined,
+        approveReview: typeof service.approveReview === 'function' ? approveReview : undefined,
+        rejectReview: typeof service.rejectReview === 'function' ? rejectReview : undefined,
 
         // Batch operations
         batchDelete,

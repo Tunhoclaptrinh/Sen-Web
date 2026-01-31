@@ -61,7 +61,7 @@ export const getDefaultRouteForRole = (role: string): string => {
         case 'admin':
             return '/admin/dashboard';
         case 'researcher':
-            return '/researcher/heritage/my-submissions';
+            return '/researcher/heritage-sites';
         case 'customer':
             return '/game/chapters';
         default:

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Space, Modal, Form, Input, Tag, Switch, DatePicker } from 'antd';
+import { Button, Space, Modal, Form, Input, Tag, Switch, DatePicker, Tabs } from 'antd';
+import { useAuth } from '@/hooks/useAuth';
 import { PictureOutlined } from '@ant-design/icons';
 import { useExhibitionModel } from './model';
 import DataTable from '@/components/common/DataTable';
@@ -49,10 +49,57 @@ const ExhibitionManagement: React.FC = () => {
         },
     ];
 
+  const { user } = useAuth();
+  
+  const tabItems = [
+    { key: 'all', label: 'Tất cả triển lãm' },
+    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
+      { key: 'my', label: 'Triển lãm của tôi' },
+    ] : []),
+    { key: 'pending', label: 'Chờ duyệt' },
+    { key: 'published', label: 'Đã xuất bản' },
+  ];
+
+  const handleTabChange = (key: string) => {
+    switch (key) {
+      case 'all':
+        model.clearFilters();
+        break;
+      case 'my':
+        model.updateFilters({ created_by: user?.id, status: undefined });
+        break;
+      case 'pending':
+        model.updateFilters({ status: 'pending', created_by: undefined });
+        break;
+      case 'published':
+        model.updateFilters({ status: 'published', created_by: undefined });
+        break;
+    }
+  };
+
+  const getActiveTab = () => {
+    if (model.filters.created_by === user?.id) return 'my';
+    if (model.filters.status === 'pending') return 'pending';
+    if (model.filters.status === 'published') return 'published';
+    return 'all';
+  };
+
     return (
         <>
             <DataTable
                 title="Quản lý Triển lãm ảo"
+                headerContent={
+                    <div style={{ marginBottom: 16 }}>
+                        <div style={{ background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+                            <Tabs 
+                                activeKey={getActiveTab()} 
+                                items={tabItems} 
+                                onChange={handleTabChange}
+                                style={{ marginBottom: 0 }}
+                            />
+                        </div>
+                    </div>
+                }
                 loading={model.loading}
                 columns={columns}
                 dataSource={model.data}

@@ -1,4 +1,5 @@
-import { Tag } from "antd";
+import { Tag, Tabs } from "antd";
+import { useAuth } from "@/hooks/useAuth";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import DataTable from "@components/common/DataTable";
@@ -9,7 +10,7 @@ import HistoryDetailModal from "./components/DetailModal";
 import HistoryStats from "./components/Stats";
 import { useHistoryModel } from "./model";
 
-const HistoryManagement = () => {
+const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) => {
     const {
         data,
         loading,
@@ -40,7 +41,10 @@ const HistoryManagement = () => {
         openDetail,
         closeForm,
         closeDetail,
-    } = useHistoryModel();
+        submitReview,
+        approveReview,
+        handleReject,
+    } = useHistoryModel(initialFilters);
 
   const onFilterChange = (key: string, value: any) => {
     updateFilters({ [key]: value });
@@ -147,11 +151,58 @@ const HistoryManagement = () => {
     },
   ];
 
+  const { user } = useAuth();
+  
+  const tabItems = [
+    { key: 'all', label: 'Tất cả bài viết' },
+    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
+      { key: 'my', label: 'Bài viết của tôi' },
+    ] : []),
+    { key: 'pending', label: 'Chờ duyệt' },
+    { key: 'published', label: 'Đã xuất bản' },
+  ];
+
+  const handleTabChange = (key: string) => {
+    switch (key) {
+      case 'all':
+        clearFilters();
+        break;
+      case 'my':
+        updateFilters({ created_by: user?.id, status: undefined });
+        break;
+      case 'pending':
+        updateFilters({ status: 'pending', created_by: undefined });
+        break;
+      case 'published':
+        updateFilters({ status: 'published', created_by: undefined });
+        break;
+    }
+  };
+
+  const getActiveTab = () => {
+    if (filters.created_by === user?.id) return 'my';
+    if (filters.status === 'pending') return 'pending';
+    if (filters.status === 'published') return 'published';
+    return 'all';
+  };
+
   return (
     <div>
       <DataTable
         title="Quản lý Bài viết Lịch sử"
-        headerContent={<HistoryStats stats={stats} loading={statsLoading} />}
+        headerContent={
+          <div style={{ marginBottom: 16 }}>
+            <HistoryStats stats={stats} loading={statsLoading} />
+            <div style={{ marginTop: 16, background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+              <Tabs 
+                activeKey={getActiveTab()} 
+                items={tabItems} 
+                onChange={handleTabChange}
+                style={{ marginBottom: 0 }}
+              />
+            </div>
+          </div>
+        }
         loading={loading}
         permissionResource="history_articles"
         columns={columns}
@@ -168,6 +219,9 @@ const HistoryManagement = () => {
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteHistory}
+        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
+        onApprove={approveReview ? (record) => approveReview(record.id) : undefined}
+        onReject={handleReject}
         onBatchDelete={batchDeleteHistories}
         batchOperations={true}
         batchActions={[

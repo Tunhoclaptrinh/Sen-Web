@@ -11,6 +11,7 @@ import {
   Modal,
   Input,
   Card,
+  Tag,
 } from "antd";
 import {
   PlusOutlined,
@@ -24,6 +25,9 @@ import {
   ExclamationCircleOutlined,
   SearchOutlined,
   FileExcelOutlined,
+  SendOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import { Button, toast, PermissionGuard } from "@/components/common";
 import { DataTableProps, FilterConfig } from "./types";
@@ -44,6 +48,9 @@ const DataTable: React.FC<DataTableProps> = ({
   onView,
   onEdit,
   onDelete,
+  onSubmitReview,
+  onApprove,
+  onReject,
   onRefresh,
   permissionResource,
   pagination = {
@@ -190,6 +197,58 @@ const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+  // Auto-status column if data has status field
+  const hasStatusField = React.useMemo(() => {
+    return data && data.length > 0 && data.some(item => item.status !== undefined);
+  }, [data]);
+
+  const statusColumn = React.useMemo(() => {
+    if (!hasStatusField) return null;
+    return {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      width: 130,
+      render: (status: string, record: any) => {
+        let color = 'default';
+        let text = status || 'N/A';
+        
+        switch (status) {
+          case 'draft': 
+            color = 'default'; text = 'Nháp'; break;
+          case 'pending': 
+            color = 'warning'; text = 'Chờ duyệt'; break;
+          case 'published': 
+            color = 'success'; text = 'Đã đăng'; break;
+          case 'rejected': 
+            color = 'error'; text = 'Từ chối'; break;
+        }
+
+        return (
+          <Tooltip title={record.review_comment}>
+            <Tag color={color}>{text.toUpperCase()}</Tag>
+          </Tooltip>
+        );
+      }
+    };
+  }, [hasStatusField]);
+
+  const tableColumns = React.useMemo(() => {
+    if (!statusColumn) return columns;
+    // Check if status column already exists
+    if (columns.some(col => col.key === 'status' || col.dataIndex === 'status')) return columns;
+    
+    // Insert before actions if possible
+    const actionsIdx = columns.findIndex(col => col.key === 'actions');
+    const newCols = [...columns];
+    if (actionsIdx !== -1) {
+      newCols.splice(actionsIdx, 0, statusColumn);
+    } else {
+      newCols.push(statusColumn);
+    }
+    return newCols;
+  }, [columns, statusColumn]);
+
   const ColumnSearch = ({
     setSelectedKeys,
     selectedKeys,
@@ -322,11 +381,12 @@ const DataTable: React.FC<DataTableProps> = ({
 
   // Dynamic Action Column Logic
   const standardActionCount =
-    (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0);
+    (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0) + 
+    (onSubmitReview ? 1 : 0) + (onApprove ? 1 : 0) + (onReject ? 1 : 0);
   // Base width per button (32px + 8px gap) + padding (16px)
   // If customActions exists, we add extra space or default to a safe width if not specified
   const calculatedWidth =
-    actionsWidth || standardActionCount * 40 + (customActions ? 40 : 16);
+    actionsWidth || Math.max(80, standardActionCount * 40 + (customActions ? 40 : 16));
 
   const mergedActionsColumn =
     showActions || userActionColumn
@@ -345,8 +405,60 @@ const DataTable: React.FC<DataTableProps> = ({
               return userActionColumn.render(_, record);
             }
 
+            const canSubmit = onSubmitReview && (record.status === 'draft' || record.status === 'rejected' || !record.status);
+            const canApprove = onApprove && record.status === 'pending';
+            const canReject = onReject && record.status === 'pending';
+
             return (
               <Space size={4} className="action-buttons-container">
+                {canSubmit && (
+                  <PermissionGuard resource={permissionResource!} action="update" fallback={null}>
+                    <Tooltip title="Gửi duyệt">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        onClick={() => onSubmitReview(record)}
+                        className="action-btn-standard"
+                        style={{ color: "var(--primary-color)" }}
+                      >
+                        <SendOutlined />
+                      </Button>
+                    </Tooltip>
+                  </PermissionGuard>
+                )}
+
+                {canApprove && (
+                  <PermissionGuard resource={permissionResource!} action="publish" fallback={null}>
+                    <Tooltip title="Phê duyệt">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        onClick={() => onApprove(record)}
+                        className="action-btn-standard"
+                        style={{ color: "#52c41a" }}
+                      >
+                        <CheckCircleOutlined />
+                      </Button>
+                    </Tooltip>
+                  </PermissionGuard>
+                )}
+
+                {canReject && (
+                  <PermissionGuard resource={permissionResource!} action="publish" fallback={null}>
+                    <Tooltip title="Từ chối">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        onClick={() => onReject(record)}
+                        className="action-btn-standard"
+                        style={{ color: "#ff4d4f" }}
+                      >
+                        <CloseCircleOutlined />
+                      </Button>
+                    </Tooltip>
+                  </PermissionGuard>
+                )}
+
                 {onView && (
                   <PermissionGuard resource={permissionResource!} action="read" fallback={null}>
                     <Tooltip title="Xem chi tiết">
@@ -414,19 +526,16 @@ const DataTable: React.FC<DataTableProps> = ({
       : null;
 
   const finalColumns = [
-    // If action position is left and no user defined action column (or user position was not specified, handled by splicing?)
-    // Actually, if user defined it in columns, let's keep its position!
+    // If action position is left and no user defined action column
     ...(actionPosition === "left" && !userActionColumn
       ? [mergedActionsColumn]
       : []),
 
-    ...columns.map((col) => {
+    ...tableColumns.map((col: any) => {
       // If this is the action column, return the merged one
       if (col.key === "actions") return mergedActionsColumn;
       
       const colKey = col.key || col.dataIndex;
-      // Get controlled value from parent filterValues if available
-      // Check both exact key match or just dataIndex match
       const controlledVal = filterValues?.[colKey];
 
       const isSearchable = col.searchable;
@@ -434,14 +543,13 @@ const DataTable: React.FC<DataTableProps> = ({
         ...col,
         align: col.align || ("center" as const),
         sorter: sortable && col.sortable !== false,
-        // Make column controlled if filterValues are provided
         ...(controlledVal !== undefined
           ? {
               filteredValue: Array.isArray(controlledVal)
                 ? controlledVal
                 : [controlledVal],
             }
-          : { filteredValue: null }), // Explicitly null to clear if not in state
+          : { filteredValue: null }),
           
         ...(isSearchable
           ? getColumnSearchProps(col.dataIndex, col.title as string)
@@ -453,7 +561,7 @@ const DataTable: React.FC<DataTableProps> = ({
     ...(actionPosition === "right" && !userActionColumn && mergedActionsColumn
       ? [mergedActionsColumn]
       : []),
-  ];
+  ].filter(Boolean); // Filter out nulls
 
   const batchActionsMenu = (
     <Menu>

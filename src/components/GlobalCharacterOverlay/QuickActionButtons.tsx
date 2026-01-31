@@ -82,7 +82,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
             <Tooltip title="Nội dung của tôi" placement="left">
               <button
                 className="quick-action-btn quick-action-btn--research"
-                onClick={() => navigate("/researcher/heritage/my-submissions")}
+                onClick={() => navigate("/researcher/heritage-sites")}
               >
                 <FileTextOutlined />
               </button>

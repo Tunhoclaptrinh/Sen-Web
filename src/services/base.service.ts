@@ -548,6 +548,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       throw error;
     }
   }
+
 }
 
 export default BaseService;
