@@ -11,7 +11,7 @@ interface LevelDetailCardProps {
 }
 
 const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }) => {
-  const { name, thumbnail, is_locked } = level;
+  const { name, thumbnail, isLocked } = level;
 
   const [imageError, setImageError] = React.useState(false);
 
@@ -74,7 +74,7 @@ const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }
             icon={<CaretRightFilled />} 
             size="large"
             onClick={onPlay}
-            disabled={is_locked}
+            disabled={isLocked}
             className="play-button-fab"
         />
       </div>

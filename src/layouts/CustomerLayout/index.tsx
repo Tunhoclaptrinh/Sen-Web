@@ -76,11 +76,11 @@ const CustomerLayout: React.FC = () => {
                     <div className="progress-stats" key="stats" style={{ display: 'flex', gap: 16, alignItems: 'center', marginRight: 12 }}>
                         <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                             <TrophyOutlined style={{ color: '#ffd700' }} />
-                            <span>{progress?.total_points || 0}</span>
+                            <span>{progress?.totalPoints || 0}</span>
                         </div>
                         <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                             <span style={{ fontSize: 16 }}>🌸</span>
-                            <span>{progress?.total_sen_petals || 0}</span>
+                            <span>{progress?.totalSenPetals || 0}</span>
                         </div>
                         <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                             <DollarOutlined style={{ fontSize: 16, color: '#ffd700' }}/>

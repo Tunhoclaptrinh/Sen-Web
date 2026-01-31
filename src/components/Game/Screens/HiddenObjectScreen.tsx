@@ -14,7 +14,7 @@ interface HiddenItem {
     y: number; // Percentage 0-100
     width: number; // Percentage
     height: number; // Percentage
-    fact_popup: string;
+    factPopup: string;
 }
 
 // Transform backend data to frontend format
@@ -28,7 +28,7 @@ const transformItems = (rawItems: any[]): HiddenItem[] => {
         y: item.coordinates?.y || item.y || 0,
         width: item.coordinates?.width || item.width || 10,
         height: item.coordinates?.height || item.height || 10,
-        fact_popup: item.fact_popup || item.content || item.description || 'Thông tin thú vị!',
+        factPopup: item.factPopup || item.fact_popup || item.content || item.description || 'Thông tin thú vị!',
     }));
 };
 
@@ -36,14 +36,14 @@ interface HiddenObjectScreenProps {
     data: HiddenObjectScreenType;
     onNext: () => void;
     onCollect: (itemId: string) => Promise<{
-        item: { id: string; name: string; fact_popup: string };
-        progress: { collected: number; required: number; all_collected: boolean };
+        item: { id: string; name: string; factPopup: string };
+        progress: { collected: number; required: number; allCollected: boolean };
     }>;
 }
 
 const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, onCollect }) => {
     const items: HiddenItem[] = transformItems(data.items);
-    const requiredItems = data.required_items || items.length;
+    const requiredItems = data.requiredItems || items.length;
     
     const [foundItems, setFoundItems] = useState<string[]>([]);
     const [progress, setProgress] = useState({ collected: 0, required: requiredItems });
@@ -56,7 +56,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
     // Reset state when data changes
     useEffect(() => {
         setFoundItems([]);
-        setProgress({ collected: 0, required: data.required_items || data.items?.length || 0 });
+        setProgress({ collected: 0, required: data.requiredItems || data.items?.length || 0 });
     }, [data]);
 
     const handleSceneClick = async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -108,10 +108,10 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
 
             Modal.success({
                 title: `🎉 Bạn đã tìm thấy: ${result.item.name}`,
-                content: <p>{result.item.fact_popup}</p>,
+                content: <p>{result.item.factPopup}</p>,
                 okText: 'Tuyệt vời',
                 onOk: () => {
-                    if (result.progress.all_collected) {
+                    if (result.progress.allCollected) {
                         // Play success sound or delay?
                          Modal.success({
                             title: '🏆 Màn chơi hoàn thành!',
@@ -145,7 +145,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
                 <div className="interactive-area" ref={sceneRef} onClick={handleSceneClick}>
                      <img 
                         ref={imageRef}
-                        src={getImageUrl(data.background_image)} 
+                        src={getImageUrl(data.backgroundImage)} 
                         alt="Hidden Scene" 
                         className="game-scene-image"
                         draggable={false}

@@ -75,7 +75,7 @@ const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({ visible, on
         if (!newItemName.trim()) return;
         setLoading(true);
         try {
-            const res = await collectionService.create({ name: newItemName, is_public: false });
+            const res = await collectionService.create({ name: newItemName, isPublic: false });
             if (res.success && res.data) {
                 message.success('Đã tạo bộ sưu tập');
                 setNewItemName('');
@@ -133,7 +133,7 @@ const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({ visible, on
                                         <List.Item.Meta
                                             avatar={<FolderAddOutlined style={{ fontSize: 24, color: '#1890ff' }} />}
                                             title={col.name}
-                                            description={`${col.total_items} mục`}
+                                            description={`${col.totalItems} mục`}
                                         />
                                     </List.Item>
                                 );

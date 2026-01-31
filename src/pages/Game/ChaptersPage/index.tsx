@@ -22,7 +22,7 @@ const ChaptersPage: React.FC = () => {
     }, [dispatch]);
 
     const handleChapterClick = (chapter: Chapter) => {
-        if (chapter.petal_state === 'blooming' || chapter.petal_state === 'full') {
+        if (chapter.petalState === 'blooming' || chapter.petalState === 'full') {
             navigate(`/game/chapters/${chapter.id}/levels`);
         }
     };
@@ -94,13 +94,13 @@ const ChaptersPage: React.FC = () => {
                         data={[
                             {
                                 title: "Điểm",
-                                value: progress.total_points,
+                                value: progress.totalPoints,
                                 icon: <TrophyOutlined />,
                                 valueColor: "#1890ff",
                             },
                             {
                                 title: "Cánh Sen",
-                                value: progress.total_sen_petals,
+                                value: progress.totalSenPetals,
                                 icon: <span style={{ fontSize: 24, lineHeight: 1 }}>🌸</span>,
                                 valueColor: "#52c41a",
                             },
@@ -112,7 +112,7 @@ const ChaptersPage: React.FC = () => {
                             },
                             {
                                 title: "Hoàn thành",
-                                value: `${progress.stats?.completion_rate || 0}%`,
+                                value: `${progress.stats?.completionRate || 0}%`,
                                 icon: <CheckCircleOutlined />,
                                 valueColor: "#722ed1",
                             }
@@ -142,9 +142,9 @@ const ChaptersPage: React.FC = () => {
                     <Row gutter={[24, 24]} className="chapters-grid">
                         {chapters.map((chapter) => {
                             // Derived logic from petal_state
-                            const isUnlocked = chapter.petal_state === 'blooming' || chapter.petal_state === 'full';
+                            const isUnlocked = chapter.petalState === 'blooming' || chapter.petalState === 'full';
                             // "locked" state from backend means Hard Lock (previous chapter not finished)
-                            const isHardLocked = chapter.petal_state === 'locked';
+                            const isHardLocked = chapter.petalState === 'locked';
                             return (
                                 <Col xs={24} sm={12} lg={8} key={chapter.id}>
                                     <motion.div
@@ -213,16 +213,16 @@ const ChaptersPage: React.FC = () => {
                                                 <div className="chapter-stats">
                                                     <div className="stat">
                                                         <Progress
-                                                            percent={chapter.completion_rate}
+                                                            percent={chapter.completionRate}
                                                             size="small"
-                                                            status={chapter.completion_rate === 100 ? 'success' : 'active'}
+                                                            status={chapter.completionRate === 100 ? 'success' : 'active'}
                                                         />
                                                     </div>
                                                     <div className="stat">
                                                         <Text type="secondary">Tiến độ</Text>
 
                                                         <Text type="secondary">
-                                                            {chapter.completed_levels}/{chapter.total_levels} màn
+                                                            {chapter.completedLevels}/{chapter.totalLevels} màn
                                                         </Text>
                                                     </div>
                                                 </div>
@@ -237,7 +237,7 @@ const ChaptersPage: React.FC = () => {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <Text>Cần {chapter.required_petals} cánh sen</Text>
+                                                            <Text>Cần {chapter.requiredPetals} cánh sen</Text>
                                                             <Button
                                                                 type="primary"
                                                                 onClick={(e) => {

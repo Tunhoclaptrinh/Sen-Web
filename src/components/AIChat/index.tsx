@@ -342,14 +342,14 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     try {
       console.log("Sending message to AI via Redux:", userText);
       const action: any = await dispatch(sendChatMessage({
-        character_id: currentCharacter.id,
+        characterId: currentCharacter.id,
         message: userText,
         context: activeContext || undefined,
       })).unwrap();
 
       // Extracted from ChatResponse
       const fullResponse = action.message?.content || action.message || "Xin lỗi, mình không thể trả lời câu hỏi này.";
-      const audioBase64 = action.message?.audio_base64 || action.audio_base64;
+      const audioBase64 = action.message?.audioBase64 || action.audioBase64;
       
       setLoading(false);
       streamText(fullResponse, audioBase64);
@@ -500,12 +500,12 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                                 <span className="timestamp">
                                   {new Date(message.timestamp).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                                 </span>
-                                {message.role === "assistant" && message.audio_base64 && (
+                                {message.role === "assistant" && message.audioBase64 && (
                                   <Button
                                     className="audio-replay-btn"
                                     icon={audioPlaying === message.id ? <PauseCircleOutlined /> : <SoundOutlined />}
                                     size="small"
-                                    onClick={() => playMessageAudio(message.audio_base64!, message.id)}
+                                    onClick={() => playMessageAudio(message.audioBase64!, message.id)}
                                   />
                                 )}
                               </div>
@@ -542,12 +542,12 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
               {/* Suggestions Overlay */}
               <div className="suggestions-overlay">
                 <div className="suggestions-container">
-                    {position === 'absolute' && activeContext?.level_id && (
+                    {position === 'absolute' && activeContext?.levelId && (
                         <div className="suggestion-chip" onClick={() => { setInput("Gợi ý giúp mình với"); handleSend(); }}>
                             <BulbOutlined /> Gợi ý bài học
                         </div>
                     )}
-                    {(activeContext?.artifact_id || activeContext?.heritage_site_id) && (
+                    {(activeContext?.artifactId || activeContext?.heritageSiteId) && (
                         <div className="suggestion-chip" onClick={() => { setInput("Bạn hãy giải thích thêm về nội dung này"); handleSend(); }}>
                             <InfoCircleOutlined /> Giải thích thêm
                         </div>

@@ -142,7 +142,7 @@ const LearningPathPage: React.FC = () => {
               },
               {
                 title: "Thời lượng",
-                value: `${learningPath.reduce((sum, m) => sum + (m.estimated_duration || 0), 0)}'`,
+                value: `${learningPath.reduce((sum, m) => sum + (m.estimatedDuration || 0), 0)}'`,
                 icon: <ClockCircleOutlined />,
                 valueColor: "#722ed1",
               },
@@ -176,7 +176,7 @@ const LearningPathPage: React.FC = () => {
               {learningPath.map((module, index) => {
                 // Logic: A module is locked if the previous module is not completed
                 // Exception: The first module (index 0) is always unlocked
-                const isLocked = index > 0 && !learningPath[index - 1].is_completed;
+                const isLocked = index > 0 && !learningPath[index - 1].isCompleted;
 
                 return (
                 <Col xs={24} sm={12} lg={8} key={module.id}>
@@ -193,7 +193,7 @@ const LearningPathPage: React.FC = () => {
                     <Card
                       hoverable={!isLocked}
                       className={`learning-card ${
-                        module.is_completed ? "completed" : ""
+                        module.isCompleted ? "completed" : ""
                       } ${isLocked ? "locked" : ""}`}
                       style={{ height: '100%' }}
                       bodyStyle={{ 
@@ -220,7 +220,7 @@ const LearningPathPage: React.FC = () => {
                                   }}
                                   className="card-image"
                               />
-                              {module.is_completed && (
+                              {module.isCompleted && (
                                 <div style={{ 
                                     position: 'absolute', top: 12, right: 12, 
                                     background: 'rgba(255, 255, 255, 0.95)', color: '#52c41a', 
@@ -262,7 +262,7 @@ const LearningPathPage: React.FC = () => {
                             {module.difficulty?.toUpperCase() || 'EASY'}
                           </Tag>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#8c8c8c' }}>
-                             <ClockCircleOutlined /> {module.estimated_duration} phút
+                             <ClockCircleOutlined /> {module.estimatedDuration} phút
                           </div>
                         </div>
 
@@ -271,7 +271,7 @@ const LearningPathPage: React.FC = () => {
                         </Title>
 
                         <div style={{ marginTop: 'auto' }}>
-                            {module.is_completed ? (
+                            {module.isCompleted ? (
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
                                     <Tag color="success" style={{ borderRadius: 6, border: 'none', padding: '2px 10px', background: 'rgba(82, 196, 26, 0.1)', color: '#52c41a' }}>
                                         Đã nhận thưởng
@@ -292,11 +292,11 @@ const LearningPathPage: React.FC = () => {
                                 size="large"
                                 disabled={isLocked}
                                 onClick={() => !isLocked && handlesNavigate(`/game/learning/${module.id}`)}
-                                type={module.is_completed ? "default" : "primary"}
+                                type={module.isCompleted ? "default" : "primary"}
                                 className="action-button"
-                                icon={isLocked ? <LockOutlined /> : (module.is_completed ? <BookOutlined /> : <PlayCircleOutlined />)}
+                                icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <BookOutlined /> : <PlayCircleOutlined />)}
                             >
-                                {isLocked ? "Chưa mở khóa" : (module.is_completed ? "Ôn lại" : "Học ngay")}
+                                {isLocked ? "Chưa mở khóa" : (module.isCompleted ? "Ôn lại" : "Học ngay")}
                             </Button>
                         </div>
                       </div>

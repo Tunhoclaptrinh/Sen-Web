@@ -150,7 +150,7 @@ const DashboardPage: React.FC = () => {
           <Card bordered={false} className="stat-card">
             <Statistic
               title="Tổng điểm"
-              value={progress?.total_points || 0}
+              value={progress?.totalPoints || 0}
               prefix={<TrophyOutlined style={{ color: "#faad14" }} />}
               valueStyle={{ color: "#3f8600" }}
             />
@@ -160,7 +160,7 @@ const DashboardPage: React.FC = () => {
           <Card bordered={false} className="stat-card">
             <Statistic
               title="Hoa Sen"
-              value={progress?.total_sen_petals || 0}
+              value={progress?.totalSenPetals || 0}
               prefix={<span style={{ fontSize: 20 }}>🌸</span>}
               valueStyle={{ color: "#cf1322" }}
             />
@@ -212,7 +212,7 @@ const DashboardPage: React.FC = () => {
                   ),
                 }}
                 renderItem={(item: Quest) => {
-                  const progressVal = item.progress?.current_value || 0;
+                  const progressVal = item.progress?.currentValue || 0;
                   const targetVal = item.requirements?.[0]?.target || 100;
                   const percent = Math.min(
                     100,
