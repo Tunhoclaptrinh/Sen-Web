@@ -62,9 +62,9 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         try {
           // Fetch labels for related IDs
           const [relHeritageRes, relHistoryRes] = await Promise.all([
-            initialValues.related_heritage_ids?.length > 0
+            initialValues.relatedHeritageIds?.length > 0
               ? heritageService.getAll({
-                  ids: initialValues.related_heritage_ids.join(","),
+                  ids: initialValues.relatedHeritageIds.join(","),
                 })
               : Promise.resolve({ success: true, data: [] }),
             initialValues.related_history_ids?.length > 0
@@ -75,7 +75,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           ]);
 
           // Map related heritage to {label, value}
-          const relatedHeri = (initialValues.related_heritage_ids || []).map(
+          const relatedHeri = (initialValues.relatedHeritageIds || []).map(
             (id: any) => {
               const heri =
                 relHeritageRes.success && relHeritageRes.data
@@ -114,7 +114,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
             ...initialValues,
             short_description:
               initialValues.short_description || initialValues.shortDescription,
-            related_heritage_ids: relatedHeri,
+            relatedHeritageIds: relatedHeri,
             related_history_ids: relatedHistoryArr,
           };
           form.setFieldsValue(formattedValues);
@@ -195,7 +195,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           "historical_context",
           "cultural_significance",
         ];
-        const tab3Fields = ["related_heritage_ids", "related_history_ids"];
+        const tab3Fields = ["relatedHeritageIds", "related_history_ids"];
 
         if (tab1Fields.includes(firstErrorField)) {
           setActiveTab("1");
@@ -223,7 +223,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         typeof item === "object" ? (item.url || item.response?.url || "") : item
       ) || [],
       shortDescription: values.short_description, // Sync for compatibility
-      related_heritage_ids: values.related_heritage_ids?.map((item: any) =>
+      relatedHeritageIds: values.relatedHeritageIds?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
       related_history_ids: values.related_history_ids?.map((item: any) =>
@@ -524,7 +524,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
               <>
                 <Form.Item
                   label="Di sản liên quan"
-                  name="related_heritage_ids"
+                  name="relatedHeritageIds"
                   tooltip="Các địa điểm di sản gắn liền với hiện vật này"
                 >
                   <DebounceSelect

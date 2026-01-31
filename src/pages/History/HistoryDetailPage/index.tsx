@@ -193,10 +193,10 @@ const HistoryDetailPage = () => {
                             children: (
                                 <div className="article-main-wrapper">
                                     <Title level={3} style={{fontFamily: 'Aleo, serif', marginBottom: 32, textAlign: 'center'}}>Các Mốc Sự Kiện Quan Trọng</Title>
-                                    {article.timeline_events?.length > 0 ? (
+                                    {article.timelineEvents?.length > 0 ? (
                                         <div style={{maxWidth: 800, margin: '0 auto'}}>
                                             <Timeline mode="alternate">
-                                                {article.timeline_events.map((event: any, index: number) => (
+                                                {article.timelineEvents.map((event: any, index: number) => (
                                                     <Timeline.Item key={index} label={event.year} color={index % 2 === 0 ? "red" : "blue"}>
                                                         <strong style={{fontSize: 18, color: '#d4380d'}}>{event.title}</strong>
                                                         <p style={{marginTop: 8, color: '#666'}}>{event.description}</p>

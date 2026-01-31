@@ -138,7 +138,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       key: "heritage_count",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
+        <Tag color="cyan">{(record.relatedHeritageIds || []).length} DS</Tag>
       ),
     },
     {
@@ -146,7 +146,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       key: "artifact_count",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="purple">{(record.related_artifact_ids || []).length} HV</Tag>
+        <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>
       ),
     },
   ];

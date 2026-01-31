@@ -159,7 +159,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       key: "artifacts_count",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_artifact_ids || []).length} HV</Tag>
+        <Tag color="cyan">{(record.relatedArtifactIds || []).length} HV</Tag>
       ),
     },
     {

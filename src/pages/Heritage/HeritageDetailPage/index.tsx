@@ -112,7 +112,7 @@ const HeritageDetailPage = () => {
         );
       }
 
-      // 2. Fetch artifacts (from backlink AND related_artifact_ids)
+      // 2. Fetch artifacts (from backlink AND relatedArtifactIds)
       const resBackArtifacts = await heritageService.getArtifacts(currentId);
       const relArtIds = currentItem.relatedArtifactIds || [];
 

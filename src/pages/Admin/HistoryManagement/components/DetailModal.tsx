@@ -27,8 +27,8 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({
             if (open && record?.id) {
                 setLoading(true);
                 try {
-                    const heriIds = record.related_heritage_ids || [];
-                    const artIds = record.related_artifact_ids || [];
+                    const heriIds = record.relatedHeritageIds || [];
+                    const artIds = record.relatedArtifactIds || [];
 
                     const [relHeriRes, relArtRes] = await Promise.all([
                         heriIds.length > 0

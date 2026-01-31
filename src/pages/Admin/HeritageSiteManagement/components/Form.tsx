@@ -67,9 +67,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             await Promise.all([
               heritageService.getTimeline(initialValues.id),
               heritageService.getArtifacts(initialValues.id),
-              initialValues.related_artifact_ids?.length > 0
+              initialValues.relatedArtifactIds?.length > 0
                 ? artifactService.getAll({
-                    ids: initialValues.related_artifact_ids.join(","),
+                    ids: initialValues.relatedArtifactIds.join(","),
                   })
                 : Promise.resolve({ success: true, data: [] }),
               initialValues.related_history_ids?.length > 0
@@ -97,7 +97,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           }
 
           const relatedArtifacts = (
-            initialValues.related_artifact_ids || []
+            initialValues.relatedArtifactIds || []
           ).map((id: any) => {
             const art = artifactMap.get(typeof id === "object" ? id.value : id);
             return art
@@ -129,7 +129,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             short_description:
               initialValues.short_description || initialValues.shortDescription,
             timeline: timeline,
-            related_artifact_ids: relatedArtifacts,
+            relatedArtifactIds: relatedArtifacts,
             related_history_ids: relatedHistory,
           };
 
@@ -282,7 +282,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         ];
         const tab2Fields = ["description"];
         const tab3Fields = [
-          "related_artifact_ids",
+          "relatedArtifactIds",
           "related_history_ids",
           "timeline",
         ];
@@ -320,7 +320,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         typeof item === "object" ? (item.url || item.response?.url || "") : item
       ) || [],
       timeline: values.timeline || [],
-      related_artifact_ids: values.related_artifact_ids?.map((item: any) =>
+      relatedArtifactIds: values.relatedArtifactIds?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
       related_history_ids: values.related_history_ids?.map((item: any) =>
@@ -627,7 +627,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
               <>
                 <Form.Item
                   label="Hiện vật liên quan"
-                  name="related_artifact_ids"
+                  name="relatedArtifactIds"
                 >
                   <DebounceSelect
                     mode="multiple"
