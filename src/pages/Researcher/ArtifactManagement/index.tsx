@@ -43,8 +43,6 @@ const ResearcherArtifactManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
-    submitReview,
-
   } = useArtifactModel();
 
   const onFilterChange = (key: string, value: any) => {
@@ -189,7 +187,7 @@ const ResearcherArtifactManagement = () => {
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteArtifact}
-        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
+        onSubmitReview={undefined}
         onApprove={undefined} // No approve
         onReject={undefined} // No reject
         onBatchDelete={batchDeleteArtifacts}

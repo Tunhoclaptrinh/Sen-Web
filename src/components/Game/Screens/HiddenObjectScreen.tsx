@@ -43,7 +43,7 @@ interface HiddenObjectScreenProps {
 
 const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, onCollect }) => {
     const items: HiddenItem[] = transformItems(data.items);
-    const requiredItems = data.required_items || items.length;
+    const requiredItems = data.requiredItems || items.length;
     
     const [foundItems, setFoundItems] = useState<string[]>([]);
     const [progress, setProgress] = useState({ collected: 0, required: requiredItems });
@@ -56,7 +56,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
     // Reset state when data changes
     useEffect(() => {
         setFoundItems([]);
-        setProgress({ collected: 0, required: data.required_items || data.items?.length || 0 });
+        setProgress({ collected: 0, required: data.requiredItems || data.items?.length || 0 });
     }, [data]);
 
     const handleSceneClick = async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -145,7 +145,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
                 <div className="interactive-area" ref={sceneRef} onClick={handleSceneClick}>
                      <img 
                         ref={imageRef}
-                        src={getImageUrl(data.background_image)} 
+                        src={getImageUrl(data.backgroundImage)} 
                         alt="Hidden Scene" 
                         className="game-scene-image"
                         draggable={false}
