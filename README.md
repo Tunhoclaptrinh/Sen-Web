@@ -60,10 +60,10 @@ Menu sẽ hiện ra:
   Select mode:
 
   [1] Build Images   (First time / Rebuild only)
-  [2] Start Dev      (docker-compose up)
-  [3] Start Prod     (docker-compose up -d)
+  [2] Start Dev      (docker compose up)
+  [3] Start Prod     (docker compose up -d)
   [4] View Logs
-  [5] Stop All       (docker-compose down)
+  [5] Stop All       (docker compose down)
   [6] Exit
 
 Select [1-6]:
@@ -344,7 +344,6 @@ sen-web/
   - Minimize/maximize panel
   - Clear history
   - Keyboard shortcuts (Enter: send, Shift+Enter: new line)
-  
 - **AIChatFloatingButton**: Global floating button
   - Badge hiển thị unread count
   - Tooltip & hover effects
@@ -363,6 +362,7 @@ sen-web/
   - Saves to `db.json` for persistence
 
 ### 5. Game System
+
 - **Sequential Chapters**
 - **Purchase Mechanism**
 - **Interactive Gameplay**
@@ -433,29 +433,31 @@ function MyPage() {
 
 ```tsx
 // Trong trang Game
-<AIChatFloatingButton 
-  context={{ level_id: currentLevel.id }} 
+<AIChatFloatingButton
+  context={{ level_id: currentLevel.id }}
 />
 
 // Trong trang Artifact
-<AIChatFloatingButton 
-  context={{ artifact_id: artifact.id }} 
+<AIChatFloatingButton
+  context={{ artifact_id: artifact.id }}
 />
 
 // Trong trang Heritage
-<AIChatFloatingButton 
-  context={{ heritage_site_id: site.id }} 
+<AIChatFloatingButton
+  context={{ heritage_site_id: site.id }}
 />
 ```
 
 #### 📁 Components
 
 **1. AIChatFloatingButton** (`src/components/common/AIChatFloatingButton/`)
+
 - Floating button mở chat panel
 - Badge hiển thị số tin nhắn chưa đọc
 - Typing indicator khi AI đang trả lời
 
 **2. AIChatPanel** (`src/components/common/AIChatPanel/`)
+
 - Giao diện chat đầy đủ
 - Bubble messages (user/assistant)
 - Audio playback controls
@@ -492,6 +494,7 @@ Frontend hiển thị + phát audio
 #### 📋 API Format
 
 **Request tới Backend:**
+
 ```json
 {
   "message": "Múa rối nước là gì?",
@@ -504,6 +507,7 @@ Frontend hiển thị + phát audio
 ```
 
 **Response từ Backend:**
+
 ```json
 {
   "success": true,
@@ -564,6 +568,7 @@ curl -X POST http://localhost:8000/process_query \
 ```
 
 **3. Test trên Frontend:**
+
 - Mở http://localhost:5173
 - Click nút chat floating (góc phải dưới)
 - Gửi câu hỏi: "Múa rối nước là gì?"
@@ -585,16 +590,19 @@ curl -X POST http://localhost:8000/process_query \
 #### ⚙️ Configuration
 
 **Backend** (`Backend/.env`):
+
 ```env
 PYTHON_SERVICE_URL=http://localhost:8000/process_query
 ```
 
 **Frontend** (`Frontend/.env`):
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 **Sen_AI** (`Sen_AI/.env`):
+
 ```env
 OPENAI_API_KEY=your_openai_key
 MONGODB_URI=your_mongodb_uri
@@ -724,6 +732,7 @@ VITE_API_TIMEOUT=30000
 ### Files Used
 
 Vercel tự động:
+
 - `vercel.json` → Rewrite rules (SPA routing)
 - `package.json` → Build command: `npm run build`
 - Build output: `dist/`
@@ -747,6 +756,7 @@ https://sen-frontend-xxx.vercel.app
 ### Features
 
 Vercel cung cấp:
+
 - **Global CDN**: Fast worldwide
 - **Auto HTTPS**: Free SSL
 - **Preview Deploys**: Test PRs before merge
@@ -822,8 +832,8 @@ This project is licensed under the MIT License.
 **Status**: Production Ready
 
 **New in v2.0.0**:
+
 - 🤖 AI Chat Assistant với RAG Pipeline
 - 🎵 Text-to-Speech tiếng Việt
 - 📱 Responsive chat interface
 - 🔄 Real-time messaging với Redux
-
