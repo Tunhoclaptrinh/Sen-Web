@@ -92,7 +92,18 @@ const ChapterManagement = () => {
       align: "left",
       width: 150,
     },
-
+    {
+      title: "Màu sắc",
+      dataIndex: "color",
+      key: "color",
+      width: 100,
+      render: (color: string) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: 16, height: 16, borderRadius: '2px', backgroundColor: color, border: '1px solid #ddd' }} />
+          <span>{color}</span>
+        </div>
+      )
+    },
     {
       title: "Yêu cầu",
       dataIndex: "required_petals",
