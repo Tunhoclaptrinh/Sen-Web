@@ -133,7 +133,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
     },
     {
       title: "UNESCO",
-      dataIndex: "unesco_listed",
+      dataIndex: "unescoListed",
       key: "unesco_listed",
       filters: [
         { text: "CÓ", value: true },
@@ -150,7 +150,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
     },
     {
       title: "Giá vé",
-      dataIndex: "entrance_fee",
+      dataIndex: "entranceFee",
       width: 120,
       render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Miễn phí"),
     },
@@ -172,7 +172,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
     },
     {
       title: "Tác giả",
-      dataIndex: "author_name",
+      dataIndex: "authorName",
       key: "author_name",
       width: 120,
     },

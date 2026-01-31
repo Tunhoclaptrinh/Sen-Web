@@ -111,7 +111,7 @@ export const fetchModuleDetail = createAsyncThunk(
 export const completeModule = createAsyncThunk(
     'learning/completeModule',
     async (
-        params: { pathId: number; moduleId: number; data: { time_spent: number; score?: number } },
+        params: { pathId: number; moduleId: number; data: { timeSpent: number; score?: number } },
         { rejectWithValue, dispatch }
     ) => {
         try {

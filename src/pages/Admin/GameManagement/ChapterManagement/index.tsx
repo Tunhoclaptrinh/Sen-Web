@@ -106,13 +106,13 @@ const ChapterManagement = () => {
     },
     {
       title: "Yêu cầu",
-      dataIndex: "required_petals",
+      dataIndex: "requiredPetals",
       width: 60,
       render: (val: number) => `${val} cánh hoa`,
     },
     {
       title: "Tác giả",
-      dataIndex: "author_name",
+      dataIndex: "authorName",
       key: "author_name",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>

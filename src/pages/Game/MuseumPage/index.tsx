@@ -3,12 +3,17 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchMuseum } from '@/store/slices/gameSlice';
 import { fetchShopData } from '@/store/slices/shopSlice';
 import { Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card, Modal } from 'antd';
-import { TrophyOutlined, RiseOutlined, GoldOutlined } from '@ant-design/icons';
+import { 
+    CloudUploadOutlined,
+    TrophyOutlined, 
+    RiseOutlined, 
+    GoldOutlined
+} from "@ant-design/icons";
 import { getImageUrl } from '@/utils/image.helper';
 import { StatisticsCard } from '@/components/common';
 import "./styles.less";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const MuseumPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -31,7 +36,7 @@ const MuseumPage: React.FC = () => {
 
     // Enrich inventory items with shop data
     const enrichedInventory = inventory.map(invItem => {
-        const itemDetail = shopItems.find(s => s.id === invItem.item_id);
+        const itemDetail = shopItems.find(s => s.id === invItem.itemId);
         return { ...invItem, ...itemDetail };
     });
 
@@ -39,7 +44,7 @@ const MuseumPage: React.FC = () => {
     const allItems = [
         ...enrichedInventory.map(item => ({
             type: 'inventory',
-            id: `inv-${item.item_id}`,
+            id: `inv-${item.itemId}`,
             name: item.name,
             description: item.description,
             image: item.image,
@@ -48,9 +53,9 @@ const MuseumPage: React.FC = () => {
         })),
         ...(museum?.artifacts || []).map(art => ({
             type: 'artifact',
-            id: `art-${art.artifact_id}`,
+            id: `art-${art.artifactId}`,
             name: art.name,
-            description: `Thu thập ngày ${new Date(art.acquired_at).toLocaleDateString()}`,
+            description: `Thu thập ngày ${new Date(art.acquiredAt).toLocaleDateString()}`,
             image: art.image,
             original: art,
             quantity: 1
@@ -154,18 +159,18 @@ const MuseumPage: React.FC = () => {
                         </div>
 
                         {/* Quantity Badge in Body - Strictly matching Shop style */}
-                        {(item.quantity > 0 && item.type === 'inventory' && item.original?.is_consumable) && (
+                        {(item.quantity > 0 && item.type === 'inventory' && item.original?.isConsumable) && (
                             <div className="owned-quantity" style={{ 
                                 fontSize: '0.8rem', 
-                                color: '#8b1d1d', // @seal-red
+                                color: '#8b1d1d', 
                                 background: 'rgba(139, 29, 29, 0.08)',
                                 border: '1px solid rgba(139, 29, 29, 0.2)',
                                 padding: '2px 8px',
                                 borderRadius: '12px',
                                 display: 'inline-block',
                                 fontWeight: 700,
-                                marginBottom: 0, // Tight spacing
-                                marginTop: 'auto', // Push to bottom if flex
+                                marginBottom: 0, 
+                                marginTop: 'auto', 
                                 fontFamily: '"Merriweather", serif',
                                 width: 'fit-content'
                             }}>
@@ -184,15 +189,6 @@ const MuseumPage: React.FC = () => {
                 <Spin size="large" tip="Đang tải dữ liệu..." />
             </div>
         );
-    }
-
-    if (!museum || !museum.is_open) {
-         // Fallback layout if museum closed but user has inventory? 
-         // For now keep logic simple: must finish Ch1 to open Museum features or similar logic.
-         // Or just show Inventory separately? 
-         // User requested "Merge", so let's show Inventory even if Museum closed, 
-         // but the code below assumes Museum object exists.
-         // Use optional chaining carefully.
     }
 
     return (
@@ -215,7 +211,7 @@ const MuseumPage: React.FC = () => {
                         },
                         {
                             title: 'Thu nhập trong 1 giờ',
-                            value: `${museum?.income_per_hour || 0}`,
+                            value: `${museum?.incomePerHour || 0}`,
                             valueColor: '#52c41a',
                             icon: <RiseOutlined />
                         },
@@ -223,8 +219,8 @@ const MuseumPage: React.FC = () => {
                             title: 'Chờ thu',
                             value: (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span>{museum?.pending_income || 0}</span>
-                                    {museum?.pending_income && museum.pending_income > 0 ? (
+                                    <span>{museum?.pendingIncome || 0}</span>
+                                    {museum?.pendingIncome && museum.pendingIncome > 0 ? (
                                         <Button 
                                             type="primary" 
                                             size="small" 
@@ -279,7 +275,7 @@ const MuseumPage: React.FC = () => {
                     <Button key="close" onClick={() => setDetailModalVisible(false)}>
                         Đóng
                     </Button>,
-                    selectedItem?.type === 'inventory' && selectedItem?.original.is_consumable && (
+                    selectedItem?.type === 'inventory' && selectedItem?.original.isConsumable && (
                         <Button key="use" type="primary">
                             Sử dụng
                         </Button>
@@ -294,18 +290,31 @@ const MuseumPage: React.FC = () => {
                                 let img = null;
                                 if (selectedItem.type === 'character') {
                                     img = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${selectedItem.name}`;
-                                } else {
+                                } else if (selectedItem.type === 'artifact' || selectedItem.type === 'inventory') {
                                     img = selectedItem.image ? getImageUrl(selectedItem.image) : null;
                                 }
-                                
-                                if (img) return <img src={img} alt={selectedItem.name} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />;
-                                return <div style={{ color: '#999' }}>No image</div>;
+                                return img ? (
+                                    <img src={img} alt={selectedItem.name} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                                ) : (
+                                    <div style={{ color: '#bfbfbf', fontSize: 40 }}><CloudUploadOutlined /></div>
+                                );
                             })()}
-                         </div>
-                         <div style={{ textAlign: 'left' }}>
-                            <p><strong>Mô tả:</strong> {selectedItem.description || 'Không có mô tả'}</p>
-                            {selectedItem.quantity && <p><strong>Số lượng:</strong> {selectedItem.quantity}</p>}
-                         </div>
+                        </div>
+                        <Title level={4} style={{ marginBottom: 8 }}>{selectedItem.name}</Title>
+                        <Text type="secondary">{selectedItem.description || 'Không có mô tả'}</Text>
+                        
+                        <div style={{ marginTop: 24, textAlign: 'left', background: '#f5f5f5', padding: 16, borderRadius: 8 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <Text strong>Loại:</Text>
+                                <Tag color={selectedItem.type === 'character' ? 'blue' : 'green'}>
+                                    {selectedItem.type === 'character' ? 'Nhân vật' : 'Cổ vật'}
+                                </Tag>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Text strong>Số lượng:</Text>
+                                <Text>{selectedItem.quantity}</Text>
+                            </div>
+                        </div>
                     </div>
                 )}
             </Modal>

@@ -91,7 +91,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
     },
     {
       title: "Tác giả",
-      dataIndex: "author_name",
+      dataIndex: "authorName",
       key: "author_name",
       width: 150,
       render: (authorName: string, record: any) => (
@@ -124,7 +124,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
     },
     {
       title: "Trạng thái",
-      dataIndex: "is_active",
+      dataIndex: "isActive",
       key: "is_active",
       width: 120,
       render: (isActive: boolean) => (

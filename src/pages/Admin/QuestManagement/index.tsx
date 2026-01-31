@@ -38,7 +38,7 @@ const QuestManagement: React.FC = () => {
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'is_active',
+            dataIndex: 'isActive',
             key: 'is_active',
             render: (val: boolean) => val ? <Tag color="green">KÍCH HOẠT</Tag> : <Tag>ẨN</Tag>
         },

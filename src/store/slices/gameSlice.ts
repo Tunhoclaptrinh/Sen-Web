@@ -355,12 +355,12 @@ const gameSlice = createSlice({
             .addCase(startLevel.fulfilled, (state, action) => {
                 state.sessionLoading = false;
                 state.currentSession = {
-                    session_id: action.payload.session_id,
-                    level_id: action.payload.level.id,
-                    user_id: 0, // Will be set from auth
-                    current_screen_index: 0,
+                    sessionId: action.payload.sessionId, // Renamed
+                    levelId: action.payload.level.id, // Renamed
+                    userId: 0, // Renamed // Will be set from auth
+                    currentScreenIndex: 0, // Renamed
                     score: 0,
-                    started_at: new Date().toISOString(),
+                    startedAt: new Date().toISOString(), // Renamed
                 };
                 state.currentLevel = action.payload.level;
             })
@@ -380,10 +380,10 @@ const gameSlice = createSlice({
                 state.currentSession = null;
                 state.successMessage = `Level completed! Score: ${action.payload.score}`;
                 // Optimistic Update: Update stats immediately
-                if (state.progress && action.payload.new_totals) {
-                    state.progress.coins = action.payload.new_totals.coins;
-                    state.progress.total_sen_petals = action.payload.new_totals.petals;
-                    state.progress.total_points = action.payload.new_totals.points;
+                if (state.progress && action.payload.newTotals) {
+                    state.progress.coins = action.payload.newTotals.coins;
+                    state.progress.totalSenPetals = action.payload.newTotals.petals;
+                    state.progress.totalPoints = action.payload.newTotals.points;
                 }
             })
             .addCase(completeLevel.rejected, (state, action) => {
@@ -420,7 +420,7 @@ const gameSlice = createSlice({
             'quest/claimRewards/fulfilled',
             (state, action: any) => {
                 // Support both unwrapped structures to be safe
-                const newProgress = action.payload?.new_progress || action.payload?.data?.new_progress;
+                const newProgress = action.payload?.newProgress || action.payload?.data?.newProgress;
                 if (newProgress) {
                      state.progress = newProgress;
                 }
@@ -431,12 +431,12 @@ const gameSlice = createSlice({
         builder.addCase(
             'shop/purchase/fulfilled',
             (state, action: any) => {
-                if (state.progress && action.payload.new_balance) {
-                    state.progress.coins = action.payload.new_balance.coins;
-                    state.progress.total_sen_petals = action.payload.new_balance.petals;
-                } else if (state.progress && action.payload.remaining_coins !== undefined) {
+                if (state.progress && action.payload.newBalance) {
+                    state.progress.coins = action.payload.newBalance.coins;
+                    state.progress.totalSenPetals = action.payload.newBalance.petals;
+                } else if (state.progress && action.payload.remainingCoins !== undefined) {
                     // Fallback for legacy/alternative structure if any
-                    state.progress.coins = action.payload.remaining_coins;
+                    state.progress.coins = action.payload.remainingCoins;
                 }
             }
         );

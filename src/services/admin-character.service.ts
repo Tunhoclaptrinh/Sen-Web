@@ -5,15 +5,15 @@ export interface GameCharacter {
     name: string;
     description: string;
     persona: string;
-    speaking_style: string;
+    speakingStyle: string;
     avatar: string;
-    avatar_locked?: string;
-    avatar_unlocked?: string;
-    persona_amnesia?: string;
-    persona_restored?: string;
+    avatarLocked?: string;
+    avatarUnlocked?: string;
+    personaAmnesia?: string;
+    personaRestored?: string;
     rarity: 'common' | 'rare' | 'epic' | 'legendary';
     origin: string;
-    is_collectible: boolean;
+    isCollectible: boolean;
 }
 
 class AdminCharacterService extends BaseService<GameCharacter> {

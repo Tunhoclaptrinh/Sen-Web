@@ -4,14 +4,14 @@ export interface AdminAsset {
     id: number;
     code: string;
     name: string;
-    type: 'artifact' | 'heritage_site' | 'other';
-    reference_id: number;
+    type: 'artifact' | 'heritageSite' | 'other';
+    referenceId: number;
     latitude?: number;
     longitude?: number;
-    reward_coins?: number;
-    reward_petals?: number;
-    reward_character?: string;
-    is_active: boolean;
+    rewardCoins?: number;
+    rewardPetals?: number;
+    rewardCharacter?: string;
+    isActive: boolean;
 }
 
 class AdminAssetService extends BaseService<AdminAsset> {

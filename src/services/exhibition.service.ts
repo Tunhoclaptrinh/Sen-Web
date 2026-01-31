@@ -5,25 +5,25 @@ export interface Exhibition {
     id: number;
     name: string;
     description: string;
-    heritage_site_id: number;
-    heritage_site?: {
+    heritageSiteId: number;
+    heritageSite?: {
         id: number;
         name: string;
     };
     theme: string;
     curator: string;
-    start_date: string;
-    end_date: string;
-    artifact_ids: number[];
+    startDate: string;
+    endDate: string;
+    artifactIds: number[];
     artifacts?: Array<{
         id: number;
         name: string;
         image: string;
     }>;
     images?: string[];
-    is_active: boolean;
-    is_permanent: boolean;
-    visitor_count?: number;
+    isActive: boolean;
+    isPermanent: boolean;
+    visitorCount?: number;
     rating?: number;
 }
 
@@ -36,8 +36,8 @@ class ExhibitionService extends BaseService {
     async getAllExhibitions(params?: {
         page?: number;
         limit?: number;
-        heritage_site_id?: number;
-        is_active?: boolean;
+        heritageSiteId?: number;
+        isActive?: boolean;
         q?: string;
     }) {
         return await this.getAll(params);
@@ -71,7 +71,7 @@ class ExhibitionService extends BaseService {
 
     // Get exhibitions by heritage site
     async getByHeritageSite(siteId: number): Promise<Exhibition[]> {
-        const response = await this.get('/', { heritage_site_id: siteId });
+        const response = await this.get('/', { heritageSiteId: siteId });
         return response.data;
     }
 }
