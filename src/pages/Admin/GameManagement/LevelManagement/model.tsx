@@ -29,8 +29,8 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
         pageSize: 10,
         autoFetch: true,
         initialFilters: initialFilters, 
-        defaultSort: 'order',
-        defaultOrder: 'ascend',
+        defaultSort: initialFilters?.chapter_id ? 'order' : undefined,
+        defaultOrder: initialFilters?.chapter_id ? 'ascend' : undefined,
         onError: (action: string, error: any) => {
             console.error(`Error ${action} level:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);

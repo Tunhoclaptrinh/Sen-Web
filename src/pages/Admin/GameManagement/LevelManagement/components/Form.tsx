@@ -139,13 +139,15 @@ const LevelForm: React.FC<LevelFormProps> = ({
                                 <Radio.Button value="upload"><CloudUploadOutlined /> Tải lên</Radio.Button>
                                 <Radio.Button value="link"><LinkOutlined /> Link</Radio.Button>
                              </Radio.Group>
-                             <Form.Item name="thumbnail" noStyle>
-                                {thumbnailMode === "upload" ? (
-                                    <ImageUpload maxCount={1} />
-                                ) : (
+                             {thumbnailMode === "upload" ? (
+                                 <Form.Item name="thumbnail" noStyle>
+                                     <ImageUpload maxCount={1} />
+                                 </Form.Item>
+                             ) : (
+                                 <Form.Item name="thumbnail" noStyle>
                                     <Input placeholder="Dán link ảnh (https://...)" style={{ marginTop: 8 }} />
-                                )}
-                             </Form.Item>
+                                 </Form.Item>
+                             )}
                            </Space>
                         </Form.Item>
                     </Col>
@@ -245,15 +247,18 @@ const LevelForm: React.FC<LevelFormProps> = ({
                                     <Radio.Button value="upload"><CloudUploadOutlined /> Tải file</Radio.Button>
                                     <Radio.Button value="link"><LinkOutlined /> Link URL</Radio.Button>
                                 </Radio.Group>
-                                <Form.Item name="background_music" noStyle>
-                                    {musicMode === "upload" ? (
-                                        <div style={{ marginTop: 8 }}>
+                                
+                                {musicMode === "upload" ? (
+                                    <div style={{ marginTop: 8 }}>
+                                        <Form.Item name="background_music" noStyle>
                                             <FileUpload accept="audio/*" placeholder="Chọn file nhạc (.mp3, .wav...)" />
-                                        </div>
-                                    ) : (
+                                        </Form.Item>
+                                    </div>
+                                ) : (
+                                    <Form.Item name="background_music" noStyle>
                                         <Input prefix={<CustomerServiceOutlined />} placeholder="https://..." style={{ marginTop: 8 }} />
-                                    )}
-                                </Form.Item>
+                                    </Form.Item>
+                                )}
                            </Space>
                         </Form.Item>
                     </Col>

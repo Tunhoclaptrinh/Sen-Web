@@ -1,13 +1,13 @@
 import React from 'react';
 import { Form, Input, Button, Card, Row, Col, InputNumber } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd';
 
 interface TimelineEditorProps {
     form: FormInstance;
 }
 
-const TimelineEditor: React.FC<TimelineEditorProps> = () => {
+const TimelineEditor: React.FC<TimelineEditorProps> = ({ form }) => {
     return (
         <div>
             <Form.Item name="instruction" label="Hướng dẫn" initialValue="Sắp xếp các sự kiện theo đúng thứ tự thời gian">
@@ -70,7 +70,15 @@ const TimelineEditor: React.FC<TimelineEditorProps> = () => {
                             </Card>
                         ))}
                         
-                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                        <Button 
+                            type="dashed" 
+                            onClick={() => {
+                                const screenId = form.getFieldValue('id') || 'EVT';
+                                add({ id: `${screenId}_E${fields.length + 1}` });
+                            }} 
+                            block 
+                            icon={<PlusOutlined />}
+                        >
                             Thêm sự kiện
                         </Button>
                     </div>

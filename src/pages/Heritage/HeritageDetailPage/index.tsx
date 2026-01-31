@@ -47,6 +47,7 @@ import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { HeritageSite, TimelineEvent } from "@/types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -68,6 +69,9 @@ const HeritageDetailPage = () => {
   const [relatedHistoryArr, setRelatedHistoryArr] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+
+  // Track view
+  useViewTracker('heritage', id);
 
   useEffect(() => {
     if (id) {
@@ -208,7 +212,7 @@ const HeritageDetailPage = () => {
   );
   const publishDate =
     site.publishDate || site.created_at || new Date().toISOString();
-  const authorName = site.author || "Admin";
+  const authorName = site.author_name || site.author || "Hệ thống";
 
   return (
     <div className="heritage-blog-page">
@@ -237,6 +241,9 @@ const HeritageDetailPage = () => {
                   Heritage
                 </span>
               )}
+              <span>
+                <HistoryOutlined /> {site.views || 0} lượt xem
+              </span>
             </div>
           </div>
 
@@ -300,6 +307,10 @@ const HeritageDetailPage = () => {
                       <SpaceItem
                         icon={<CommentOutlined />}
                         text={`${site.commentCount || 0} comments`}
+                      />
+                      <SpaceItem
+                        icon={<HistoryOutlined />}
+                        text={`${site.views || 0} views`}
                       />
                     </div>
                     <div className="action-row" style={{ display: 'flex', gap: 8 }}>

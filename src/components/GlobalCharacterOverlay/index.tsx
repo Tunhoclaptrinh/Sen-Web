@@ -5,12 +5,14 @@ import {
   Switch,
   Divider,
 } from "antd";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import SenCharacter from "@/components/SenCharacter";
 import SenChibi from "@/components/SenChibi"; // New Chibi
 import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
 import QuickActionButtons from "./QuickActionButtons";
 import { SenCustomizationSettings } from "@/components/common";
+import AIChat from "@/components/AIChat";
+import { setOverlayOpen } from "@/store/slices/aiSlice";
 
 import "./styles.less";
 import "./SenToggle.less"; // Import new toggle styles
@@ -19,7 +21,8 @@ import "./SenToggle.less"; // Import new toggle styles
 
 const GlobalCharacterOverlay = () => {
   const globalChar = useGlobalCharacter();
-  const { isOverlayOpen, senSettings } = useAppSelector((state) => state.ai);
+  const dispatch = useAppDispatch();
+  const { isOverlayOpen, layoutMode, senSettings } = useAppSelector((state) => state.ai);
 
   const {
       isChibi,
@@ -83,88 +86,100 @@ const GlobalCharacterOverlay = () => {
     };
   }, [isDragging, dragOffset, updatePosition, CHAR_WIDTH, CHAR_HEIGHT]);
 
-  if (!isFeatureEnabled || isOverlayOpen) return null;
-
   return (
     <>
-      {/* 1. The Character (Only visible if NOT minimized) */}
-      {!isMinimized && (
-        <div
-          className={`global-char-overlay ${isDragging ? "dragging" : ""}`}
-          style={{
-            left: position.x - CHAR_WIDTH / 2,
-            top: position.y - CHAR_HEIGHT / 2,
-            width: CHAR_WIDTH,
-            height: CHAR_HEIGHT,
-          }}
-          onMouseDown={handleMouseDown}
-          onDoubleClick={() => setShowModal(true)}
-        >
-          <Stage
-            width={CHAR_WIDTH}
-            height={CHAR_HEIGHT}
-            options={{ backgroundAlpha: 0, antialias: true }}
-          >
-            {isChibi ? (
-              <SenChibi
-                x={CHAR_WIDTH / 2}
-                y={CHAR_HEIGHT / 2}
-                scale={scale}
-                origin="torso"
-                showHat={accessories.hat}
-                showGlasses={accessories.glasses}
-                showCoat={accessories.coat}
-                mouthState={mouthState as any}
-                eyeState={eyeState as any} // Pass eyeState
-                gesture={gesture as any}
-                isTalking={isTalking}
-                isBlinking={isBlinking} // Pass isBlinking
-              />
-            ) : (
-              <SenCharacter
-                x={CHAR_WIDTH / 2}
-                y={CHAR_HEIGHT / 2}
-                scale={scale}
-                origin="torso"
-                showHat={accessories.hat}
-                showGlasses={accessories.glasses}
-                showCoat={accessories.coat}
-                showBag={accessories.bag}
-                mouthState={mouthState as any}
-                eyeState={eyeState as any} // Pass eyeState
-                isTalking={isTalking}
-                isBlinking={isBlinking} // Pass isBlinking
-                draggable={false} // Handled by div wrapper for better DOM events
-                onPositionChange={() => { }}
-                onClick={() => { }}
-              />
-            )}
-          </Stage>
-        </div>
+      {/* Global AI Chat Overlay (Fixed Position) */}
+      {isOverlayOpen && layoutMode === 'fixed' && (
+        <AIChat 
+          open={true} 
+          onClose={() => dispatch(setOverlayOpen(false))} 
+          position="fixed"
+        />
       )}
 
-      {/* 2. Quick Action Buttons (includes Sen toggle) */}
-      <QuickActionButtons
-        isMinimized={isMinimized}
-        onToggleMinimize={() => setIsMinimized(!isMinimized)}
-      />
+      {/* The rest of the floating character features are only rendered if enabled and overlay is closed */}
+      {isFeatureEnabled && !isOverlayOpen && (
+        <>
+          {/* 1. The Character (Only visible if NOT minimized) */}
+          {!isMinimized && (
+            <div
+              className={`global-char-overlay ${isDragging ? "dragging" : ""}`}
+              style={{
+                left: position.x - CHAR_WIDTH / 2,
+                top: position.y - CHAR_HEIGHT / 2,
+                width: CHAR_WIDTH,
+                height: CHAR_HEIGHT,
+              }}
+              onMouseDown={handleMouseDown}
+              onDoubleClick={() => setShowModal(true)}
+            >
+              <Stage
+                width={CHAR_WIDTH}
+                height={CHAR_HEIGHT}
+                options={{ backgroundAlpha: 0, antialias: true }}
+              >
+                {isChibi ? (
+                  <SenChibi
+                    x={CHAR_WIDTH / 2}
+                    y={CHAR_HEIGHT / 2}
+                    scale={scale}
+                    origin="torso"
+                    showHat={accessories.hat}
+                    showGlasses={accessories.glasses}
+                    showCoat={accessories.coat}
+                    mouthState={mouthState as any}
+                    eyeState={eyeState as any}
+                    gesture={gesture as any}
+                    isTalking={isTalking}
+                    isBlinking={isBlinking}
+                  />
+                ) : (
+                  <SenCharacter
+                    x={CHAR_WIDTH / 2}
+                    y={CHAR_HEIGHT / 2}
+                    scale={scale}
+                    origin="torso"
+                    showHat={accessories.hat}
+                    showGlasses={accessories.glasses}
+                    showCoat={accessories.coat}
+                    showBag={accessories.bag}
+                    mouthState={mouthState as any}
+                    eyeState={eyeState as any}
+                    isTalking={isTalking}
+                    isBlinking={isBlinking}
+                    draggable={false}
+                    onPositionChange={() => { }}
+                    onClick={() => { }}
+                  />
+                )}
+              </Stage>
+            </div>
+          )}
 
-      {/* 3. Settings Modal */}
-      <Modal
-        title="Tùy chỉnh SEN"
-        open={showModal}
-        onCancel={() => setShowModal(false)}
-        footer={null}
-        width={600}
-      >
-        <SenCustomizationSettings />
-        
-        <Divider />
-        <div className="visibility-control" style={{ marginTop: 16 }}>
-          <span>Thu nhỏ Sen</span>
-          <Switch checked={isMinimized} onChange={setIsMinimized} />
-        </div>
-      </Modal>
+          {/* 2. Quick Action Buttons (includes Sen toggle) */}
+          <QuickActionButtons
+            isMinimized={isMinimized}
+            onToggleMinimize={() => setIsMinimized(!isMinimized)}
+          />
+
+          {/* 3. Settings Modal */}
+          <Modal
+            title="Tùy chỉnh SEN"
+            open={showModal}
+            onCancel={() => setShowModal(false)}
+            footer={null}
+            width={600}
+          >
+            <SenCustomizationSettings />
+            
+            <Divider />
+            <div className="visibility-control" style={{ marginTop: 16 }}>
+              <span>Thu nhỏ Sen</span>
+              <Switch checked={isMinimized} onChange={setIsMinimized} />
+            </div>
+          </Modal>
+        </>
+      )}
     </>
   );
 };

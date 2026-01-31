@@ -255,4 +255,31 @@ export const researcherMenu: IMenuItem[] = [
             { key: 'create-exhibition', path: '/researcher/exhibitions/create', name: 'Tạo triển lãm', icon: <PlusOutlined /> },
         ],
     },
+    {
+        key: 'articles',
+        name: 'Bài viết văn hóa',
+        icon: <BookOutlined />,
+        children: [
+            { key: 'my-articles', path: '/researcher/history/my-articles', name: 'Bài viết của tôi' },
+            { key: 'create-article', path: '/researcher/history/create', name: 'Viết bài mới', icon: <PlusOutlined /> },
+        ],
+    },
+    {
+        key: 'learning',
+        name: 'Bài học ôn tập',
+        icon: <BookOutlined />,
+        children: [
+            { key: 'learning-list', path: '/researcher/learning', name: 'Danh sách bài học' },
+            { key: 'create-learning', path: '/researcher/learning/create', name: 'Tạo bài học mới', icon: <PlusOutlined /> },
+        ],
+    },
+    {
+        key: 'game-content',
+        name: 'Quản lý Game',
+        icon: <TrophyOutlined />,
+        children: [
+            { key: 'chapters', path: '/researcher/chapters', name: 'Chương' },
+            { key: 'levels', path: '/researcher/levels', name: 'Màn chơi' },
+        ],
+    },
 ];

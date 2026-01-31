@@ -9,7 +9,10 @@ import {
     PauseCircleOutlined,
     SettingOutlined,
     UserOutlined,
-    EditOutlined
+    EditOutlined,
+    DeleteOutlined,
+    BulbOutlined,
+    InfoCircleOutlined
 } from "@ant-design/icons";
 import { Stage } from "@pixi/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +24,7 @@ import {
   addUserMessage,
   setCurrentCharacter,
   setMuted,
+  clearChatHistory,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
 import SenChibi from "@/components/SenChibi";
@@ -31,11 +35,53 @@ import "./styles.less";
 interface AIChatProps {
   open: boolean;
   onClose: () => void;
+  position?: 'fixed' | 'absolute';
 }
 
-const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
+// Parse markdown links and convert to clickable HTML
+const renderMessageWithLinks = (text: string) => {
+  // Regex to match markdown links: [text](url)
+  const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  
+  const parts: (string | JSX.Element)[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = markdownLinkRegex.exec(text)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    
+    // Add the clickable link
+    const linkText = match[1];
+    const url = match[2];
+    parts.push(
+      <a 
+        key={match.index}
+        href={url} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        style={{ color: '#1890ff', textDecoration: 'underline' }}
+      >
+        {linkText}
+      </a>
+    );
+    
+    lastIndex = match.index + match[0].length;
+  }
+  
+  // Add remaining text after the last link
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : text;
+};
+
+const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) => {
   const dispatch = useAppDispatch();
-  const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings } = useAppSelector((state) => state.ai);
+  const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings, activeContext } = useAppSelector((state) => state.ai);
   const { user } = useAppSelector((state) => state.auth);
 
   const [input, setInput] = useState("");
@@ -43,11 +89,13 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [pendingSwitchCharacter, setPendingSwitchCharacter] = useState<typeof currentCharacter>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [streamingText, setStreamingText] = useState("");
   const [dimensions, setDimensions] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1000, // Default fallback
+    height: 800,
   });
 
   const topMargin = (dimensions.height * 0.2) + (35 * (senSettings?.scale || 0.2));
@@ -64,7 +112,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     if (open && !currentCharacter) {
       dispatch(fetchCharacters()).then((action: any) => {
         if (action.payload && action.payload.length > 0) {
-          dispatch(setCurrentCharacter(action.payload[0]));
+          // Ưu tiên chọn nhân vật mặc định (Sen) nếu có
+          const defaultChar = action.payload.find((c: any) => c.is_default);
+          dispatch(setCurrentCharacter(defaultChar || action.payload[0]));
         }
       });
     }
@@ -87,15 +137,23 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+    if (!open || !containerRef.current) return;
+
+    const updateSize = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        });
+      }
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(containerRef.current);
+    updateSize();
+
+    return () => observer.disconnect();
+  }, [open]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,7 +200,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     audioRef.current = audio;
 
     audio.onplay = () => {
-        setIsSpeaking(true);
+        // Only set isSpeaking if we have actual text rendered (not just "..." placeholder)
+        if (streamingText.length > 0 && streamingText !== '...') {
+            setIsSpeaking(true);
+        }
         setAudioPlaying(messageId);
     };
     audio.onended = () => {
@@ -187,7 +248,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
           pausedDurationRef.current += (activePauseEndTimeRef.current - pauseStartTimeRef.current);
           activePauseEndTimeRef.current = 0;
           pauseStartTimeRef.current = 0;
-          setIsSpeaking(true);
+          // Only resume speaking if not placeholder text
+          if (targetText !== '...') {
+              setIsSpeaking(true);
+          }
       }
 
       const speed = charPerMsRef.current > 0 ? charPerMsRef.current : 0.1;
@@ -212,7 +276,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
 
       if (charsToShow < targetText.length) {
         setStreamingText(targetText.substring(0, charsToShow));
-        if (activePauseEndTimeRef.current === 0) setIsSpeaking(true);
+        // Only set isSpeaking if we actually have real text content (not placeholder "..." or loading)
+        if (activePauseEndTimeRef.current === 0 && charsToShow > 0 && targetText !== '...' && targetText.trim().length > 0) {
+            setIsSpeaking(true);
+        }
       } else {
         // Complete
         setStreamingText(targetText);
@@ -277,6 +344,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
       const action: any = await dispatch(sendChatMessage({
         character_id: currentCharacter.id,
         message: userText,
+        context: activeContext || undefined,
       })).unwrap();
 
       // Extracted from ChatResponse
@@ -295,7 +363,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
     <AnimatePresence>
       {open && (
         <motion.div 
-          className="ai-chat-overlay"
+          key="ai-chat-overlay"
+          ref={containerRef}
+          className={`ai-chat-overlay ${position === 'fixed' ? 'is-fixed' : 'is-absolute'}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -308,6 +378,15 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <div className="controls-group">
+                <Button 
+                    className="control-button delete-button"
+                    icon={<DeleteOutlined />} 
+                    onClick={() => {
+                        if (currentCharacter) dispatch(clearChatHistory(currentCharacter.id));
+                    }}
+                    type="text"
+                    disabled={chatHistory.length === 0}
+                />
                 <Button 
                     className="control-button mute-button"
                     icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />} 
@@ -413,10 +492,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                       if (isLastAssistantMessage) return null;
 
                       return (
-                        <div key={message.id} className={`message ${message.role}`}>
+                        <div key={message.id ?? `msg-${index}`} className={`message ${message.role}`}>
                           <div className="message-content">
                             <div className="message-bubble">
-                              <div className="message-text">{message.content}</div>
+                              <div className="message-text">{renderMessageWithLinks(message.content)}</div>
                               <div className="message-footer">
                                 <span className="timestamp">
                                   {new Date(message.timestamp).toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
@@ -440,7 +519,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                       <div className="message-content">
                         <div className="message-bubble">
                           <div className="message-text">
-                            {streamingText}
+                            {renderMessageWithLinks(streamingText)}
                             <span className="cursor">|</span>
                           </div>
                         </div>
@@ -456,7 +535,23 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+
+              {/* Suggestions Overlay */}
+              <div className="suggestions-overlay">
+                <div className="suggestions-container">
+                    {position === 'absolute' && activeContext?.level_id && (
+                        <div className="suggestion-chip" onClick={() => { setInput("Gợi ý giúp mình với"); handleSend(); }}>
+                            <BulbOutlined /> Gợi ý bài học
+                        </div>
+                    )}
+                    {(activeContext?.artifact_id || activeContext?.heritage_site_id) && (
+                        <div className="suggestion-chip" onClick={() => { setInput("Bạn hãy giải thích thêm về nội dung này"); handleSend(); }}>
+                            <InfoCircleOutlined /> Giải thích thêm
+                        </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -486,11 +581,13 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
       )}
 
       <Modal
+        key="settings-modal"
         title="Cài đặt AI"
         open={isSettingsOpen}
         onCancel={() => setIsSettingsOpen(false)}
         footer={null}
         width={600}
+        zIndex={10000}
         className="character-settings-modal"
       >
         <Tabs
@@ -500,7 +597,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                     key: 'select',
                     label: (
                         <span>
-                            <UserOutlined />
+                            <UserOutlined style={{ marginRight: '8px' }} />
                             Nhân vật
                         </span>
                     ),
@@ -512,9 +609,11 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                                 <List.Item
                                     className={`character-item ${currentCharacter?.id === character.id ? 'active' : ''}`}
                                     onClick={() => {
-                                        dispatch(setCurrentCharacter(character));
-                                        // Keep modal open if it's Sen to allow customization, 
-                                        // or close it if user wants to get back to chat
+                                        // Skip nếu đang chọn nhân vật này
+                                        if (currentCharacter?.id === character.id) return;
+                                        
+                                        // Hiện modal xác nhận chuyển nhân vật
+                                        setPendingSwitchCharacter(character);
                                     }}
                                     style={{ cursor: 'pointer', padding: '12px', borderRadius: '8px' }}
                                 >
@@ -535,7 +634,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                     key: 'customize',
                     label: (
                         <span>
-                            <EditOutlined />
+                            <EditOutlined style={{ marginRight: '8px' }} />
                             Tùy chỉnh SEN
                         </span>
                     ),
@@ -547,6 +646,34 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose }) => {
                 }] : [])
             ]}
         />
+      </Modal>
+
+      {/* Modal xác nhận chuyển nhân vật */}
+      <Modal
+        key="character-switch-modal"
+        title="Đổi nhân vật trò chuyện"
+        open={!!pendingSwitchCharacter}
+        onOk={() => {
+          if (pendingSwitchCharacter) {
+            dispatch(setCurrentCharacter(pendingSwitchCharacter));
+            setIsSettingsOpen(false);
+          }
+          setPendingSwitchCharacter(null);
+        }}
+        onCancel={() => setPendingSwitchCharacter(null)}
+        okText="Đồng ý"
+        cancelText="Hủy"
+        zIndex={10001}
+      >
+        <p>
+          Vì tính cách của mỗi nhân vật là khác nhau, chúng tôi đã thiết kế mỗi nhân vật 
+          sẽ có một đoạn chat riêng.
+        </p>
+        <p>
+          Nếu đổi sang <strong>{pendingSwitchCharacter?.name}</strong>, cuộc trò chuyện hiện 
+          tại với <strong>{currentCharacter?.name}</strong> sẽ được lưu lại.
+        </p>
+        <p>Bạn có muốn tiếp tục?</p>
       </Modal>
     </AnimatePresence>
   );

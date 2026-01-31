@@ -87,21 +87,37 @@ const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({
           <SkinOutlined /> Trang Phục & Phụ Kiện
         </Title>
         <Row gutter={[16, 16]}>
-          {["hat", "glasses", "coat"].map((key) => (
-            <Col span={12} key={key}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-                <Switch
-                  checked={accessories[key as keyof typeof accessories]}
-                  onChange={() => handleToggleAccessory(key as keyof typeof accessories)}
-                />
-              </div>
-            </Col>
-          ))}
+          <Col span={12}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ minWidth: '60px' }}>Hat:</span>
+              <Switch
+                checked={accessories.hat}
+                onChange={() => handleToggleAccessory('hat')}
+              />
+            </div>
+          </Col>
+          <Col span={12}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ minWidth: '60px' }}>Glasses:</span>
+              <Switch
+                checked={accessories.glasses}
+                onChange={() => handleToggleAccessory('glasses')}
+              />
+            </div>
+          </Col>
+          <Col span={12}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ minWidth: '60px' }}>Coat:</span>
+              <Switch
+                checked={accessories.coat}
+                onChange={() => handleToggleAccessory('coat')}
+              />
+            </div>
+          </Col>
           {!isChibi && (
             <Col span={12} key="bag">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Bag:</span>
+                <span style={{ minWidth: '60px' }}>Bag:</span>
                 <Switch
                   checked={accessories.bag}
                   onChange={() => handleToggleAccessory('bag')}

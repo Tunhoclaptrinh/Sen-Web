@@ -114,7 +114,7 @@ class ArtifactService extends BaseService<Artifact, ArtifactDTO, ArtifactDTO> {
    */
   async getTrending(limit: number = 10): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      _sort: 'view_count',
+      _sort: 'views',
       _order: 'desc',
       _limit: limit,
     });

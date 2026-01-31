@@ -17,11 +17,16 @@ interface Props {
 }
 
 const ImageViewerScreen: React.FC<Props> = ({ data, onNext }) => {
-  const imageUrl = data.content?.image_url || data.background_image;
-  const title = data.content?.title || "Hình ảnh chi tiết";
+  // Support multiple data structures
+  const content = data.content || {};
+  
+  const imageUrl = (data as any).image || content.image_url || data.background_image;
+  const title = (data as any).caption || content.title || "Hình ảnh chi tiết";
   const description =
-    data.content?.description ||
+    (data as any).description || content.description ||
     "Khám phá hình ảnh này để tìm hiểu thêm về di sản văn hóa Việt Nam.";
+  
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
     <div className="image-viewer-screen">
@@ -56,7 +61,25 @@ const ImageViewerScreen: React.FC<Props> = ({ data, onNext }) => {
           <div className="viewer-info">
             <div className="info-content">
               <h3>{title}</h3>
-              <p>{description}</p>
+              <div className="description-container">
+                  <div className={`text-wrapper ${isExpanded ? 'expanded' : ''}`}>
+                      <p>
+                        {isExpanded || description.length <= 150 
+                            ? description 
+                            : `${description.substring(0, 150)}...`}
+                      </p>
+                  </div>
+                  {description.length > 150 && (
+                      <Button 
+                        type="link" 
+                        size="small" 
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="toggle-btn"
+                      >
+                          {isExpanded ? "Thu gọn" : "Xem thêm"}
+                      </Button>
+                  )}
+              </div>
             </div>
             <Button
               type="primary"

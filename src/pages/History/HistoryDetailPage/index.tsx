@@ -7,17 +7,18 @@ import {
   HeartFilled,
   CalendarOutlined,
   UserOutlined,
-  CommentOutlined,
   ShareAltOutlined,
   ReadOutlined,
   RocketOutlined,
   ShopOutlined,
-  ArrowLeftOutlined
+  ArrowLeftOutlined,
+  EyeOutlined
 } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import historyService from "@/services/history.service"; // Adapt service
 import favoriteService from "@/services/favorite.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -28,6 +29,9 @@ const HistoryDetailPage = () => {
     const [article, setArticle] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false); // Placeholder for now
+
+    // Track view
+    useViewTracker('history', id);
 
     // Data states
     const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
@@ -104,8 +108,8 @@ const HistoryDetailPage = () => {
     if (!article) return <Empty description="Không tìm thấy bài viết" />;
     
     const mainImage = article.image || 'https://images.unsplash.com/photo-1555921015-5532091f6026?w=1200';
-    const publishDate = article.publishDate || article.createdAt;
-    const authorName = article.author || 'Admin';
+    const publishDate = article.publishDate || article.createdAt || article.created_at;
+    const authorName = article.author_name || article.author || 'Hệ thống';
 
     return (
         <div className="heritage-blog-page history-detail-page">
@@ -131,7 +135,7 @@ const HistoryDetailPage = () => {
                         <div className="hero-meta">
                              <span><CalendarOutlined /> {dayjs(publishDate).format('DD/MM/YYYY')}</span>
                              <span><UserOutlined /> {authorName}</span>
-                             <span><CommentOutlined /> {article.views || 0} lượt xem</span>
+                             <span><EyeOutlined /> {article.views || 0} lượt xem</span>
                         </div>
                     </div>
                 </div>

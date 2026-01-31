@@ -12,6 +12,8 @@ const LearningManagement: React.FC = () => {
             title: 'Tiêu đề bài học',
             dataIndex: 'title',
             key: 'title',
+            align: 'left' ,
+            searchable: true,
         },
         {
             title: 'Độ khó',
@@ -33,6 +35,13 @@ const LearningManagement: React.FC = () => {
             key: 'estimated_duration',
             width: 150,
             render: (val: number) => `${val} phút`
+        },
+        {
+            title: "Tác giả",
+            dataIndex: "author_name",
+            key: "author_name",
+            width: 120,
+            render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
         },
     ];
 

@@ -11,10 +11,18 @@ DOCKER_TUNNEL_PROD="Docker/Tunnel/docker-compose.prod.yml"
 # Cleanup background jobs on exit
 trap "kill 0 2>/dev/null" EXIT
 
-# Function to open browser (works in WSL)
+# Function to open browser (Cross-platform)
 open_browser() {
     local url=$1
-    cmd.exe /c start "" "$url" 2>/dev/null
+    if command -v xdg-open > /dev/null; then
+        xdg-open "$url"
+    elif command -v open > /dev/null; then
+        open "$url"
+    elif grep -q Microsoft /proc/version 2>/dev/null; then
+        cmd.exe /c start "" "$url" 2>/dev/null
+    else
+        echo "Please open browser to: $url"
+    fi
 }
 
 show_menu() {
@@ -55,7 +63,7 @@ start_docker() {
         dev)
             echo "[Docker] Starting Development Server..."
             echo "[Info] Browser will open in 5 seconds..."
-            (sleep 5 && cmd.exe /c start "" "http://localhost:3001") &
+            (sleep 5 && open_browser "http://localhost:3001") &
             BROWSER_PID=$!
             docker compose -f $DOCKER_DEV up
             kill $BROWSER_PID 2>/dev/null

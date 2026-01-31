@@ -198,8 +198,6 @@ sen-web/
 │   │   │   ├── SearchBar/
 │   │   │   ├── Loading/
 │   │   │   ├── EmptyState/
-│   │   │   ├── AIChatPanel/         # 🆕 AI Chat interface
-│   │   │   ├── AIChatFloatingButton/ # 🆕 Floating chat button
 │   │   │   └── guards/
 │   │   ├── Background/       # Animated background
 │   │   ├── SenCharacter/     # Sen mascot component
@@ -231,7 +229,6 @@ sen-web/
 │   │   ├── Profile/          # User profile
 │   │   ├── Admin/            # Admin pages
 │   │   ├── CharacterShowcase/ # Character demo
-│   │   ├── AIChatDemo/       # 🆕 AI Chat demo page
 │   │   └── NotFound/
 │   ├── routes/            # Routing configuration
 │   │   └── routes.config.tsx
@@ -336,19 +333,15 @@ sen-web/
 
 ### 4. AI Chat System
 
-- **AIChatPanel**: Full-featured chat interface
+- **AIChat**: Giao diện chat thông minh tích hợp Voice Mode
   - Real-time messaging với Redux state management
+  - **Voice Mode**: Hỗ trợ nhập liệu bằng giọng nói (Hands-free)
   - Audio playback (base64 → HTMLAudioElement)
   - Message history với auto-scroll
   - Typing indicator & loading states
   - Minimize/maximize panel
   - Clear history
   - Keyboard shortcuts (Enter: send, Shift+Enter: new line)
-- **AIChatFloatingButton**: Global floating button
-  - Badge hiển thị unread count
-  - Tooltip & hover effects
-  - Typing indicator animation
-  - Context-aware (level, artifact, heritage)
 
 - **Redux Integration**:
   - `aiSlice`: State management (chatHistory, currentCharacter, isTyping, error)
@@ -417,13 +410,13 @@ Sen AI là trợ lý thông minh giúp người dùng tìm hiểu về di sản 
 **Thêm vào bất kỳ trang nào:**
 
 ```tsx
-import { AIChatFloatingButton } from '@/components/common';
+import AIChat from '@/components/AIChat';
 
 function MyPage() {
   return (
     <div>
       {/* Your page content */}
-      <AIChatFloatingButton />
+      <AIChat />
     </div>
   );
 }
@@ -433,35 +426,23 @@ function MyPage() {
 
 ```tsx
 // Trong trang Game
-<AIChatFloatingButton
-  context={{ level_id: currentLevel.id }}
-/>
+<AIChat context={{ level_id: currentLevel.id }} />
 
 // Trong trang Artifact
-<AIChatFloatingButton
-  context={{ artifact_id: artifact.id }}
-/>
+<AIChat context={{ artifact_id: artifact.id }} />
 
 // Trong trang Heritage
-<AIChatFloatingButton
-  context={{ heritage_site_id: site.id }}
-/>
+<AIChat context={{ heritage_site_id: site.id }} />
 ```
 
 #### 📁 Components
 
-**1. AIChatFloatingButton** (`src/components/common/AIChatFloatingButton/`)
+**1. AIChat** (`src/components/AIChat/`)
 
-- Floating button mở chat panel
-- Badge hiển thị số tin nhắn chưa đọc
-- Typing indicator khi AI đang trả lời
+- Giao diện chính tích hợp nút chat floating và panel chat
+- Hỗ trợ Voice Mode với visualizer sóng âm
+- Tự động phát hiện im lặng để gửi tin nhắn
 
-**2. AIChatPanel** (`src/components/common/AIChatPanel/`)
-
-- Giao diện chat đầy đủ
-- Bubble messages (user/assistant)
-- Audio playback controls
-- Auto-scroll, minimize, clear history
 
 #### 🔄 Architecture Flow
 
@@ -606,20 +587,6 @@ VITE_API_BASE_URL=http://localhost:3000/api
 ```env
 OPENAI_API_KEY=your_openai_key
 MONGODB_URI=your_mongodb_uri
-```
-
-#### 🎓 Demo Page
-
-Demo page đầy đủ tại: `/ai-demo` (cần thêm route trong `routes.config.tsx`)
-
-```tsx
-import AIChatDemoPage from '@/pages/AIChatDemo';
-
-// Thêm vào routes
-{
-  path: '/ai-demo',
-  element: <AIChatDemoPage />
-}
 ```
 
 #### 🔮 Future Enhancements

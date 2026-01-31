@@ -263,7 +263,50 @@ const routes: RouteObject[] = [
         path: "heritage/my-submissions",
         element: <HeritageListPage />,
       },
-      // ... retain other researcher routes
+      {
+        path: "heritage/create",
+        element: <HeritageSiteManagement />,
+      },
+      {
+        path: "artifacts/my-artifacts",
+        element: <ArtifactManagement />,
+      },
+      {
+        path: "artifacts/create",
+        element: <ArtifactManagement />,
+      },
+      {
+        path: "exhibitions/my-exhibitions",
+        element: <ExhibitionManagement />,
+      },
+      {
+        path: "exhibitions/create",
+        element: <ExhibitionManagement />,
+      },
+      {
+        path: "history/my-articles",
+        element: <HistoryManagement />,
+      },
+      {
+        path: "history/create",
+        element: <HistoryManagement />,
+      },
+      {
+        path: "learning",
+        element: <LearningManagement />,
+      },
+      {
+        path: "learning/create",
+        element: <LearningManagement />,
+      },
+      {
+        path: "chapters",
+        element: <ChapterManagement />,
+      },
+      {
+        path: "levels",
+        element: <LevelManagement />,
+      },
     ],
   },
 

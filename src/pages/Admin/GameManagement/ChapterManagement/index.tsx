@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Button, Tooltip, Image } from "antd";
+import { Button, Tooltip, Image, Tag } from "antd";
 import { NodeIndexOutlined } from "@ant-design/icons";
 import DataTable from "@/components/common/DataTable";
 import ChapterForm from "./components/Form";
@@ -98,6 +98,13 @@ const ChapterManagement = () => {
       dataIndex: "required_petals",
       width: 60,
       render: (val: number) => `${val} cánh hoa`,
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "author_name",
+      key: "author_name",
+      width: 120,
+      render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
   ];
 

@@ -38,7 +38,6 @@ export interface Chapter {
     description: string;
     theme: string;
     order: number;
-    layer_index: 1 | 2 | 3;
     petal_state: 'closed' | 'blooming' | 'full' | 'locked';
     color: string;
     image?: string;
@@ -72,6 +71,7 @@ export interface Level {
     total_screens?: number;
     screens?: Screen[];
     knowledge_base?: string;
+    background_music?: string;
 }
 
 // ==================== Screen Types ====================
@@ -135,11 +135,20 @@ export interface HiddenObjectScreen extends Screen {
     items: Array<{
         id: string;
         name: string;
-        x: number;
-        y: number;
+        image?: string;
+        coordinates?: {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        };
+        // Legacy support if needed
+        x?: number;
+        y?: number;
         fact_popup: string;
     }>;
     required_items: number;
+    guide_text?: string;
 }
 
 // ==================== Session Responses ====================

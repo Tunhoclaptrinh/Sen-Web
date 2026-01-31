@@ -43,6 +43,7 @@ interface ScreenListProps {
   onEdit: (screen: Screen) => void;
   onAdd: () => void;
   onCountChange?: (count: number) => void;
+  refreshTrigger?: number;
 }
 
 // Context for sharing dnd-kit properties with the drag handle
@@ -189,7 +190,7 @@ const SortableItem = ({ screen, onEdit, onDelete }: SortableItemProps) => {
     );
 };
 
-const ScreenList: React.FC<ScreenListProps> = ({ levelId, onEdit, onAdd, onCountChange }) => {
+const ScreenList: React.FC<ScreenListProps> = ({ levelId, onEdit, onAdd, onCountChange, refreshTrigger }) => {
   const [screens, setScreens] = useState<Screen[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -211,7 +212,7 @@ const ScreenList: React.FC<ScreenListProps> = ({ levelId, onEdit, onAdd, onCount
 
   useEffect(() => {
     fetchScreens();
-  }, [levelId]);
+  }, [levelId, refreshTrigger]);
 
   const handleDelete = async (screenId: string) => {
     try {

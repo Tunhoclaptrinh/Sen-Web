@@ -12,7 +12,8 @@ interface HiddenItem {
     name: string;
     x: number; // Percentage 0-100
     y: number; // Percentage 0-100
-    radius: number; // Percentage
+    width: number; // Percentage
+    height: number; // Percentage
     fact_popup: string;
 }
 
@@ -23,9 +24,10 @@ const transformItems = (rawItems: any[]): HiddenItem[] => {
     return rawItems.map(item => ({
         id: item.id,
         name: item.name,
-        x: item.x || 0,
-        y: item.y || 0,
-        radius: item.radius || 6, // Default radius 6%
+        x: item.coordinates?.x || item.x || 0,
+        y: item.coordinates?.y || item.y || 0,
+        width: item.coordinates?.width || item.width || 10,
+        height: item.coordinates?.height || item.height || 10,
         fact_popup: item.fact_popup || item.content || item.description || 'Thông tin thú vị!',
     }));
 };
@@ -49,6 +51,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
     const [missMarkers, setMissMarkers] = useState<{x: number, y: number, id: number}[]>([]);
     
     const sceneRef = useRef<HTMLDivElement>(null);
+    const imageRef = useRef<HTMLImageElement>(null);
 
     // Reset state when data changes
     useEffect(() => {
@@ -57,31 +60,27 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
     }, [data]);
 
     const handleSceneClick = async (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!sceneRef.current || loading) return;
+        if (!imageRef.current || loading) return;
 
-        const rect = sceneRef.current.getBoundingClientRect();
+        // Get rect of the ACTUAL IMAGE element for precise coordinates
+        const rect = imageRef.current.getBoundingClientRect();
         const clientX = e.clientX;
         const clientY = e.clientY;
 
-        // Calculate click percentage
+        // Calculate click percentage relative to valid image area
         const xPercent = ((clientX - rect.left) / rect.width) * 100;
         const yPercent = ((clientY - rect.top) / rect.height) * 100;
 
-        // Check for hits
+        // Check for hits (Rectangular Collision)
         let hitItem: HiddenItem | null = null;
         const candidates = items.filter(item => !foundItems.includes(item.id));
         
         for (const item of candidates) {
-            // Re-calculate distance in pixels for accuracy relative to current aspect
-            const itemX = (item.x / 100) * rect.width;
-            const itemY = (item.y / 100) * rect.height;
-            const clickX = clientX - rect.left;
-            const clickY = clientY - rect.top;
-            
-            const dist = Math.sqrt(Math.pow(clickX - itemX, 2) + Math.pow(clickY - itemY, 2));
-            const radiusPx = (item.radius / 100) * rect.width;
+            // Check bounding box
+            const isHitX = xPercent >= item.x && xPercent <= (item.x + item.width);
+            const isHitY = yPercent >= item.y && yPercent <= (item.y + item.height);
 
-            if (dist <= radiusPx) {
+            if (isHitX && isHitY) {
                 hitItem = item;
                 break; 
             }
@@ -113,6 +112,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
                 okText: 'Tuyệt vời',
                 onOk: () => {
                     if (result.progress.all_collected) {
+                        // Play success sound or delay?
                          Modal.success({
                             title: '🏆 Màn chơi hoàn thành!',
                             content: 'Bạn đã tìm thấy tất cả các vật phẩm bí ẩn.',
@@ -144,6 +144,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
             <div className="scene-container">
                 <div className="interactive-area" ref={sceneRef} onClick={handleSceneClick}>
                      <img 
+                        ref={imageRef}
                         src={getImageUrl(data.background_image)} 
                         alt="Hidden Scene" 
                         className="game-scene-image"
@@ -162,8 +163,8 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
                                 style={{
                                     left: `${item.x}%`,
                                     top: `${item.y}%`,
-                                    width: `${item.radius * 2}%`, 
-                                    aspectRatio: '1/1',
+                                    width: `${item.width}%`, 
+                                    height: `${item.height}%`,
                                 }}
                              />
                          )

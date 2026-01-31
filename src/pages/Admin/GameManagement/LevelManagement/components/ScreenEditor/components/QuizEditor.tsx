@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, Row, Col, Checkbox, InputNumber } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd';
 
 interface QuizEditorProps {
     form: FormInstance;
