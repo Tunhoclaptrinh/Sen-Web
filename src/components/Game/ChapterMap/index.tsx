@@ -103,12 +103,12 @@ const ChapterMap: React.FC<ChapterMapProps> = ({
                 <path
                   key={`path-${level.id}`}
                   d={`M ${startX} ${level.y} C ${startX} ${controlY1}, ${endX} ${controlY2}, ${endX} ${nextLevel.y}`}
-                  stroke={nextLevel.is_locked ? "#e5e5e5" : "#1f5f25"}
+                  stroke={nextLevel.isLocked ? "#e5e5e5" : "#1f5f25"}
                   strokeWidth="10"
                   fill="none"
                   strokeLinecap="round"
                   className="path-line"
-                  strokeDasharray={nextLevel.is_locked ? "10 10" : "0"}
+                  strokeDasharray={nextLevel.isLocked ? "10 10" : "0"}
                 />
               );
             })}
@@ -122,7 +122,7 @@ const ChapterMap: React.FC<ChapterMapProps> = ({
             return (
               <div
                 key={level.id}
-                className={`level-node-wrapper ${level.is_locked ? "locked" : ""} ${isCurrent ? "current" : ""} ${level.is_completed ? "completed" : ""}`}
+                className={`level-node-wrapper ${level.isLocked ? "locked" : ""} ${isCurrent ? "current" : ""} ${level.isCompleted ? "completed" : ""}`}
                 style={{ left: level.x, top: level.y, position: 'absolute', transform: 'translate(-50%, -50%)' }}
                 onClick={() => onLevelClick(level)}
               >
@@ -154,9 +154,9 @@ const ChapterMap: React.FC<ChapterMapProps> = ({
                   {...popoverProps}
                 >
                   <div className="level-circle">
-                    {level.is_locked ? (
+                    {level.isLocked ? (
                       <LockFilled className="icon-locked" />
-                    ) : level.is_completed ? (
+                    ) : level.isCompleted ? (
                       <CheckOutlined className="icon-completed" />
                     ) : (
                       <StarFilled className="icon-active" />
@@ -166,8 +166,8 @@ const ChapterMap: React.FC<ChapterMapProps> = ({
                 </Popover>
 
                 {/* Stars / Score */}
-                {level.is_completed &&
-                  level.player_best_score !== undefined && (
+                {level.isCompleted &&
+                  level.playerBestScore !== undefined && (
                     <div className="level-stars-container">
                       {[1, 2, 3].map((i) => (
                         <StarFilled
@@ -175,9 +175,9 @@ const ChapterMap: React.FC<ChapterMapProps> = ({
                           style={{
                             color:
                               i <=
-                              ((level.player_best_score ?? 0) > 80
+                              ((level.playerBestScore ?? 0) > 80
                                 ? 3
-                                : (level.player_best_score ?? 0) > 50
+                                : (level.playerBestScore ?? 0) > 50
                                   ? 2
                                   : 1)
                                 ? "#ffd700"

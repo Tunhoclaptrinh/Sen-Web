@@ -102,7 +102,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
       <div
         className="dialogue-background"
         style={{
-          backgroundImage: `url(${getImageUrl(data.background_image)})`,
+          backgroundImage: `url(${getImageUrl(data.backgroundImage)})`,
         }}
       />
 

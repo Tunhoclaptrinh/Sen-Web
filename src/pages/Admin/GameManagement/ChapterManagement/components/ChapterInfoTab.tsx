@@ -84,7 +84,7 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({
           {data.order}
         </Descriptions.Item>
         <Descriptions.Item label="Số cánh hoa yêu cầu">
-          {data.required_petals}
+          {data.requiredPetals}
         </Descriptions.Item>
       </Descriptions>
     );
@@ -95,7 +95,7 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({
     <Form
       form={form}
       layout="vertical"
-      initialValues={data || { required_petals: 0 }}
+      initialValues={data || { requiredPetals: 0 }}
     >
       <Form.Item
         name="name"
@@ -153,7 +153,7 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({
           </Col>
         )}
         <Col span={mode === "edit" ? 12 : 24}>
-          <Form.Item name="required_petals" label="Số cánh hoa yêu cầu">
+          <Form.Item name="requiredPetals" label="Số cánh hoa yêu cầu">
             <InputNumber style={{ width: "100%" }} min={0} />
           </Form.Item>
         </Col>
