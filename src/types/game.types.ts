@@ -20,6 +20,8 @@ export interface GameProgress {
     achievements: Achievement[];
     museum_open: boolean;
     museum_income: number;
+    streak_days: number;
+    last_reward_claim: string | null;
     stats: {
         completion_rate: number;
         chapters_unlocked: number;

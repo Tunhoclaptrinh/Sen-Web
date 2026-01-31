@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Drawer, Statistic, Card } from 'antd';
+import { Button } from 'antd';
 import {
     TrophyOutlined,
     GiftOutlined,
@@ -18,6 +18,7 @@ import UnifiedLayout from '../UnifiedLayout';
 import './styles.less';
 import { customerMenu } from '@/config/menu.config';
 import NotificationPopover from '@/components/common/NotificationPopover';
+import DailyRewardModal from '@/components/common/DailyRewardModal';
 // AIChat removed, now handled globally in GlobalCharacterOverlay
 
 const CustomerLayout: React.FC = () => {
@@ -35,7 +36,7 @@ const CustomerLayout: React.FC = () => {
     // Initial Data Fetching (Persistent Game Data)
     // Ensures stats (Coins, Petals) are available and FRESH on navigation
     React.useEffect(() => {
-         dispatch(fetchProgress() as any);
+        dispatch(fetchProgress() as any);
     }, [dispatch, location.pathname]);
 
 
@@ -107,24 +108,10 @@ const CustomerLayout: React.FC = () => {
             </UnifiedLayout>
 
             {/* Daily Reward Modal */}
-            <Drawer
-                title="🎁 Phần thưởng hàng ngày"
-                placement="right"
-                onClose={() => setDailyRewardVisible(false)}
-                open={dailyRewardVisible}
-                width={400}
-            >
-                <Card>
-                    <Statistic
-                        title="Ngày đăng nhập liên tiếp"
-                        value={7}
-                        suffix="ngày"
-                    />
-                    <Button type="primary" block style={{ marginTop: 16 }}>
-                        Nhận thưởng
-                    </Button>
-                </Card>
-            </Drawer>
+            <DailyRewardModal 
+                visible={dailyRewardVisible} 
+                onClose={() => setDailyRewardVisible(false)} 
+            />
 
             {/* AI Chat Overlay (Global) - Now handled by GlobalCharacterOverlay in App.tsx */}
         </>

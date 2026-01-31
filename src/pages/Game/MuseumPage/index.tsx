@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchMuseum } from '@/store/slices/gameSlice';
 import { fetchShopData } from '@/store/slices/shopSlice';
-import { Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card, Modal } from 'antd'; // Added Modal
+import { Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card, Modal } from 'antd';
 import { TrophyOutlined, RiseOutlined, GoldOutlined } from '@ant-design/icons';
 import { getImageUrl } from '@/utils/image.helper';
 import { StatisticsCard } from '@/components/common';
@@ -14,7 +14,7 @@ const MuseumPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const { museum, museumLoading } = useAppSelector((state) => state.game);
     const { inventory, items: shopItems, loading: shopLoading } = useAppSelector((state) => state.shop);
-    const [activeTab, setActiveTab] = useState('all'); // Changed initial tab to 'all'
+    const [activeTab, setActiveTab] = useState('all');
 
     // Modal state
     const [detailModalVisible, setDetailModalVisible] = useState(false);
