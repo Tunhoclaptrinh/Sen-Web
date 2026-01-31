@@ -1,5 +1,5 @@
 import { Tag, Tabs } from 'antd';
-import { useAuth } from '@/hooks/useAuth';
+
 import { useLearningModel } from './model';
 import DataTable from '@/components/common/DataTable';
 import LearningForm from './components/Form';
@@ -45,7 +45,7 @@ const LearningManagement: React.FC = () => {
         },
     ];
 
-    const { user } = useAuth();
+
     
     const tabItems = [
         { key: 'all', label: 'Tất cả bài học' },

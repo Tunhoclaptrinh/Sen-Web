@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Badge, FloatButton, Space, Divider } from 'antd';
+import { Button, FloatButton, Divider } from 'antd';
 import {
     BankOutlined,
     FileImageOutlined,

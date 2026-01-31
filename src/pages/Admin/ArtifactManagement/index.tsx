@@ -1,7 +1,7 @@
 import {
   Tag, Tabs
 } from "antd";
-import { useAuth } from "@/hooks/useAuth";
+
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import { 
@@ -161,7 +161,7 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
     },
   ];
 
-  const { user } = useAuth();
+
   
   const tabItems = [
     { key: 'all', label: 'Tất cả hiện vật' },

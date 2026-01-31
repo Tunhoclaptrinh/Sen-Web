@@ -1,18 +1,16 @@
 import { Tag, Tabs } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
-import { useAuth } from "@/hooks/useAuth";
+
 
 import DataTable from "@/components/common/DataTable";
 
 import HeritageDetailModal from "@/pages/Admin/HeritageSiteManagement/components/DetailModal";
 import HeritageForm from "@/pages/Admin/HeritageSiteManagement/components/Form";
-import HeritageStats from "@/pages/Admin/HeritageSiteManagement/components/Stats";
+
 import {
   HeritageType,
-  HeritageRegion,
   HeritageTypeLabels,
-  HeritageRegionLabels
 } from "@/types";
 import { useHeritageModel } from "@/pages/Admin/HeritageSiteManagement/model";
 
@@ -29,8 +27,6 @@ const ResearcherHeritageManagement = () => {
     updateFilters,
     filters,
     clearFilters,
-    stats,
-    statsLoading,
     deleteHeritage,
     batchDeleteHeritages,
     exportData,
@@ -48,7 +44,7 @@ const ResearcherHeritageManagement = () => {
     closeForm,
     closeDetail,
     submitReview,
-    handleReject,
+
   } = useHeritageModel();
 
   const onFilterChange = (key: string, value: any) => {

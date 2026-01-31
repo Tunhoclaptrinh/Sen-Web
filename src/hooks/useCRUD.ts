@@ -506,11 +506,11 @@ export const useCRUD = (service: any, options: any = {}) => {
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
 
-                message.success(successMessage.export);
+                message.success(exportSuccessMessage);
                 return true;
             } catch (err) {
                 console.error("Export error", err);
-                message.error(errorMessage.export);
+                message.error(exportErrorMessage);
                 return false;
             } finally {
                 setLoading(false);

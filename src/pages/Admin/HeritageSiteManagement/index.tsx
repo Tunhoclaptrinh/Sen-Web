@@ -1,7 +1,7 @@
 import { Tag, Tabs } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
-import { useAuth } from "@/hooks/useAuth";
+
 
 import DataTable from "@/components/common/DataTable";
 
@@ -178,7 +178,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
     },
   ];
 
-  const { user } = useAuth();
+
   
   const tabItems = [
     { key: 'all', label: 'Tất cả di sản' },

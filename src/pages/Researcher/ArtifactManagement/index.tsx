@@ -11,7 +11,7 @@ import DataTable from "@/components/common/DataTable";
 
 import ArtifactDetailModal from "@/pages/Admin/ArtifactManagement/components/DetailModal";
 import ArtifactForm from "@/pages/Admin/ArtifactManagement/components/Form";
-import ArtifactStats from "@/pages/Admin/ArtifactManagement/components/Stats";
+
 import { useArtifactModel } from "@/pages/Admin/ArtifactManagement/model";
 
 const ResearcherArtifactManagement = () => {
@@ -27,8 +27,6 @@ const ResearcherArtifactManagement = () => {
     updateFilters,
     filters,
     clearFilters,
-    stats,
-    statsLoading,
     deleteArtifact,
     batchDeleteArtifacts,
     exportData,
@@ -46,7 +44,7 @@ const ResearcherArtifactManagement = () => {
     closeForm,
     closeDetail,
     submitReview,
-    handleReject,
+
   } = useArtifactModel();
 
   const onFilterChange = (key: string, value: any) => {

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Tag, Tabs } from 'antd';
-import { useAuth } from '@/hooks/useAuth';
+
 import DataTable from '@/components/common/DataTable';
 import { useLearningModel } from '@/pages/Admin/LearningManagement/model'; // Reuse model
 import LearningForm from '@/pages/Admin/LearningManagement/components/Form'; // Reuse form
 
 const ResearcherLearningManagement: React.FC = () => {
     const model = useLearningModel();
-    const { user } = useAuth();
+
     
     // Set default filter to 'my' on mount if not already set by Tabs
     // Actually, Tabs default active key handling or useEffect might be better.
