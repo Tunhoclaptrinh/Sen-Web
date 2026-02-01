@@ -149,8 +149,9 @@ class AIService extends BaseService {
             new_balance: number;
         };
     }> {
+        // Note: BaseService.post returns already-unwrapped data from axios interceptor
         const response = await this.post(`/characters/${characterId}/purchase`, {});
-        return response.data;
+        return response; // Already unwrapped by axios interceptor
     }
 }
 

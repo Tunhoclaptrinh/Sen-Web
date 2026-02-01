@@ -12,7 +12,6 @@ import {
   DragOutlined,
   SkinOutlined,
   SmileOutlined,
-  SoundOutlined,
 } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
@@ -37,7 +36,7 @@ const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({
   const globalChar = useGlobalCharacter();
 
   const isTalking = globalChar?.isTalking || false;
-  const setIsTalking = (val: boolean) => globalChar?.setIsTalking(val);
+  // const setIsTalking = (val: boolean) => globalChar?.setIsTalking(val);
 
   const {
       isChibi,
@@ -127,7 +126,7 @@ const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({
           )}
         </Row>
 
-        {!compact && <Divider />}
+        {/* {!compact && <Divider />}
         <Title level={5}>
           <SoundOutlined /> Hội thoại (Speaking)
         </Title>
@@ -148,7 +147,7 @@ const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({
           <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
             (Nhân vật sẽ tự động mấp máy môi khi bật)
           </Text>
-        </div>
+        </div> */}
 
         {!compact && <Divider />}
         <Title level={5}>

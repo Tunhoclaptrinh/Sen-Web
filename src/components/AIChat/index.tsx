@@ -28,6 +28,7 @@ import {
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
 import SenChibi from "@/components/SenChibi";
+import type { SenChibiGesture, SenChibiMouthState, SenChibiEyeState } from "@/components/SenChibi/types";
 import SenCharacter from "@/components/SenCharacter";
 import { SenCustomizationSettings } from "@/components/common";
 import "./styles.less";
@@ -110,11 +111,12 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   // Set default character if not present
   useEffect(() => {
     if (open && !currentCharacter) {
-      dispatch(fetchCharacters()).then((action: any) => {
-        if (action.payload && action.payload.length > 0) {
+      dispatch(fetchCharacters()).then((action) => {
+        const chars = action.payload;
+        if (chars && Array.isArray(chars) && chars.length > 0) {
           // Ưu tiên chọn nhân vật mặc định (Sen) nếu có
-          const defaultChar = action.payload.find((c: any) => c.is_default);
-          dispatch(setCurrentCharacter(defaultChar || action.payload[0]));
+          const defaultChar = chars.find((c) => c.is_default);
+          dispatch(setCurrentCharacter(defaultChar || chars[0]));
         }
       });
     }
@@ -200,10 +202,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     audioRef.current = audio;
 
     audio.onplay = () => {
-        // Only set isSpeaking if we have actual text rendered (not just "..." placeholder)
-        if (streamingText.length > 0 && streamingText !== '...') {
-            setIsSpeaking(true);
-        }
+        // Audio plays but mouth controlled by streaming logic
         setAudioPlaying(messageId);
     };
     audio.onended = () => {
@@ -244,14 +243,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
               setIsSpeaking(false); // Stop mouth movement during pause
               return;
           }
-          // Pause finished
+          // Pause finished - continue streaming
           pausedDurationRef.current += (activePauseEndTimeRef.current - pauseStartTimeRef.current);
           activePauseEndTimeRef.current = 0;
           pauseStartTimeRef.current = 0;
-          // Only resume speaking if not placeholder text
-          if (targetText !== '...') {
-              setIsSpeaking(true);
-          }
       }
 
       const speed = charPerMsRef.current > 0 ? charPerMsRef.current : 0.1;
@@ -277,8 +272,11 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       if (charsToShow < targetText.length) {
         setStreamingText(targetText.substring(0, charsToShow));
         // Only set isSpeaking if we actually have real text content (not placeholder "..." or loading)
-        if (activePauseEndTimeRef.current === 0 && charsToShow > 0 && targetText !== '...' && targetText.trim().length > 0) {
-            setIsSpeaking(true);
+        const isRealContent = charsToShow > 0 && targetText !== '...' && targetText.trim().length > 0;
+        if (activePauseEndTimeRef.current === 0 && isRealContent) {
+            setIsSpeaking(true); // ENABLED - mouth opens only when real text renders
+        } else {
+            setIsSpeaking(false); // Ensure mouth closed when no real content yet
         }
       } else {
         // Complete
@@ -340,16 +338,16 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     dispatch(addUserMessage(userText));
 
     try {
-      console.log("Sending message to AI via Redux:", userText);
-      const action: any = await dispatch(sendChatMessage({
+      const response = await dispatch(sendChatMessage({
         character_id: currentCharacter.id,
         message: userText,
         context: activeContext || undefined,
       })).unwrap();
 
-      // Extracted from ChatResponse
-      const fullResponse = action.message?.content || action.message || "Xin lỗi, mình không thể trả lời câu hỏi này.";
-      const audioBase64 = action.message?.audio_base64 || action.audio_base64;
+      // Extract from ChatResponse - message is a ChatMessage object
+      const messageObj = response.message;
+      const fullResponse = messageObj?.content || "Xin lỗi, mình không thể trả lời câu hỏi này.";
+      const audioBase64 = messageObj?.audio_base64;
       
       setLoading(false);
       streamText(fullResponse, audioBase64);
@@ -400,7 +398,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                                 setIsSpeaking(false);
                             } else if (!!streamingText || targetTextRef.current) {
                                 audioRef.current.play().catch(console.error);
-                                setIsSpeaking(true);
                             }
                         }
                         if (newMuted) {
@@ -438,10 +435,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                         y={topMargin} 
                         scale={senSettings.scale * 1.45} 
                         origin="head"
-                        isTalking={loading || !!streamingText || isSpeaking}
-                        gesture={loading ? "point" : (isSpeaking ? "hello" : "normal")}
-                        eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
-                        mouthState={senSettings.mouthState as any}
+                        isTalking={isSpeaking}
+                        gesture={senSettings.gesture as SenChibiGesture}
+                        eyeState={senSettings.eyeState as SenChibiEyeState}
+                        mouthState={senSettings.mouthState as SenChibiMouthState}
                         showHat={senSettings.accessories.hat}
                         showGlasses={senSettings.accessories.glasses}
                         showCoat={senSettings.accessories.coat}
@@ -453,9 +450,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                         y={topMargin}
                         scale={senSettings.scale * 1.45}
                         origin="head"
-                        isTalking={loading || !!streamingText || isSpeaking}
-                        eyeState={loading ? "blink" : (isSpeaking ? "normal" : senSettings.eyeState as any)}
-                        mouthState={senSettings.mouthState as any}
+                        isTalking={isSpeaking}
+                        eyeState={senSettings.eyeState as SenChibiEyeState}
+                        mouthState={senSettings.mouthState as SenChibiMouthState}
                         showHat={senSettings.accessories.hat}
                         showGlasses={senSettings.accessories.glasses}
                         showCoat={senSettings.accessories.coat}

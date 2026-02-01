@@ -6,6 +6,7 @@ import { Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card, Modal } fro
 import { TrophyOutlined, RiseOutlined, GoldOutlined } from '@ant-design/icons';
 import { getImageUrl } from '@/utils/image.helper';
 import { StatisticsCard } from '@/components/common';
+import { aiService, AICharacter } from '@/services/ai.service';
 import "./styles.less";
 
 const { Title } = Typography;
@@ -19,11 +20,29 @@ const MuseumPage: React.FC = () => {
     // Modal state
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
+    
+    // AI Characters state
+    const [ownedCharacters, setOwnedCharacters] = useState<AICharacter[]>([]);
+    const [charactersLoading, setCharactersLoading] = useState(false);
 
     useEffect(() => {
         dispatch(fetchMuseum());
         dispatch(fetchShopData());
+        fetchOwnedCharacters();
     }, [dispatch]);
+    
+    // Fetch owned AI characters
+    const fetchOwnedCharacters = async () => {
+        setCharactersLoading(true);
+        try {
+            const characters = await aiService.getCharacters();
+            setOwnedCharacters(characters);
+        } catch (err) {
+            console.error('Failed to fetch owned characters:', err);
+        } finally {
+            setCharactersLoading(false);
+        }
+    };
 
     const handleCollectIncome = () => {
         console.log('Collect income');
@@ -55,14 +74,16 @@ const MuseumPage: React.FC = () => {
             original: art,
             quantity: 1
         })),
-        ...(museum?.characters || []).map((charName, idx) => ({
+        // Use owned AI characters with full data instead of basic museum.characters
+        ...ownedCharacters.map(char => ({
             type: 'character',
-            id: `char-${idx}`,
-            name: charName,
-            description: 'Nhân vật đồng hành cùng bạn',
-            image: null, 
-            original: charName,
-            quantity: 1
+            id: `char-${char.id}`,
+            name: char.name,
+            description: char.description || char.personality || 'Nhân vật đồng hành cùng bạn',
+            image: char.avatar,
+            original: char,
+            quantity: 1,
+            rarity: char.rarity
         }))
     ];
 
@@ -79,7 +100,8 @@ const MuseumPage: React.FC = () => {
         // Resolve image URL based on type
         let itemImage: string | null = null;
         if (item.type === 'character') {
-             itemImage = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${item.name}`;
+            // Use actual avatar if available, otherwise fallback to dicebear
+            itemImage = item.image ? getImageUrl(item.image) : `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${item.name}`;
         } else {
              itemImage = item.image ? getImageUrl(item.image) : null;
         }
@@ -178,7 +200,7 @@ const MuseumPage: React.FC = () => {
         );
     };
 
-    if (museumLoading || shopLoading) {
+    if (museumLoading || shopLoading || charactersLoading) {
         return (
             <div style={{ textAlign: 'center', padding: '100px 0' }}>
                 <Spin size="large" tip="Đang tải dữ liệu..." />

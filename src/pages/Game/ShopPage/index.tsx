@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { fetchShopData, purchaseItem, clearMessages } from '@/store/slices/shopSlice';
 import { ShopItem } from '@/types/game.types';
+import { aiService, AICharacter } from '@/services/ai.service';
 import './styles.less';
 import { getImageUrl } from '@/utils/image.helper';
 
@@ -26,10 +27,29 @@ const ShopPage: React.FC = () => {
     const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
     const [purchaseQuantity, setPurchaseQuantity] = useState(1);
     const [loadingItemId, setLoadingItemId] = useState<number | null>(null);
+    
+    // AI Character state
+    const [availableCharacters, setAvailableCharacters] = useState<AICharacter[]>([]);
+    const [charactersLoading, setCharactersLoading] = useState(false);
+    const [purchasingCharacterId, setPurchasingCharacterId] = useState<number | null>(null);
 
     useEffect(() => {
         dispatch(fetchShopData() as any);
+        fetchAvailableCharacters();
     }, [dispatch]);
+    
+    // Fetch available AI characters for purchase
+    const fetchAvailableCharacters = async () => {
+        setCharactersLoading(true);
+        try {
+            const characters = await aiService.getAvailableCharacters();
+            setAvailableCharacters(characters);
+        } catch (err) {
+            console.error('Failed to fetch available characters:', err);
+        } finally {
+            setCharactersLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (successMessage) {
@@ -53,6 +73,25 @@ const ShopPage: React.FC = () => {
         if (activeTab === 'themes') return ['theme', 'decoration', 'collectible'].includes(item.type);
         
         return item.type === activeTab;
+    });
+
+    // Create unified list combining shop items and AI characters, sorted by owned status (owned at end)
+    const allCards: Array<{ type: 'shop' | 'ai', data: any, isOwned: boolean }> = [
+        // Shop items
+        ...filteredItems.map(item => ({
+            type: 'shop' as const,
+            data: item,
+            isOwned: inventory.some(inv => inv.item_id === item.id) && !item.is_consumable
+        })),
+        // AI characters (only in 'all' or 'characters' tab)
+        ...((activeTab === 'all' || activeTab === 'characters') ? availableCharacters : []).map(char => ({
+            type: 'ai' as const,
+            data: char,
+            isOwned: char.is_owned || false
+        }))
+    ].sort((a, b) => {
+        // Sort: not owned first, owned last
+        return a.isOwned === b.isOwned ? 0 : a.isOwned ? 1 : -1;
     });
 
     const handleOpenModal = (item: ShopItem) => {
@@ -234,6 +273,126 @@ const ShopPage: React.FC = () => {
         );
     };
 
+    // Handle AI character purchase
+    const handlePurchaseCharacter = async (character: AICharacter) => {
+        const balance = progress?.total_sen_petals || 0;
+        if (balance < (character.price || 0)) {
+            message.warning('Bạn không đủ Cánh Sen để mua nhân vật này!');
+            return;
+        }
+
+        Modal.confirm({
+            title: 'Mua nhân vật đồng hành',
+            content: `Bạn muốn mua ${character.name} với giá ${character.price} 🌸 Cánh Sen?`,
+            okText: 'Mua ngay',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                setPurchasingCharacterId(character.id);
+                try {
+                    const result = await aiService.purchaseCharacter(character.id);
+                    if (result.success) {
+                        message.success(`Đã mua thành công nhân vật ${character.name}!`);
+                        fetchAvailableCharacters(); // Refresh list
+                    } else {
+                        message.error(result.message || 'Không thể mua nhân vật');
+                    }
+                } catch (err: any) {
+                    message.error(err.message || 'Lỗi khi mua nhân vật');
+                } finally {
+                    setPurchasingCharacterId(null);
+                }
+            }
+        });
+    };
+
+    // Render AI Character card
+    const renderAICharacter = (character: AICharacter) => {
+        const rarityColors: Record<string, string> = {
+            common: 'default',
+            rare: 'blue',
+            epic: 'purple',
+            legendary: 'gold'
+        };
+        const rarityLabels: Record<string, string> = {
+            common: 'Phổ thông',
+            rare: 'Hiếm',
+            epic: 'Sử thi',
+            legendary: 'Huyền thoại'
+        };
+
+        const characterImage = character.avatar ? getImageUrl(character.avatar) : null;
+
+        return (
+            <Col xs={24} sm={12} md={8} lg={6} key={`char-${character.id}`}>
+                <Card
+                    hoverable
+                    className="shop-card"
+                    cover={
+                        <div className="card-cover">
+                            {characterImage ? (
+                                <>
+                                    <div 
+                                        className="blur-background"
+                                        style={{ backgroundImage: `url(${characterImage})` }}
+                                    />
+                                    <img 
+                                        src={characterImage} 
+                                        alt={character.name} 
+                                        className="item-image"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                        }} 
+                                    />
+                                </>
+                            ) : (
+                                <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', background: '#f5f5f5'}}>
+                                    🤖
+                                </div>
+                            )}
+                            <div className="item-type-tag">
+                                <Tag color="magenta">ĐỒNG HÀNH</Tag>
+                            </div>
+                            {character.rarity && (
+                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                    <Tag color={rarityColors[character.rarity] || 'default'}>
+                                        {rarityLabels[character.rarity] || character.rarity.toUpperCase()}
+                                    </Tag>
+                                </div>
+                            )}
+                        </div>
+                    }
+                >
+                    <div className="item-info">
+                        <div className="item-name">{character.name}</div>
+                        <div className="item-desc" title={character.description}>
+                            {character.description || character.personality}
+                        </div>
+                        
+                        <div className="price-section">
+                            <span>Giá bán:</span>
+                            <span className="price-value">
+                                <span style={{fontSize: '1.2rem'}}>🌸</span> {character.price || 0}
+                            </span>
+                        </div>
+
+                        <div className="buy-btn-wrapper">
+                            <Button 
+                                type="primary" 
+                                className={`buy-btn ${character.is_owned ? 'owned' : ''}`}
+                                onClick={() => !character.is_owned && handlePurchaseCharacter(character)}
+                                loading={purchasingCharacterId === character.id}
+                                disabled={character.is_owned || purchasingCharacterId === character.id}
+                            >
+                                {character.is_owned ? 'Đã sở hữu' : 'Mua ngay'}
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+            </Col>
+        );
+    };
+
+
     return (
         <div className="shop-page">
             <div className="shop-header">
@@ -257,14 +416,19 @@ const ShopPage: React.FC = () => {
                 />
             </div>
 
-            {loading ? (
+            {(loading || charactersLoading) ? (
                 <div style={{ textAlign: 'center', padding: 50 }}>
                     <Spin size="large" />
                 </div>
             ) : (
                 <div className="shop-items-grid">
                      <Row gutter={[24, 24]}>
-                        {filteredItems.map(renderShopItem)}
+                        {/* Unified sorted render - owned items at end */}
+                        {allCards.map((card) => 
+                            card.type === 'shop' 
+                                ? renderShopItem(card.data) 
+                                : renderAICharacter(card.data)
+                        )}
                     </Row>
                 </div>
             )}

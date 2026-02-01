@@ -44,13 +44,13 @@ const LearningDetail: React.FC = () => {
     const [currentStep, setCurrentStep] = useState<'content' | 'quiz'>('content');
     const [timeLeft, setTimeLeft] = useState(0);
 
-    useEffect(() => {
-        if (id) {
-            fetchModuleDetail(parseInt(id));
-        }
-    }, [id]);
+    const handleNavigate = React.useCallback((path: string) => {
+        startTransition(() => {
+            navigate(path);
+        });
+    }, [navigate]);
 
-    const fetchModuleDetail = async (moduleId: number) => {
+    const fetchModuleDetail = React.useCallback(async (moduleId: number) => {
         try {
             setLoading(true);
             const data = await learningService.getModuleDetail(moduleId);
@@ -61,13 +61,15 @@ const LearningDetail: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleNavigate]);
 
-    const handleNavigate = (path: string) => {
-        startTransition(() => {
-            navigate(path);
-        });
-    };
+    useEffect(() => {
+        if (id) {
+            fetchModuleDetail(parseInt(id));
+        }
+    }, [id, fetchModuleDetail]);
+
+
 
     const handleAnswerChange = (questionId: number, optionIndex: number) => {
         setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
@@ -112,6 +114,49 @@ const LearningDetail: React.FC = () => {
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
+    const getEmbedUrl = (url?: string) => {
+        if (!url) return '';
+        try {
+
+            let videoId = '';
+            
+            // If already embed, extract ID to ensure clean URL without strange params
+            if (url.includes('/embed/')) {
+                const parts = url.split('/embed/');
+                if (parts[1]) {
+                    videoId = parts[1].split('?')[0];
+                }
+            }
+            // Handle youtu.be/ID
+            else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1]?.split('?')[0];
+            } 
+            // Handle youtube.com/watch?v=ID
+            else if (url.includes('v=')) {
+                const vParam = url.split('v=')[1];
+                if (vParam) {
+                    videoId = vParam.split('&')[0];
+                }
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+            
+            // If it Looks like YouTube but we failed to extract ID, return null to avoid embedding 'youtube.com' (refused to connect)
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                console.warn('Invalid YouTube URL:', url);
+                return null;
+            }
+
+            // Return original for other providers (vimeo etc)
+            return url;
+        } catch (e) {
+            console.error('Error parsing video URL:', e);
+            return null;
+        }
+    };
+
     const handleQuizSubmit = async () => {
         if (!module) return;
 
@@ -144,8 +189,9 @@ const LearningDetail: React.FC = () => {
             if (response.success) {
                 if (response.data.passed) {
                     // Check for level up in response data (updated backend)
-                    const isLevelUp = (response.data as any).is_level_up;
-                    const newLevel = (response.data as any).new_level;
+                    const responseData = response.data as any; // Cast safely for extended properties 
+                    const isLevelUp = responseData.is_level_up;
+                    const newLevel = responseData.new_level;
 
                     Modal.success({
                         title: null, // Custom title below
@@ -391,20 +437,43 @@ const LearningDetail: React.FC = () => {
                                                 boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
                                                 background: '#000'
                                             }} className="video-wrapper">
-                                                {module.content_url?.trim().startsWith('<') ? (
-                                                    <div 
-                                                        dangerouslySetInnerHTML={{ __html: module.content_url }} 
-                                                        style={{ width: '100%', height: '100%' }}
-                                                    />
-                                                ) : (
-                                                    <iframe 
-                                                        src={module.content_url} 
-                                                        title={module.title}
-                                                        frameBorder="0" 
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                                        allowFullScreen 
-                                                    />
-                                                )}
+                                                {(() => {
+                                                    const embedSrc = getEmbedUrl(module.content_url);
+                                                    if (module.content_url?.trim().startsWith('<')) {
+                                                        return (
+                                                             <div 
+                                                                dangerouslySetInnerHTML={{ __html: module.content_url }} 
+                                                                style={{ width: '100%', height: '100%' }}
+                                                            />
+                                                        );
+                                                    }
+                                                    
+                                                    if (!embedSrc) {
+                                                        return (
+                                                            <div style={{
+                                                                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                                                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                                                color: 'rgba(255,255,255,0.7)',
+                                                                background: '#1f1f1f'
+                                                            }}>
+                                                                <CloseCircleFilled style={{ fontSize: 32, marginBottom: 8 }} />
+                                                                <Text style={{ color: 'rgba(255,255,255,0.7)' }}>Video không khả dụng hoặc Link lỗi</Text>
+                                                                <Text type="secondary" style={{ fontSize: 12, marginTop: 4 }}>{module.content_url}</Text>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <iframe 
+                                                            src={embedSrc}
+                                                            title={module.title}
+                                                            frameBorder="0" 
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                            allowFullScreen
+                                                            referrerPolicy="origin"
+                                                        />
+                                                    );
+                                                })()}
                                             </div>
                                         ) : (
                                             /* Render other types (article, quiz text, etc.) as HTML content */
