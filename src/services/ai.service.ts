@@ -25,10 +25,18 @@ export interface ChatMessage {
     content: string;
     timestamp: string;
     audio_base64?: string; // Add audio field
+    recommendation?: {
+        title: string;
+        url: string;
+    };
     context?: {
         level_id?: number;
         artifact_id?: number;
         heritage_site_id?: number;
+        recommendation?: {
+            title: string;
+            url: string;
+        };
     };
 }
 
@@ -63,7 +71,7 @@ class AIService extends BaseService {
                 heritageSiteId: data.context?.heritage_site_id,
             }
         });
-        // Backend returns: { success: true, data: { message, character, timestamp, route } }
+        // Backend returns: { success: true, data: { message, character, timestamp, route, recommendation } }
         return {
             message: {
                 id: Date.now(),
@@ -73,6 +81,7 @@ class AIService extends BaseService {
                 content: response.data.message,
                 timestamp: response.data.timestamp || new Date().toISOString(),
                 audio_base64: response.data.audio_base64, // Map audio
+                recommendation: response.data.recommendation, // Map recommendation
                 context: data.context,
             },
             character: response.data.character,

@@ -1,18 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Input, Button, Spin, Modal, List, Avatar, Tabs } from "antd";
+import { Input, Button, Spin, Modal, List, Avatar, Tabs, Popover, Tooltip, message, Image } from "antd";
 import { 
     SendOutlined, 
     CloseOutlined, 
     SoundOutlined, 
-    AudioMutedOutlined, 
-    AudioOutlined, 
+    AudioOutlined,
     PauseCircleOutlined,
     SettingOutlined,
+    PlusOutlined,
     UserOutlined,
     EditOutlined,
     DeleteOutlined,
     BulbOutlined,
-    InfoCircleOutlined
+    InfoCircleOutlined,
+    PaperClipOutlined,
+    ReadOutlined,
+    QuestionCircleOutlined,
+    CheckOutlined
 } from "@ant-design/icons";
 import { Stage } from "@pixi/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,7 +27,6 @@ import {
   fetchCharacters,
   addUserMessage,
   setCurrentCharacter,
-  setMuted,
   clearChatHistory,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
@@ -88,6 +91,166 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const dataHistoryRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    if (isListening) {
+      const startMonitoring = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          streamRef.current = stream;
+          
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          audioContextRef.current = audioContext;
+          
+          const source = audioContext.createMediaStreamSource(stream);
+          const analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.5; // Smoother transitions
+          source.connect(analyser);
+          analyserRef.current = analyser;
+
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          
+          // Fill initial history with zeros
+          const BAR_WIDTH = 3;
+          const BAR_GAP = 3;
+          const STEP = BAR_WIDTH + BAR_GAP;
+          
+          // Throttling for scroll speed control
+          let lastDrawTime = 0;
+          const FRAME_INTERVAL = 32; // ~30fps - Adjust this to control scroll speed (larger = slower)
+
+          const draw = (timestamp: number) => {
+            if (!canvasRef.current || !analyserRef.current) return;
+            
+            // Throttle updates
+            if (timestamp - lastDrawTime < FRAME_INTERVAL) {
+                animationFrameRef.current = requestAnimationFrame(draw);
+                return;
+            }
+            lastDrawTime = timestamp;
+            
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            // Handle DPI scaling (only needs to be set once ideally, but safe here)
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+                 canvas.width = rect.width * dpr;
+                 canvas.height = rect.height * dpr;
+                 ctx.scale(dpr, dpr);
+            }
+            
+            // Use TimeDomainData for better "Loudness" / Amplitude representation
+            analyserRef.current.getByteTimeDomainData(dataArray);
+            
+            let sumSquares = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                // Time domain data is unsigned 8-bit integer (0-255), centered at 128 (silence)
+                const deviation = dataArray[i] - 128;
+                sumSquares += deviation * deviation;
+            }
+            
+            const rms = Math.sqrt(sumSquares / dataArray.length);
+            
+            // Push to history
+            const maxBars = Math.floor(rect.width / STEP) + 2;
+            const history = dataHistoryRef.current;
+            history.push(rms);
+            if (history.length > maxBars) {
+                // If we have too many bars, shift strictly to maintain buffer size 
+                // but usually we just want to fill the screen.
+                // shift() removes the oldest (left-most) element
+                while (history.length > maxBars) {
+                     history.shift();
+                }
+            }
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            
+            // Draw
+            const centerY = rect.height / 2;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            
+            for (let i = 0; i < history.length; i++) {
+                const vol = history[i];
+                // Noise gate (Time domain noise floor is usually very low, e.g. rms < 2)
+                const isSilence = vol < 2; 
+                
+                const x = rect.width - ((history.length - 1 - i) * STEP) - 10;
+                
+                // Optimization: Don't draw if off-screen to the left
+                if (x + BAR_WIDTH < 0) continue;
+                
+                if (isSilence) {
+                    ctx.beginPath();
+                    ctx.arc(x + BAR_WIDTH/2, centerY, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // [CONFIGURATION] SENSITIVITY CONTROL
+                    // Adjust this GAIN value to change how "tall" the bars get.
+                    // Higher value = Taller bars for the same volume.
+                    // 0.05 = Conservative (needs loud voice to fill)
+                    // 0.15 = Aggressive (easy to fill height)
+                    const GAIN = 0.1; 
+                    
+                    // Soft-Clipping (Tanh)
+                    // Allows bars to approach 100% height without hitting a hard wall.
+                    const softScale = Math.tanh(vol * GAIN);
+                    
+                    // [MODIFIED] Ensure it uses the FULL canvas height ("Touch the roof")
+                    const maxHeight = rect.height; 
+                    
+                    // Final height calculation
+                    const height = Math.max(4, softScale * maxHeight);
+                    
+                    const y = centerY - height / 2;
+                    
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, BAR_WIDTH, height, 2);
+                    ctx.fill();
+                }
+            }
+
+            animationFrameRef.current = requestAnimationFrame(draw);
+          };
+          
+          requestAnimationFrame(draw);
+        } catch (err) {
+          console.error('Error accessing microphone:', err);
+          setIsListening(false);
+        }
+      };
+      
+      startMonitoring();
+    } else {
+      // Cleanup
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (audioContextRef.current) audioContextRef.current.close();
+      dataHistoryRef.current = []; // Reset history
+    }
+
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (audioContextRef.current) audioContextRef.current.close();
+    };
+  }, [isListening]);
   const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [pendingSwitchCharacter, setPendingSwitchCharacter] = useState<typeof currentCharacter>(null);
@@ -138,6 +301,133 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     ',': 300, ';': 300, ':': 300
   };
 
+  const [streamingRecommendation, setStreamingRecommendation] = useState<{title: string, url: string} | undefined>(undefined);
+  
+  // File Upload State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const processFile = (file: File) => {
+    // Validate type
+    if (!file.type.startsWith('image/')) {
+        message.error('Vui lòng chỉ chọn file ảnh!');
+        return;
+    }
+
+    // Validate size (5MB)
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+        message.error('Ảnh phải nhỏ hơn 5MB!');
+        return;
+    }
+
+    // Create preview
+    const objectUrl = URL.createObjectURL(file);
+    setSelectedFile(file);
+    setPreviewUrl(objectUrl);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        processFile(file);
+    }
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    const items = event.clipboardData?.items;
+    if (items) {
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                if (file) {
+                    processFile(file);
+                    event.preventDefault(); // Prevent pasting the image filename/metadata as text
+                }
+                break; // Only take the first image
+            }
+        }
+    }
+  };
+
+  const removeFile = () => {
+    if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
+
+  // Clean up object URL
+  useEffect(() => {
+    return () => {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+    };
+  }, [previewUrl]);
+
+  const renderAttachmentMenu = () => {
+    const isSen = currentCharacter?.name?.toLowerCase().includes('sen');
+    
+    return (
+        <div className="attachment-menu">
+            <Tooltip 
+                title="Hỗ trợ ảnh (JPG, PNG) tối đa 5MB" 
+                placement="right" 
+                overlayStyle={{ zIndex: 20005 }}
+            >
+                <div className="menu-item" onClick={() => {
+                    fileInputRef.current?.click();
+                }}>
+                    <PaperClipOutlined />
+                    <span>Thêm ảnh, tệp đính kèm</span>
+                </div>
+            </Tooltip>
+            
+            <div className="menu-divider" />
+            
+            <Tooltip 
+                title="Sen, đóng vai trò là giáo viên, giúp bạn hiểu kiến thức từng bước, giải thích rõ ràng, có ví dụ minh họa và điều chỉnh theo trình độ của bạn." 
+                placement="right"
+                overlayStyle={{ maxWidth: 300, zIndex: 20005 }}
+            >
+                <div className={`menu-item ${!isSen ? 'disabled' : ''}`} onClick={() => {
+                    if (isSen) {
+                        setInput("Kích hoạt chế độ: Học có hướng dẫn");
+                        // handleSend(); // Optional: Auto send
+                    }
+                }}>
+                    <ReadOutlined />
+                    <span>Học có hướng dẫn</span>
+                    {!isSen && <span className="lock-icon">🔒</span>}
+                </div>
+            </Tooltip>
+
+            <Tooltip 
+                title="Sen, đóng vai trò là người kiểm tra, đưa ra câu hỏi phù hợp để đánh giá mức độ hiểu bài và đưa nhận xét ngắn gọn sau mỗi câu trả lời." 
+                placement="right"
+                overlayStyle={{ maxWidth: 300, zIndex: 20005 }}
+            >
+                <div className={`menu-item ${!isSen ? 'disabled' : ''}`} onClick={() => {
+                    if (isSen) {
+                       setInput("Kích hoạt chế độ: Câu đố kiểm tra");
+                       // handleSend();
+                    }
+                }}>
+                    <QuestionCircleOutlined />
+                    <span>Câu đố</span>
+                    {!isSen && <span className="lock-icon">🔒</span>}
+                </div>
+            </Tooltip>
+        </div>
+    );
+  };
+
   useEffect(() => {
     if (!open || !containerRef.current) return;
 
@@ -186,6 +476,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     setIsSpeaking(false);
     setAudioPlaying(null);
     startTimeRef.current = 0;
+    setStreamingRecommendation(undefined);
   };
 
   const playMessageAudio = (audioBase64: string, messageId: number) => {
@@ -281,20 +572,25 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       } else {
         // Complete
         setStreamingText(targetText);
-        setIsSpeaking(false);
-        // Note: Redux chatHistory will already have the message from sendChatMessage.fulfilled
-        // We just clear local streaming text after a short delay or immediately
+        setIsSpeaking(false); // Stop mouth animation
+        
+        // Clear local streaming text but DO NOT stop audio (stopAll)
+        // Let audio finish naturally
         setTimeout(() => {
             setStreamingText("");
-            stopAll();
+             if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
         }, 500);
       }
     }, 16); 
   };
 
-  const streamText = (fullText: string, audioBase64?: string) => {
+  const streamText = (fullText: string, audioBase64?: string, recommendation?: {title: string, url: string}) => {
     targetTextRef.current = fullText;
     setStreamingText("");
+    setStreamingRecommendation(recommendation);
     startTimeRef.current = Date.now();
     pausedDurationRef.current = 0;
     activePauseEndTimeRef.current = 0;
@@ -321,18 +617,36 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
             audio.play();
             startStreaming();
         };
+
+        audio.onended = () => {
+             audioRef.current = null;
+        };
+
         audio.onerror = () => startStreaming();
     } else {
-        startStreaming();
+    startStreaming();
     }
   };
 
   const handleSend = async () => {
-    if (!input.trim() || loading || !currentCharacter) return;
+    if ((!input.trim() && !selectedFile) || loading || !currentCharacter) return;
+
+    if (selectedFile) {
+        console.log("Sending file:", selectedFile.name);
+        // Implement upload logic here later
+    }
+
+    if (!input.trim() && !selectedFile) return; // If only file was sent, and input is empty, we might want to return here if file upload is handled separately.
+                                                // However, based on the structure, it seems we proceed if either input or file exists.
+                                                // The previous guard `((!input.trim() && !selectedFile) || loading || !currentCharacter)` already handles the "nothing to send" case.
+                                                // This line might be redundant or intended for a different flow. I will keep it as per instruction.
+
+    setLoading(true);
+    setStreamingText("");
 
     const userText = input.trim();
     setInput("");
-    setLoading(true);
+    // setLoading(true); // This was already set above, removing redundancy based on instruction's placement.
 
     // Add user message to Redux
     dispatch(addUserMessage(userText));
@@ -348,9 +662,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       const messageObj = response.message;
       const fullResponse = messageObj?.content || "Xin lỗi, mình không thể trả lời câu hỏi này.";
       const audioBase64 = messageObj?.audio_base64;
+      const recommendation = messageObj?.recommendation; // Extract recommendation
       
       setLoading(false);
-      streamText(fullResponse, audioBase64);
+      streamText(fullResponse, audioBase64, recommendation);
     } catch (error) {
       console.error("AI Chat Error Detail:", error);
       setLoading(false);
@@ -384,27 +699,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                     }}
                     type="text"
                     disabled={chatHistory.length === 0}
-                />
-                <Button 
-                    className="control-button mute-button"
-                    icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />} 
-                    onClick={() => {
-                        const newMuted = !isMuted;
-                        dispatch(setMuted(newMuted));
-                        if (audioRef.current) {
-                            audioRef.current.muted = newMuted;
-                            if (newMuted) {
-                                audioRef.current.pause(); // Pause if muted, as per user's "thực sự hoạt động"
-                                setIsSpeaking(false);
-                            } else if (!!streamingText || targetTextRef.current) {
-                                audioRef.current.play().catch(console.error);
-                            }
-                        }
-                        if (newMuted) {
-                            window.speechSynthesis.cancel();
-                        }
-                    }}
-                    type="text"
                 />
                 <Button 
                     className="control-button setting-button"
@@ -506,6 +800,21 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                                   />
                                 )}
                               </div>
+
+                              {message.role === 'assistant' && (message.recommendation?.url || message.context?.recommendation?.url) && (
+                                <div style={{ marginTop: 8 }}>
+                                    <Button 
+                                        type="primary" 
+                                        ghost 
+                                        size="small"
+                                        href={(message.recommendation || message.context?.recommendation)?.url}
+                                        target="_blank"
+                                        icon={<InfoCircleOutlined />}
+                                    >
+                                        {(message.recommendation || message.context?.recommendation)?.title}
+                                    </Button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -519,6 +828,20 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                             {renderMessageWithLinks(streamingText)}
                             <span className="cursor">|</span>
                           </div>
+                          {streamingRecommendation && (
+                            <div style={{ marginTop: 8 }}>
+                                <Button 
+                                    type="primary" 
+                                    ghost 
+                                    size="small"
+                                    href={streamingRecommendation.url}
+                                    target="_blank"
+                                    icon={<InfoCircleOutlined />}
+                                >
+                                    {streamingRecommendation.title}
+                                </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -554,24 +877,120 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
             </div>
 
             <div className="input-container" style={{ pointerEvents: 'auto' }}>
-              <Input
-                autoFocus
-                placeholder="Hỏi về di sản văn hóa Việt Nam..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onPressEnter={handleSend}
-                disabled={loading || chatLoading}
-                style={{ fontSize: '18px' }}
-                suffix={
-                  <Button
-                    type="text"
-                    icon={<SendOutlined />}
-                    onClick={handleSend}
-                    disabled={loading || chatLoading || !input.trim()}
-                    style={{ color: "#8b1d1d" }}
+              <div className="styled-input-wrapper">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    style={{ display: 'none' }} 
+                    accept="image/*"
+                    onChange={handleFileSelect}
                   />
-                }
-              />
+                  {isListening ? (
+                    <div className="listening-input-wrapper">
+                        <Button 
+                            type="text" 
+                            icon={<PlusOutlined />} 
+                            className="input-prefix-btn"
+                            style={{ color: 'white', opacity: 0.5, cursor: 'default' }}
+                        />
+                        <div className="listening-dots-container">
+                            <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+                        </div>
+                        <div className="listening-actions">
+                            <div className="control-btn cancel-btn" onClick={() => setIsListening(false)}>
+                                <CloseOutlined />
+                            </div>
+                            <div className="control-btn confirm-btn" onClick={() => setIsListening(false)}>
+                                <CheckOutlined />
+                            </div>
+                        </div>
+                    </div>
+                  ) : (
+                    <>
+                      {previewUrl && (
+                        <div className="file-preview-container">
+                            <div className="preview-image-wrapper">
+                                <Image 
+                                    src={previewUrl} 
+                                    alt="Preview" 
+                                    className="preview-image" 
+                                    width={80}
+                                    height={80}
+                                    style={{ objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.2)' }}
+                                    preview={{ zIndex: 20010 }}
+                                />
+                                <div className="remove-file-btn" onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeFile();
+                                }}>
+                                    <CloseOutlined />
+                                </div>
+                            </div>
+                        </div>
+                      )}
+
+                      <Input
+                        autoFocus
+                        placeholder="Hỏi về di sản văn hóa Việt Nam..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onPressEnter={handleSend}
+                        onPaste={handlePaste}
+                        disabled={loading || chatLoading}
+                        style={{ fontSize: '18px' }}
+                        prefix={
+                            <Tooltip title="Thêm tệp đính kèm" placement="top" overlayStyle={{ zIndex: 20005 }}>
+                                <Popover 
+                                    content={renderAttachmentMenu()} 
+                                    trigger="click" 
+                                    placement="topLeft"
+                                    overlayClassName="attachment-popover"
+                                    arrow={false}
+                                    overlayStyle={{ zIndex: 20000 }}
+                                >
+                                    <Button 
+                                        type="text" 
+                                        icon={<PlusOutlined />} 
+                                        className="input-prefix-btn"
+                                        style={{ color: 'white', opacity: 0.7 }}
+                                    />
+                                </Popover>
+                            </Tooltip>
+                        }
+                        suffix={
+                          (input.trim() || selectedFile) ? (
+                            <Button
+                                type="text"
+                                icon={<SendOutlined />}
+                                onClick={handleSend}
+                                disabled={loading || chatLoading || (!input.trim() && !selectedFile)}
+                                className="input-suffix-btn send-btn"
+                                style={{ color: "#d24040" }}
+                            />
+                          ) : (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <Button
+                                    type="text"
+                                    icon={<AudioOutlined style={{ fontSize: '22px' }} />}
+                                    className="input-suffix-btn"
+                                    style={{ color: 'white' }}
+                                    onClick={() => setIsListening(true)}
+                                />
+                                <div className="wave-icon-wrapper">
+                                    <div className="waveform-icon">
+                                        <div className="bar"></div>
+                                        <div className="bar"></div>
+                                        <div className="bar"></div>
+                                        <div className="bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                          )
+                        }
+                      />
+                    </>
+                  )}
+              </div>
             </div>
           </motion.div>
         </motion.div>
