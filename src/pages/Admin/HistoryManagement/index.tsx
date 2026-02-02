@@ -80,7 +80,7 @@ const HistoryManagement = () => {
     {
       title: "Tiêu đề",
       dataIndex: "title",
-      key: "title_like", // Align with searchable key
+      key: "titleLike", // Align with searchable key
       width: 250,
       ellipsis: true,
       searchable: true,
@@ -88,7 +88,7 @@ const HistoryManagement = () => {
     {
       title: "Tác giả",
       dataIndex: "authorName",
-      key: "author_name",
+      key: "authorName",
       width: 150,
       render: (authorName: string, record: any) => (
         <Tag color="orange">{authorName || record.author || 'Hệ thống'}</Tag>
@@ -121,7 +121,7 @@ const HistoryManagement = () => {
     {
       title: "Trạng thái",
       dataIndex: "isActive",
-      key: "is_active",
+      key: "isActive",
       width: 120,
       render: (isActive: boolean) => (
         <Tag color={isActive ? "green" : "red"}>
@@ -131,18 +131,18 @@ const HistoryManagement = () => {
     },
     {
       title: "Di sản",
-      key: "heritage_count",
+      key: "heritageCount",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
+        <Tag color="cyan">{(record.relatedHeritageIds || []).length} DS</Tag>
       ),
     },
     {
       title: "Hiện vật",
-      key: "artifact_count",
+      key: "artifactCount",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="purple">{(record.related_artifact_ids || []).length} HV</Tag>
+        <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>
       ),
     },
   ];
@@ -187,7 +187,7 @@ const HistoryManagement = () => {
         onRefresh={refresh}
         filters={[
           {
-            key: "is_active",
+            key: "isActive",
             placeholder: "Trạng thái",
             options: [
               { label: "Đang hiển thị", value: true },

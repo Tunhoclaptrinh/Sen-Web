@@ -27,7 +27,7 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
     () => ({
       pageSize: 10,
       autoFetch: true,
-      defaultFilters: { chapter_id: chapterId },
+      defaultFilters: { chapterId: chapterId },
       onError: (action: string, error: any) => {
         console.error(`Error ${action} level:`, error);
         message.error(`Thao tác thất bại: ${error.message}`);
@@ -65,10 +65,10 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
   };
 
   const handleSubmit = async (values: any) => {
-    // Ensure chapter_id is set
+    // Ensure chapterId is set
     const levelData = {
       ...values,
-      chapter_id: chapterId,
+      chapterId: chapterId,
     };
 
     let success = false;
@@ -168,7 +168,7 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
-        initialValues={currentLevel ? currentLevel : { chapter_id: chapterId }}
+        initialValues={currentLevel ? currentLevel : { chapterId: chapterId }}
         loading={crud.loading}
       />
 

@@ -28,7 +28,7 @@ const transformItems = (rawItems: any[]): HiddenItem[] => {
         y: item.coordinates?.y || item.y || 0,
         width: item.coordinates?.width || item.width || 10,
         height: item.coordinates?.height || item.height || 10,
-        factPopup: item.factPopup || item.content || item.description || 'Thông tin thú vị!',
+        factPopup: item.factPopup || item.fact_popup || item.content || item.description || 'Thông tin thú vị!',
     }));
 };
 

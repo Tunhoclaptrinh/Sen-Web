@@ -60,7 +60,7 @@ const HeritageListPage = () => {
       ],
     },
     {
-      key: "unesco_listed",
+      key: "unescoListed",
       placeholder: "UNESCO",
       width: 120,
       options: [
@@ -122,7 +122,7 @@ const HeritageListPage = () => {
     {
       title: "Năm Thành Lập",
       dataIndex: "yearEstablished",
-      key: "year_established",
+      key: "yearEstablished",
       width: 130,
       sorter: true,
       render: (year: any) => year || "N/A",
@@ -130,7 +130,7 @@ const HeritageListPage = () => {
     {
       title: "Phí Vào Cửa",
       dataIndex: "entranceFee",
-      key: "entrance_fee",
+      key: "entranceFee",
       width: 120,
       sorter: true,
       render: (fee: any) =>
@@ -147,7 +147,7 @@ const HeritageListPage = () => {
     {
       title: "UNESCO",
       dataIndex: "unescoListed",
-      key: "unesco_listed",
+      key: "unescoListed",
       width: 100,
       filters: [
         { text: "Có", value: true },

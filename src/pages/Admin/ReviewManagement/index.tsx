@@ -57,7 +57,7 @@ const ReviewManagement = () => {
         {
             title: "Người dùng",
             dataIndex: ["user", "name"],
-            key: "user_name",
+            key: "userName",
             width: 200,
             render: (name: string, record: any) => (
                 <Space>

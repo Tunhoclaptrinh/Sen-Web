@@ -30,7 +30,7 @@ const ReviewStats: React.FC<ReviewStatsProps> = ({ stats, loading }) => {
         },
         {
             title: "Đánh giá Di sản",
-            value: stats?.types?.heritage_site || 0,
+            value: stats?.types?.heritageSite || stats?.types?.heritage_site || 0,
             icon: <BankOutlined />,
             valueColor: "#52c41a",
         },

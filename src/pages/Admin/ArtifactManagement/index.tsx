@@ -87,7 +87,7 @@ const ArtifactManagement = () => {
     {
       title: "Tên Hiện vật",
       dataIndex: "name",
-      key: "name_like",
+      key: "nameLike",
       width: 250,
       searchable: true,
       align: "left" as const,
@@ -95,13 +95,13 @@ const ArtifactManagement = () => {
     {
       title: "Loại hình",
       dataIndex: "artifactType",
-      key: "artifact_type",
+      key: "artifactType",
       width: 150,
       filters: Object.values(ArtifactType).map(type => ({
         text: ArtifactTypeLabels[type],
         value: type
       })),
-      filteredValue: filters.artifact_type ? (Array.isArray(filters.artifact_type) ? filters.artifact_type : [filters.artifact_type]) : null,
+      filteredValue: filters.artifactType ? (Array.isArray(filters.artifactType) ? filters.artifactType : [filters.artifactType]) : null,
       render: (type: ArtifactType) => (
         <Tag color="purple">{ArtifactTypeLabels[type]?.toUpperCase() || type}</Tag>
       ),
@@ -128,30 +128,30 @@ const ArtifactManagement = () => {
     {
       title: "Trưng bày",
       dataIndex: "is_on_display",
-      key: "is_on_display",
+      key: "isOnDisplay",
       width: 100,
       render: (onDisplay: boolean) => onDisplay ? <Tag color="green">CÓ</Tag> : <Tag color="red">KHÔNG</Tag>,
     },
     {
       title: "Di sản",
-      key: "heritage_count",
+      key: "heritageCount",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_heritage_ids || []).length} DS</Tag>
+        <Tag color="cyan">{(record.relatedHeritageIds || []).length} DS</Tag>
       ),
     },
     {
       title: "Lịch sử",
-      key: "history_count",
+      key: "historyCount",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
+        <Tag color="purple">{(record.relatedHistoryIds || []).length} LS</Tag>
       ),
     },
     {
       title: "Tác giả",
       dataIndex: "authorName",
-      key: "author_name",
+      key: "authorName",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
@@ -197,7 +197,7 @@ const ArtifactManagement = () => {
         onRefresh={refresh}
         filters={[
           {
-            key: "artifact_type",
+            key: "artifactType",
             placeholder: "Loại hình",
             options: Object.values(ArtifactType).map(type => ({
                 label: ArtifactTypeLabels[type],
@@ -213,7 +213,7 @@ const ArtifactManagement = () => {
             })),
           },
           {
-            key: "is_on_display",
+            key: "isOnDisplay",
             placeholder: "Trưng bày",
             options: [
                 { label: "Đang trưng bày", value: true },

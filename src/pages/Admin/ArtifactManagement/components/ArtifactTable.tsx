@@ -52,7 +52,7 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
     {
       title: "Loại hình",
       dataIndex: "artifactType",
-      key: "artifact_type",
+      key: "artifactType",
       width: 150,
       render: (type: string) => <Tag color="purple">{type?.toUpperCase()}</Tag>,
     },
@@ -71,7 +71,7 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
     {
       title: "Trưng bày",
       dataIndex: "is_on_display",
-      key: "is_on_display",
+      key: "isOnDisplay",
       width: 100,
       render: (onDisplay: boolean) => onDisplay ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>,
     },

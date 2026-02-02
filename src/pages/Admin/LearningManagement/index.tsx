@@ -32,14 +32,14 @@ const LearningManagement: React.FC = () => {
         {
             title: 'Thời gian (phút)',
             dataIndex: 'estimatedDuration',
-            key: 'estimated_duration',
+            key: 'estimatedDuration',
             width: 150,
             render: (val: number) => `${val} phút`
         },
         {
             title: "Tác giả",
             dataIndex: "authorName",
-            key: "author_name",
+            key: "authorName",
             width: 120,
             render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
         },

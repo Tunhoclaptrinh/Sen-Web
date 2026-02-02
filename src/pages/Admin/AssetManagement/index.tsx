@@ -38,7 +38,7 @@ const AssetManagement: React.FC = () => {
         {
             title: 'Trạng thái',
             dataIndex: 'isActive',
-            key: 'is_active',
+            key: 'isActive',
             render: (val: boolean) => val ? <Tag color="green">HOẠT ĐỘNG</Tag> : <Tag>KHOÁ</Tag>
         },
     ];

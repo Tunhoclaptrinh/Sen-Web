@@ -37,7 +37,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
     const [levels, setLevels] = useState<any[]>([]);
     
     // Watch for chapter changes to fetch levels
-    const selectedChapterId = Form.useWatch("chapter_id", form);
+    const selectedChapterId = Form.useWatch("chapterId", form);
     
     // UI Local State for Source Toggle
     const [thumbnailMode, setThumbnailMode] = useState<"upload" | "link">("upload");
@@ -54,8 +54,8 @@ const LevelForm: React.FC<LevelFormProps> = ({
                     // To keep it simple, if it's present, let's just stick to what was set or default to upload.
                     setThumbnailMode("upload");
                 }
-                if (initialValues.background_music) {
-                    setMusicMode(initialValues.background_music.startsWith("http") ? "link" : "upload");
+                if (initialValues.backgroundMusic) {
+                    setMusicMode(initialValues.backgroundMusic.startsWith("http") ? "link" : "upload");
                 }
             } else {
                 form.resetFields();
@@ -64,7 +64,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
                 }
                 form.setFieldsValue({
                     difficulty: "easy",
-                    passing_score: 70
+                    passingScore: 70
                 });
                 setThumbnailMode("upload");
                 setMusicMode("link");
@@ -94,7 +94,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
             }
             try {
                 const response = await adminLevelService.getAll({ 
-                    chapter_id: selectedChapterId,
+                    chapterId: selectedChapterId,
                     limit: 100 
                 });
                 if (response.success) {
@@ -164,7 +164,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
                             </Col>
                             <Col span={12}>
                                 <Form.Item
-                                    name="chapter_id"
+                                    name="chapterId"
                                     label="Thuộc Chương"
                                     rules={[{ required: true, message: "Chọn chương" }]}
                                 >
@@ -210,14 +210,14 @@ const LevelForm: React.FC<LevelFormProps> = ({
                         </Form.Item>
                     </Col>
                     <Col span={8}>
-                        <Form.Item name="passing_score" label="Điểm vượt qua (%)">
+                        <Form.Item name="passingScore" label="Điểm vượt qua (%)">
                             <InputNumber style={{ width: "100%" }} min={0} max={100} addonAfter="%" />
                         </Form.Item>
                     </Col>
 
                     <Col span={12}>
                         <Form.Item 
-                            name="required_level" 
+                            name="requiredLevel" 
                             label="Màn chơi yêu cầu để mở khóa"
                             tooltip="Người chơi phải hoàn thành màn này mới có thể chơi màn đang tạo/chỉnh sửa."
                         >
@@ -250,12 +250,12 @@ const LevelForm: React.FC<LevelFormProps> = ({
                                 
                                 {musicMode === "upload" ? (
                                     <div style={{ marginTop: 8 }}>
-                                        <Form.Item name="background_music" noStyle>
+                                        <Form.Item name="backgroundMusic" noStyle>
                                             <FileUpload accept="audio/*" placeholder="Chọn file nhạc (.mp3, .wav...)" />
                                         </Form.Item>
                                     </div>
                                 ) : (
-                                    <Form.Item name="background_music" noStyle>
+                                    <Form.Item name="backgroundMusic" noStyle>
                                         <Input prefix={<CustomerServiceOutlined />} placeholder="https://..." style={{ marginTop: 8 }} />
                                     </Form.Item>
                                 )}
@@ -304,7 +304,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
                 <Row gutter={16}>
                     <Col span={24}>
                         <Form.Item 
-                            name="knowledge_base" 
+                            name="knowledgeBase" 
                             label="Dữ liệu kiến thức dạy cho AI"
                             tooltip="Văn bản này sẽ được dùng để 'dạy' AI về bối cảnh của màn chơi này, giúp AI trả lời các câu hỏi của người chơi chính xác hơn."
                         >

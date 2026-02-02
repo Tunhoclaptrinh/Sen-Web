@@ -36,14 +36,14 @@ const ExhibitionManagement: React.FC = () => {
         {
             title: 'Trạng thái',
             dataIndex: 'isActive',
-            key: 'is_active',
+            key: 'isActive',
             width: 120,
             render: (val: boolean) => val ? <Tag color="green">ĐANG MỞ</Tag> : <Tag>ĐÃ ĐÓNG</Tag>
         },
         {
             title: 'Tác giả',
             dataIndex: 'authorName',
-            key: 'author_name',
+            key: 'authorName',
             width: 120,
             render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
         },

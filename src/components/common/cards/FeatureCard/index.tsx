@@ -19,7 +19,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       ? `/heritage-sites/${data.id}` 
       : `/artifacts/${data.id}`;
 
-  const rawImage = resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images);
+  const rawImage = resolveImage(data.image) || resolveImage(data.mainImage) || resolveImage(data.images);
   const imageUrl = getImageUrl(rawImage, "https://via.placeholder.com/300x400?text=No+Image");
   const subtitle = cardType === 'heritage' ? data.region : data.dynasty;
 
@@ -36,7 +36,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             />
 
             {/* Top Overlay: UNESCO Badge (Heritage only) */}
-            {data.unesco_listed && (
+            {data.unescoListed && (
                 <div className="overlay-badges">
                   <Tag color="gold" className="unesco-tag">
                       UNESCO
@@ -59,7 +59,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                       {data.rating.toFixed(1)}
                     </span>
                     <span className="rating-count">
-                      ({data.total_reviews || 0})
+                      ({data.totalReviews || 0})
                     </span>
                   </div>
                 )}

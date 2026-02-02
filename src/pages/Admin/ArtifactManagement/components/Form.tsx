@@ -112,7 +112,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
           const formattedValues = {
             ...initialValues,
-            short_description:
+            shortDescription:
               initialValues.short_description || initialValues.shortDescription,
             related_heritage_ids: relatedHeri,
             related_history_ids: relatedHistoryArr,
@@ -136,9 +136,9 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         
         // Set defaults
         form.setFieldsValue({
-          is_on_display: true,
+          isOnDisplay: true,
           condition: ArtifactCondition.GOOD,
-          year_created: undefined,
+          yearCreated: undefined,
         });
       }
     };
@@ -177,18 +177,18 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         const tab1Fields = [
           "image",
           "gallery",
-          "short_description",
+          "shortDescription",
           "name",
-          "artifact_type",
-          "heritage_site_id",
-          "category_id",
-          "year_created",
+          "artifactType",
+          "heritageSiteId",
+          "categoryId",
+          "yearCreated",
           "material",
           "dimensions",
           "condition",
           "creator",
           "location_in_site",
-          "is_on_display",
+          "isOnDisplay",
         ];
         const tab2Fields = [
           "description",
@@ -222,7 +222,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       gallery: values.gallery?.map((item: any) => 
         typeof item === "object" ? (item.url || item.response?.url || "") : item
       ) || [],
-      shortDescription: values.short_description, // Sync for compatibility
+      shortDescription: values.shortDescription, // Sync for compatibility
       related_heritage_ids: values.related_heritage_ids?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
@@ -329,7 +329,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 <Row gutter={16}>
                   <Col span={24}>
                     <Form.Item
-                      name="short_description"
+                      name="shortDescription"
                       label="Mô tả ngắn"
                       rules={[
                         { required: true, message: "Vui lòng nhập mô tả ngắn" },
@@ -360,7 +360,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      name="artifact_type"
+                      name="artifactType"
                       label="Loại hình"
                       rules={[
                         { required: true, message: "Vui lòng chọn loại hình" },
@@ -380,7 +380,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 <Row gutter={16}>
                   <Col span={12}>
                     <Form.Item
-                      name="heritage_site_id"
+                      name="heritageSiteId"
                       label="Thuộc Di sản"
                       rules={[
                         { required: true, message: "Vui lòng chọn di sản" },
@@ -402,7 +402,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      name="category_id"
+                      name="categoryId"
                       label="Phân loại"
                       rules={[
                         { required: true, message: "Vui lòng chọn phân loại" },
@@ -426,7 +426,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item name="year_created" label="Năm sáng tạo">
+                    <Form.Item name="yearCreated" label="Năm sáng tạo">
                       <InputNumber style={{ width: "100%" }} controls={false} />
                     </Form.Item>
                   </Col>
@@ -469,7 +469,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 <Row>
                   <Col span={6}>
                     <Form.Item
-                      name="is_on_display"
+                      name="isOnDisplay"
                       label="Đang trưng bày"
                       valuePropName="checked"
                     >
@@ -499,7 +499,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item name="historical_context" label="Bối cảnh lịch sử">
+                <Form.Item name="historicalContext" label="Bối cảnh lịch sử">
                   <TinyEditor
                     key={isEdit ? `hist-edit-${initialValues?.id}` : "hist-create"}
                     height={250}
@@ -507,7 +507,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item name="cultural_significance" label="Ý nghĩa văn hóa">
+                <Form.Item name="culturalSignificance" label="Ý nghĩa văn hóa">
                   <TinyEditor 
                     key={isEdit ? `cult-edit-${initialValues?.id}` : "cult-create"}
                     height={250} 
@@ -524,7 +524,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
               <>
                 <Form.Item
                   label="Di sản liên quan"
-                  name="related_heritage_ids"
+                  name="relatedHeritageIds"
                   tooltip="Các địa điểm di sản gắn liền với hiện vật này"
                 >
                   <DebounceSelect

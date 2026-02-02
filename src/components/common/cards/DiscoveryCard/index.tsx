@@ -33,7 +33,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
         navigate(path);
     };
 
-    const rawImage = data.main_image || data.image || (data.images && data.images[0]);
+    const rawImage = data.mainImage || data.image || (data.images && data.images[0]);
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
     const apiHost = apiBase.replace(/\/api$/, '');
     const imageUrl = rawImage 
@@ -52,7 +52,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                         {type === 'artifact' ? (
                             <>
                                 <span className="meta-item">
-                                    <CalendarOutlined /> {data.year_created || 'N/A'}
+                                    <CalendarOutlined /> {data.yearCreated || 'N/A'}
                                 </span>
                                 <span className="meta-item">
                                     <UserOutlined /> {data.dynasty || 'Unknown Dynasty'}
@@ -61,10 +61,10 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                         ) : (
                             <>
                                 <span className="meta-item">
-                                    <CalendarOutlined /> {dayjs(data.publishDate || data.created_at || data.createdAt).format('DD/MM/YYYY')}
+                                    <CalendarOutlined /> {dayjs(data.publishDate || data.createdAt).format('DD/MM/YYYY')}
                                 </span>
                                 <span className="meta-item">
-                                    <UserOutlined /> {data.author_name || data.author || 'Hệ thống'}
+                                    <UserOutlined /> {data.authorName || data.author || 'Hệ thống'}
                                 </span>
                                 <span className="meta-item">
                                     <CommentOutlined /> {data.commentCount || 0}
@@ -82,7 +82,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                     <h3 className="card-title">{data.name}</h3>
                     
                     <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
-                        {data.short_description || data.shortDescription || data.description?.replace(/<[^>]+>/g, '') || "Chưa có mô tả ngắn."}
+                        {data.shortDescription || data.description?.replace(/<[^>]+>/g, '') || "Chưa có mô tả ngắn."}
                     </Paragraph>
                 </div>
 
