@@ -25,7 +25,7 @@ const BadgeManagement: React.FC = () => {
             title: 'Điều kiện',
             key: 'condition',
             render: (_: any, record: any) => (
-                <span>{record.condition_type}: {record.condition_value}</span>
+                <span>{record.conditionType}: {record.conditionValue}</span>
             )
         },
         {
@@ -33,8 +33,8 @@ const BadgeManagement: React.FC = () => {
             key: 'rewards',
             render: (_: any, record: any) => (
                 <Space>
-                    {record.reward_coins && <Tag color="gold">{record.reward_coins} Xu</Tag>}
-                    {record.reward_petals && <Tag color="pink">{record.reward_petals} Cánh sen</Tag>}
+                    {record.rewardCoins && <Tag color="gold">{record.rewardCoins} Xu</Tag>}
+                    {record.rewardPetals && <Tag color="pink">{record.rewardPetals} Cánh sen</Tag>}
                 </Space>
             )
         },
@@ -72,7 +72,7 @@ const BadgeManagement: React.FC = () => {
             >
                 <Form
                     layout="vertical"
-                    initialValues={model.currentRecord || { is_active: true, condition_type: 'level_reached' }}
+                    initialValues={model.currentRecord || { isActive: true, conditionType: 'level_reached' }}
                     onFinish={model.handleSubmit}
                 >
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '16px' }}>
@@ -101,7 +101,7 @@ const BadgeManagement: React.FC = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <Form.Item
-                            name="condition_type"
+                            name="conditionType"
                             label="Loại điều kiện"
                         >
                             <Select>
@@ -112,7 +112,7 @@ const BadgeManagement: React.FC = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="condition_value"
+                            name="conditionValue"
                             label="Giá trị điều kiện"
                             rules={[{ required: true, message: 'Nhập giá trị' }]}
                         >
@@ -122,13 +122,13 @@ const BadgeManagement: React.FC = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <Form.Item
-                            name="reward_coins"
+                            name="rewardCoins"
                             label="Thưởng Xu"
                         >
                             <InputNumber style={{ width: '100%' }} min={0} />
                         </Form.Item>
                         <Form.Item
-                            name="reward_petals"
+                            name="rewardPetals"
                             label="Thưởng Cánh sen"
                         >
                             <InputNumber style={{ width: '100%' }} min={0} />
@@ -136,7 +136,7 @@ const BadgeManagement: React.FC = () => {
                     </div>
 
                     <Form.Item
-                        name="is_active"
+                        name="isActive"
                         label="Đang kích hoạt"
                         valuePropName="checked"
                     >

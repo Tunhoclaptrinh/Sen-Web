@@ -33,7 +33,7 @@ const ChaptersPage: React.FC = () => {
             if (result.success) {
                 Modal.success({
                     title: 'Mở khóa thành công!',
-                    content: `Bạn đã mở khóa chương mới và chi tiêu ${result.data.petals_spent} cánh sen.`,
+                    content: `Bạn đã mở khóa chương mới và chi tiêu ${result.data.petalsSpent} cánh sen.`,
                     onOk: () => {
                         dispatch(fetchChapters());
                     }
