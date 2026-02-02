@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { fetchShopData, purchaseItem, clearMessages } from '@/store/slices/shopSlice';
+import { fetchProgress } from '@/store/slices/gameSlice';
 import { ShopItem } from '@/types/game.types';
 import { aiService, AICharacter } from '@/services/ai.service';
 import './styles.less';
@@ -81,13 +82,13 @@ const ShopPage: React.FC = () => {
         ...filteredItems.map(item => ({
             type: 'shop' as const,
             data: item,
-            isOwned: inventory.some(inv => inv.item_id === item.id) && !item.is_consumable
+            isOwned: inventory.some(inv => inv.itemId === item.id) && !item.isConsumable
         })),
         // AI characters (only in 'all' or 'characters' tab)
         ...((activeTab === 'all' || activeTab === 'characters') ? availableCharacters : []).map(char => ({
             type: 'ai' as const,
             data: char,
-            isOwned: char.is_owned || false
+            isOwned: char.isOwned || false
         }))
     ].sort((a, b) => {
         // Sort: not owned first, owned last
@@ -275,15 +276,16 @@ const ShopPage: React.FC = () => {
 
     // Handle AI character purchase
     const handlePurchaseCharacter = async (character: AICharacter) => {
-        const balance = progress?.total_sen_petals || 0;
+        // Use COINS for characters
+        const balance = progress?.coins || 0;
         if (balance < (character.price || 0)) {
-            message.warning('Bạn không đủ Cánh Sen để mua nhân vật này!');
+            message.warning('Bạn không đủ Xu để mua nhân vật này!');
             return;
         }
 
         Modal.confirm({
             title: 'Mua nhân vật đồng hành',
-            content: `Bạn muốn mua ${character.name} với giá ${character.price} 🌸 Cánh Sen?`,
+            content: `Bạn muốn mua ${character.name} với giá ${character.price} Xu?`,
             okText: 'Mua ngay',
             cancelText: 'Hủy',
             onOk: async () => {
@@ -293,6 +295,7 @@ const ShopPage: React.FC = () => {
                     if (result.success) {
                         message.success(`Đã mua thành công nhân vật ${character.name}!`);
                         fetchAvailableCharacters(); // Refresh list
+                        dispatch(fetchProgress() as any); // Refresh user coins
                     } else {
                         message.error(result.message || 'Không thể mua nhân vật');
                     }
@@ -371,19 +374,19 @@ const ShopPage: React.FC = () => {
                         <div className="price-section">
                             <span>Giá bán:</span>
                             <span className="price-value">
-                                <span style={{fontSize: '1.2rem'}}>🌸</span> {character.price || 0}
+                                <DollarOutlined style={{ marginRight: 4, color: '#FFD700', fontSize: '1.2rem' }} /> {character.price || 0}
                             </span>
                         </div>
 
                         <div className="buy-btn-wrapper">
                             <Button 
                                 type="primary" 
-                                className={`buy-btn ${character.is_owned ? 'owned' : ''}`}
-                                onClick={() => !character.is_owned && handlePurchaseCharacter(character)}
+                                className={`buy-btn ${character.isOwned ? 'owned' : ''}`}
+                                onClick={() => !character.isOwned && handlePurchaseCharacter(character)}
                                 loading={purchasingCharacterId === character.id}
-                                disabled={character.is_owned || purchasingCharacterId === character.id}
+                                disabled={character.isOwned || purchasingCharacterId === character.id}
                             >
-                                {character.is_owned ? 'Đã sở hữu' : 'Mua ngay'}
+                                {character.isOwned ? 'Đã sở hữu' : 'Mua ngay'}
                             </Button>
                         </div>
                     </div>

@@ -5,15 +5,12 @@ export interface AICharacter {
     id: number;
     name: string;
     avatar: string;
-    personality: string;
-    state: 'amnesia' | 'restored';
     description: string;
-    isDefault?: boolean;
+    rarity: 'common' | 'rare' | 'epic' | 'legendary';
+    price: number;
+    unlockLevelId?: number;
     isOwned?: boolean;
-    rarity?: 'common' | 'rare' | 'epic' | 'legendary';
-    price?: number;
-    unlockLevelId?: number | null;
-    canUnlock?: boolean;
+    personality?: string;
 }
 
 // Chat Message
