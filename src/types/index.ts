@@ -63,14 +63,14 @@ export interface Metadata {
 
 export interface BaseEntity {
   id: number;
-  created_at: string;
-  updated_at?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface TimestampEntity {
-  created_at: string;
-  updated_at?: string;
-  deleted_at?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
 }
 
 // Component Props

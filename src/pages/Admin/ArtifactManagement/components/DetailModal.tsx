@@ -28,8 +28,8 @@ const DetailModal: React.FC<DetailModalProps> = ({
             if (open && record?.id) {
                 setLoading(true);
                 try {
-                    const heriIds = record.related_heritage_ids || [];
-                    const historyIds = record.related_history_ids || [];
+                    const heriIds = record.relatedHeritageIds || [];
+                    const historyIds = record.relatedHistoryIds || [];
 
                     const [relHeriRes, relHistoryRes] = await Promise.all([
                         heriIds.length > 0
@@ -88,7 +88,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         </Descriptions.Item>
 
                         <Descriptions.Item label="Loại hình">
-                            <Tag color="purple">{ArtifactTypeLabels[record.artifact_type]?.toUpperCase() || record.artifact_type?.toUpperCase()}</Tag>
+                            <Tag color="purple">{ArtifactTypeLabels[record.artifactType as keyof typeof ArtifactTypeLabels]?.toUpperCase() || record.artifactType?.toUpperCase()}</Tag>
                         </Descriptions.Item>
                         <Descriptions.Item label="Chất liệu">{record.material || "N/A"}</Descriptions.Item>
                         <Descriptions.Item label="Tình trạng">
@@ -106,21 +106,21 @@ const DetailModal: React.FC<DetailModalProps> = ({
                             })()}
                         </Descriptions.Item>
                         <Descriptions.Item label="Trưng bày">
-                            {record.is_on_display ? <Tag color="green">ĐANG TRƯNG BÀY</Tag> : <Tag color="red">TRONG KHO</Tag>}
+                            {record.isOnDisplay ? <Tag color="green">ĐANG TRƯNG BÀY</Tag> : <Tag color="red">TRONG KHO</Tag>}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Vị trí" span={record.year_created ? 1 : 2}>
+                        <Descriptions.Item label="Vị trí" span={record.yearCreated ? 1 : 2}>
                             <Space>
                                 <EnvironmentOutlined />
-                                {record.location_in_site || "Chưa rõ"}
+                                {record.locationInSite || "Chưa rõ"}
                             </Space>
                         </Descriptions.Item>
-                        {record.year_created && <Descriptions.Item label="Năm sáng tạo">{record.year_created}</Descriptions.Item>}
+                        {record.yearCreated && <Descriptions.Item label="Năm sáng tạo">{record.yearCreated}</Descriptions.Item>}
                         <Descriptions.Item label="Đánh giá">
                             <Space><StarOutlined style={{ color: "#faad14" }} /> {record.rating || 0}</Space>
                         </Descriptions.Item>
                         <Descriptions.Item label="Mô tả ngắn" span={2}>
                             <Typography.Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
-                                {record.short_description || "Chưa có mô tả ngắn."}
+                                {record.shortDescription || "Chưa có mô tả ngắn."}
                             </Typography.Paragraph>
                         </Descriptions.Item>
                     </Descriptions>
@@ -179,9 +179,9 @@ const DetailModal: React.FC<DetailModalProps> = ({
 
                 <Tabs.TabPane tab="Bối cảnh & Ý nghĩa" key="context">
                     <h4>Bối cảnh lịch sử</h4>
-                    <div dangerouslySetInnerHTML={{ __html: record.historical_context || "Chưa có dữ liệu." }} style={{ marginBottom: 20 }} />
+                    <div dangerouslySetInnerHTML={{ __html: record.historicalContext || "Chưa có dữ liệu." }} style={{ marginBottom: 20 }} />
                     <h4>Ý nghĩa văn hóa</h4>
-                    <div dangerouslySetInnerHTML={{ __html: record.cultural_significance || "Chưa có dữ liệu." }} />
+                    <div dangerouslySetInnerHTML={{ __html: record.culturalSignificance || "Chưa có dữ liệu." }} />
                 </Tabs.TabPane>
 
                 <Tabs.TabPane tab={`Di sản liên quan (${relatedHeritage.length})`} key="heritage">

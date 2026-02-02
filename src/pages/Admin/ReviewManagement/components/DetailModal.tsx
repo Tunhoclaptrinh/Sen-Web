@@ -34,13 +34,13 @@ const DetailModal: React.FC<DetailModalProps> = ({
                     <Tag color={record.type === 'artifact' ? 'purple' : 'blue'}>
                         {record.type?.toUpperCase()}
                     </Tag>
-                    {record.target_name || `ID: ${record.heritage_site_id || record.artifact_id}`}
+                    {record.targetName || `ID: ${record.heritageSiteId || record.artifactId}`}
                 </Descriptions.Item>
                 <Descriptions.Item label="Đánh giá">
                     <Rate disabled defaultValue={record.rating} />
                 </Descriptions.Item>
                 <Descriptions.Item label="Thời gian">
-                    {dayjs(record.created_at).format("DD/MM/YYYY HH:mm")}
+                    {dayjs(record.createdAt).format("DD/MM/YYYY HH:mm")}
                 </Descriptions.Item>
                 <Descriptions.Item label="Nội dung">
                     {record.comment}

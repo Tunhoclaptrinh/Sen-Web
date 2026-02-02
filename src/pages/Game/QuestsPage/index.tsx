@@ -115,7 +115,7 @@ const QuestsPage: React.FC = () => {
     return [...filtered].sort((a: Quest, b: Quest) => {
       const getScore = (q: Quest) => {
         if (q.progress?.status === "completed") return 3; // Top priority (Claim now)
-        if (q.progress?.status === "in_progress") return 2;
+        if (q.progress?.status === "inProgress") return 2;
         if (!q.progress) return 1; // Not started
         if (q.progress?.status === "claimed") return 0; // Bottom
         return 0;
@@ -298,22 +298,22 @@ const QuestsPage: React.FC = () => {
                           <div className="progress-info">
                             <span>Tiến độ</span>
                             <span>
-                              {quest.progress.current_value}/
+                             currentValue: {quest.progress.currentValue}/
                               {quest.requirements[0]?.target}
                             </span>
                           </div>
                           <Progress
                             percent={Math.round(
-                              (quest.progress.current_value /
+                              (quest.progress.currentValue /
                                 (quest.requirements[0]?.target || 1)) *
                                 100,
                             )}
                             status={
-                              quest.progress.is_completed ? "success" : "active"
+                              quest.progress.isCompleted ? "success" : "active"
                             }
                             showInfo={false}
                             strokeColor={
-                              quest.progress.is_completed
+                              quest.progress.isCompleted
                                 ? "#52c41a"
                                 : "#1890ff"
                             }

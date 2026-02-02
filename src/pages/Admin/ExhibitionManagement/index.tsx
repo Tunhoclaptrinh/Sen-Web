@@ -25,25 +25,25 @@ const ExhibitionManagement: React.FC = () => {
             key: 'duration',
             width: 250,
             render: (_: any, record: any) => {
-                if (record.is_permanent) return <Tag color="blue">VĨNH VIỄN</Tag>;
+                if (record.isPermanent) return <Tag color="blue">VĨNH VIỄN</Tag>;
                 return (
                     <span style={{ fontSize: '12px' }}>
-                        {dayjs(record.start_date).format('DD/MM/YYYY')} - {dayjs(record.end_date).format('DD/MM/YYYY')}
+                        {dayjs(record.startDate).format('DD/MM/YYYY')} - {dayjs(record.endDate).format('DD/MM/YYYY')}
                     </span>
                 );
             }
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'is_active',
-            key: 'is_active',
+            dataIndex: 'isActive',
+            key: 'isActive',
             width: 120,
             render: (val: boolean) => val ? <Tag color="green">ĐANG MỞ</Tag> : <Tag>ĐÃ ĐÓNG</Tag>
         },
         {
             title: 'Tác giả',
-            dataIndex: 'author_name',
-            key: 'author_name',
+            dataIndex: 'authorName',
+            key: 'authorName',
             width: 120,
             render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
         },
@@ -77,13 +77,13 @@ const ExhibitionManagement: React.FC = () => {
                     layout="vertical"
                     initialValues={model.currentRecord ? {
                         ...model.currentRecord,
-                        dates: [dayjs(model.currentRecord.start_date), dayjs(model.currentRecord.end_date)]
-                    } : { is_active: true, is_permanent: false }}
+                        dates: [dayjs(model.currentRecord.startDate), dayjs(model.currentRecord.endDate)]
+                    } : { isActive: true, isPermanent: false }}
                     onFinish={(values) => {
                         const { dates, ...rest } = values;
-                        if (dates && !rest.is_permanent) {
-                            rest.start_date = dates[0].format('YYYY-MM-DD');
-                            rest.end_date = dates[1].format('YYYY-MM-DD');
+                        if (dates && !rest.isPermanent) {
+                            rest.startDate = dates[0].format('YYYY-MM-DD');
+                            rest.endDate = dates[1].format('YYYY-MM-DD');
                         }
                         model.handleSubmit(rest);
                     }}
@@ -113,14 +113,14 @@ const ExhibitionManagement: React.FC = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <Form.Item
-                            name="is_permanent"
+                            name="isPermanent"
                             label="Triển lãm vĩnh viễn?"
                             valuePropName="checked"
                         >
                             <Switch />
                         </Form.Item>
                         <Form.Item
-                            name="is_active"
+                            name="isActive"
                             label="Công khai"
                             valuePropName="checked"
                         >
@@ -130,9 +130,9 @@ const ExhibitionManagement: React.FC = () => {
 
                     <Form.Item
                         noStyle
-                        shouldUpdate={(prev, curr) => prev.is_permanent !== curr.is_permanent}
+                        shouldUpdate={(prev, curr) => prev.isPermanent !== curr.isPermanent}
                     >
-                        {({ getFieldValue }) => !getFieldValue('is_permanent') && (
+                        {({ getFieldValue }) => !getFieldValue('isPermanent') && (
                             <Form.Item
                                 name="dates"
                                 label="Thời gian diễn ra"

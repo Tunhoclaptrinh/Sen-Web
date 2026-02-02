@@ -14,7 +14,7 @@ import {
  */
 export interface CollectionWithItems extends Collection {
   artifacts?: any[];
-  heritage_sites?: any[];
+  heritageSites?: any[];
 }
 
 
@@ -156,14 +156,14 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    * Get public collections
    */
   async getPublic(params: QueryParams = {}): Promise<BaseApiResponse<Collection[]>> {
-    return this.getAll({ is_public: true, ...params });
+    return this.getAll({ isPublic: true, ...params });
   }
 
   /**
    * Get user's private collections
    */
   async getPrivate(params: QueryParams = {}): Promise<BaseApiResponse<Collection[]>> {
-    return this.getAll({ is_public: false, ...params });
+    return this.getAll({ isPublic: false, ...params });
   }
 
   /**
@@ -347,7 +347,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async getFeatured(limit: number = 10): Promise<BaseApiResponse<Collection[]>> {
     return this.getPublic({
-      _sort: 'total_items',
+      _sort: 'totalItems',
       _order: 'desc',
       _limit: limit,
     });

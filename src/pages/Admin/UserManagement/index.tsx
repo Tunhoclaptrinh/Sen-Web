@@ -66,7 +66,7 @@ const UserManagement = () => {
     {
       title: "Người dùng",
       dataIndex: "name",
-      key: "name_like",
+      key: "nameLike",
       width: 250,
       searchable: true,
       render: (text: string, record: User) => (
@@ -138,7 +138,7 @@ const UserManagement = () => {
     },
     {
       title: "Ngày tạo",
-      dataIndex: "created_at",
+      dataIndex: "createdAt",
       width: 150,
       render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
     },
@@ -220,7 +220,7 @@ const UserManagement = () => {
              defaultOperator: "like"
           },
           {
-              key: "created_at",
+              key: "createdAt",
               placeholder: "Ngày tham gia",
               type: "date",
               operators: ["eq", "gte", "lte"],

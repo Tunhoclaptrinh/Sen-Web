@@ -5,18 +5,18 @@ import { logger } from "@/utils/logger.utils";
 /**
  * Favorite item type
  */
-export type FavoriteType = "artifact" | "heritage_site" | "exhibition" | "article";
+export type FavoriteType = "artifact" | "heritageSite" | "exhibition" | "article";
 
 /**
  * Favorite interface
  */
 export interface Favorite {
   id: number;
-  user_id: number;
+  userId: number;
   type: FavoriteType;
-  reference_id: number;
+  referenceId: number;
   item?: any;
-  created_at: string;
+  createdAt: string;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface TrendingItem {
   id: number;
   name: string;
   type: FavoriteType;
-  favorite_count: number;
+  favoriteCount: number;
   image?: string;
   [key: string]: any;
 }

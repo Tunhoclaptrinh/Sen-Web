@@ -53,68 +53,67 @@ export const ArtifactConditionLabels: Record<ArtifactCondition, string> = {
 // Artifact
 export interface Artifact extends BaseEntity, TimestampEntity {
   name: string;
-  short_description?: string;
   shortDescription?: string;
   description: string;
-  artifact_type: ArtifactType;
-  category_id?: number;
-  heritage_site_id?: number;
-  year_created?: number;
+  artifactType: ArtifactType;
+  categoryId?: number;
+  heritageSiteId?: number;
+  yearCreated?: number;
   creator?: string;
   material?: string;
   dimensions?: string;
   weight?: string;
   condition: ArtifactCondition;
   origin?: string;
-  acquisition_date?: string;
-  acquisition_method?: string;
-  current_location?: string;
-  location_in_site?: string;
-  is_on_display: boolean;
+  acquisitionDate?: string;
+  acquisitionMethod?: string;
+  currentLocation?: string;
+  locationInSite?: string;
+  isOnDisplay: boolean;
   gallery?: string[];
   images?: string[];
   image?: string;
-  main_image?: string;
-  historical_context?: string;
-  cultural_significance?: string;
+  mainImage?: string;
+  historicalContext?: string;
+  culturalSignificance?: string;
   story?: string;
   rating?: number;
-  total_reviews?: number;
+  totalReviews?: number;
   views?: number;
-  is_active?: boolean;
+  isActive?: boolean;
   author?: string;
-  author_name?: string;
+  authorName?: string;
   // Related items (admin-managed)
-  related_heritage_ids?: number[];
-  related_history_ids?: number[];
+  relatedHeritageIds?: number[];
+  relatedHistoryIds?: number[];
 }
 
 // Artifact DTO
 export interface ArtifactDTO {
   name: string;
   description: string;
-  artifact_type: ArtifactType;
-  category_id?: number;
-  heritage_site_id?: number;
-  year_created?: number;
+  artifactType: ArtifactType;
+  categoryId?: number;
+  heritageSiteId?: number;
+  yearCreated?: number;
   creator?: string;
   material?: string;
   dimensions?: string;
   weight?: string;
   condition: ArtifactCondition;
   origin?: string;
-  acquisition_date?: string;
-  acquisition_method?: string;
-  current_location?: string;
-  location_in_site?: string;
-  is_on_display: boolean;
+  acquisitionDate?: string;
+  acquisitionMethod?: string;
+  currentLocation?: string;
+  locationInSite?: string;
+  isOnDisplay: boolean;
   images?: string[];
-  historical_context?: string;
-  cultural_significance?: string;
+  historicalContext?: string;
+  culturalSignificance?: string;
   story?: string;
   // Related items (admin-managed)
-  related_heritage_ids?: number[];
-  related_history_ids?: number[];
+  relatedHeritageIds?: number[];
+  relatedHistoryIds?: number[];
 }
 
 // Category
@@ -122,16 +121,16 @@ export interface Category extends BaseEntity {
   name: string;
   icon?: string;
   description?: string;
-  parent_id?: number;
+  parentId?: number;
 }
 
 // Artifact Filters
 export interface ArtifactFilters {
-  artifact_type?: ArtifactType;
-  category_id?: number;
-  heritage_site_id?: number;
+  artifactType?: ArtifactType;
+  categoryId?: number;
+  heritageSiteId?: number;
   condition?: ArtifactCondition;
-  is_on_display?: boolean;
+  isOnDisplay?: boolean;
   minYear?: number;
   maxYear?: number;
   material?: string;

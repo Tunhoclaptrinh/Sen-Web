@@ -60,7 +60,7 @@ const HeritageListPage = () => {
       ],
     },
     {
-      key: "unesco_listed",
+      key: "unescoListed",
       placeholder: "UNESCO",
       width: 120,
       options: [
@@ -121,16 +121,16 @@ const HeritageListPage = () => {
     },
     {
       title: "Năm Thành Lập",
-      dataIndex: "year_established",
-      key: "year_established",
+      dataIndex: "yearEstablished",
+      key: "yearEstablished",
       width: 130,
       sorter: true,
       render: (year: any) => year || "N/A",
     },
     {
       title: "Phí Vào Cửa",
-      dataIndex: "entrance_fee",
-      key: "entrance_fee",
+      dataIndex: "entranceFee",
+      key: "entranceFee",
       width: 120,
       sorter: true,
       render: (fee: any) =>
@@ -146,8 +146,8 @@ const HeritageListPage = () => {
     },
     {
       title: "UNESCO",
-      dataIndex: "unesco_listed",
-      key: "unesco_listed",
+      dataIndex: "unescoListed",
+      key: "unescoListed",
       width: 100,
       filters: [
         { text: "Có", value: true },
@@ -246,12 +246,12 @@ const HeritageListPage = () => {
             </div>
             <div>
               <strong>Năm thành lập:</strong>{" "}
-              {viewingRecord.year_established || "N/A"}
+              {viewingRecord.yearEstablished || "N/A"}
             </div>
             <div>
               <strong>Phí vào cửa:</strong>{" "}
-              {viewingRecord.entrance_fee
-                ? `${viewingRecord.entrance_fee.toLocaleString("vi-VN")} đ`
+              {viewingRecord.entranceFee
+                ? `${viewingRecord.entranceFee.toLocaleString("vi-VN")} đ`
                 : "Miễn phí"}
             </div>
             <div>
@@ -262,8 +262,8 @@ const HeritageListPage = () => {
             </div>
             <div>
               <strong>UNESCO:</strong>{" "}
-              <Tag color={viewingRecord.unesco_listed ? "green" : "default"}>
-                {viewingRecord.unesco_listed ? "Có" : "Không"}
+              <Tag color={viewingRecord.unescoListed ? "green" : "default"}>
+                {viewingRecord.unescoListed ? "Có" : "Không"}
               </Tag>
             </div>
           </Space>

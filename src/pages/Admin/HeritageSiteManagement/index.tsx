@@ -82,7 +82,7 @@ const HeritageSiteManagement = () => {
     {
       title: "Tên Di Sản",
       dataIndex: "name",
-      key: "name_like",
+      key: "nameLike",
       width: 250,
       searchable: true,
       align: "left" as const,
@@ -129,16 +129,16 @@ const HeritageSiteManagement = () => {
     },
     {
       title: "UNESCO",
-      dataIndex: "unesco_listed",
-      key: "unesco_listed",
+      dataIndex: "unescoListed",
+      key: "unescoListed",
       filters: [
         { text: "CÓ", value: true },
         { text: "KHÔNG", value: false },
       ],
-      filteredValue: filters.unesco_listed
-        ? Array.isArray(filters.unesco_listed)
-          ? filters.unesco_listed
-          : [filters.unesco_listed]
+      filteredValue: filters.unescoListed
+        ? Array.isArray(filters.unescoListed)
+          ? filters.unescoListed
+          : [filters.unescoListed]
         : null,
       width: 100,
       render: (listed: boolean) =>
@@ -146,30 +146,30 @@ const HeritageSiteManagement = () => {
     },
     {
       title: "Giá vé",
-      dataIndex: "entrance_fee",
+      dataIndex: "entranceFee",
       width: 120,
       render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Miễn phí"),
     },
     {
       title: "Hiện vật",
-      key: "artifacts_count",
+      key: "artifactsCount",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.related_artifact_ids || []).length} HV</Tag>
+        <Tag color="cyan">{(record.relatedArtifactIds || []).length} HV</Tag>
       ),
     },
     {
       title: "Lịch sử",
-      key: "history_count",
+      key: "historyCount",
       width: 100,
       render: (_: any, record: any) => (
-        <Tag color="purple">{(record.related_history_ids || []).length} LS</Tag>
+        <Tag color="purple">{(record.relatedHistoryIds || []).length} LS</Tag>
       ),
     },
     {
       title: "Tác giả",
-      dataIndex: "author_name",
-      key: "author_name",
+      dataIndex: "authorName",
+      key: "authorName",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
@@ -231,7 +231,7 @@ const HeritageSiteManagement = () => {
             })),
           },
           {
-            key: "unesco_listed",
+            key: "unescoListed",
             placeholder: "UNESCO",
             options: [
               { label: "CÓ", value: true },
@@ -239,14 +239,14 @@ const HeritageSiteManagement = () => {
             ],
           },
           {
-            key: "recognition_date",
+            key: "recognitionDate",
             placeholder: "Ngày công nhận",
             type: "date",
             operators: ["eq", "gte", "lte"], 
             defaultOperator: "eq"
           },
           {
-            key: "management_unit",
+            key: "managementUnit",
             placeholder: "Đơn vị quản lý",
             type: "input",
             operators: ["like"],

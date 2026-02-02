@@ -25,11 +25,11 @@ const HistoryListPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     interface FilterState {
         q: string;
-        is_active?: boolean;
+        isActive?: boolean;
     }
     const [filters, setFilters] = useState<FilterState>({
         q: '',
-        is_active: true
+        isActive: true
     });
     // Random featured site
     const [randomFeatured, setRandomFeatured] = useState<any | null>(null);
@@ -121,7 +121,7 @@ const HistoryListPage: React.FC = () => {
                             onClick={() => {
                                 setFilters({
                                     q: '',
-                                    is_active: true
+                                    isActive: true
                                 });
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}

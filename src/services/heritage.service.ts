@@ -124,7 +124,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
    */
   async getUNESCO(params: QueryParams = {}): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.getAll({
-      unesco_listed: true,
+      unescoListed: true,
       ...params,
     });
   }
@@ -166,7 +166,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
    */
   async getByCulturalPeriod(period: string, params: QueryParams = {}): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.getAll({
-      cultural_period: period,
+      culturalPeriod: period,
       ...params,
     });
   }
@@ -183,7 +183,7 @@ class HeritageService extends BaseService<HeritageSite, HeritageSiteDTO, Heritag
     if (!allSites.data) return allSites;
 
     const filtered = allSites.data.filter(
-      site => !site.entrance_fee || site.entrance_fee <= maxFee
+      site => !site.entranceFee || site.entranceFee <= maxFee
     );
 
     return {

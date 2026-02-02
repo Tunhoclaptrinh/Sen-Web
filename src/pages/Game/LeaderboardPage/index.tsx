@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LeaderboardEntry } from "@/types";
+import { getImageUrl } from "@/utils/image.helper";
 import "./styles.less";
 
 const { Title, Text, Paragraph } = Typography;
@@ -28,7 +29,7 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number }> = ({
       {rank === 1 && <CrownOutlined className="crown-icon" />}
       <div className="podium-card">
         <Avatar
-          src={entry.user_avatar}
+          src={getImageUrl(entry.userAvatar)}
           size={rank === 1 ? 100 : 80}
           icon={<UserOutlined />}
           style={{
@@ -36,19 +37,19 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number }> = ({
           }}
         />
         <div className="player-info">
-          <span className="player-name">{entry.user_name}</span>
+          <span className="player-name">{entry.userName}</span>
           <span className="player-level">Cấp độ {entry.level}</span>
         </div>
         <div className="stats-grid">
           <div className="stat-item">
             <span className="stat-label">Điểm</span>
             <span className="stat-value">
-              {entry.total_points.toLocaleString()}
+              {entry.totalPoints.toLocaleString()}
             </span>
           </div>
           <div className="stat-item">
             <span className="stat-label">Cánh Sen</span>
-            <span className="stat-value">🌸 {entry.sen_petals}</span>
+            <span className="stat-value">🌸 {entry.senPetals}</span>
           </div>
         </div>
       </div>
@@ -92,18 +93,18 @@ const LeaderboardPage: React.FC = () => {
       key: "player",
       render: (_: any, record: LeaderboardEntry) => (
         <div className="player-info-cell">
-          <Avatar src={record.user_avatar} icon={<UserOutlined />} />
-          <div className="player-details">
-            <span className="name">{record.user_name}</span>
-            <span className="level">Level {record.level}</span>
+          <Avatar src={getImageUrl(record.userAvatar)} icon={<UserOutlined />} />
+          <div className="user-info">
+            <div className="user-name">{record.userName}</div>
+            <div className="user-level">Cấp {record.level}</div>
           </div>
         </div>
       ),
     },
     {
       title: "Điểm",
-      dataIndex: "total_points",
-      key: "total_points",
+      dataIndex: "totalPoints",
+      key: "totalPoints",
       render: (points: number) => (
         <Tag
           color="blue"
@@ -116,8 +117,8 @@ const LeaderboardPage: React.FC = () => {
     },
     {
       title: "Cánh Sen",
-      dataIndex: "sen_petals",
-      key: "sen_petals",
+      dataIndex: "senPetals",
+      key: "senPetals",
       align: "center" as const,
       render: (petals: number) => (
         <Text strong style={{ color: "#ff85c0" }}>
@@ -127,8 +128,8 @@ const LeaderboardPage: React.FC = () => {
     },
     {
       title: "Nhân vật",
-      dataIndex: "characters_count",
-      key: "characters_count",
+      dataIndex: "charactersCount",
+      key: "charactersCount",
       align: "center" as const,
       render: (count: number) => (
         <Tag color="purple" style={{ borderRadius: 12 }}>
@@ -198,7 +199,7 @@ const LeaderboardPage: React.FC = () => {
               <Table
                 dataSource={restOfPlayers}
                 columns={columns}
-                rowKey="user_id"
+                rowKey="userId"
                 pagination={{
                   pageSize: 10,
                   showSizeChanger: false,

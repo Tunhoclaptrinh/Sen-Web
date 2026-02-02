@@ -29,12 +29,12 @@ const HeritageBrowsePage: React.FC = () => {
     interface FilterState {
         q: string;
         region?: string;
-        unesco_listed?: boolean;
+        unescoListed?: boolean;
     }
     const [filters, setFilters] = useState<FilterState>({
         q: '',
         region: undefined,
-        unesco_listed: undefined,
+        unescoListed: undefined,
     });
     // Random featured site
     const [randomFeatured, setRandomFeatured] = useState<HeritageSite | null>(null);
@@ -55,7 +55,7 @@ const HeritageBrowsePage: React.FC = () => {
             const response = await heritageService.getAll({
                 page: pagination.current,
                 limit: pagination.pageSize,
-                is_active: true,
+                isActive: true,
                 ...filters,
             });
             
@@ -148,9 +148,9 @@ const HeritageBrowsePage: React.FC = () => {
                             placeholder="UNESCO"
                             style={{ width: '100%' }}
                             allowClear
-                            value={filters.unesco_listed}
+                            value={filters.unescoListed}
                             onChange={(value) =>
-                                setFilters((prev) => ({ ...prev, unesco_listed: value }))
+                                setFilters((prev) => ({ ...prev, unescoListed: value }))
                             }
                         >
                             <Select.Option value={true}>Có UNESCO</Select.Option>
@@ -167,7 +167,7 @@ const HeritageBrowsePage: React.FC = () => {
                                 setFilters({
                                     q: '',
                                     region: undefined,
-                                    unesco_listed: undefined,
+                                    unescoListed: undefined,
                                 });
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}

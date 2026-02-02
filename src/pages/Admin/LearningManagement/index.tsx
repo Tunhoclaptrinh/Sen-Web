@@ -31,15 +31,15 @@ const LearningManagement: React.FC = () => {
         },
         {
             title: 'Thời gian (phút)',
-            dataIndex: 'estimated_duration',
-            key: 'estimated_duration',
+            dataIndex: 'estimatedDuration',
+            key: 'estimatedDuration',
             width: 150,
             render: (val: number) => `${val} phút`
         },
         {
             title: "Tác giả",
-            dataIndex: "author_name",
-            key: "author_name",
+            dataIndex: "authorName",
+            key: "authorName",
             width: 120,
             render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
         },

@@ -52,7 +52,7 @@ class HistoryService extends BaseService<HistoryArticle, HistoryArticleDTO, Hist
    */
   async getFeatured(limit: number = 5): Promise<BaseApiResponse<HistoryArticle[]>> {
     return this.getAll({
-      is_featured: true,
+      isFeatured: true,
       _limit: limit,
       _sort: 'views',
       _order: 'desc'

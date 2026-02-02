@@ -44,7 +44,7 @@ const CharacterManagement: React.FC = () => {
         },
         {
             title: 'Sưu tầm',
-            dataIndex: 'is_collectible',
+            dataIndex: 'isCollectible',
             key: 'is_collectible',
             width: 100,
             align: 'center' as const,
@@ -52,7 +52,7 @@ const CharacterManagement: React.FC = () => {
         },
         {
             title: 'Tính cách',
-            dataIndex: 'speaking_style',
+            dataIndex: 'speakingStyle',
             key: 'speaking_style',
             ellipsis: true,
         },
@@ -116,7 +116,7 @@ const CharacterManagement: React.FC = () => {
                             <Input placeholder="Ví dụ: Múa rối nước" />
                         </Form.Item>
                         <Form.Item
-                            name="is_collectible"
+                            name="isCollectible"
                             label="Có thể sưu tầm?"
                             valuePropName="checked"
                         >
@@ -146,7 +146,7 @@ const CharacterManagement: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item
-                        name="speaking_style"
+                        name="speakingStyle"
                         label="Phong cách nói chuyện"
                     >
                         <Input placeholder="Ví dụ: Hài hước, cổ điển, trang trọng" />

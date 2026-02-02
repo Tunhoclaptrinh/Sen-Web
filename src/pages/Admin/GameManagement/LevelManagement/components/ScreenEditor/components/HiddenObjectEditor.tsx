@@ -11,7 +11,7 @@ interface HiddenObjectEditorProps {
 
 const HiddenObjectEditor: React.FC<HiddenObjectEditorProps> = ({ form }) => {
     // 1. Watch background image to render the visual editor
-    const bgImage = Form.useWatch('background_image', form);
+    const bgImage = Form.useWatch('backgroundImage', form);
     const items = Form.useWatch('items', form);
 
     // 2. State for interaction
@@ -95,12 +95,12 @@ const HiddenObjectEditor: React.FC<HiddenObjectEditorProps> = ({ form }) => {
         <div>
              <Row gutter={16}>
                 <Col span={8}>
-                     <Form.Item name="required_items" label="Số lượng cần tìm">
+                     <Form.Item name="requiredItems" label="Số lượng cần tìm">
                         <InputNumber min={1} style={{width: '100%'}} />
                     </Form.Item>
                 </Col>
                 <Col span={16}>
-                     <Form.Item name="guide_text" label="Hướng dẫn">
+                     <Form.Item name="guideText" label="Hướng dẫn">
                         <Input placeholder="Ví dụ: Tìm 3 vật phẩm của Chú Tễu..." />
                     </Form.Item>
                 </Col>
@@ -260,7 +260,7 @@ const HiddenObjectEditor: React.FC<HiddenObjectEditorProps> = ({ form }) => {
                                     <Col span={24}>
                                         <Form.Item
                                             {...restField}
-                                            name={[name, 'fact_popup']}
+                                            name={[name, 'factPopup']}
                                             label="Thông tin (Fact Popup)"
                                         >
                                             <Input.TextArea rows={2} placeholder="Thông tin hiện ra khi tìm thấy..." />

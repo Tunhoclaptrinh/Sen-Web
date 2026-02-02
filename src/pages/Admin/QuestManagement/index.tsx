@@ -38,8 +38,8 @@ const QuestManagement: React.FC = () => {
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'is_active',
-            key: 'is_active',
+            dataIndex: 'isActive',
+            key: 'isActive',
             render: (val: boolean) => val ? <Tag color="green">KÍCH HOẠT</Tag> : <Tag>ẨN</Tag>
         },
     ];
@@ -70,7 +70,7 @@ const QuestManagement: React.FC = () => {
             >
                 <Form
                     layout="vertical"
-                    initialValues={model.currentRecord || { type: 'daily', is_active: true }}
+                    initialValues={model.currentRecord || { type: 'daily', isActive: true }}
                     onFinish={model.handleSubmit}
                 >
                     <Form.Item
@@ -93,7 +93,7 @@ const QuestManagement: React.FC = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="is_active"
+                            name="isActive"
                             label="Đang kích hoạt"
                             valuePropName="checked"
                         >

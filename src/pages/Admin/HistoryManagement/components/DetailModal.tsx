@@ -27,8 +27,8 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({
             if (open && record?.id) {
                 setLoading(true);
                 try {
-                    const heriIds = record.related_heritage_ids || [];
-                    const artIds = record.related_artifact_ids || [];
+                    const heriIds = record.relatedHeritageIds || [];
+                    const artIds = record.relatedArtifactIds || [];
 
                     const [relHeriRes, relArtRes] = await Promise.all([
                         heriIds.length > 0
@@ -74,7 +74,7 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({
                             <Space size="large">
                                 <Space><UserOutlined style={{color: '#8c8c8c'}} /> <strong>{record.author || "Khuyết danh"}</strong></Space>
                                 <Space><CalendarOutlined style={{color: '#8c8c8c'}} /> {dayjs(record.publishDate).format('DD/MM/YYYY')}</Space>
-                                <Tag color={record.is_active ? 'green' : 'red'}>{record.is_active ? 'HIỂN THỊ' : 'ĐÃ ẨN'}</Tag>
+                                <Tag color={record.isActive ? 'green' : 'red'}>{record.isActive ? 'HIỂN THỊ' : 'ĐÃ ẨN'}</Tag>
                             </Space>
                             <Space><EyeOutlined /> {record.views || 0} lượt xem</Space>
                         </div>
@@ -94,7 +94,7 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({
                 <Tabs.TabPane tab="Thông tin bổ sung" key="info">
                     <Descriptions bordered column={1}>
                         <Descriptions.Item label="Tiêu đề bài viết"><strong>{record.title}</strong></Descriptions.Item>
-                        <Descriptions.Item label="Mô tả ngắn">{record.short_description || record.shortDescription}</Descriptions.Item>
+                        <Descriptions.Item label="Mô tả ngắn">{record.shortDescription}</Descriptions.Item>
                         <Descriptions.Item label="Tác giả">{record.author || "Khuyết danh"}</Descriptions.Item>
                         <Descriptions.Item label="Ngày đăng">
                             {record.publishDate ? dayjs(record.publishDate).format('DD/MM/YYYY') : 'N/A'}

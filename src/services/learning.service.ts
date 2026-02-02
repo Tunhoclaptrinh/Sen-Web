@@ -7,30 +7,30 @@ export interface LearningPath {
     description: string;
     category: string;
     difficulty: 'beginner' | 'intermediate' | 'advanced';
-    duration_minutes: number;
+    durationMinutes: number;
     thumbnail?: string;
     modules: LearningModule[];
-    is_enrolled: boolean;
+    isEnrolled: boolean;
     progress?: number;
-    completed_modules?: number;
-    total_modules?: number;
+    completedModulesCount?: number;
+    totalModules?: number;
 }
 
 // Learning Module
 export interface LearningModule {
     id: number;
-    path_id: number;
+    pathId: number;
     title: string;
     description: string;
     order: number;
-    content_type: 'video' | 'article' | 'quiz' | 'interactive';
-    content_url?: string;
-    duration_minutes: number;
-    is_completed: boolean;
+    contentType: 'video' | 'article' | 'quiz' | 'interactive';
+    contentUrl?: string;
+    durationMinutes: number;
+    isCompleted: boolean;
     quiz?: Quiz;
     // UI props
     difficulty?: 'easy' | 'medium' | 'hard';
-    estimated_duration?: number;
+    estimatedDuration?: number;
     score?: number;
     thumbnail?: string;
 }
@@ -39,28 +39,28 @@ export interface LearningModule {
 export interface Quiz {
     id: number;
     questions: QuizQuestion[];
-    passing_score: number;
-    time_limit?: number;
+    passingScore: number;
+    timeLimit?: number;
 }
 
 export interface QuizQuestion {
     id: number;
     question: string;
     options: string[];
-    correct_answer: number;
+    correctAnswer: number;
     explanation?: string;
     point?: number;
 }
 
 // User Progress
 export interface LearningProgress {
-    path_id: number;
-    user_id: number;
-    enrolled_at: string;
-    completed_modules: number[];
-    current_module_id?: number;
-    progress_percentage: number;
-    completed_at?: string;
+    pathId: number;
+    userId: number;
+    enrolledAt: string;
+    completedModules: number[];
+    currentModuleId?: number;
+    progressPercentage: number;
+    completedAt?: string;
 }
 
 class LearningService extends BaseService {
@@ -75,8 +75,8 @@ class LearningService extends BaseService {
             completed: number;
             total: number;
             percentage: number;
-            next_module_id?: number;
-            total_time_spent?: number;
+            nextModuleId?: number;
+            totalTimeSpent?: number;
         } 
     }> {
         const response = await this.get<{ data: LearningModule[]; progress: any }>('/path');
@@ -117,7 +117,7 @@ class LearningService extends BaseService {
     async submitQuiz(pathId: number, moduleId: number, answers: Record<number, number>): Promise<{
         score: number;
         passed: boolean;
-        points_earned: number;
+        pointsEarned: number;
     }> {
         const response = await this.post(`/paths/${pathId}/modules/${moduleId}/quiz/submit`, { answers });
         return response as any;
@@ -130,13 +130,13 @@ class LearningService extends BaseService {
     }
 
     // Complete module
-    async completeModule(moduleId: number, data: { time_spent: number; score?: number; answers?: Record<number, number> }): Promise<{
+    async completeModule(moduleId: number, data: { timeSpent: number; score?: number; answers?: Record<number, number> }): Promise<{
         success: boolean;
         message: string;
         data: {
-            module_title: string;
+            moduleTitle: string;
             score: number;
-            points_earned: number;
+            pointsEarned: number;
             passed: boolean;
         }
     }> {

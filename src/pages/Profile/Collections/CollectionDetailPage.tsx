@@ -118,9 +118,9 @@ const CollectionDetailPage = () => {
                             <Title level={2} style={{ marginBottom: 8 }}>{collection.name}</Title>
                             {collection.description && <Paragraph type="secondary">{collection.description}</Paragraph>}
                             <div style={{ color: '#888' }}>
-                                <span>{collection.total_items} mục</span>
+                                <span>{collection.totalItems} mục</span>
                                 <span style={{ margin: '0 8px' }}>•</span>
-                                <span>{collection.is_public ? 'Công khai' : 'Riêng tư'}</span>
+                                <span>{collection.isPublic ? 'Công khai' : 'Riêng tư'}</span>
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>

@@ -7,7 +7,7 @@ class NotificationService extends BaseService {
     super('/notifications');
   }
 
-  async getNotifications(page: number = 1, limit: number = 20, filter: Record<string, any> = {}): Promise<{ items: Notification[]; total: number; unread_count: number }> {
+  async getNotifications(page: number = 1, limit: number = 20, filter: Record<string, any> = {}): Promise<{ items: Notification[]; total: number; unreadCount: number }> {
     const params = { page, limit, ...filter };
     const response = await this.get<any>('/', params);
 
@@ -15,7 +15,7 @@ class NotificationService extends BaseService {
     return {
       items: response.data || [],
       total: response.pagination?.total || response.data?.length || 0,
-      unread_count: response.unreadCount || 0
+      unreadCount: response.unreadCount || 0
     };
   }
 

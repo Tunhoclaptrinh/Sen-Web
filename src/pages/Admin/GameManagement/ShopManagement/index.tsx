@@ -37,8 +37,8 @@ const ShopManagement: React.FC = () => {
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'is_active',
-            key: 'is_active',
+            dataIndex: 'isActive',
+            key: 'isActive',
             render: (val: boolean) => val ? <Tag color="green">ĐANG BÁN</Tag> : <Tag>HẾT HÀNG</Tag>
         },
     ];
@@ -69,7 +69,7 @@ const ShopManagement: React.FC = () => {
             >
                 <Form
                     layout="vertical"
-                    initialValues={model.currentRecord || { currency: 'coins', type: 'avatar', is_active: true }}
+                    initialValues={model.currentRecord || { currency: 'coins', type: 'avatar', isActive: true }}
                     onFinish={model.handleSubmit}
                 >
                     <Form.Item
@@ -93,7 +93,7 @@ const ShopManagement: React.FC = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="is_active"
+                            name="isActive"
                             label="Đang mở bán"
                             valuePropName="checked"
                         >

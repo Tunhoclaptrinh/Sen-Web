@@ -114,7 +114,7 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
 
           <Row gutter={16}>
             <Col span={isEditMode ? 12 : 24}>
-              <Form.Item name="required_petals" label="Số cánh hoa yêu cầu">
+              <Form.Item name="requiredPetals" label="Số cánh hoa yêu cầu">
                 <InputNumber style={{ width: "100%" }} min={0} />
               </Form.Item>
             </Col>
@@ -150,7 +150,7 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
         <Col span={9}>
             <div style={{ backgroundColor: '#f9f9f9', padding: '16px', borderRadius: '8px', height: '100%' }}>
                 <Form.Item
-                    name="is_active"
+                    name="isActive"
                     label="Trạng thái"
                     valuePropName="checked"
                     initialValue={true}

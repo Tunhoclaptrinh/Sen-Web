@@ -33,13 +33,13 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
         setLoading(true);
         try {
             // If activeTab is 'unread', filter by is_read=false
-            const filter = activeTab === 'unread' ? { is_read: false } : {};
+            const filter = activeTab === 'unread' ? { isRead: false } : {};
             const data = await notificationService.getNotifications(1, 10, filter);
             setNotifications(data.items);
             // Always update global unread count from the response (it usually comes with the envelope)
             // Ideally backend returns total unread count regardless of filter, 
             // but relying on the "unread_count" property from service which maps to backend "unreadCount"
-            setUnreadCount(data.unread_count);
+            setUnreadCount(data.unreadCount);
         } catch (error) {
             console.error('Failed to fetch notifications', error);
         } finally {
@@ -58,7 +58,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
         const pollUnread = async () => {
             try {
                 const data = await notificationService.getNotifications(1, 1);
-                setUnreadCount(data.unread_count);
+                setUnreadCount(data.unreadCount);
             } catch (e) { }
         };
 
@@ -73,10 +73,10 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
 
     const handleMarkAsRead = async (item: Notification, e?: React.MouseEvent) => {
         e?.stopPropagation();
-        if (!item.is_read) {
+        if (!item.isRead) {
             await notificationService.markAsRead(item.id);
             // Optimistic update
-            setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, is_read: true } : n));
+            setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
             setUnreadCount(prev => Math.max(0, prev - 1));
             // If in unread tab, maybe remove it? Or just keep it as read until refresh.
             // keeping it is better UX for "oops didn't mean to click"
@@ -88,7 +88,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
     const handleMarkAllRead = async () => {
         setLoading(true);
         await notificationService.markAllAsRead();
-        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
         setUnreadCount(0);
         setLoading(false);
         // If unread tab, list becomes empty?
@@ -198,7 +198,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
                                 style={{
                                     padding: '16px 20px',
                                     cursor: 'pointer',
-                                    background: !item.is_read ? '#f0f9ff' : '#fff',
+                                    background: !item.isRead ? '#f0f9ff' : '#fff',
                                     borderBottom: '1px solid #f9f9f9',
                                     transition: 'all 0.2s',
                                     position: 'relative'
@@ -206,7 +206,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
                             >
                                 <div style={{ display: 'flex', width: '100%', gap: 16 }}>
                                     {/* Unread Indicator Dot */}
-                                    {!item.is_read && (
+                                    {!item.isRead && (
                                         <div style={{
                                             position: 'absolute',
                                             left: 6,
@@ -235,9 +235,9 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
 
                                     <div style={{ flex: 1, overflow: 'hidden' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                            <Text strong={!item.is_read} style={{ fontSize: 14, color: '#262626' }}>{item.title}</Text>
+                                            <Text strong={!item.isRead} style={{ fontSize: 14, color: '#262626' }}>{item.title}</Text>
                                             <Text type="secondary" style={{ fontSize: 11, whiteSpace: 'nowrap', marginLeft: 8 }}>
-                                                {formatRelativeTime(item.created_at)}
+                                                {formatRelativeTime(item.createdAt)}
                                             </Text>
                                         </div>
                                         <Paragraph

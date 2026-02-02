@@ -48,7 +48,7 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
     // Filters
     filters,
     updateFilters
-  } = useLevelModel(chapterId ? { chapter_id: chapterId } : undefined);
+  } = useLevelModel(chapterId ? { chapterId: chapterId } : undefined);
 
   // Screen Editor State
   const [editorVisible, setEditorVisible] = useState(false);
@@ -89,7 +89,7 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
   };
 
   const handleRunLevel = async (level: any) => {
-      setSimulatorBgm(level.background_music);
+      setSimulatorBgm(level.backgroundMusic);
       
       try {
           // ALWAYS Fetch fresh screens for the level
@@ -157,8 +157,8 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
     },
     {
       title: "Tác giả",
-      dataIndex: "author_name",
-      key: "author_name",
+      dataIndex: "authorName",
+      key: "authorName",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
@@ -222,11 +222,11 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
                     open={editorVisible}
                     levelId={currentLevel.id}
                     levelMetadata={{
-                        chapter_id: currentLevel.chapter_id,
-                        chapter_name: chapterName,
-                        level_name: currentLevel.name,
+                        chapterId: currentLevel.chapterId,
+                        chapterName: chapterName,
+                        levelName: currentLevel.name,
                         order: currentLevel.order,
-                        background_music: currentLevel.background_music
+                        backgroundMusic: currentLevel.backgroundMusic
                     }}
                     screensCount={screensCount}
                     screen={currentScreen}
@@ -260,8 +260,8 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
                         placeholder="Lọc theo Chương"
                         style={{ width: 250 }}
                         allowClear
-                        value={filters.chapter_id}
-                        onChange={(val) => updateFilters({ chapter_id: val })}
+                        value={filters.chapterId}
+                        onChange={(val) => updateFilters({ chapterId: val })}
                         showSearch
                         optionFilterProp="label"
                         options={chapters.map((c: any) => ({ label: c.name, value: c.id }))}
@@ -309,7 +309,7 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
             </Space>
         )}
         extra={
-            filters.chapter_id && (
+            filters.chapterId && (
                 <Button 
                     variant="outline"
                     buttonSize="small"

@@ -82,9 +82,9 @@ const GamePlayPage: React.FC = () => {
 
   // Handle BGM Playback
   useEffect(() => {
-      if (!levelInfo?.background_music) return;
+      if (!levelInfo?.backgroundMusic) return;
 
-      const bgmUrl = getImageUrl(levelInfo.background_music);
+      const bgmUrl = getImageUrl(levelInfo.backgroundMusic);
       
       if (!bgmAudioRef.current) {
           bgmAudioRef.current = new Audio(bgmUrl);
@@ -114,7 +114,7 @@ const GamePlayPage: React.FC = () => {
                bgmAudioRef.current.pause();
           }
       }
-  }, [levelInfo?.background_music, isMuted, bgmVolume, loading, gameCompleted, currentScreen?.type]);
+  }, [levelInfo?.backgroundMusic, isMuted, bgmVolume, loading, gameCompleted, currentScreen?.type]);
 
   const triggerScoreAnimation = (points: number) => {
       if (points > 0) {
@@ -128,10 +128,10 @@ const GamePlayPage: React.FC = () => {
       setLoading(true);
       setGameCompleted(false);
       const data = await gameService.startLevel(id);
-      setSessionId(data.session_id);
-      setCurrentScreen(data.current_screen);
+      setSessionId(data.sessionId);
+      setCurrentScreen(data.currentScreen);
       setLevelInfo(data.level);
-      setProgress({ completed: 0, total: data.level.total_screens || 10 });
+      setProgress({ completed: 0, total: data.level.totalScreens || 10 });
       setStartTime(Date.now());
     } catch (error) {
       message.error("Không thể bắt đầu màn chơi. Vui lòng thử lại.");
@@ -148,20 +148,20 @@ const GamePlayPage: React.FC = () => {
       setLoading(true);
       const response = await gameService.navigateToNextScreen(sessionId);
 
-      if (response.level_finished) {
+      if (response.levelFinished) {
         await handleFinishLevel();
         return;
       }
 
-      setCurrentScreen(response.current_screen);
+      setCurrentScreen(response.currentScreen);
       setProgress({
-        completed: response.progress.completed_screens,
-        total: response.progress.total_screens,
+        completed: response.progress.completedScreens,
+        total: response.progress.totalScreens,
       });
       
       // ⚡ Animation
-      if (response.points_earned && response.points_earned > 0) {
-          const points = response.points_earned;
+      if (response.pointsEarned && response.pointsEarned > 0) {
+          const points = response.pointsEarned;
           setScore(prev => prev + points);
           triggerScoreAnimation(points);
       }
@@ -177,8 +177,8 @@ const GamePlayPage: React.FC = () => {
   const handleAnswerSubmit = async (answerId: string) => {
     if (!sessionId) throw new Error("No session");
     const res = await gameService.submitAnswer(sessionId, answerId);
-    if (res.is_correct) {
-      setScore((prev) => prev + res.points_earned);
+    if (res.isCorrect) {
+      setScore((prev) => prev + res.pointsEarned);
     }
     return res;
   };
@@ -187,7 +187,7 @@ const GamePlayPage: React.FC = () => {
     if (!sessionId) throw new Error("No session");
     const res = await gameService.submitTimeline(sessionId, order);
     if (res.isCorrect) {
-      setScore((prev) => prev + (res.points_earned || 0));
+      setScore((prev) => prev + (res.pointsEarned || 0));
     }
     return res;
   };
@@ -195,7 +195,7 @@ const GamePlayPage: React.FC = () => {
   const handleCollectItem = async (itemId: string) => {
     if (!levelId) throw new Error("No level ID");
     const res = await gameService.collectClue(parseInt(levelId), itemId);
-    setScore((prev) => prev + res.points_earned);
+    setScore((prev) => prev + res.pointsEarned);
     return res;
   };
 
@@ -317,7 +317,7 @@ const GamePlayPage: React.FC = () => {
                           <div className="breakdown-divider"></div>
                           <div className="breakdown-row total">
                               <span>Cần đạt:</span>
-                              <span>{completionData.required_score}</span>
+                               <span>{completionData.requiredScore}</span>
                           </div>
                     </div>
                   ) : (
@@ -326,12 +326,12 @@ const GamePlayPage: React.FC = () => {
                            <>
                             <div className="breakdown-row">
                                 <span>Điểm màn chơi:</span>
-                                <span>{completionData.breakdown.base_score}</span>
+                                <span>{completionData.breakdown.baseScore}</span>
                             </div>
-                            {completionData.breakdown.time_bonus > 0 && (
+                            {completionData.breakdown.timeBonus > 0 && (
                                 <div className="breakdown-row bonus">
                                     <span>Thưởng tốc độ:</span>
-                                    <span>+{completionData.breakdown.time_bonus}</span>
+                                    <span>+{completionData.breakdown.timeBonus}</span>
                                 </div>
                             )}
                             <div className="breakdown-divider"></div>
@@ -396,14 +396,14 @@ const GamePlayPage: React.FC = () => {
                >
                  Chơi Lại
                </Button>
-               {(completionData.new_totals || completionData.passed || completionData.is_completed) && (
+               {(completionData.newTotals || completionData.passed || completionData.isCompleted) && (
                    <Button
                      type="primary"
                      key="next"
                      size="large"
                      className="next-level-btn"
                      onClick={() => {
-                         const chapterId = levelInfo?.chapter_id || 1;
+                         const chapterId = levelInfo?.chapterId || 1;
                          navigate(`/game/chapters/${chapterId}/levels`);
                      }}
                    >
@@ -455,9 +455,9 @@ const GamePlayPage: React.FC = () => {
 
           <div className="score-display">
             <span className="current-score">Điểm: {score}</span>
-            {currentScreen?.potential_score && !currentScreen.is_completed && (
+            {currentScreen?.potentialScore && !currentScreen.isCompleted && (
                 <span className="potential-score" title="Điểm có thể đạt được">
-                    (+{currentScreen.potential_score})
+                    (+{currentScreen.potentialScore})
                 </span>
             )}
             {pointsGained && (
@@ -479,7 +479,7 @@ const GamePlayPage: React.FC = () => {
                   pointerEvents: 'auto'
               }}
               onClick={() => {
-                  dispatch(setActiveContext({ level_id: levelInfo?.id }));
+                  dispatch(setActiveContext({ levelId: levelInfo?.id }));
                   dispatch(setOverlayOpen({ open: true, mode: 'absolute' }));
               }}
           />

@@ -92,8 +92,8 @@ const LearningDetail: React.FC = () => {
 
     // Timer Logic
     useEffect(() => {
-        if (currentStep === 'quiz' && module?.estimated_duration) {
-            setTimeLeft((module.estimated_duration) * 60);
+        if (currentStep === 'quiz' && module?.estimatedDuration) {
+            setTimeLeft((module.estimatedDuration) * 60);
         }
     }, [currentStep, module]);
 
@@ -170,7 +170,7 @@ const LearningDetail: React.FC = () => {
                 const questionPoint = q.point || 10; // Default to 10 if not set
                 totalPoints += questionPoint;
                 
-                if (answers[q.id] === q.correct_answer) {
+                if (answers[q.id] === q.correctAnswer) {
                     earnedPoints += questionPoint;
                 }
             });
@@ -181,7 +181,7 @@ const LearningDetail: React.FC = () => {
         try {
             setSubmitting(true);
             const response = await learningService.completeModule(module.id, {
-                time_spent: ((module.estimated_duration || 30) * 60) - timeLeft, // Calculate actual time spent
+                timeSpent: ((module.estimatedDuration || 30) * 60) - timeLeft, // Calculate actual time spent
                 score: score,
                 answers: answers // Send answers for backend validation
             });
@@ -190,8 +190,8 @@ const LearningDetail: React.FC = () => {
                 if (response.data.passed) {
                     // Check for level up in response data (updated backend)
                     const responseData = response.data as any; // Cast safely for extended properties 
-                    const isLevelUp = responseData.is_level_up;
-                    const newLevel = responseData.new_level;
+                    const isLevelUp = responseData.isLevelUp;
+                    const newLevel = responseData.newLevel;
 
                     Modal.success({
                         title: null, // Custom title below
@@ -239,7 +239,7 @@ const LearningDetail: React.FC = () => {
 
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: 24 }}>
                                     <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#faad14', fontSize: 20, fontWeight: 'bold' }}>+{response.data.points_earned}</div>
+                                        <div style={{ color: '#faad14', fontSize: 20, fontWeight: 'bold' }}>+{response.data.pointsEarned}</div>
                                         <Text type="secondary" style={{ fontSize: 12 }}>EXP</Text>
                                     </div>
                                 </div>
@@ -263,7 +263,7 @@ const LearningDetail: React.FC = () => {
                         content: (
                             <div style={{ textAlign: 'center', marginTop: 16 }}>
                                 <Title level={2} style={{ color: '#ff4d4f', margin: 0 }}>{response.data.score}</Title>
-                                <Text type="secondary">Điểm cần đạt: {module.quiz?.passing_score || 70}</Text>
+                                <Text type="secondary">Điểm cần đạt: {module.quiz?.passingScore || 70}</Text>
                                 <p style={{ marginTop: 16 }}>Đừng nản chí! Hãy ôn lại kiến thức và thử lại nhé.</p>
                             </div>
                         ),
@@ -409,7 +409,7 @@ const LearningDetail: React.FC = () => {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                                             <Tag color="#A31D1D" style={{  padding: '4px 16px', borderRadius: 20, fontWeight: 600, border: 'none', color: 'white' }}>
-                                                {module.content_type?.toUpperCase()}
+                                                {module.contentType?.toUpperCase()}
                                             </Tag>
                                             <Tag icon={<FireFilled />} color="#faad14" style={{ borderRadius: 20, border: 'none', color: '#fff', fontWeight: 600, padding: '4px 12px' }}>
                                                 {module.difficulty?.toUpperCase() || 'EASY'}
@@ -426,7 +426,7 @@ const LearningDetail: React.FC = () => {
 
                                         {/* Content Renderer */}
                                         {/* Content Renderer */}
-                                        {module.content_type === 'video' ? (
+                                        {module.contentType === 'video' ? (
                                             <div style={{ 
                                                 position: 'relative', 
                                                 paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
@@ -438,11 +438,11 @@ const LearningDetail: React.FC = () => {
                                                 background: '#000'
                                             }} className="video-wrapper">
                                                 {(() => {
-                                                    const embedSrc = getEmbedUrl(module.content_url);
-                                                    if (module.content_url?.trim().startsWith('<')) {
+                                                    const embedSrc = getEmbedUrl(module.contentUrl);
+                                                    if (module.contentUrl?.trim().startsWith('<')) {
                                                         return (
                                                              <div 
-                                                                dangerouslySetInnerHTML={{ __html: module.content_url }} 
+                                                                dangerouslySetInnerHTML={{ __html: module.contentUrl }} 
                                                                 style={{ width: '100%', height: '100%' }}
                                                             />
                                                         );
@@ -458,7 +458,7 @@ const LearningDetail: React.FC = () => {
                                                             }}>
                                                                 <CloseCircleFilled style={{ fontSize: 32, marginBottom: 8 }} />
                                                                 <Text style={{ color: 'rgba(255,255,255,0.7)' }}>Video không khả dụng hoặc Link lỗi</Text>
-                                                                <Text type="secondary" style={{ fontSize: 12, marginTop: 4 }}>{module.content_url}</Text>
+                                                                <Text type="secondary" style={{ fontSize: 12, marginTop: 4 }}>{module.contentUrl}</Text>
                                                             </div>
                                                         );
                                                     }
@@ -467,7 +467,6 @@ const LearningDetail: React.FC = () => {
                                                         <iframe 
                                                             src={embedSrc}
                                                             title={module.title}
-                                                            frameBorder="0" 
                                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                                             allowFullScreen
                                                             referrerPolicy="origin"
@@ -478,7 +477,7 @@ const LearningDetail: React.FC = () => {
                                         ) : (
                                             /* Render other types (article, quiz text, etc.) as HTML content */
                                             <div className="article-content" style={{ marginTop: 24 }}>
-                                                <div dangerouslySetInnerHTML={{ __html: module.content_url || '' }} />
+                                                <div dangerouslySetInnerHTML={{ __html: module.contentUrl || '' }} />
                                             </div>
                                         )}
 
@@ -730,7 +729,7 @@ const LearningDetail: React.FC = () => {
                                                 </Tooltip>
 
                                                 {/* Passing Score Info */}
-                                                <Tooltip title={`Cần đạt: ${module.quiz.passing_score || 70}/100 điểm`}>
+                                                <Tooltip title={`Cần đạt: ${module.quiz.passingScore || 70}/100 điểm`}>
                                                     <div style={{ 
                                                         width: 40, height: 40, 
                                                         borderRadius: '50%', 

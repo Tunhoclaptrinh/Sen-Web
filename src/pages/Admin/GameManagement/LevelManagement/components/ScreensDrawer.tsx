@@ -14,6 +14,7 @@ const ScreensDrawer: React.FC<ScreensDrawerProps> = ({ open, onClose, level }) =
   const [editingScreen, setEditingScreen] = useState<Screen | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isListOpen, setIsListOpen] = useState(true);
+  const [screensCount, setScreensCount] = useState(0);
 
   const handleEdit = (screen: Screen) => {
     setEditingScreen(screen);
@@ -57,6 +58,7 @@ const ScreensDrawer: React.FC<ScreensDrawerProps> = ({ open, onClose, level }) =
               levelId={level.id}
               onEdit={handleEdit}
               onAdd={handleAdd}
+              onCountChange={setScreensCount}
           />
         )}
       </ViewModal>
@@ -66,6 +68,13 @@ const ScreensDrawer: React.FC<ScreensDrawerProps> = ({ open, onClose, level }) =
         <ScreenEditor
             open={isEditorOpen}
             levelId={level.id}
+            levelMetadata={{
+                chapterId: level.chapterId,
+                levelName: level.name,
+                order: level.order,
+                backgroundMusic: level.backgroundMusic
+            }}
+            screensCount={screensCount}
             screen={editingScreen}
             onSuccess={() => {
                 closeEditor();

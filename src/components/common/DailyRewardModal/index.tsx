@@ -21,7 +21,7 @@ const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ visible, onClose })
 
     // Calculate State
     const today = dayjs().format('YYYY-MM-DD');
-    const lastClaim = progress?.last_reward_claim ? dayjs(progress.last_reward_claim).format('YYYY-MM-DD') : null;
+    const lastClaim = progress?.lastRewardClaim ? dayjs(progress.lastRewardClaim).format('YYYY-MM-DD') : null;
     const isClaimedToday = lastClaim === today;
     
     // Logic to determine "Current Display Day" (1-7)
@@ -30,13 +30,13 @@ const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ visible, onClose })
     //    If last claim was yesterday: Next day is target.
     //    If last claim was older: Day 1 is target.
     
-    let currentStreak = progress?.streak_days || 0;
+    let currentStreak = progress?.streakDays || 0;
     let nextStreak = currentStreak + 1;
     let isReset = false;
 
     if (!isClaimedToday) {
-        if (progress?.last_reward_claim) {
-             const diff = dayjs().diff(dayjs(progress.last_reward_claim), 'day');
+        if (progress?.lastRewardClaim) {
+             const diff = dayjs().diff(dayjs(progress.lastRewardClaim), 'day');
              if (diff > 1) {
                  nextStreak = 1;
                  isReset = true;
@@ -184,7 +184,7 @@ const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ visible, onClose })
                 <div style={{ marginBottom: 16 }}>
                      <Title level={2} style={{ margin: 0, color: '#faad14', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
                         <FireOutlined style={{ color: '#ff4d4f' }} /> 
-                        {isReset && !isClaimedToday ? '1 Ngày' : `${progress?.streak_days || 0} Ngày`}
+                        {isReset && !isClaimedToday ? '1 Ngày' : `${progress?.streakDays || 0} Ngày`}
                      </Title>
                      <Text type="secondary">Chuỗi nỗ lực liên tiếp</Text>
                      

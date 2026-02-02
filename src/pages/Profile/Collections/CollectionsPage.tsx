@@ -117,9 +117,9 @@ const CollectionsPage = () => {
                                         data={{
                                             id: col.id,
                                             name: col.name,
-                                            short_description: col.description,
-                                            created_at: col.createdAt,
-                                            total_items: col.total_items,
+                                            shortDescription: col.description,
+                                            createdAt: col.createdAt,
+                                            totalItems: col.totalItems,
                                             thumbnail: "/images/collection-placeholder.jpg"
                                         }}
                                         actions={
