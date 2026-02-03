@@ -15,10 +15,10 @@ export const HERITAGE_TYPES = {
   MONUMENT: "monument",
   TEMPLE: "temple",
   MUSEUM: "museum",
-  ARCHAEOLOGICAL_SITE: "archaeological_site",
-  HISTORIC_BUILDING: "historic_building",
-  NATURAL_HERITAGE: "natural_heritage",
-  INTANGIBLE_HERITAGE: "intangible_heritage",
+  ARCHAEOLOGICAL_SITE: "archaeologicalSite",
+  HISTORIC_BUILDING: "historicBuilding",
+  NATURAL_HERITAGE: "naturalHeritage",
+  INTANGIBLE_HERITAGE: "intangibleHeritage",
 } as const;
 
 export const HERITAGE_TYPE_LABELS = {

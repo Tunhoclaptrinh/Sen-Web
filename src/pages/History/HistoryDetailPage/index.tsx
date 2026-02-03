@@ -19,6 +19,7 @@ import historyService from "@/services/history.service"; // Adapt service
 import favoriteService from "@/services/favorite.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import { useViewTracker } from "@/hooks/useViewTracker";
+import { HistoryArticle, HeritageSite, Artifact, TimelineEvent } from "@/types";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -26,7 +27,7 @@ const { Title } = Typography;
 const HistoryDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [article, setArticle] = useState<any>(null);
+    const [article, setArticle] = useState<HistoryArticle | null>(null);
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false); // Placeholder for now
 
@@ -34,13 +35,13 @@ const HistoryDetailPage = () => {
     useViewTracker('history', id);
 
     // Data states
-    const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
-    const [relatedArtifacts, setRelatedArtifacts] = useState<any[]>([]);
+    const [relatedHeritage, setRelatedHeritage] = useState<HeritageSite[]>([]);
+    const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
     const [relatedLevels, setRelatedLevels] = useState<any[]>([]);
     const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
     
     // Fallback for general related history
-    const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
+    const [relatedHistory, setRelatedHistory] = useState<HistoryArticle[]>([]);
 
 
     useEffect(() => {
@@ -57,7 +58,6 @@ const HistoryDetailPage = () => {
             const res = await historyService.getById(currentId);
             if (res && res.data) {
                  const data = res.data;
-                 console.log('[HistoryDetail] API Data:', data);
                  setArticle(data);
                  setRelatedHeritage(data.relatedHeritage || []);
                  setRelatedArtifacts(data.relatedArtifacts || []);
@@ -66,7 +66,6 @@ const HistoryDetailPage = () => {
 
                  // Also fetch general related history items for the bottom section
                  const resRelated = await historyService.getRelated(currentId);
-                 console.log('[HistoryDetail] Related History Data:', resRelated);
                  if (resRelated.success) setRelatedHistory(resRelated.data || []);
 
             } else {
@@ -108,20 +107,20 @@ const HistoryDetailPage = () => {
     if (!article) return <Empty description="Không tìm thấy bài viết" />;
     
     const mainImage = article.image || 'https://images.unsplash.com/photo-1555921015-5532091f6026?w=1200';
-    const publishDate = article.publishDate || article.createdAt || article.created_at;
-    const authorName = article.author_name || article.author || 'Hệ thống';
+    const publishDate = article.publishDate || article.createdAt;
+    const authorName = article.authorName || article.author || 'Hệ thống';
 
     return (
         <div className="heritage-blog-page history-detail-page">
             {/* 0. Nav Back (Added on top of Hero) */}
-            <div style={{position: 'absolute', top: 20, left: 24, zIndex: 20}}>
+            <div className="nav-back-wrapper">
                 <Button 
                     type="default" 
                     shape="circle" 
                     icon={<ArrowLeftOutlined />} 
                     size="large"
                     onClick={() => navigate('/history')}
-                    style={{background: 'rgba(255,255,255,0.2)', color: '#fff', border: 'none'}}
+                    className="nav-back-btn"
                 />
             </div>
 
@@ -149,7 +148,7 @@ const HistoryDetailPage = () => {
                     items={[
                         {
                             key: 'content',
-                            label: 'Nội Dung',
+                            label: 'Nội dung',
                             children: (
                                 <div className="article-main-wrapper">
                                     <div className="article-meta-header">
@@ -160,15 +159,21 @@ const HistoryDetailPage = () => {
 
                                     {/* Abstract/Short Description */}
                                     {article.shortDescription && (
-                                        <blockquote style={{fontSize: 18, fontStyle: 'italic', borderLeft: '4px solid #d4380d', margin: '24px 0', padding: '16px 24px', background: '#fff5f5' }}>
+                                        <blockquote>
                                             {article.shortDescription}
                                         </blockquote>
                                     )}
-
                                     <div 
                                         className="article-body-content"
                                         dangerouslySetInnerHTML={{ __html: article.content || '' }}
                                     />
+
+                                    {article.references && (
+                                        <div className="references-section">
+                                            <h3>Nguồn tham khảo</h3>
+                                            <div className="references-content" dangerouslySetInnerHTML={{ __html: article.references }} />
+                                        </div>
+                                    )}
 
                                     <div className="article-footer-info">
                                         <Divider />
@@ -189,14 +194,14 @@ const HistoryDetailPage = () => {
                         },
                         {
                             key: 'timeline',
-                            label: 'Dòng Thời Gian',
+                            label: 'Dòng thời gian',
                             children: (
                                 <div className="article-main-wrapper">
                                     <Title level={3} style={{fontFamily: 'Aleo, serif', marginBottom: 32, textAlign: 'center'}}>Các Mốc Sự Kiện Quan Trọng</Title>
-                                    {article.timeline_events?.length > 0 ? (
+                                    {article.timelineEvents && article.timelineEvents.length > 0 ? (
                                         <div style={{maxWidth: 800, margin: '0 auto'}}>
                                             <Timeline mode="alternate">
-                                                {article.timeline_events.map((event: any, index: number) => (
+                                                {article.timelineEvents.map((event: TimelineEvent, index: number) => (
                                                     <Timeline.Item key={index} label={event.year} color={index % 2 === 0 ? "red" : "blue"}>
                                                         <strong style={{fontSize: 18, color: '#d4380d'}}>{event.title}</strong>
                                                         <p style={{marginTop: 8, color: '#666'}}>{event.description}</p>
@@ -212,7 +217,7 @@ const HistoryDetailPage = () => {
                         },
                         {
                             key: 'discovery',
-                            label: 'Khám Phá & Trải Nghiệm',
+                            label: 'Khám phá & Trải nghiệm',
                             children: (
                                 <div className="article-main-wrapper">
                                     {/* 1. Related Games */}
@@ -224,12 +229,12 @@ const HistoryDetailPage = () => {
                                                 {relatedLevels.map((level: any) => (
                                                     <Col xs={24} md={12} key={level.id}>
                                                         <div className="game-card-mini" style={{border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'flex', gap: 16, alignItems: 'center'}}>
-                                                            <div className="game-thumb" style={{width: 80, height: 80, borderRadius: 8, background: '#eee', backgroundImage: `url(${level.background_image})`, backgroundSize: 'cover'}} />
+                                                            <div className="game-thumb" style={{width: 80, height: 80, borderRadius: 8, background: '#eee', backgroundImage: `url(${level.backgroundImage})`, backgroundSize: 'cover'}} />
                                                             <div className="game-info" style={{flex: 1}}>
                                                                 <h4 style={{margin: 0, fontSize: 16}}>{level.name}</h4>
                                                                 <div style={{color: '#888', fontSize: 13}}>{level.description}</div>
                                                             </div>
-                                                            <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi Ngay</Button>
+                                                            <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi ngay</Button>
                                                         </div>
                                                     </Col>
                                                 ))}

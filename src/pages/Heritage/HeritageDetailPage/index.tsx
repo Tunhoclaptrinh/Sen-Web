@@ -44,7 +44,7 @@ import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
 import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
-import type { HeritageSite, TimelineEvent } from "@/types";
+import type { HeritageSite, TimelineEvent, Artifact, HistoryArticle } from "@/types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import { useViewTracker } from "@/hooks/useViewTracker";
@@ -64,9 +64,9 @@ const HeritageDetailPage = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth); // Get auth state
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
-  const [siteArtifacts, setSiteArtifacts] = useState<any[]>([]);
+  const [siteArtifacts, setSiteArtifacts] = useState<Artifact[]>([]);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
-  const [relatedHistoryArr, setRelatedHistoryArr] = useState<any[]>([]);
+  const [relatedHistoryArr, setRelatedHistoryArr] = useState<HistoryArticle[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
 
@@ -116,7 +116,7 @@ const HeritageDetailPage = () => {
       const resBackArtifacts = await heritageService.getArtifacts(currentId);
       const relArtIds = currentItem.relatedArtifactIds || [];
 
-      let allArtifacts = resBackArtifacts.data || [];
+      const allArtifacts = resBackArtifacts.data || [];
       if (relArtIds.length > 0) {
         const resRelArt = await artifactService.getAll({
           ids: relArtIds.join(","),
@@ -275,8 +275,8 @@ const HeritageDetailPage = () => {
                   ...(site.images || []),
                 ]),
               )
-                .filter(Boolean)
-                .map((img: any, idx) => {
+                .filter((item): item is string => !!item)
+                .map((img, idx) => {
                   const src = getImageUrl(img);
                   return <Image key={idx} src={src} />;
                 })}
@@ -293,7 +293,7 @@ const HeritageDetailPage = () => {
           items={[
             {
               key: "description",
-              label: "Mô Tả",
+              label: "Mô tả",
               children: (
                 <div className="article-main-wrapper">
                   {/* Article Header Meta */}
@@ -356,12 +356,17 @@ const HeritageDetailPage = () => {
 
                   {/* Main Title */}
                   <h2 className="article-main-title">{site.name}</h2>
-
-                  {/* Content Body (Rich Text) */}
                   <div
                     className="article-body-content"
                     dangerouslySetInnerHTML={{ __html: site.description || "" }}
                   />
+
+                  {site.references && (
+                    <div className="references-section">
+                        <h3>Nguồn tham khảo</h3>
+                        <div className="references-content" dangerouslySetInnerHTML={{ __html: site.references }} />
+                    </div>
+                  )}
 
                   {/* Footer Stats/Divider only - Actions removed */}
                    <div className="article-footer-info">
@@ -372,7 +377,7 @@ const HeritageDetailPage = () => {
             },
             {
               key: "info",
-              label: "Thông Tin",
+              label: "Thông tin",
               children: (
                 <div className="article-main-wrapper">
                   <div
@@ -510,14 +515,14 @@ const HeritageDetailPage = () => {
                             className="direction-btn"
                             icon={<EnvironmentOutlined />}
                           >
-                            Chỉ Đường
+                            Chỉ đường
                           </Button>
                           <Button
                             type="primary"
                             size="large"
                             className="booking-btn-large"
                           >
-                            Đặt Vé Ngay
+                            Đặt vé ngay
                           </Button>
                         </div>
                       </div>
@@ -578,7 +583,7 @@ const HeritageDetailPage = () => {
                             shape="round"
                             icon={<RocketOutlined />}
                           >
-                            Chơi Ngay
+                            Chơi ngay
                           </Button>
                         </div>
                       </Col>
@@ -618,7 +623,7 @@ const HeritageDetailPage = () => {
                             shape="round"
                             icon={<RocketOutlined />}
                           >
-                            Chơi Ngay
+                            Chơi ngay
                           </Button>
                         </div>
                       </Col>
@@ -639,7 +644,7 @@ const HeritageDetailPage = () => {
                         Những bảo vật quý giá gắn liền với di tích này.
                       </p>
                       <Row gutter={[16, 16]}>
-                        {siteArtifacts.map((artifact: any) => (
+                        {siteArtifacts.map((artifact: Artifact) => (
                           <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
                             <ArticleCard data={artifact} type="artifact" />
                           </Col>
@@ -662,7 +667,7 @@ const HeritageDetailPage = () => {
                         Các sự kiện và câu chuyện lịch sử liên quan.
                       </p>
                       <Row gutter={[16, 16]}>
-                        {relatedHistory.map((item: any) => (
+                        {relatedHistory.map((item: HistoryArticle) => (
                           <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
                             <ArticleCard data={item} type="history" />
                           </Col>
@@ -842,7 +847,7 @@ const HeritageDetailPage = () => {
             },
             {
               key: "timeline",
-              label: "Dòng Thời Gian",
+              label: "Dòng thời gian",
               children: (
                 <div className="article-main-wrapper">
                   <Title

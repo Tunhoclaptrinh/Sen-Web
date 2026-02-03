@@ -221,7 +221,7 @@ const HeritageListPage = () => {
 
       {/* View Detail Modal */}
       <Modal
-        title="Chi Tiết Di Sản"
+        title="Chi tiết Di sản"
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
         footer={null}

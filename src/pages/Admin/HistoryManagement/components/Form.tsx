@@ -40,16 +40,16 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
             try {
                 // Fetch labels for related IDs
                 const [relHeritageRes, relArtifactRes] = await Promise.all([
-                    initialValues.related_heritage_ids?.length > 0 
-                      ? heritageService.getAll({ ids: initialValues.related_heritage_ids.join(',') })
+                    initialValues.relatedHeritageIds?.length > 0 
+                      ? heritageService.getAll({ ids: initialValues.relatedHeritageIds.join(',') })
                       : Promise.resolve({ success: true, data: [] }),
-                    initialValues.related_artifact_ids?.length > 0
-                      ? artifactService.getAll({ ids: initialValues.related_artifact_ids.join(',') })
+                    initialValues.relatedArtifactIds?.length > 0
+                      ? artifactService.getAll({ ids: initialValues.relatedArtifactIds.join(',') })
                       : Promise.resolve({ success: true, data: [] })
                 ]);
 
                 // Map related heritage to {label, value}
-                const relatedHeri = (initialValues.related_heritage_ids || []).map((id: any) => {
+                const relatedHeri = (initialValues.relatedHeritageIds || []).map((id: any) => {
                     const heri = relHeritageRes.success && relHeritageRes.data 
                       ? relHeritageRes.data.find((h: any) => h.id === (typeof id === 'object' ? id.value : id)) 
                       : null;
@@ -57,7 +57,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 });
 
                 // Map related artifacts to {label, value}
-                const relatedArtifacts = (initialValues.related_artifact_ids || []).map((id: any) => {
+                const relatedArtifacts = (initialValues.relatedArtifactIds || []).map((id: any) => {
                     const art = relArtifactRes.success && relArtifactRes.data 
                       ? relArtifactRes.data.find((a: any) => a.id === (typeof id === 'object' ? id.value : id)) 
                       : null;
@@ -66,10 +66,9 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
                 const formattedValues = {
                     ...initialValues,
-                    shortDescription: initialValues.short_description || initialValues.shortDescription,
                     publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
-                    related_heritage_ids: relatedHeri,
-                    related_artifact_ids: relatedArtifacts
+                    relatedHeritageIds: relatedHeri,
+                    relatedArtifactIds: relatedArtifacts
                 };
                 form.setFieldsValue(formattedValues);
             } catch (error) {
@@ -115,10 +114,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         gallery: values.gallery?.map((item: any) => 
           typeof item === "object" ? (item.url || item.response?.url || "") : item
         ) || [],
-        related_heritage_ids: values.related_heritage_ids?.map((item: any) => 
+        relatedHeritageIds: values.relatedHeritageIds?.map((item: any) => 
           typeof item === 'object' ? item.value : item
         ) || [],
-        related_artifact_ids: values.related_artifact_ids?.map((item: any) => 
+        relatedArtifactIds: values.relatedArtifactIds?.map((item: any) => 
           typeof item === 'object' ? item.value : item
         ) || []
     };
@@ -141,7 +140,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         // Map fields to tabs
         const tab1Fields = ['image', 'gallery', 'title', 'shortDescription', 'author', 'publishDate', 'isActive'];
         const tab2Fields = ['content'];
-        const tab3Fields = ['related_heritage_ids', 'related_artifact_ids', 'related_level_ids'];
+        const tab3Fields = ['relatedHeritageIds', 'relatedArtifactIds', 'relatedLevelIds'];
 
         if (tab1Fields.includes(firstErrorField)) {
           setActiveTab("1");
@@ -264,18 +263,27 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 key: '2',
                 label: 'Nội dung chi tiết',
                 children: (
-                    <Form.Item
-                        name="content"
-                        label="Nội dung bài viết"
-                        rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
-                    >
-                        <TinyEditor
-                            height={500}
-                            placeholder="Viết nội dung bài viết tại đây..."
-                            enableImageUpload={true}
-                            enableVideoEmbed={true}
-                        />
-                    </Form.Item>
+                    <>
+                        <Form.Item
+                            name="content"
+                            label="Nội dung bài viết"
+                            rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
+                        >
+                            <TinyEditor
+                                height={500}
+                                placeholder="Viết nội dung bài viết tại đây..."
+                                enableImageUpload={true}
+                                enableVideoEmbed={true}
+                            />
+                        </Form.Item>
+
+                        <Form.Item name="references" label="Nguồn tham khảo">
+                            <TinyEditor 
+                                height={250} 
+                                placeholder="Nhập các nguồn tham khảo..." 
+                            />
+                        </Form.Item>
+                    </>
                 )
             },
             {
@@ -283,7 +291,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 label: 'Liên kết liên quan',
                 children: (
                     <>
-                        <Form.Item label="Di sản liên quan" name="related_heritage_ids">
+                        <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
                             <DebounceSelect
                                 mode="multiple"
                                 placeholder="Tìm kiếm di sản..."
@@ -292,7 +300,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                             />
                         </Form.Item>
                         
-                        <Form.Item label="Hiện vật liên quan" name="related_artifact_ids">
+                        <Form.Item label="Hiện vật liên quan" name="relatedArtifactIds">
                             <DebounceSelect
                                 mode="multiple"
                                 placeholder="Tìm kiếm hiện vật..."
