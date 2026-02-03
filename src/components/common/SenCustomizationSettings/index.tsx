@@ -36,7 +36,6 @@ const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({
   const globalChar = useGlobalCharacter();
 
   const isTalking = globalChar?.isTalking || false;
-  // const setIsTalking = (val: boolean) => globalChar?.setIsTalking(val);
 
   const {
       isChibi,
@@ -125,29 +124,6 @@ const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({
             </Col>
           )}
         </Row>
-
-        {/* {!compact && <Divider />}
-        <Title level={5}>
-          <SoundOutlined /> Hội thoại (Speaking)
-        </Title>
-        <div className="expression-control">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span
-              style={{ 
-                  color: isTalking ? '#1890ff' : 'inherit',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8
-              }}
-            >
-              <SoundOutlined /> Chế độ nói chuyện:
-            </span>
-            <Switch checked={isTalking} onChange={setIsTalking} />
-          </div>
-          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
-            (Nhân vật sẽ tự động mấp máy môi khi bật)
-          </Text>
-        </div> */}
 
         {!compact && <Divider />}
         <Title level={5}>

@@ -351,9 +351,8 @@ const aiSlice = createSlice({
 
         // Transcribe Audio
         builder
-            .addCase(transcribeAudio.pending, () => {
-                // We typically use local state for this, but can track global loading if needed
-                // state.chatLoading = true; 
+            .addCase(transcribeAudio.pending, (state) => {
+                state.chatLoading = true; 
             })
             .addCase(transcribeAudio.fulfilled, (state) => {
                 state.error = null;
