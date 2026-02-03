@@ -32,6 +32,11 @@ export interface ChatMessage {
         url: string;
     };
     audioBase64?: string; // Add audio field
+    emotion?: {
+        gesture: string;
+        mouthState: string;
+        eyeState: string;
+    }; // 🎭 Add emotion field
     context?: {
         levelId?: number;
         artifactId?: number;
@@ -74,7 +79,7 @@ class AIService extends BaseService {
                 heritageSiteId: data.context?.heritageSiteId,
             }
         });
-        // Backend returns: { success: true, data: { message, character, timestamp, route, recommendation } }
+        // Backend returns: { success: true, data: { message, character, timestamp, route, recommendation, emotion } }
         return {
             message: {
                 id: Date.now(),
@@ -85,6 +90,7 @@ class AIService extends BaseService {
                 timestamp: response.data.timestamp || new Date().toISOString(),
                 recommendation: response.data.recommendation, // Map recommendation
                 audioBase64: response.data.audioBase64, // Map audio
+                emotion: response.data.emotion, // 🎭 Map emotion
                 context: data.context,
             },
             character: response.data.character,

@@ -9,10 +9,10 @@ export enum HeritageType {
   MONUMENT = "monument",
   TEMPLE = "temple",
   MUSEUM = "museum",
-  ARCHAEOLOGICAL_SITE = "archaeological_site",
-  HISTORIC_BUILDING = "historic_building",
-  NATURAL_HERITAGE = "natural_heritage",
-  INTANGIBLE_HERITAGE = "intangible_heritage",
+  ARCHAEOLOGICAL_SITE = "archaeologicalSite",
+  HISTORIC_BUILDING = "historicBuilding",
+  NATURAL_HERITAGE = "naturalHeritage",
+  INTANGIBLE_HERITAGE = "intangibleHeritage",
 }
 
 // Heritage Type Labels (Vietnamese)
@@ -268,6 +268,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   relatedLevels?: any[];
   relatedProducts?: any[];
   relatedHistory?: any[];
+  references?: string;
 }
 
 // Heritage Site Create/Update DTO
@@ -293,6 +294,7 @@ export interface HeritageSiteDTO {
   gallery?: string[];
   timeline?: TimelineEvent[];
   relatedArtifactIds?: number[];
+  references?: string;
 }
 
 // Timeline Event

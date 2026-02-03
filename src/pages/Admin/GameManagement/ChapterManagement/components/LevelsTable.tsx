@@ -21,7 +21,7 @@ const LevelsTable: React.FC<LevelsTableProps> = ({ chapterId }) => {
     () => ({
       pageSize: 10,
       autoFetch: true,
-      defaultFilters: { chapter_id: chapterId },
+      defaultFilters: { chapterId: chapterId },  // ✅ Fix: Use camelCase
       onError: (action: string, error: any) => {
         console.error(`Error ${action} level:`, error);
         message.error(`Thao tác thất bại: ${error.message}`);

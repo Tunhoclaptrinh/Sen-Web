@@ -307,7 +307,7 @@ export interface ShopItem {
     id: number;
     name: string;
     description: string;
-    type: 'hint' | 'boost' | 'cosmetic' | 'premium_ai' | 'character' | 'character_skin' | 'theme' | 'decoration' | 'other';
+    type: 'hint' | 'boost' | 'cosmetic' | 'premiumAi' | 'character' | 'characterSkin' | 'theme' | 'decoration' | 'other';
     price: number;
     currency: 'coins' | 'petals';
     image?: string;

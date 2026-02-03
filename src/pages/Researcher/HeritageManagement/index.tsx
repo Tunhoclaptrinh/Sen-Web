@@ -208,7 +208,7 @@ const ResearcherHeritageManagement = () => {
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
-        initialValues={currentRecord}
+        initialValues={currentRecord || undefined}
         loading={loading}
       />
 

@@ -30,6 +30,7 @@ import {
   setCurrentCharacter,
   clearChatHistory,
   transcribeAudio,
+  updateSenSettings,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
 import SenChibi from "@/components/SenChibi";
@@ -93,7 +94,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [shouldHideCoat, setShouldHideCoat] = useState(false); // 👔 Control coat visibility
   const [isListening, setIsListening] = useState(false);
+  const emotionResetTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 🎭 Timeout để reset emotion
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isTranscriptionSuccess, setIsTranscriptionSuccess] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -328,19 +331,33 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     }
   }, [open, user, currentCharacter, dispatch]);
 
-  // Set default character if not present
+  // Set default character if not present or force Sen on open
   useEffect(() => {
-    if (open && !currentCharacter) {
-      dispatch(fetchCharacters()).then((action) => {
-        const chars = action.payload;
-        if (chars && Array.isArray(chars) && chars.length > 0) {
-          // Ưu tiên chọn nhân vật mặc định (Sen) nếu có
-          const defaultChar = chars.find((c) => c.is_default);
-          dispatch(setCurrentCharacter(defaultChar || chars[0]));
-        }
-      });
+    if (open) {
+      // Helper to set Sen
+      const setSen = (chars: typeof characters) => {
+          const sen = chars.find((c) => c.name === 'Sen' || c.isDefault);
+          if (sen) {
+             dispatch(setCurrentCharacter(sen));
+          } else if (chars.length > 0 && !currentCharacter) {
+             dispatch(setCurrentCharacter(chars[0]));
+          }
+      };
+
+      if (characters.length === 0) {
+        dispatch(fetchCharacters()).then((action) => {
+          const chars = action.payload;
+          if (chars && Array.isArray(chars)) {
+            setSen(chars);
+          }
+        });
+      } else {
+         // If characters already loaded, force Sen
+         setSen(characters);
+      }
     }
-  }, [open, currentCharacter, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, dispatch]);
 
   // Audio & Sync Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -427,6 +444,15 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
         }
     };
   }, [previewUrl]);
+
+  // Cleanup emotion reset timeout on unmount
+  useEffect(() => {
+    return () => {
+        if (emotionResetTimeoutRef.current) {
+            clearTimeout(emotionResetTimeoutRef.current);
+        }
+    };
+  }, []);
 
   const renderAttachmentMenu = () => {
     const isSen = currentCharacter?.name?.toLowerCase().includes('sen');
@@ -550,19 +576,24 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     audioRef.current = audio;
 
     audio.onplay = () => {
-        // Audio plays but mouth controlled by streaming logic
+        // ✅ Mấp máy môi khi phát lại audio
+        setIsSpeaking(true);
+        setShouldHideCoat(true); // 👔 Ẩn áo khi bắt đầu nói
         setAudioPlaying(messageId);
     };
     audio.onended = () => {
         setIsSpeaking(false);
+        setShouldHideCoat(false); // 👔 Hiện áo lại khi dừng
         setAudioPlaying(null);
     };
     audio.onpause = () => {
         setIsSpeaking(false);
+        setShouldHideCoat(false); // 👔 Hiện áo lại khi pause
         setAudioPlaying(null);
     };
     audio.onerror = () => {
         setIsSpeaking(false);
+        setShouldHideCoat(false); // 👔 Hiện áo lại khi lỗi
         setAudioPlaying(null);
     };
 
@@ -611,7 +642,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                   activePauseEndTimeRef.current = now + PUNCTUATION_PAUSES[char];
                   pauseStartTimeRef.current = now;
                   lastPunctuationIndexRef.current = i;
-                  setIsSpeaking(false);
+                  setIsSpeaking(false); // ✅ Dừng miệng khi pause - giữ smile tĩnh
                   break;
               }
           }
@@ -623,6 +654,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
         const isRealContent = charsToShow > 0 && targetText !== '...' && targetText.trim().length > 0;
         if (activePauseEndTimeRef.current === 0 && isRealContent) {
             setIsSpeaking(true); // ENABLED - mouth opens only when real text renders
+            setShouldHideCoat(true); // 👔 Ẩn áo khi bắt đầu nói
         } else {
             setIsSpeaking(false); // Ensure mouth closed when no real content yet
         }
@@ -630,6 +662,19 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
         // Complete
         setStreamingText(targetText);
         setIsSpeaking(false); // Stop mouth animation
+        setShouldHideCoat(false); // 👔 Hiện áo lại khi streaming xong
+        
+        // 🎭 Reset emotion về default sau 6 giây
+        if (emotionResetTimeoutRef.current) {
+            clearTimeout(emotionResetTimeoutRef.current);
+        }
+        emotionResetTimeoutRef.current = setTimeout(() => {
+            dispatch(updateSenSettings({
+                gesture: 'normal' as const,
+                mouthState: 'smile' as const,
+                eyeState: 'normal' as const,
+            }));
+        }, 6000); // 6 seconds
         
         // Clear local streaming text but DO NOT stop audio (stopAll)
         // Let audio finish naturally
@@ -677,6 +722,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
         audio.onended = () => {
              audioRef.current = null;
+             setShouldHideCoat(false); // 👔 Hiện áo lại khi audio kết thúc
         };
 
         audio.onerror = () => startStreaming();
@@ -720,6 +766,25 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       const fullResponse = messageObj?.content || "Xin lỗi, mình không thể trả lời câu hỏi này.";
       const audioBase64 = messageObj?.audioBase64;
       const recommendation = messageObj?.recommendation; // Extract recommendation
+      
+      // 🎭 Extract emotion metadata from message object (mapped from service)
+      const emotionData = messageObj?.emotion;
+      
+      if (emotionData) {
+        // Cancel any pending emotion reset
+        if (emotionResetTimeoutRef.current) {
+            clearTimeout(emotionResetTimeoutRef.current);
+            emotionResetTimeoutRef.current = null;
+        }
+        // Update Sen settings with AI-suggested emotion
+        dispatch(updateSenSettings({
+          gesture: (emotionData.gesture || 'normal') as 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back',
+          mouthState: (emotionData.mouthState || 'smile') as 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue' | 'angry',
+          eyeState: (emotionData.eyeState || 'normal') as 'normal' | 'blink' | 'close' | 'half' | 'like' | 'sleep',
+        }));
+      } else {
+        console.warn("⚠️ No emotion data found in message object");
+      }
       
       setLoading(false);
       streamText(fullResponse, audioBase64, recommendation);
@@ -793,7 +858,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                             mouthState={senSettings.mouthState as SenChibiMouthState}
                             showHat={senSettings.accessories.hat}
                             showGlasses={senSettings.accessories.glasses}
-                            showCoat={senSettings.accessories.coat}
+                            showCoat={senSettings.accessories.coat && !shouldHideCoat}
                             isBlinking={senSettings.isBlinking}
                         />
                     ) : (
@@ -807,7 +872,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                             mouthState={senSettings.mouthState as SenChibiMouthState}
                             showHat={senSettings.accessories.hat}
                             showGlasses={senSettings.accessories.glasses}
-                            showCoat={senSettings.accessories.coat}
+                            showCoat={senSettings.accessories.coat && !shouldHideCoat}
                             showBag={senSettings.accessories.bag}
                             isBlinking={senSettings.isBlinking}
                             draggable={false}
@@ -1026,12 +1091,12 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
                       <Input
                         autoFocus
-                        placeholder="Hỏi về di sản văn hóa Việt Nam..."
+                        placeholder={user ? "Hỏi về di sản văn hóa Việt Nam..." : "Vui lòng đăng nhập để trò chuyện"}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onPressEnter={handleSend}
                         onPaste={handlePaste}
-                        disabled={loading || chatLoading}
+                        disabled={loading || chatLoading || !user}
                         style={{ fontSize: '18px' }}
                         prefix={
                             <Tooltip title="Thêm tệp đính kèm" placement="top" overlayStyle={{ zIndex: 20005 }}>
@@ -1058,8 +1123,9 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                                 type="text"
                                 icon={<AudioOutlined style={{ fontSize: '22px' }} />}
                                 className="input-suffix-btn"
-                                style={{ color: 'white' }}
-                                onClick={() => setIsListening(true)}
+                                style={{ color: 'white', opacity: user ? 1 : 0.5 }}
+                                onClick={() => user && setIsListening(true)}
+                                disabled={!user}
                             />
                             
                             {(input.trim() || selectedFile) ? (

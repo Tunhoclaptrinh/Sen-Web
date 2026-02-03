@@ -85,8 +85,8 @@ export const fetchCharacters = createAsyncThunk(
         try {
             const data = await aiService.getCharacters();
             return data;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to fetch characters');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to fetch characters');
         }
     }
 );
@@ -98,8 +98,8 @@ export const fetchChatHistory = createAsyncThunk(
         try {
             const data = await aiService.getChatHistory(params.characterId, params.limit);
             return data;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to fetch chat history');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to fetch chat history');
         }
     }
 );
@@ -122,8 +122,8 @@ export const sendChatMessage = createAsyncThunk(
         try {
             const response = await aiService.chat(params);
             return response;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to send message');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to send message');
         }
     }
 );
@@ -135,8 +135,8 @@ export const getHint = createAsyncThunk(
         try {
             const data = await aiService.getHint(params.levelId, params.screenId);
             return data;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to get hint');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to get hint');
         }
     }
 );
@@ -148,8 +148,8 @@ export const getExplanation = createAsyncThunk(
         try {
             const data = await aiService.explain(params.type, params.id);
             return data;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to get explanation');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to get explanation');
         }
     }
 );
@@ -161,8 +161,8 @@ export const clearChatHistory = createAsyncThunk(
         try {
             await aiService.clearHistory(characterId);
             return characterId;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to clear chat history');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to clear chat history');
         }
     }
 );
@@ -174,8 +174,8 @@ export const transcribeAudio = createAsyncThunk(
         try {
             const text = await aiService.transcribeAudio(audioBlob);
             return text;
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to transcribe audio');
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to transcribe audio');
         }
     }
 );
@@ -355,9 +355,11 @@ const aiSlice = createSlice({
                 state.chatLoading = true; 
             })
             .addCase(transcribeAudio.fulfilled, (state) => {
+                state.chatLoading = false;
                 state.error = null;
             })
             .addCase(transcribeAudio.rejected, (state, action) => {
+                state.chatLoading = false;
                 state.error = action.payload as string;
             });
     },

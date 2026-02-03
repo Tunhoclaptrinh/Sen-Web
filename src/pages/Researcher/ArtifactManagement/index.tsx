@@ -218,7 +218,7 @@ const ResearcherArtifactManagement = () => {
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
-        initialValues={currentRecord}
+        initialValues={currentRecord || undefined}
         loading={loading}
         isEdit={!!currentRecord}
       />
