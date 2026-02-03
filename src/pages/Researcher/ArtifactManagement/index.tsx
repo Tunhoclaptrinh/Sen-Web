@@ -83,7 +83,7 @@ const ResearcherArtifactManagement = () => {
     {
       title: "Tên Hiện vật",
       dataIndex: "name",
-      key: "name_like",
+      key: "nameLike",
       width: 250,
       searchable: true,
       align: "left" as const,
@@ -91,7 +91,7 @@ const ResearcherArtifactManagement = () => {
     {
       title: "Loại hình",
       dataIndex: "artifactType",
-      key: "artifact_type",
+      key: "artifactType",
       width: 150,
       render: (type: ArtifactType) => (
         <Tag color="purple">{ArtifactTypeLabels[type]?.toUpperCase() || type}</Tag>

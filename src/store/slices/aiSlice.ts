@@ -159,10 +159,23 @@ export const clearChatHistory = createAsyncThunk(
     'ai/clearChatHistory',
     async (characterId: number, { rejectWithValue }) => {
         try {
-            await aiService.clearHistory();
+            await aiService.clearHistory(characterId);
             return characterId;
         } catch (error: any) {
             return rejectWithValue(error.message || 'Failed to clear chat history');
+        }
+    }
+);
+
+// Transcribe Audio
+export const transcribeAudio = createAsyncThunk(
+    'ai/transcribeAudio',
+    async (audioBlob: Blob, { rejectWithValue }) => {
+        try {
+            const text = await aiService.transcribeAudio(audioBlob);
+            return text;
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Failed to transcribe audio');
         }
     }
 );
@@ -333,6 +346,18 @@ const aiSlice = createSlice({
                 state.chatHistory = [];
             })
             .addCase(clearChatHistory.rejected, (state, action) => {
+                state.error = action.payload as string;
+            });
+
+        // Transcribe Audio
+        builder
+            .addCase(transcribeAudio.pending, (state) => {
+                state.chatLoading = true; 
+            })
+            .addCase(transcribeAudio.fulfilled, (state) => {
+                state.error = null;
+            })
+            .addCase(transcribeAudio.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
     },

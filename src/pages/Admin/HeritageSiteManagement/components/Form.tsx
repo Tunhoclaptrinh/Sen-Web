@@ -126,7 +126,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
           const formattedValues = {
             ...initialValues,
-            short_description:
+            shortDescription:
               initialValues.short_description || initialValues.shortDescription,
             timeline: timeline,
             relatedArtifactIds: relatedArtifacts,
@@ -201,9 +201,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         setSelectedRegion("");
         setAvailableProvinces([]);
         form.setFieldsValue({
-          is_active: true,
-          unesco_listed: false,
-          year_established: new Date().getFullYear(),
+          isActive: true,
+          unescoListed: false,
+          yearEstablished: new Date().getFullYear(),
         });
       }
     };
@@ -266,7 +266,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         const tab1Fields = [
           "image",
           "gallery",
-          "short_description",
+          "shortDescription",
           "name",
           "type",
           "address",
@@ -275,10 +275,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           "cultural_period",
           "significance",
           "visit_hours",
-          "year_established",
+          "yearEstablished",
           "entrance_fee",
-          "unesco_listed",
-          "is_active",
+          "unescoListed",
+          "isActive",
         ];
         const tab2Fields = ["description"];
         const tab3Fields = [
@@ -304,7 +304,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
     // Transform values before submit
     const submitData = {
       ...values,
-      shortDescription: values.short_description, // Sync for compatibility
+      shortDescription: values.shortDescription, // Sync for compatibility
       // Convert region label back to enum value
       region:
         Object.keys(HeritageRegionLabels).find(
@@ -378,8 +378,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       loading={loading}
       preserve={false}
       initialValues={{
-        is_active: true,
-        unesco_listed: false,
+        isActive: true,
+        unescoListed: false,
         ...initialValues,
       }}
       footer={
@@ -432,7 +432,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 <Row gutter={16}>
                   <Col span={24}>
                     <Form.Item
-                      name="short_description"
+                      name="shortDescription"
                       label="Mô tả ngắn"
                       rules={[
                         { required: true, message: "Vui lòng nhập mô tả ngắn" },
@@ -527,7 +527,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item name="cultural_period" label="Thời kỳ văn hóa">
+                    <Form.Item name="culturalPeriod" label="Thời kỳ văn hóa">
                       <Input placeholder="VD: Triều Nguyễn, Thời Lý..." />
                     </Form.Item>
                   </Col>
@@ -546,7 +546,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item name="visit_hours" label="Giờ mở cửa">
+                    <Form.Item name="visitHours" label="Giờ mở cửa">
                       <Input placeholder="VD: 08:30 - 17:00 hàng ngày" />
                     </Form.Item>
                   </Col>
@@ -554,12 +554,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item name="year_established" label="Năm thành lập">
+                    <Form.Item name="yearEstablished" label="Năm thành lập">
                       <InputNumber style={{ width: "100%" }} controls={false} />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item name="entrance_fee" label="Giá vé">
+                    <Form.Item name="entranceFee" label="Giá vé">
                       <InputNumber
                         style={{ width: "100%" }}
                         formatter={(value) =>
@@ -573,7 +573,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     <Row gutter={16}>
                       <Col span={12}>
                         <Form.Item
-                          name="unesco_listed"
+                          name="unescoListed"
                           label="UNESCO"
                           valuePropName="checked"
                         >
@@ -585,7 +585,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                       </Col>
                       <Col span={12}>
                         <Form.Item
-                          name="is_active"
+                          name="isActive"
                           label="Trạng thái"
                           valuePropName="checked"
                         >

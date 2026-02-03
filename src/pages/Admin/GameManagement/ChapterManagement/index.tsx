@@ -113,7 +113,7 @@ const ChapterManagement = () => {
     {
       title: "Tác giả",
       dataIndex: "authorName",
-      key: "author_name",
+      key: "authorName",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
@@ -135,13 +135,13 @@ const ChapterManagement = () => {
         defaultOperator: 'like' as const
     },
     {
-        key: 'required_petals',
+        key: 'requiredPetals',
         label: 'Cánh hoa yêu cầu',
         type: 'number' as const,
         placeholder: 'Số cánh hoa...',
     },
     {
-        key: 'petal_state',
+        key: 'petalState',
         label: 'Trạng thái',
         type: 'select' as const,
         options: [

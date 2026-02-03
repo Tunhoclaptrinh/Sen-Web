@@ -116,7 +116,7 @@ const CharacterManagement: React.FC = () => {
                             <Input placeholder="Ví dụ: Múa rối nước" />
                         </Form.Item>
                         <Form.Item
-                            name="is_collectible"
+                            name="isCollectible"
                             label="Có thể sưu tầm?"
                             valuePropName="checked"
                         >
@@ -146,7 +146,7 @@ const CharacterManagement: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item
-                        name="speaking_style"
+                        name="speakingStyle"
                         label="Phong cách nói chuyện"
                     >
                         <Input placeholder="Ví dụ: Hài hước, cổ điển, trang trọng" />

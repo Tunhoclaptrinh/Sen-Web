@@ -317,7 +317,7 @@ const GamePlayPage: React.FC = () => {
                           <div className="breakdown-divider"></div>
                           <div className="breakdown-row total">
                               <span>Cần đạt:</span>
-                              <span>{completionData.required_score}</span>
+                               <span>{completionData.requiredScore}</span>
                           </div>
                     </div>
                   ) : (
@@ -326,12 +326,12 @@ const GamePlayPage: React.FC = () => {
                            <>
                             <div className="breakdown-row">
                                 <span>Điểm màn chơi:</span>
-                                <span>{completionData.breakdown.base_score}</span>
+                                <span>{completionData.breakdown.baseScore}</span>
                             </div>
-                            {completionData.breakdown.time_bonus > 0 && (
+                            {completionData.breakdown.timeBonus > 0 && (
                                 <div className="breakdown-row bonus">
                                     <span>Thưởng tốc độ:</span>
-                                    <span>+{completionData.breakdown.time_bonus}</span>
+                                    <span>+{completionData.breakdown.timeBonus}</span>
                                 </div>
                             )}
                             <div className="breakdown-divider"></div>
@@ -396,7 +396,7 @@ const GamePlayPage: React.FC = () => {
                >
                  Chơi Lại
                </Button>
-               {(completionData.new_totals || completionData.passed || completionData.is_completed) && (
+               {(completionData.newTotals || completionData.passed || completionData.isCompleted) && (
                    <Button
                      type="primary"
                      key="next"

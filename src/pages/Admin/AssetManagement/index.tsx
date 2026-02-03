@@ -30,15 +30,15 @@ const AssetManagement: React.FC = () => {
             key: 'reward',
             render: (_: any, record: any) => (
                 <Space>
-                    {record.reward_coins && <Tag color="gold">{record.reward_coins} Xu</Tag>}
-                    {record.reward_petals && <Tag color="pink">{record.reward_petals} Cánh sen</Tag>}
+                    {record.rewardCoins && <Tag color="gold">{record.rewardCoins} Xu</Tag>}
+                    {record.rewardPetals && <Tag color="pink">{record.rewardPetals} Cánh sen</Tag>}
                 </Space>
             )
         },
         {
             title: 'Trạng thái',
             dataIndex: 'isActive',
-            key: 'is_active',
+            key: 'isActive',
             render: (val: boolean) => val ? <Tag color="green">HOẠT ĐỘNG</Tag> : <Tag>KHOÁ</Tag>
         },
     ];
@@ -69,7 +69,7 @@ const AssetManagement: React.FC = () => {
             >
                 <Form
                     layout="vertical"
-                    initialValues={model.currentRecord || { type: 'artifact', is_active: true, reward_coins: 100, reward_petals: 1 }}
+                    initialValues={model.currentRecord || { type: 'artifact', isActive: true, rewardCoins: 100, rewardPetals: 1 }}
                     onFinish={model.handleSubmit}
                 >
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -101,14 +101,14 @@ const AssetManagement: React.FC = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="reference_id"
+                            name="referenceId"
                             label="ID tham chiếu"
                             rules={[{ required: true, message: 'Vui lòng nhập ID' }]}
                         >
                             <InputNumber style={{ width: '100%' }} placeholder="ID của hiện vật/di sản" />
                         </Form.Item>
                         <Form.Item
-                            name="is_active"
+                            name="isActive"
                             label="Đang hoạt động"
                             valuePropName="checked"
                         >
@@ -118,13 +118,13 @@ const AssetManagement: React.FC = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <Form.Item
-                            name="reward_coins"
+                            name="rewardCoins"
                             label="Thưởng Xu khi quét"
                         >
                             <InputNumber style={{ width: '100%' }} min={0} />
                         </Form.Item>
                         <Form.Item
-                            name="reward_petals"
+                            name="rewardPetals"
                             label="Thưởng Cánh sen khi quét"
                         >
                             <InputNumber style={{ width: '100%' }} min={0} />

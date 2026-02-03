@@ -573,7 +573,7 @@ curl -X POST http://localhost:8000/process_query \
 **Backend** (`Backend/.env`):
 
 ```env
-PYTHON_SERVICE_URL=http://localhost:8000/process_query
+PYTHON_SERVICE_URL=https://itzmedandelion-sen-ai.hf.space/chat
 ```
 
 **Frontend** (`Frontend/.env`):

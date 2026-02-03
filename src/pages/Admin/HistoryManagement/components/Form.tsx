@@ -66,7 +66,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
                 const formattedValues = {
                     ...initialValues,
-                    short_description: initialValues.short_description || initialValues.shortDescription,
+                    shortDescription: initialValues.short_description || initialValues.shortDescription,
                     publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
                     relatedHeritageIds: relatedHeri,
                     relatedArtifactIds: relatedArtifacts
@@ -91,7 +91,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
             form.resetFields();
             
             form.setFieldsValue({
-                is_active: true,
+                isActive: true,
                 publishDate: dayjs(),
                 views: 0
             });
@@ -105,7 +105,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
     // Transform values before submit
     const submitData = {
         ...values,
-        shortDescription: values.short_description,
+        shortDescription: values.shortDescription,
         publishDate: values.publishDate?.toISOString(),
         image: (() => {
           const raw = Array.isArray(values.image) ? values.image[0] : values.image;
@@ -139,7 +139,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         const firstErrorField = error.errorFields[0].name[0];
         
         // Map fields to tabs
-        const tab1Fields = ['image', 'gallery', 'title', 'short_description', 'author', 'publishDate', 'is_active'];
+        const tab1Fields = ['image', 'gallery', 'title', 'shortDescription', 'author', 'publishDate', 'isActive'];
         const tab2Fields = ['content'];
         const tab3Fields = ['relatedHeritageIds', 'relatedArtifactIds', 'relatedLevelIds'];
 
@@ -236,7 +236,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                         <Row gutter={16}>
                             <Col span={24}>
                                 <Form.Item
-                                    name="short_description"
+                                    name="shortDescription"
                                     label="Mô tả ngắn"
                                     rules={[{ required: true, message: "Vui lòng nhập mô tả ngắn" }]}
                                 >
@@ -252,7 +252,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                                 </Form.Item>
                             </Col>
                             <Col span={8}>
-                                <Form.Item name="is_active" label="Hiển thị" valuePropName="checked">
+                                <Form.Item name="isActive" label="Hiển thị" valuePropName="checked">
                                     <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
                                 </Form.Item>
                             </Col>

@@ -10,7 +10,7 @@ interface Props {
     content?: {
       title?: string;
       description?: string;
-      image_url?: string;
+      imageUrl?: string;
     };
   };
   onNext: () => void;
@@ -20,7 +20,7 @@ const ImageViewerScreen: React.FC<Props> = ({ data, onNext }) => {
   // Support multiple data structures
   const content = data.content || {};
   
-  const imageUrl = (data as any).image || content.image_url || data.backgroundImage;
+  const imageUrl = (data as any).image || content.imageUrl || data.backgroundImage;
   const title = (data as any).caption || content.title || "Hình ảnh chi tiết";
   const description =
     (data as any).description || content.description ||

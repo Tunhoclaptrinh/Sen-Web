@@ -173,12 +173,12 @@ const LearningForm: React.FC<LearningFormProps> = ({
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                             <Form.Item name="estimated_duration" label="Thời gian (phút)">
+                             <Form.Item name="estimatedDuration" label="Thời gian (phút)">
                                 <InputNumber style={{ width: '100%' }} min={1} />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                             <Form.Item name="content_type" label="Loại nội dung">
+                             <Form.Item name="contentType" label="Loại nội dung">
                                 <Select>
                                     <Select.Option value="article">Article (Bài đọc)</Select.Option>
                                     <Select.Option value="video">Video</Select.Option>
@@ -191,20 +191,20 @@ const LearningForm: React.FC<LearningFormProps> = ({
 
                     <Form.Item
                         noStyle
-                        shouldUpdate={(prev, current) => prev.content_type !== current.content_type}
+                        shouldUpdate={(prev, current) => prev.contentType !== current.contentType}
                     >
                         {({ getFieldValue }) => {
-                            const type = getFieldValue('content_type');
+                            const type = getFieldValue('contentType');
                             return type === 'video' ? (
-                                <Form.Item name="content_url" label="Video URL (Embed Link)" rules={[{ required: true }]}>
+                                <Form.Item name="contentUrl" label="Video URL (Embed Link)" rules={[{ required: true }]}>
                                     <Input placeholder="https://www.youtube.com/embed/..." />
                                 </Form.Item>
                             ) : type === 'article' ? (
-                                <Form.Item name="content_url" label="Nội dung bài học (HTML)" trigger="onChange" validateTrigger={['onChange', 'onBlur']}>
+                                <Form.Item name="contentUrl" label="Nội dung bài học (HTML)" trigger="onChange" validateTrigger={['onChange', 'onBlur']}>
                                     <TinyEditor height={400} placeholder="Soạn thảo nội dung bài học..." />
                                 </Form.Item>
                             ) : type === 'interactive' ? (
-                                <Form.Item name="content_url" label="Đường dẫn Game/App" rules={[{ required: true }]}>
+                                <Form.Item name="contentUrl" label="Đường dẫn Game/App" rules={[{ required: true }]}>
                                     <Input placeholder="/game/..." />
                                 </Form.Item>
                             ) : null;
@@ -224,7 +224,7 @@ const LearningForm: React.FC<LearningFormProps> = ({
                                 <h3 style={{ margin: 0, color: '#1f1f1f' }}>Cấu hình Quiz</h3>
                                 <p style={{ margin: '4px 0 0', color: '#8c8c8c', fontSize: 13 }}>Thiết lập các câu hỏi kiểm tra kiến thức</p>
                             </div>
-                            <Form.Item name={['quiz', 'passing_score']} label="Điểm đạt (Passing Score)" style={{ margin: 0, width: 180 }}>
+                            <Form.Item name={['quiz', 'passingScore']} label="Điểm đạt (Passing Score)" style={{ margin: 0, width: 180 }}>
                                 <InputNumber min={0} max={100} addonAfter="điểm" />
                             </Form.Item>
                         </div>
@@ -318,7 +318,7 @@ const LearningForm: React.FC<LearningFormProps> = ({
                                             <div style={{ marginTop: 16 }}>
                                                 <Form.Item
                                                     {...restField}
-                                                    name={[name, 'correct_answer']}
+                                                    name={[name, 'correctAnswer']}
                                                     label="Đáp án đúng (Index)"
                                                     help="Nhập số thứ tự của đáp án đúng (bắt đầu từ 0)"
                                                     rules={[{ required: true }]}

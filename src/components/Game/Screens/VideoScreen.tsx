@@ -11,7 +11,7 @@ interface Props {
     content?: {
       title?: string;
       description?: string;
-      video_url: string;
+      videoUrl: string;
     };
   };
   onNext: () => void;
@@ -19,7 +19,7 @@ interface Props {
 
 const VideoScreen: React.FC<Props> = ({ data, onNext }) => {
   const content = data.content || {};
-  const videoUrl = (data as any).video_url || content.video_url || "";
+  const videoUrl = (data as any).videoUrl || content.videoUrl || "";
   const title = (data as any).caption || content.title || "Video";
   const description = (data as any).description || content.description || "Xem đoạn phim này để hiểu rõ hơn về câu chuyện.";
 

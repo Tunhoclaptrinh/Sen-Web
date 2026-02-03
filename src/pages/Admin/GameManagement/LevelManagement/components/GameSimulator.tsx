@@ -108,7 +108,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                     || screen.options?.find((o: any) => o._id === answerId)
                     || screen.options?.find((o: any) => o.text === answerId);
         
-        if (option?.is_correct) {
+        if (option?.isCorrect) {
             message.success("Đúng rồi! (+Điểm)");
             setScore(prev => prev + 10);
             return { isCorrect: true, pointsEarned: 10, explanation: "Chính xác!" };
@@ -150,7 +150,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             [screen.id]: newCollected
         }));
 
-        const required = screen.required_items || screen.items?.length || 0;
+        const required = screen.requiredItems || screen.items?.length || 0;
         const isAllCollected = newCollected.length >= required;
 
         if (!currentCollected.includes(itemId)) {
@@ -164,7 +164,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             item: { 
                 id: itemId, 
                 name: item.name, 
-                factPopup: item.fact_popup || item.factPopup || item.content || item.description || "Bạn đã tìm thấy một manh mối quan trọng!" 
+                factPopup: item.factPopup || item.content || item.description || "Bạn đã tìm thấy một manh mối quan trọng!" 
             },
             progress: { 
                 collected: newCollected.length, 

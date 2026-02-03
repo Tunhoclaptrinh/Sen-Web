@@ -158,7 +158,7 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
     {
       title: "Tác giả",
       dataIndex: "authorName",
-      key: "author_name",
+      key: "authorName",
       width: 120,
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },

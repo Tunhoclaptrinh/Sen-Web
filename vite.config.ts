@@ -51,6 +51,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ["pixi.js", "@pixi/react"],
+    force: true,
   },
   build: {
     outDir: "dist",

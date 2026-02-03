@@ -79,7 +79,7 @@ const ResearcherHeritageManagement = () => {
     {
       title: "Tên Di Sản",
       dataIndex: "name",
-      key: "name_like",
+      key: "nameLike",
       width: 250,
       searchable: true,
       align: "left" as const,
@@ -117,7 +117,7 @@ const ResearcherHeritageManagement = () => {
     {
       title: "UNESCO",
       dataIndex: "unescoListed",
-      key: "unesco_listed",
+      key: "unescoListed",
       width: 100,
       render: (listed: boolean) =>
         listed ? <Tag color="green">CÓ</Tag> : <Tag color={"red"}>KHÔNG</Tag>,
