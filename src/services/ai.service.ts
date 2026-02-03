@@ -1,4 +1,5 @@
 import BaseService from './base.service';
+import apiClient from '@/config/axios.config';
 
 // AI Character
 export interface AICharacter {
@@ -11,6 +12,11 @@ export interface AICharacter {
     unlockLevelId?: number;
     isOwned?: boolean;
     personality?: string;
+    state?: 'amnesia' | 'restored';
+    isDefault?: boolean;
+    canUnlock?: boolean;
+    origin?: string;
+    isCollectible?: boolean;
 }
 
 // Chat Message
@@ -129,8 +135,10 @@ class AIService extends BaseService {
     }
 
     // Clear chat history
-    async clearHistory(): Promise<{ success: boolean }> {
-        const response = await this.deleteRequest('/history');
+    async clearHistory(characterId?: number): Promise<{ success: boolean }> {
+        // Append characterId to query params if present
+        const path = characterId ? `/history?characterId=${characterId}` : '/history';
+        const response = await this.deleteRequest(path);
         return response.data || { success: true };
     }
 
@@ -158,6 +166,25 @@ class AIService extends BaseService {
         // Note: BaseService.post returns already-unwrapped data from axios interceptor
         const response = await this.post(`/characters/${characterId}/purchase`, {});
         return response; // Already unwrapped by axios interceptor
+    }
+
+    // Transcribe audio
+    async transcribeAudio(audioBlob: Blob): Promise<string> {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'voice.webm');
+        formData.append('transcribeOnly', 'true');
+
+        // We use apiClient directly to set headers
+        const response = await apiClient.post(
+            `/ai/chat-audio`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+        return response.data.transcribedText;
     }
 }
 

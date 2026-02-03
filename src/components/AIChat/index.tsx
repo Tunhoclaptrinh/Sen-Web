@@ -16,9 +16,10 @@ import {
     PaperClipOutlined,
     ReadOutlined,
     QuestionCircleOutlined,
-    CheckOutlined
+    CheckOutlined,
+    LoadingOutlined
 } from "@ant-design/icons";
-import { Stage } from "@pixi/react";
+import { Stage, Sprite } from "@pixi/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -28,6 +29,7 @@ import {
   addUserMessage,
   setCurrentCharacter,
   clearChatHistory,
+  transcribeAudio,
 } from "@/store/slices/aiSlice";
 import type { ChatMessage } from "@/types";
 import SenChibi from "@/components/SenChibi";
@@ -92,45 +94,63 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   const [loading, setLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isTranscriptionSuccess, setIsTranscriptionSuccess] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const dataHistoryRef = useRef<number[]>([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
+  // Start/Stop Microphone monitoring & recording
   useEffect(() => {
     if (isListening) {
       const startMonitoring = async () => {
         try {
+          // Request permissions and stream
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
           streamRef.current = stream;
           
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          // --- ANALYZER SETUP (Existing Visualization Logic) ---
+          const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
           audioContextRef.current = audioContext;
           
           const source = audioContext.createMediaStreamSource(stream);
           const analyser = audioContext.createAnalyser();
           analyser.fftSize = 256;
-          analyser.smoothingTimeConstant = 0.5; // Smoother transitions
+          analyser.smoothingTimeConstant = 0.5;
           source.connect(analyser);
           analyserRef.current = analyser;
 
+          // --- MEDIA RECORDER SETUP (New Recording Logic) ---
+          // Use a MIME type that is widely supported. 'audio/webm' is standard for Chrome/Firefox.
+          const mimeType = 'audio/webm'; 
+          const mediaRecorder = new MediaRecorder(stream, { mimeType });
+          mediaRecorderRef.current = mediaRecorder;
+          audioChunksRef.current = [];
+
+          mediaRecorder.ondataavailable = (event) => {
+              if (event.data.size > 0) {
+                  audioChunksRef.current.push(event.data);
+              }
+          };
+
+          mediaRecorder.start();
+
+          // Initialize Visualization Loop
           const dataArray = new Uint8Array(analyser.frequencyBinCount);
-          
-          // Fill initial history with zeros
           const BAR_WIDTH = 3;
           const BAR_GAP = 3;
           const STEP = BAR_WIDTH + BAR_GAP;
-          
-          // Throttling for scroll speed control
           let lastDrawTime = 0;
-          const FRAME_INTERVAL = 32; // ~30fps - Adjust this to control scroll speed (larger = slower)
+          const FRAME_INTERVAL = 32;
 
           const draw = (timestamp: number) => {
             if (!canvasRef.current || !analyserRef.current) return;
             
-            // Throttle updates
             if (timestamp - lastDrawTime < FRAME_INTERVAL) {
                 animationFrameRef.current = requestAnimationFrame(draw);
                 return;
@@ -141,7 +161,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            // Handle DPI scaling (only needs to be set once ideally, but safe here)
             const dpr = window.devicePixelRatio || 1;
             const rect = canvas.getBoundingClientRect();
             if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
@@ -150,46 +169,34 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                  ctx.scale(dpr, dpr);
             }
             
-            // Use TimeDomainData for better "Loudness" / Amplitude representation
             analyserRef.current.getByteTimeDomainData(dataArray);
             
             let sumSquares = 0;
             for (let i = 0; i < dataArray.length; i++) {
-                // Time domain data is unsigned 8-bit integer (0-255), centered at 128 (silence)
                 const deviation = dataArray[i] - 128;
                 sumSquares += deviation * deviation;
             }
             
             const rms = Math.sqrt(sumSquares / dataArray.length);
             
-            // Push to history
             const maxBars = Math.floor(rect.width / STEP) + 2;
             const history = dataHistoryRef.current;
             history.push(rms);
             if (history.length > maxBars) {
-                // If we have too many bars, shift strictly to maintain buffer size 
-                // but usually we just want to fill the screen.
-                // shift() removes the oldest (left-most) element
                 while (history.length > maxBars) {
                      history.shift();
                 }
             }
             
-            // Clear canvas
             ctx.clearRect(0, 0, rect.width, rect.height);
-            
-            // Draw
             const centerY = rect.height / 2;
             ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
             
             for (let i = 0; i < history.length; i++) {
                 const vol = history[i];
-                // Noise gate (Time domain noise floor is usually very low, e.g. rms < 2)
                 const isSilence = vol < 2; 
-                
                 const x = rect.width - ((history.length - 1 - i) * STEP) - 10;
                 
-                // Optimization: Don't draw if off-screen to the left
                 if (x + BAR_WIDTH < 0) continue;
                 
                 if (isSilence) {
@@ -197,23 +204,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                     ctx.arc(x + BAR_WIDTH/2, centerY, 1.5, 0, Math.PI * 2);
                     ctx.fill();
                 } else {
-                    // [CONFIGURATION] SENSITIVITY CONTROL
-                    // Adjust this GAIN value to change how "tall" the bars get.
-                    // Higher value = Taller bars for the same volume.
-                    // 0.05 = Conservative (needs loud voice to fill)
-                    // 0.15 = Aggressive (easy to fill height)
-                    const GAIN = 0.1; 
-                    
-                    // Soft-Clipping (Tanh)
-                    // Allows bars to approach 100% height without hitting a hard wall.
+                    const GAIN = 0.06; 
                     const softScale = Math.tanh(vol * GAIN);
-                    
-                    // [MODIFIED] Ensure it uses the FULL canvas height ("Touch the roof")
                     const maxHeight = rect.height; 
-                    
-                    // Final height calculation
                     const height = Math.max(4, softScale * maxHeight);
-                    
                     const y = centerY - height / 2;
                     
                     ctx.beginPath();
@@ -228,6 +222,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
           requestAnimationFrame(draw);
         } catch (err) {
           console.error('Error accessing microphone:', err);
+          message.error("Không thể truy cập microphone");
           setIsListening(false);
         }
       };
@@ -236,21 +231,83 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     } else {
       // Cleanup
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      
+      // Stop MediaRecorder if running and NOT triggered by confirm (which handles its own stop)
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+          mediaRecorderRef.current.stop();
+      }
+      
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
       if (audioContextRef.current) audioContextRef.current.close();
-      dataHistoryRef.current = []; // Reset history
+      
+      dataHistoryRef.current = [];
     }
-
-    return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (audioContextRef.current) audioContextRef.current.close();
-    };
   }, [isListening]);
+
+  // Handle Cancel Recording
+  const handleCancelRecording = () => {
+     if (mediaRecorderRef.current) {
+         mediaRecorderRef.current.onstop = null; // Prevent any processing
+         mediaRecorderRef.current.stop();
+     }
+     setIsListening(false);
+  };
+
+  // Handle Confirm Recording (Transcribe -> Input)
+  const handleConfirmRecording = () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+          // Define what happens when recording stops
+          mediaRecorderRef.current.onstop = async () => {
+              const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+              
+              // Instead of closing immediately, we switch to transcribing mode
+              setIsTranscribing(true);
+              
+              try {
+                  // Dispatch Transcription Action
+                  const resultAction = await dispatch(transcribeAudio(audioBlob));
+                  
+                  if (transcribeAudio.fulfilled.match(resultAction)) {
+                      const text = resultAction.payload;
+                      if (text) {
+                          // Append to existing input or replace? usually voice dictation appends or replaces if empty.
+                          // Let's append with a space if there is existing text.
+                          setInput((prev) => prev ? `${prev} ${text}` : text);
+                          
+                          // Show success state
+                          setIsTranscribing(false);
+                          setIsTranscriptionSuccess(true);
+                          
+                          // Wait 1.5s before closing
+                          setTimeout(() => {
+                              setIsTranscriptionSuccess(false);
+                              setIsListening(false);
+                          }, 1500);
+                      } else {
+                        message.warning("Không nghe rõ lời bạn nói.");
+                        setIsTranscribing(false);
+                        setIsListening(false);
+                      }
+                  } else {
+                      message.error("Lỗi nhận diện giọng nói: " + (resultAction.payload || "Unknown error"));
+                      setIsTranscribing(false);
+                      setIsListening(false);
+                  }
+              } catch (err) {
+                  console.error("Transcription error:", err);
+                  message.error("Có lỗi xảy ra khi xử lý âm thanh.");
+                  setIsTranscribing(false);
+                  setIsListening(false);
+              }
+          };
+          
+          mediaRecorderRef.current.stop();
+      } else {
+          setIsListening(false);
+      }
+  };
   const [audioPlaying, setAudioPlaying] = useState<number | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [pendingSwitchCharacter, setPendingSwitchCharacter] = useState<typeof currentCharacter>(null);
@@ -632,7 +689,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     if ((!input.trim() && !selectedFile) || loading || !currentCharacter) return;
 
     if (selectedFile) {
-        console.log("Sending file:", selectedFile.name);
+        // console.log("Sending file:", selectedFile.name);
         // Implement upload logic here later
     }
 
@@ -723,38 +780,48 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                   height={dimensions.height}
                   options={{ backgroundAlpha: 0, antialias: true }}
                 >
-                  {senSettings.isChibi ? (
-                    <SenChibi
-                        x={dimensions.width * 0.2}
-                        y={topMargin} 
-                        scale={senSettings.scale * 1.45} 
-                        origin="head"
-                        isTalking={isSpeaking}
-                        gesture={senSettings.gesture as SenChibiGesture}
-                        eyeState={senSettings.eyeState as SenChibiEyeState}
-                        mouthState={senSettings.mouthState as SenChibiMouthState}
-                        showHat={senSettings.accessories.hat}
-                        showGlasses={senSettings.accessories.glasses}
-                        showCoat={senSettings.accessories.coat}
-                        isBlinking={senSettings.isBlinking}
-                    />
+                  {(currentCharacter?.isDefault || currentCharacter?.name?.toLowerCase().includes('sen')) ? (
+                    senSettings.isChibi ? (
+                        <SenChibi
+                            x={dimensions.width * 0.2}
+                            y={topMargin} 
+                            scale={senSettings.scale * 1.45} 
+                            origin="head"
+                            isTalking={isSpeaking}
+                            gesture={senSettings.gesture as SenChibiGesture}
+                            eyeState={senSettings.eyeState as SenChibiEyeState}
+                            mouthState={senSettings.mouthState as SenChibiMouthState}
+                            showHat={senSettings.accessories.hat}
+                            showGlasses={senSettings.accessories.glasses}
+                            showCoat={senSettings.accessories.coat}
+                            isBlinking={senSettings.isBlinking}
+                        />
+                    ) : (
+                        <SenCharacter
+                            x={dimensions.width * 0.2}
+                            y={topMargin}
+                            scale={senSettings.scale * 1.45}
+                            origin="head"
+                            isTalking={isSpeaking}
+                            eyeState={senSettings.eyeState as SenChibiEyeState}
+                            mouthState={senSettings.mouthState as SenChibiMouthState}
+                            showHat={senSettings.accessories.hat}
+                            showGlasses={senSettings.accessories.glasses}
+                            showCoat={senSettings.accessories.coat}
+                            showBag={senSettings.accessories.bag}
+                            isBlinking={senSettings.isBlinking}
+                            draggable={false}
+                            onPositionChange={() => { }}
+                            onClick={() => { }}
+                        />
+                    )
                   ) : (
-                    <SenCharacter
+                    <Sprite
+                        image={currentCharacter?.avatar || "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sen"}
                         x={dimensions.width * 0.2}
                         y={topMargin}
-                        scale={senSettings.scale * 1.45}
-                        origin="head"
-                        isTalking={isSpeaking}
-                        eyeState={senSettings.eyeState as SenChibiEyeState}
-                        mouthState={senSettings.mouthState as SenChibiMouthState}
-                        showHat={senSettings.accessories.hat}
-                        showGlasses={senSettings.accessories.glasses}
-                        showCoat={senSettings.accessories.coat}
-                        showBag={senSettings.accessories.bag}
-                        isBlinking={senSettings.isBlinking}
-                        draggable={false}
-                        onPositionChange={() => { }}
-                        onClick={() => { }}
+                        anchor={0.5}
+                        scale={0.8} 
                     />
                   )}
                 </Stage>
@@ -887,23 +954,51 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                   />
                   {isListening ? (
                     <div className="listening-input-wrapper">
-                        <Button 
-                            type="text" 
-                            icon={<PlusOutlined />} 
-                            className="input-prefix-btn"
-                            style={{ color: 'white', opacity: 0.5, cursor: 'default' }}
-                        />
-                        <div className="listening-dots-container">
-                            <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
-                        </div>
-                        <div className="listening-actions">
-                            <div className="control-btn cancel-btn" onClick={() => setIsListening(false)}>
-                                <CloseOutlined />
+                        {isTranscribing ? (
+                            <div className="transcribing-state" style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                width: '100%', 
+                                gap: '10px',
+                                color: 'white'
+                            }}>
+                                <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'white' }} spin />} />
+                                <span style={{ fontFamily: 'Cinzel', fontSize: '16px' }}>Đang nhận diện...</span>
                             </div>
-                            <div className="control-btn confirm-btn" onClick={() => setIsListening(false)}>
-                                <CheckOutlined />
+                        ) : isTranscriptionSuccess ? (
+                            <div className="transcribing-state" style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                width: '100%', 
+                                gap: '10px',
+                                color: '#52c41a' // Success Green
+                            }}>
+                                <CheckOutlined style={{ fontSize: 24 }} />
+                                <span style={{ fontFamily: 'Cinzel', fontSize: '16px' }}>Đã nhận diện</span>
                             </div>
-                        </div>
+                        ) : (
+                            <>
+                                <Button 
+                                    type="text" 
+                                    icon={<PlusOutlined />} 
+                                    className="input-prefix-btn"
+                                    style={{ color: 'white', opacity: 0.5, cursor: 'default' }}
+                                />
+                                <div className="listening-dots-container">
+                                    <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+                                </div>
+                                <div className="listening-actions">
+                                    <div className="control-btn cancel-btn" onClick={handleCancelRecording}>
+                                        <CloseOutlined />
+                                    </div>
+                                    <div className="control-btn confirm-btn" onClick={handleConfirmRecording}>
+                                        <CheckOutlined />
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                   ) : (
                     <>
@@ -958,24 +1053,25 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                             </Tooltip>
                         }
                         suffix={
-                          (input.trim() || selectedFile) ? (
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                             <Button
                                 type="text"
-                                icon={<SendOutlined />}
-                                onClick={handleSend}
-                                disabled={loading || chatLoading || (!input.trim() && !selectedFile)}
-                                className="input-suffix-btn send-btn"
-                                style={{ color: "#d24040" }}
+                                icon={<AudioOutlined style={{ fontSize: '22px' }} />}
+                                className="input-suffix-btn"
+                                style={{ color: 'white' }}
+                                onClick={() => setIsListening(true)}
                             />
-                          ) : (
-                            <div style={{ display: 'flex', gap: '8px' }}>
+                            
+                            {(input.trim() || selectedFile) ? (
                                 <Button
                                     type="text"
-                                    icon={<AudioOutlined style={{ fontSize: '22px' }} />}
-                                    className="input-suffix-btn"
-                                    style={{ color: 'white' }}
-                                    onClick={() => setIsListening(true)}
+                                    icon={<SendOutlined />}
+                                    onClick={handleSend}
+                                    disabled={loading || chatLoading || (!input.trim() && !selectedFile)}
+                                    className="input-suffix-btn send-btn"
+                                    style={{ color: "#d24040" }} // Sen Red
                                 />
+                            ) : (
                                 <div className="wave-icon-wrapper">
                                     <div className="waveform-icon">
                                         <div className="bar"></div>
@@ -984,8 +1080,8 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                                         <div className="bar"></div>
                                     </div>
                                 </div>
-                            </div>
-                          )
+                            )}
+                          </div>
                         }
                       />
                     </>
