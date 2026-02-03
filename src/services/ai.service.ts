@@ -1,19 +1,22 @@
 import BaseService from './base.service';
+import apiClient from '@/config/axios.config';
 
 // AI Character
 export interface AICharacter {
     id: number;
     name: string;
     avatar: string;
-    personality: string;
-    state: 'amnesia' | 'restored';
     description: string;
-    isDefault?: boolean;
+    rarity: 'common' | 'rare' | 'epic' | 'legendary';
+    price: number;
+    unlockLevelId?: number;
     isOwned?: boolean;
-    rarity?: 'common' | 'rare' | 'epic' | 'legendary';
-    price?: number;
-    unlockLevelId?: number | null;
+    personality?: string;
+    state?: 'amnesia' | 'restored';
+    isDefault?: boolean;
     canUnlock?: boolean;
+    origin?: string;
+    isCollectible?: boolean;
 }
 
 // Chat Message
@@ -24,11 +27,19 @@ export interface ChatMessage {
     role: 'user' | 'assistant';
     content: string;
     timestamp: string;
+    recommendation?: {
+        title: string;
+        url: string;
+    };
     audioBase64?: string; // Add audio field
     context?: {
         levelId?: number;
         artifactId?: number;
         heritageSiteId?: number;
+        recommendation?: {
+            title: string;
+            url: string;
+        };
     };
 }
 
@@ -63,7 +74,7 @@ class AIService extends BaseService {
                 heritageSiteId: data.context?.heritageSiteId,
             }
         });
-        // Backend returns: { success: true, data: { message, character, timestamp, route } }
+        // Backend returns: { success: true, data: { message, character, timestamp, route, recommendation } }
         return {
             message: {
                 id: Date.now(),
@@ -72,6 +83,7 @@ class AIService extends BaseService {
                 role: 'assistant',
                 content: response.data.message,
                 timestamp: response.data.timestamp || new Date().toISOString(),
+                recommendation: response.data.recommendation, // Map recommendation
                 audioBase64: response.data.audioBase64, // Map audio
                 context: data.context,
             },
@@ -123,8 +135,10 @@ class AIService extends BaseService {
     }
 
     // Clear chat history
-    async clearHistory(): Promise<{ success: boolean }> {
-        const response = await this.deleteRequest('/history');
+    async clearHistory(characterId?: number): Promise<{ success: boolean }> {
+        // Append characterId to query params if present
+        const path = characterId ? `/history?characterId=${characterId}` : '/history';
+        const response = await this.deleteRequest(path);
         return response.data || { success: true };
     }
 
@@ -150,7 +164,26 @@ class AIService extends BaseService {
         };
     }> {
         const response = await this.post(`/characters/${characterId}/purchase`, {});
-        return response.data;
+        return response; // Already unwrapped by axios interceptor
+    }
+
+    // Transcribe audio
+    async transcribeAudio(audioBlob: Blob): Promise<string> {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'voice.webm');
+        formData.append('transcribeOnly', 'true');
+
+        // We use apiClient directly to set headers
+        const response = await apiClient.post(
+            `/ai/chat-audio`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+        return response.data.transcribedText;
     }
 }
 
