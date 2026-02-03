@@ -78,7 +78,7 @@ const LearningForm: React.FC<LearningFormProps> = ({
         try {
             // Validate fields for the current step
             if (currentStep === 0) {
-                await form.validateFields(['title', 'thumbnail', 'difficulty', 'estimated_duration', 'content_type', 'content_url', 'description']);
+                await form.validateFields(['title', 'thumbnail', 'difficulty', 'estimatedDuration', 'contentType', 'contentUrl', 'description']);
             }
             setCurrentStep(currentStep + 1);
         } catch (error) {
