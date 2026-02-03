@@ -63,7 +63,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       if (open && initialValues && isEdit) {
         try {
           // Fetch labels for related IDs to show in DebounceSelect
-          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] =
+           const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] =
             await Promise.all([
               heritageService.getTimeline(initialValues.id),
               heritageService.getArtifacts(initialValues.id),
@@ -72,9 +72,9 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     ids: initialValues.relatedArtifactIds.join(","),
                   })
                 : Promise.resolve({ success: true, data: [] }),
-              initialValues.related_history_ids?.length > 0
+              initialValues.relatedHistoryIds?.length > 0
                 ? historyService.getAll({
-                    ids: initialValues.related_history_ids.join(","),
+                    ids: initialValues.relatedHistoryIds.join(","),
                   })
                 : Promise.resolve({ success: true, data: [] }),
             ]);
@@ -108,7 +108,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           });
 
           // Map related history to {label, value}
-          const relatedHistory = (initialValues.related_history_ids || []).map(
+          const relatedHistory = (initialValues.relatedHistoryIds || []).map(
             (id: any) => {
               const hist = relHistoryRes.success
                 ? relHistoryRes.data?.find(
@@ -126,11 +126,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
           const formattedValues = {
             ...initialValues,
-            shortDescription:
-              initialValues.short_description || initialValues.shortDescription,
+            shortDescription: initialValues.shortDescription,
             timeline: timeline,
             relatedArtifactIds: relatedArtifacts,
-            related_history_ids: relatedHistory,
+            relatedHistoryIds: relatedHistory,
           };
 
           // Set available provinces based on region
@@ -272,18 +271,18 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           "address",
           "region",
           "province",
-          "cultural_period",
+          "culturalPeriod",
           "significance",
-          "visit_hours",
+          "visitHours",
           "yearEstablished",
-          "entrance_fee",
+          "entranceFee",
           "unescoListed",
           "isActive",
         ];
         const tab2Fields = ["description"];
         const tab3Fields = [
           "relatedArtifactIds",
-          "related_history_ids",
+          "relatedHistoryIds",
           "timeline",
         ];
 
@@ -323,7 +322,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       relatedArtifactIds: values.relatedArtifactIds?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
-      related_history_ids: values.related_history_ids?.map((item: any) =>
+      relatedHistoryIds: values.relatedHistoryIds?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
     };
@@ -637,7 +636,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item label="Lịch sử liên quan" name="related_history_ids">
+                <Form.Item label="Lịch sử liên quan" name="relatedHistoryIds">
                   <DebounceSelect
                     mode="multiple"
                     placeholder="Tìm kiếm và chọn bài viết lịch sử..."

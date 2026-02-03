@@ -66,7 +66,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
                 const formattedValues = {
                     ...initialValues,
-                    shortDescription: initialValues.short_description || initialValues.shortDescription,
+                    shortDescription: initialValues.shortDescription,
                     publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
                     relatedHeritageIds: relatedHeri,
                     relatedArtifactIds: relatedArtifacts

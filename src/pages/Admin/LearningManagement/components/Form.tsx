@@ -55,9 +55,9 @@ const LearningForm: React.FC<LearningFormProps> = ({
             } else {
                 form.setFieldsValue({ 
                     difficulty: 'easy', 
-                    estimated_duration: 30, 
-                    content_type: 'article', 
-                    quiz: { passing_score: 50, questions: [] } 
+                    estimatedDuration: 30, 
+                    contentType: 'article', 
+                    quiz: { passingScore: 50, questions: [] } 
                 });
             }
         }

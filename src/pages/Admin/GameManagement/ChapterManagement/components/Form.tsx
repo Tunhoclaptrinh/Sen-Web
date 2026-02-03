@@ -68,9 +68,9 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
         // Create mode: reset to default values
         form.resetFields();
         form.setFieldsValue({
-          required_petals: 0,
+          requiredPetals: 0,
           color: '#1890ff',
-          is_active: true
+          isActive: true
         });
       }
     }
