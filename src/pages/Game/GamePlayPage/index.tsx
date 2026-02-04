@@ -24,6 +24,7 @@ import type { Screen, Level } from "@/types/game.types";
 import { SCREEN_TYPES } from "@/types/game.types";
 import { getImageUrl } from "@/utils/image.helper";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAuth } from '@/hooks/useAuth';
 import AIChat from "@/components/AIChat";
 
 // Screens
@@ -199,10 +200,33 @@ const GamePlayPage: React.FC = () => {
     return res;
   };
 
+  const { user } = useAuth();
+
   const handleFinishLevel = async () => {
     if (!levelId) return;
     setLoading(true);
     const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+
+    // ADMIN: Simulate completion, do not save
+    if (user?.role === 'admin') {
+        const mockResult = {
+            success: true,
+            passed: true,
+            score: score,
+            requiredScore: 0,
+            rewards: { coins: 0, petals: 0 },
+            breakdown: { baseScore: score, timeBonus: 0 },
+            isCompleted: true,
+            message: "Admin Mode: Completed without saving."
+        };
+        setTimeout(() => {
+            setCompletionData(mockResult);
+            setGameCompleted(true);
+            setLoading(false);
+            message.info("Admin Mode: Kết quả không được lưu vào hệ thống.");
+        }, 1000);
+        return;
+    }
 
     try {
       const result = await gameService.completeLevel(
@@ -212,8 +236,6 @@ const GamePlayPage: React.FC = () => {
       );
       setCompletionData(result);
       setGameCompleted(true);
-      
-
       
     } catch (error) {
       message.error("Lỗi khi hoàn thành màn chơi");

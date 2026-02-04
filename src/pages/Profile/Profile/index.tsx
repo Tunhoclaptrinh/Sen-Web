@@ -25,11 +25,13 @@ import {
   HistoryOutlined,
   HeartOutlined,
   AppstoreOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  TrophyOutlined
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import userService from "@services/user.service";
 import collectionService from "@services/collection.service";
+import gameService from "@services/game.service"; // Import GameService
 import { Collection } from "@/types/collection.types";
 import favoriteService, { FavoriteStats } from "@services/favorite.service";
 // import apiClient from "@config/axios.config";
@@ -51,10 +53,14 @@ const Profile = () => {
   const [collectionsLoading, setCollectionsLoading] = useState(false);
   // const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [favoritesLoading] = useState<boolean>(false);
+  const [favoritesLoading] = useState<boolean>(false);
   const [activityLoading, setActivityLoading] = useState(false);
+  const [badgesLoading, setBadgesLoading] = useState(false);
 
   // Data States
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [allBadges, setAllBadges] = useState<any[]>([]); // All badge definitions
+  const [userProgress, setUserProgress] = useState<any>(null); // User game progress
   // Favorites list moved to LibraryPage, keeping stats only
   const [favoriteStats, setFavoriteStats] = useState<FavoriteStats | null>(null);
   // const [activities, setActivities] = useState<any[]>([]); // Unused for now
@@ -114,6 +120,22 @@ const Profile = () => {
     }
   };
 
+  const fetchBadgesData = async () => {
+      setBadgesLoading(true);
+      try {
+          const [badgesRes, progressRes] = await Promise.all([
+              gameService.getBadges(),
+              gameService.getProgress()
+          ]);
+          setAllBadges(badgesRes || []);
+          setUserProgress(progressRes || null);
+      } catch (error) {
+          console.error("Error fetching badges:", error);
+      } finally {
+          setBadgesLoading(false);
+      }
+  };
+
   const onUpdateProfile = async (values: any) => {
     try {
       setLoading(true);
@@ -171,6 +193,9 @@ const Profile = () => {
   useEffect(() => {
     if (activeTab === 'activity') {
         fetchActivity();
+    }
+    if (activeTab === 'badges') {
+        fetchBadgesData();
     }
   }, [activeTab]);
 
@@ -388,6 +413,61 @@ const Profile = () => {
       </div>
   )
 
+  const renderBadgeTab = () => {
+      const userBadges = userProgress?.badges || []; // Array of { id, earnedAt }
+      // Map earned status to all badges
+      const displayedBadges = allBadges.map(badge => {
+          const earned = userBadges.find((b: any) => b.id === badge.id);
+          return { ...badge, earned: !!earned, earnedAt: earned?.earnedAt };
+      });
+
+      return (
+        <div className="profile-card">
+            <div className="card-title">
+                <TrophyOutlined /> Huy hiệu & Thành tích
+            </div>
+            <div style={{ marginBottom: 24, padding: 16, background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <div style={{ fontWeight: 600, color: '#389e0d' }}>Tiến độ sưu tập</div>
+                    <div>Bạn đã mở khóa {userBadges.length}/{allBadges.length} huy hiệu</div>
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#389e0d' }}>
+                    {Math.round((userBadges.length / (allBadges.length || 1)) * 100)}%
+                </div>
+            </div>
+
+            {badgesLoading ? <div style={{ textAlign: 'center', padding: 40 }}><Spin /></div> : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 24 }}>
+                    {displayedBadges.map(badge => (
+                        <div 
+                            key={badge.id}
+                            style={{ 
+                                textAlign: 'center', 
+                                padding: 16, 
+                                borderRadius: 12, 
+                                border: badge.earned ? '1px solid #d9d9d9' : '1px dashed #d9d9d9',
+                                background: badge.earned ? '#fff5f0' : '#fafafa',
+                                filter: badge.earned ? 'none' : 'grayscale(100%)',
+                                opacity: badge.earned ? 1 : 0.6,
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <div style={{ fontSize: 48, marginBottom: 8 }}>{badge.icon}</div>
+                            <div style={{ fontWeight: 700, marginBottom: 4, color: '#2c3e50', minHeight: 44 }}>{badge.name}</div>
+                            <div style={{ fontSize: 12, color: '#666', lineHeight: 1.4 }}>{badge.description}</div>
+                            {badge.earned && (
+                                <div style={{ marginTop: 8, fontSize: 11, color: '#fa8c16' }}>
+                                    Đạt được: {new Date(badge.earnedAt).toLocaleDateString('vi-VN')}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+      );
+  };
+
   return (
     <div className="profile-page">
       <ProfileHeader 
@@ -399,6 +479,7 @@ const Profile = () => {
       <div className="profile-content">
         <div className="profile-container">
           {activeTab === 'profile' && renderProfileTab()}
+          {activeTab === 'badges' && renderBadgeTab()}
           {activeTab === 'activity' && renderActivityTab()}
           {activeTab === 'security' && renderSecurityTab()}
         </div>

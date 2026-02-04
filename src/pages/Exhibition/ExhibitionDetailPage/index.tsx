@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-    Card, 
-    Typography, 
-    Tag, 
+    Spin, 
     Row, 
     Col, 
-    Image, 
-    Spin, 
+    Typography, 
+    Empty, 
     Button, 
-    Descriptions,
-    Empty,
-    Space,
-    Breadcrumb
+    Tag, 
+    Tabs, 
+    message 
 } from 'antd';
 import { 
     ArrowLeftOutlined, 
@@ -21,198 +18,206 @@ import {
     PictureOutlined,
     TagOutlined,
     EyeOutlined,
-    HomeOutlined
+    ShareAltOutlined,
+    RocketOutlined,
+    CameraOutlined
 } from '@ant-design/icons';
 import exhibitionService, { Exhibition } from '@/services/exhibition.service';
-import { getImageUrl } from '@/utils/image.helper';
+import artifactService from '@/services/artifact.service';
+import { getImageUrl, resolveImage } from '@/utils/image.helper';
+import { useAuth } from '@/hooks/useAuth';
+import ArticleCard from '@/components/common/cards/ArticleCard';
 import dayjs from 'dayjs';
 import './styles.less';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph } = Typography;
 
 const ExhibitionDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { user } = useAuth();
+    
     const [exhibition, setExhibition] = useState<Exhibition | null>(null);
+    const [artifacts, setArtifacts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchExhibition = async () => {
+        const fetchData = async () => {
             if (!id) return;
             setLoading(true);
             try {
-                const response = await exhibitionService.getById(Number(id));
-                if (response.success && response.data) {
-                    setExhibition(response.data);
+                // 1. Fetch Exhibition
+                const res = await exhibitionService.getById(Number(id));
+                if (res.success && res.data) {
+                    const data = res.data;
+                    
+                    // Security / Visibility Check
+                    const isAdmin = user?.role === 'admin';
+                    const isOwner = user && data.createdBy === user.id;
+                    const isPublished = data.status === 'published';
+                    const isActive = data.isActive;
+                    const now = dayjs();
+                    const inDateRange = data.startDate && data.endDate && now.isAfter(data.startDate) && now.isBefore(data.endDate);
+
+                    // Allow access if: Admin OR Owner OR (Published OR Active OR In Date Range)
+                    const canView = isAdmin || isOwner || isPublished || isActive || inDateRange;
+
+                    if (!canView) {
+                        message.error('Triển lãm này chưa được công khai hoặc bạn không có quyền truy cập');
+                        if (user?.role === 'researcher') {
+                            navigate('/researcher/exhibitions');
+                        } else {
+                            navigate('/exhibitions');
+                        }
+                        return;
+                    }
+                    setExhibition(data);
+
+                    // 2. Fetch Related Artifacts
+                    if (data.artifactIds && data.artifactIds.length > 0) {
+                        const artRes = await artifactService.getAll({ ids: data.artifactIds.join(',') });
+                        if (artRes.success && artRes.data) {
+                            setArtifacts(artRes.data); // Assuming getAll returns { data: [...] } or array
+                        }
+                    }
                 }
             } catch (error) {
-                console.error('Error fetching exhibition:', error);
+                console.error('Error fetching data:', error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchExhibition();
-    }, [id]);
+        fetchData();
+        window.scrollTo(0, 0);
+    }, [id, user]); // Added user dependency to re-run check if auth loads late
 
-    if (loading) {
-        return (
-            <div className="exhibition-detail-page">
-                <div className="loading-container">
-                    <Spin size="large" tip="Đang tải..." />
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="exhibition-detail-page"><div className="loading-container"><Spin size="large" /></div></div>;
+    if (!exhibition) return <Empty description="Không tìm thấy triển lãm" />;
 
-    if (!exhibition) {
-        return (
-            <div className="exhibition-detail-page">
-                <Card>
-                    <Empty description="Không tìm thấy triển lãm" />
-                    <div style={{ textAlign: 'center', marginTop: 16 }}>
-                        <Button onClick={() => navigate('/exhibitions')}>Quay lại</Button>
-                    </div>
-                </Card>
-            </div>
-        );
-    }
-
-    const imageUrl = exhibition.image && (exhibition.image.startsWith('http') || exhibition.image.startsWith('blob'))
-        ? exhibition.image
-        : getImageUrl(exhibition.image || '');
+    const rawImage = resolveImage(exhibition.image);
+    const heroImage = getImageUrl(rawImage, '/images/Zero_home.png'); // Fallback to generic if empty
 
     return (
         <div className="exhibition-detail-page">
-            {/* Breadcrumb */}
-            <Breadcrumb className="breadcrumb">
-                <Breadcrumb.Item href="/">
-                    <HomeOutlined /> Trang chủ
-                </Breadcrumb.Item>
-                <Breadcrumb.Item href="/exhibitions">
-                    <PictureOutlined /> Triển lãm
-                </Breadcrumb.Item>
-                <Breadcrumb.Item>{exhibition.name}</Breadcrumb.Item>
-            </Breadcrumb>
-
-            {/* Hero Section */}
-            <div className="hero-section">
-                <div className="hero-image">
-                    {imageUrl ? (
-                        <Image
-                            src={imageUrl}
-                            alt={exhibition.name}
-                            style={{ width: '100%', height: 400, objectFit: 'cover' }}
-                            placeholder={<div style={{ background: '#f0f0f0', height: 400 }} />}
-                        />
-                    ) : (
-                        <div className="no-image">
-                            <PictureOutlined style={{ fontSize: 48 }} />
-                            <span>Chưa có hình ảnh</span>
-                        </div>
-                    )}
-                </div>
-                
+            {/* HERO SECTION */}
+            <section className="detail-hero">
+                <div className="hero-bg" style={{ backgroundImage: `url('${heroImage}')` }} />
                 <div className="hero-overlay">
                     <div className="hero-content">
-                        <Space style={{ marginBottom: 16 }}>
-                            {exhibition.isPermanent && <Tag color="purple" className="big-tag">VĨNH VIỄN</Tag>}
-                            {exhibition.theme && <Tag className="big-tag">{exhibition.theme}</Tag>}
-                        </Space>
-                        <Title level={1} className="hero-title">{exhibition.name}</Title>
+                        <Tag color="var(--primary-color)" style={{ border: 'none', marginBottom: 16, fontSize: 14, padding: '4px 12px' }}>
+                            VIRTUAL EXHIBITION
+                        </Tag>
+                        <h1>{exhibition.name}</h1>
                         <div className="hero-meta">
-                            <span><CalendarOutlined /> {exhibition.isPermanent 
-                                ? 'Triển lãm thường trực'
-                                : `${dayjs(exhibition.startDate).format('DD/MM/YYYY')} - ${dayjs(exhibition.endDate).format('DD/MM/YYYY')}`
-                            }</span>
-                            {exhibition.curator && <span><UserOutlined /> {exhibition.curator}</span>}
+                            <span><CalendarOutlined /> {exhibition.isPermanent ? 'Vĩnh viễn' : `${dayjs(exhibition.startDate).format('DD/MM/YYYY')} - ${dayjs(exhibition.endDate).format('DD/MM/YYYY')}`}</span>
+                            <span><UserOutlined /> {exhibition.curator || 'Bảo tàng SEN'}</span>
+                            <span><EyeOutlined /> {exhibition.visitorCount || 0} lượt tham quan</span>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Content */}
-            <div className="content-section">
-                <Row gutter={24}>
-                    <Col xs={24} md={16}>
-                        {/* Description */}
-                        <Card title="Giới thiệu" className="content-card">
-                            {exhibition.description ? (
-                                <div 
-                                    className="description-content"
-                                    dangerouslySetInnerHTML={{ __html: exhibition.description }}
-                                />
-                            ) : (
-                                <Paragraph type="secondary">Chưa có mô tả</Paragraph>
-                            )}
-                        </Card>
-
-                        {/* Artifacts */}
-                        {exhibition.artifactIds && exhibition.artifactIds.length > 0 && (
-                            <Card title={`Hiện vật trong triển lãm (${exhibition.artifactIds.length})`} className="content-card">
-                                <Row gutter={[16, 16]}>
-                                    {exhibition.artifactIds.map((artifactId: number) => (
-                                        <Col key={artifactId} xs={12} sm={8} md={6}>
-                                            <Card 
-                                                hoverable
-                                                size="small"
-                                                onClick={() => navigate(`/artifacts/${artifactId}`)}
-                                                cover={
-                                                    <div className="artifact-placeholder">
-                                                        <PictureOutlined />
-                                                    </div>
-                                                }
-                                            >
-                                                <Card.Meta 
-                                                    title={<Text type="secondary" style={{ fontSize: 12 }}>Hiện vật #{artifactId}</Text>}
-                                                />
-                                            </Card>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Card>
-                        )}
+            {/* CONTENT CONTAINER */}
+            <div className="content-container">
+                <Row gutter={[48, 24]}>
+                    <Col xs={24} lg={16}>
+                        <Tabs 
+                            defaultActiveKey="desc" 
+                            className="exhibition-tabs" 
+                            items={[
+                                {
+                                    key: 'desc',
+                                    label: 'Giới thiệu',
+                                    children: (
+                                        <div className="article-main-wrapper">
+                                            <h2 className="article-main-title">{exhibition.name}</h2>
+                                            <div 
+                                                className="article-body-content"
+                                                dangerouslySetInnerHTML={{ __html: exhibition.description || '<p>Chưa có mô tả chi tiết cho triển lãm này.</p>' }}
+                                            />
+                                            
+                                            {/* Gallery Preview Block (Mock) */}
+                                            <div style={{ marginTop: 40, padding: 24, background: '#f9f9f9', borderRadius: 12, textAlign: 'center' }}>
+                                                <Title level={4}>Trải nghiệm không gian 3D</Title>
+                                                <p>Khám phá triển lãm trong không gian thực tế ảo sống động.</p>
+                                                <Button type="primary" size="large" icon={<RocketOutlined />} disabled>
+                                                    Vào tham quan 3D (Sắp ra mắt)
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    key: 'artifacts',
+                                    label: `Hiện vật (${artifacts.length})`,
+                                    children: (
+                                        <div className="article-main-wrapper">
+                                            <Title level={3} style={{ fontFamily: 'Aleo', marginBottom: 24 }}>Hiện vật trưng bày</Title>
+                                            {artifacts.length > 0 ? (
+                                                <Row gutter={[24, 24]}>
+                                                    {artifacts.map(art => (
+                                                        <Col xs={24} sm={12} key={art.id}>
+                                                            <ArticleCard data={art} type="artifact" />
+                                                        </Col>
+                                                    ))}
+                                                </Row>
+                                            ) : (
+                                                <Empty description="Chưa có hiện vật nào được cập nhật" />
+                                            )}
+                                        </div>
+                                    )
+                                }
+                            ]} 
+                        />
                     </Col>
 
-                    <Col xs={24} md={8}>
-                        {/* Quick Info */}
-                        <Card title="Thông tin" className="info-card">
-                            <Descriptions column={1} size="small">
-                                <Descriptions.Item label={<><CalendarOutlined /> Thời gian</>}>
-                                    {exhibition.isPermanent ? (
-                                        <Text strong style={{ color: 'var(--primary-color)' }}>Vĩnh viễn</Text>
-                                    ) : (
-                                        <Text>
-                                            {dayjs(exhibition.startDate).format('DD/MM/YYYY')} - {dayjs(exhibition.endDate).format('DD/MM/YYYY')}
-                                        </Text>
-                                    )}
-                                </Descriptions.Item>
-                                {exhibition.curator && (
-                                    <Descriptions.Item label={<><UserOutlined /> Phụ trách</>}>
-                                        {exhibition.curator}
-                                    </Descriptions.Item>
-                                )}
-                                {exhibition.theme && (
-                                    <Descriptions.Item label={<><TagOutlined /> Chủ đề</>}>
-                                        <Tag>{exhibition.theme}</Tag>
-                                    </Descriptions.Item>
-                                )}
-                                {exhibition.visitorCount !== undefined && (
-                                    <Descriptions.Item label={<><EyeOutlined /> Lượt xem</>}>
-                                        <Text strong>{exhibition.visitorCount.toLocaleString()}</Text>
-                                    </Descriptions.Item>
-                                )}
-                            </Descriptions>
-                        </Card>
+                    <Col xs={24} lg={8}>
+                        <div className="sidebar-wrapper">
+                            {/* Info Widget */}
+                            <div className="info-card-widget">
+                                <h3 className="info-section-title">Thông tin triển lãm</h3>
+                                <ul className="info-grid-list">
+                                    <li>
+                                        <div className="icon-wrapper"><CalendarOutlined /></div>
+                                        <div className="info-text">
+                                            <span className="label">Thời gian</span>
+                                            <span className="value">{exhibition.isPermanent ? 'Thường trực' : 'Có thời hạn'}</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div className="icon-wrapper"><TagOutlined /></div>
+                                        <div className="info-text">
+                                            <span className="label">Chủ đề</span>
+                                            <span className="value">{exhibition.theme || 'Văn hóa'}</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div className="icon-wrapper"><UserOutlined /></div>
+                                        <div className="info-text">
+                                            <span className="label">Người tổ chức</span>
+                                            <span className="value">{exhibition.curator || 'Ban quản lý'}</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div className="icon-wrapper"><PictureOutlined /></div>
+                                        <div className="info-text">
+                                            <span className="label">Số lượng hiện vật</span>
+                                            <span className="value">{artifacts.length} hiện vật</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
 
-                        {/* Back button */}
-                        <Button 
-                            icon={<ArrowLeftOutlined />} 
-                            onClick={() => navigate('/exhibitions')}
-                            block
-                            style={{ marginTop: 16 }}
-                        >
-                            Quay lại danh sách
-                        </Button>
+                            {/* Actions Widget */}
+                            <div className="action-button-group">
+                                <Button type="primary" size="large" className="primary-action-btn" icon={<ShareAltOutlined />}>
+                                    Chia sẻ sự kiện
+                                </Button>
+                                <Button size="large" className="secondary-action-btn" icon={<ArrowLeftOutlined />} onClick={() => navigate('/exhibitions')}>
+                                    Quay lại danh sách
+                                </Button>
+                            </div>
+                        </div>
                     </Col>
                 </Row>
             </div>

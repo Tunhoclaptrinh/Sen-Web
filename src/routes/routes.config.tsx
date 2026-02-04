@@ -101,6 +101,12 @@ const ResearcherExhibitionManagement = lazy(
 const ExhibitionDetailPage = lazy(
   () => import("@/pages/Admin/ExhibitionManagement/ExhibitionDetailPage"),
 );
+const ResearcherChapterManagement = lazy(
+  () => import("@/pages/Researcher/ChapterManagement"),
+);
+const ResearcherLevelManagement = lazy(
+  () => import("@/pages/Researcher/LevelManagement"),
+);
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -216,7 +222,7 @@ const routes: RouteObject[] = [
   {
     path: "/game",
     element: (
-      <RoleGuard allowedRoles={["customer"]} redirectTo="/">
+      <RoleGuard allowedRoles={["customer", "admin"]} redirectTo="/">
         <LazyLoadWrapper>
           <CustomerLayout />
         </LazyLoadWrapper>
@@ -320,11 +326,11 @@ const routes: RouteObject[] = [
       },
       {
         path: "chapters",
-        element: <ChapterManagement />,
+        element: <ResearcherChapterManagement />,
       },
       {
         path: "levels",
-        element: <LevelManagement />,
+        element: <ResearcherLevelManagement />,
       },
     ],
   },

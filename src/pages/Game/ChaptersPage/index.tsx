@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters } from '@/store/slices/gameSlice';
+import { useAuth } from '@/hooks/useAuth'; 
 import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal, message } from 'antd';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import gameService from '@/services/game.service';
@@ -15,6 +16,7 @@ const { Title, Text, Paragraph } = Typography;
 const ChaptersPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { user } = useAuth(); // Import useAuth
     const { chapters, chaptersLoading, progress, progressLoading } = useAppSelector((state) => state.game);
 
     useEffect(() => {
@@ -142,9 +144,10 @@ const ChaptersPage: React.FC = () => {
                     <Row gutter={[24, 24]} className="chapters-grid">
                         {chapters.map((chapter) => {
                             // Derived logic from petal_state
-                            const isUnlocked = chapter.petalState === 'blooming' || chapter.petalState === 'full';
+                            const isAdmin = user?.role === 'admin';
+                            const isUnlocked = isAdmin || chapter.petalState === 'blooming' || chapter.petalState === 'full';
                             // "locked" state from backend means Hard Lock (previous chapter not finished)
-                            const isHardLocked = chapter.petalState === 'locked';
+                            const isHardLocked = !isAdmin && chapter.petalState === 'locked';
                             return (
                                 <Col xs={24} sm={12} lg={8} key={chapter.id}>
                                     <motion.div

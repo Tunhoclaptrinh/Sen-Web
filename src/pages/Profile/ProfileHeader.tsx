@@ -141,6 +141,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, onTabCha
                                     }}
                                     items={[
                                         { label: 'Hồ sơ', key: 'profile' },
+                                        { label: 'Huy hiệu', key: 'badges' },
                                         { label: 'Hoạt động', key: 'activity' },
                                         { label: 'Bảo mật', key: 'security' },
                                         { label: 'Kho lưu Trữ', key: 'library' },

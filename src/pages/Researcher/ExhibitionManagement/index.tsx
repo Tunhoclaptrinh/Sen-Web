@@ -1,4 +1,4 @@
-import { Button, Space, Modal, Form, Input, Tag, Switch, DatePicker, Tabs } from 'antd';
+import { Button, Space, Modal, Form, Input, Tag, Switch, DatePicker, Tabs, Transfer } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { PictureOutlined } from '@ant-design/icons';
@@ -236,6 +236,26 @@ const ResearcherExhibitionManagement: React.FC = () => {
                         label="Mô tả"
                     >
                         <Input.TextArea rows={4} placeholder="Mô tả nội dung triển lãm" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="artifactIds"
+                        label="Chọn hiện vật trưng bày"
+                    >
+                        <Transfer
+                            dataSource={model.availableArtifacts as any[]}
+                            showSearch
+                            listStyle={{
+                                width: '100%',
+                                height: 300,
+                            }}
+                            titles={['Hiện vật kho', 'Đã chọn']}
+                            render={(item) => item.name}
+                            rowKey={(item) => item.id}
+                            filterOption={(inputValue, item) => 
+                                item.name.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+                            }
+                        />
                     </Form.Item>
 
                     <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>

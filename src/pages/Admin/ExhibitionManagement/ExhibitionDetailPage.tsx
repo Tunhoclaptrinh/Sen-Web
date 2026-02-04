@@ -12,8 +12,11 @@ import {
     Descriptions,
     Empty,
     Space,
+    message, // Added message
     Breadcrumb
 } from 'antd';
+// ... icons
+import { useAuth } from '@/hooks/useAuth'; // Added useAuth
 import { 
     ArrowLeftOutlined, 
     CalendarOutlined, 
@@ -35,6 +38,8 @@ const ExhibitionDetailPage: React.FC = () => {
     const [exhibition, setExhibition] = useState<Exhibition | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const { user } = useAuth(); // Import useAuth
+
     useEffect(() => {
         const fetchExhibition = async () => {
             if (!id) return;
@@ -42,6 +47,12 @@ const ExhibitionDetailPage: React.FC = () => {
             try {
                 const response = await exhibitionService.getById(Number(id));
                 if (response.success && response.data) {
+                    // Security Check for Researchers
+                    if (user?.role === 'researcher' && response.data.createdBy !== user.id) {
+                        message.error('Bạn không có quyền xem triển lãm này');
+                        navigate('/researcher/exhibitions');
+                        return;
+                    }
                     setExhibition(response.data);
                 }
             } catch (error) {
@@ -51,7 +62,7 @@ const ExhibitionDetailPage: React.FC = () => {
             }
         };
         fetchExhibition();
-    }, [id]);
+    }, [id, user]);
 
     const getStatusTag = (status: string) => {
         const statusConfig: Record<string, { color: string; text: string }> = {

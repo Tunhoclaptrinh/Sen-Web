@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { useAuth } from "@/hooks/useAuth";
 import {
   fetchLevelsByChapter,
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
-import { Button, Spin, Typography, Progress, Switch, Tooltip } from "antd";
+import { Button, Spin, Typography, Progress, Switch, Tooltip, message } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import type { Level } from "@/types";
 import "./styles.less";
@@ -27,6 +28,9 @@ const LevelsPage: React.FC = () => {
   // Controls validity of card "Always On" mode
   const [showDetailCards, setShowDetailCards] = React.useState(true);
 
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { user } = useAuth();
+
   useEffect(() => {
     if (chapterId) {
       dispatch(fetchLevelsByChapter(Number(chapterId)));
@@ -43,9 +47,11 @@ const LevelsPage: React.FC = () => {
   }, [dispatch, chapterId, progress?.completedLevels]); // Re-run when completion status changes
 
   const handleStartLevel = (level: Level) => {
-    if (!level.isLocked) {
+    if (!level.isLocked || user?.role === 'admin') {
       dispatch(setCurrentLevel(level));
       navigate(`/game/play/${level.id}`);
+    } else {
+        message.warning("Màn chơi này đang bị khóa!");
     }
   };
 
@@ -110,7 +116,7 @@ const LevelsPage: React.FC = () => {
 
       {/* MAP AREA */}
       <ChapterMap 
-          levels={levels} 
+          levels={user?.role === 'admin' ? levels.map(l => ({...l, isLocked: false})) : levels} 
           currentActiveLevelId={currentActiveLevelId} 
           onLevelClick={handleStartLevel}
           showDetailCards={showDetailCards}

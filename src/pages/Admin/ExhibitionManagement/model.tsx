@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { message, Modal, Input } from "antd";
 import { useCRUD } from "@/hooks/useCRUD";
 import exhibitionService, { Exhibition } from "@/services/exhibition.service";
+import artifactService from "@/services/artifact.service";
 
 export const useExhibitionModel = () => {
     // Stats State
@@ -131,10 +132,31 @@ export const useExhibitionModel = () => {
         return success;
     };
 
+    // Artifacts Logic
+    const [availableArtifacts, setAvailableArtifacts] = useState<any[]>([]);
+
+    const fetchArtifacts = async () => {
+        try {
+            // Fetch all artifacts for admin selection
+            const response = await artifactService.getAll({ _limit: 1000 });
+            if (response.success && response.data) {
+                setAvailableArtifacts(response.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch artifacts", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+        fetchArtifacts();
+    }, []);
+
     return {
         ...crud,
         stats,
         statsLoading,
+        availableArtifacts,
         currentRecord,
         formVisible,
         detailVisible,
