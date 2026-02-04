@@ -17,7 +17,7 @@ const { Paragraph } = Typography;
 
 interface ArticleCardProps {
     data: any; // Using any for shared convenience
-    type: 'artifact' | 'heritage' | 'history' | 'collection';
+    type: 'artifact' | 'heritage' | 'history' | 'collection' | 'exhibition';
     variant?: 'default' | 'portrait'; // Added variant support
     actions?: React.ReactNode;
     secondaryAction?: React.ReactNode;
@@ -33,6 +33,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ data, type, variant = 'defaul
         else if (type === 'heritage') path = `/heritage-sites/${data.id}`;
         else if (type === 'history') path = `/history/${data.id}`;
         else if (type === 'collection') path = `/profile/collections/${data.id}`;
+        else if (type === 'exhibition') path = `/exhibitions/${data.id}`;
         
         if (path) navigate(path);
     };

@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { PictureOutlined } from '@ant-design/icons';
 import { useExhibitionModel } from './model';
-import ExhibitionStats from './components/Stats';
-import ExhibitionDetailModal from './components/DetailModal';
 import DataTable from '@/components/common/DataTable';
+import ExhibitionStats from '@/pages/Admin/ExhibitionManagement/components/Stats';
+import ExhibitionDetailModal from '@/pages/Admin/ExhibitionManagement/components/DetailModal';
 import { getImageUrl } from '@/utils/image.helper';
 import dayjs from 'dayjs';
 
-const ExhibitionManagement: React.FC = () => {
+const ResearcherExhibitionManagement: React.FC = () => {
     const model = useExhibitionModel();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const columns = [
@@ -21,7 +22,7 @@ const ExhibitionManagement: React.FC = () => {
             width: 100,
             align: 'center',
             render: (url: string) => {
-                 const src = url && (url.startsWith('http') || url.startsWith('blob')) 
+                const src = url && (url.startsWith('http') || url.startsWith('blob')) 
                     ? url 
                     : getImageUrl(url);
                 return (
@@ -46,7 +47,7 @@ const ExhibitionManagement: React.FC = () => {
             title: 'Trạng thái duyệt',
             dataIndex: 'status',
             key: 'status',
-            width: 120,
+            width: 130,
             render: (status: string) => {
                 let color = 'default';
                 let text = 'Nháp';
@@ -87,49 +88,38 @@ const ExhibitionManagement: React.FC = () => {
             width: 120,
             render: (val: boolean) => val ? <Tag color="green">ĐANG MỞ</Tag> : <Tag>ĐÃ ĐÓNG</Tag>
         },
-        {
-            title: 'Tác giả',
-            dataIndex: 'authorName',
-            key: 'authorName',
-            width: 120,
-            render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
-        },
     ];
 
-  const { user } = useAuth();
-  
-  const tabItems = [
-    { key: 'all', label: 'Tất cả triển lãm' },
-    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
-      { key: 'my', label: 'Triển lãm của tôi' },
-    ] : []),
-    { key: 'pending', label: 'Chờ duyệt' },
-    { key: 'published', label: 'Đã xuất bản' },
-  ];
+    const tabItems = [
+        { key: 'my', label: 'Triển lãm của tôi' },
+        { key: 'pending', label: 'Chờ duyệt' },
+        { key: 'published', label: 'Đã xuất bản' },
+        { key: 'rejected', label: 'Bị từ chối' },
+    ];
 
-  const handleTabChange = (key: string) => {
-    switch (key) {
-      case 'all':
-        model.clearFilters();
-        break;
-      case 'my':
-        model.updateFilters({ createdBy: user?.id, status: undefined });
-        break;
-      case 'pending':
-        model.updateFilters({ status: 'pending', createdBy: undefined });
-        break;
-      case 'published':
-        model.updateFilters({ status: 'published', createdBy: undefined });
-        break;
-    }
-  };
+    const handleTabChange = (key: string) => {
+        switch (key) {
+            case 'my':
+                model.updateFilters({ createdBy: user?.id, status: undefined });
+                break;
+            case 'pending':
+                model.updateFilters({ status: 'pending', createdBy: user?.id });
+                break;
+            case 'published':
+                model.updateFilters({ status: 'published', createdBy: user?.id });
+                break;
+            case 'rejected':
+                model.updateFilters({ status: 'rejected', createdBy: user?.id });
+                break;
+        }
+    };
 
-  const getActiveTab = () => {
-    if (model.filters.createdBy === user?.id) return 'my';
-    if (model.filters.status === 'pending') return 'pending';
-    if (model.filters.status === 'published') return 'published';
-    return 'all';
-  };
+    const getActiveTab = () => {
+        if (model.filters.status === 'pending') return 'pending';
+        if (model.filters.status === 'published') return 'published';
+        if (model.filters.status === 'rejected') return 'rejected';
+        return 'my';
+    };
 
     return (
         <>
@@ -160,8 +150,7 @@ const ExhibitionManagement: React.FC = () => {
                 onView={model.openDetail}
                 onDelete={model.remove}
                 onSubmitReview={model.submitReview ? (record) => model.submitReview?.(record.id) : undefined}
-                onApprove={model.approveReview ? (record) => model.approveReview?.(record.id) : undefined}
-                onReject={model.handleReject}
+                permissionResource="exhibitions"
             />
 
             <Modal
@@ -265,10 +254,10 @@ const ExhibitionManagement: React.FC = () => {
                 exhibition={model.currentRecord}
                 visible={model.detailVisible}
                 onClose={model.closeDetail}
-                onViewFull={(id) => navigate(`/admin/exhibitions/${id}`)}
+                onViewFull={(id) => navigate(`/researcher/exhibitions/${id}`)}
             />
         </>
     );
 };
 
-export default ExhibitionManagement;
+export default ResearcherExhibitionManagement;

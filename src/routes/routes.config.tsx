@@ -36,6 +36,12 @@ const ArtifactDetailPage = lazy(
 const HistoryDetailPage = lazy(
   () => import("@/pages/History/HistoryDetailPage"),
 );
+const ExhibitionBrowsePage = lazy(
+  () => import("@/pages/Exhibition/ExhibitionBrowsePage"),
+);
+const PublicExhibitionDetailPage = lazy(
+  () => import("@/pages/Exhibition/ExhibitionDetailPage"),
+);
 
 // Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
@@ -88,6 +94,12 @@ const ShopManagement = lazy(
 );
 const ChapterManagement = lazy(
   () => import("@/pages/Admin/GameManagement/ChapterManagement"),
+);
+const ResearcherExhibitionManagement = lazy(
+  () => import("@/pages/Researcher/ExhibitionManagement"),
+);
+const ExhibitionDetailPage = lazy(
+  () => import("@/pages/Admin/ExhibitionManagement/ExhibitionDetailPage"),
 );
 
 // Game Pages
@@ -176,6 +188,19 @@ const routes: RouteObject[] = [
           {
             path: ":id",
             element: <HistoryDetailPage />,
+          },
+        ],
+      },
+      {
+        path: "exhibitions",
+        children: [
+          {
+            index: true,
+            element: <ExhibitionBrowsePage />,
+          },
+          {
+            path: ":id",
+            element: <PublicExhibitionDetailPage />,
           },
         ],
       },
@@ -279,7 +304,11 @@ const routes: RouteObject[] = [
       },
       {
         path: "exhibitions",
-        element: <ExhibitionManagement />,
+        element: <ResearcherExhibitionManagement />,
+      },
+      {
+        path: "exhibitions/:id",
+        element: <ExhibitionDetailPage />,
       },
       {
         path: "history",
@@ -384,6 +413,10 @@ const routes: RouteObject[] = [
       {
         path: "exhibitions",
         element: <ExhibitionManagement />,
+      },
+      {
+        path: "exhibitions/:id",
+        element: <ExhibitionDetailPage />,
       },
       {
         path: "history",

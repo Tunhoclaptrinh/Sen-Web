@@ -65,6 +65,7 @@ const Header: React.FC = () => {
     if (location.pathname.startsWith('/heritage')) return 'heritage';
     if (location.pathname.startsWith('/artifacts')) return 'artifacts'; 
     if (location.pathname.startsWith('/history')) return 'history';
+    if (location.pathname.startsWith('/exhibitions')) return 'exhibitions';
     if (location.pathname.startsWith('/learn')) return 'learn';
     if (location.pathname.startsWith('/game')) return 'game';
     if (location.pathname.startsWith('/support')) return 'support';
@@ -115,6 +116,10 @@ const Header: React.FC = () => {
     {
         key: 'history',
         label: <Link to="/history">Bài viết</Link>,
+    },
+    {
+        key: 'exhibitions',
+        label: <Link to="/exhibitions">Triển lãm</Link>,
     },
     {
       key: 'learn',

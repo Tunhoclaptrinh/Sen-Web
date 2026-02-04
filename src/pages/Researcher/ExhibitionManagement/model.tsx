@@ -1,9 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
-import { message, Modal, Input } from "antd";
+import { message } from "antd";
 import { useCRUD } from "@/hooks/useCRUD";
+import { useAuth } from "@/hooks/useAuth";
 import exhibitionService, { Exhibition } from "@/services/exhibition.service";
 
 export const useExhibitionModel = () => {
+    const { user } = useAuth();
+
     // Stats State
     const [stats, setStats] = useState<any>(null);
     const [statsLoading, setStatsLoading] = useState(false);
@@ -13,15 +16,16 @@ export const useExhibitionModel = () => {
     const [formVisible, setFormVisible] = useState(false);
     const [detailVisible, setDetailVisible] = useState(false);
 
-    // CRUD Setup
+    // CRUD Setup - Default to researcher's own content
     const crudOptions = useMemo(() => ({
         pageSize: 10,
         autoFetch: true,
+        initialFilters: { createdBy: user?.id },
         onError: (action: string, error: any) => {
             console.error(`Error ${action} exhibition:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
         },
-    }), []);
+    }), [user?.id]);
 
     const crud = useCRUD(exhibitionService, crudOptions);
 
@@ -29,7 +33,6 @@ export const useExhibitionModel = () => {
     const fetchStats = async () => {
         setStatsLoading(true);
         try {
-            // Check if getStats exists (it might be newly added)
             const response = await (exhibitionService as any).getStats?.();
             if (response?.success && response?.data) {
                 setStats(response.data);
@@ -86,32 +89,6 @@ export const useExhibitionModel = () => {
         return success;
     };
 
-    const handleReject = async (record: any) => {
-        Modal.confirm({
-            title: 'Từ chối phê duyệt',
-            content: (
-                <div style={{ marginTop: 16 }}>
-                    <p>Lý do từ chối:</p>
-                    <Input.TextArea 
-                        rows={4} 
-                        placeholder="Nhập lý do từ chối nội dung này..." 
-                        id="reject-comment"
-                    />
-                </div>
-            ),
-            onOk: async () => {
-                const comment = (document.getElementById('reject-comment') as HTMLTextAreaElement)?.value;
-                if (!comment) {
-                    message.error('Vui lòng nhập lý do từ chối');
-                    return Promise.reject();
-                }
-                const success = await crud.rejectReview?.(record.id, comment);
-                if (success) fetchStats();
-                return success;
-            }
-        });
-    };
-
     // Override crud actions to refresh stats
     const remove = async (id: any) => {
         const success = await crud.remove(id);
@@ -121,12 +98,6 @@ export const useExhibitionModel = () => {
 
     const submitReview = async (id: any) => {
         const success = await crud.submitReview?.(id);
-        if (success) fetchStats();
-        return success;
-    };
-
-    const approveReview = async (id: any) => {
-        const success = await crud.approveReview?.(id);
         if (success) fetchStats();
         return success;
     };
@@ -144,9 +115,7 @@ export const useExhibitionModel = () => {
         closeDetail,
         closeForm,
         handleSubmit,
-        handleReject,
         remove,
         submitReview,
-        approveReview,
     };
 };
