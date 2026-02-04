@@ -70,7 +70,7 @@ const ShopPage: React.FC = () => {
         
         if (activeTab === 'all') return true;
         if (activeTab === 'powerups') return ['powerup', 'hint', 'boost'].includes(item.type);
-        if (activeTab === 'characters') return ['character', 'character_skin', 'premium_ai'].includes(item.type);
+        if (activeTab === 'characters') return ['character', 'characterSkin', 'premiumAi'].includes(item.type);
         if (activeTab === 'themes') return ['theme', 'decoration', 'collectible'].includes(item.type);
         
         return item.type === activeTab;

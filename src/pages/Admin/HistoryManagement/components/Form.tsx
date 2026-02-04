@@ -66,7 +66,6 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
                 const formattedValues = {
                     ...initialValues,
-                    shortDescription: initialValues.shortDescription,
                     publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
                     relatedHeritageIds: relatedHeri,
                     relatedArtifactIds: relatedArtifacts
@@ -264,18 +263,27 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 key: '2',
                 label: 'Nội dung chi tiết',
                 children: (
-                    <Form.Item
-                        name="content"
-                        label="Nội dung bài viết"
-                        rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
-                    >
-                        <TinyEditor
-                            height={500}
-                            placeholder="Viết nội dung bài viết tại đây..."
-                            enableImageUpload={true}
-                            enableVideoEmbed={true}
-                        />
-                    </Form.Item>
+                    <>
+                        <Form.Item
+                            name="content"
+                            label="Nội dung bài viết"
+                            rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
+                        >
+                            <TinyEditor
+                                height={500}
+                                placeholder="Viết nội dung bài viết tại đây..."
+                                enableImageUpload={true}
+                                enableVideoEmbed={true}
+                            />
+                        </Form.Item>
+
+                        <Form.Item name="references" label="Nguồn tham khảo">
+                            <TinyEditor 
+                                height={250} 
+                                placeholder="Nhập các nguồn tham khảo..." 
+                            />
+                        </Form.Item>
+                    </>
                 )
             },
             {

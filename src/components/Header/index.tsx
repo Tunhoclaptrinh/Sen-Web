@@ -211,7 +211,8 @@ const Header: React.FC = () => {
           {!isMobile && (
             <Button
               type="text"
-              icon={<MessageOutlined style={{ fontSize: 20 }} />}
+              className="header-action-btn"
+              icon={<MessageOutlined />}
               onClick={() => dispatch(setOverlayOpen({ open: true, mode: 'fixed' }))}
             />
           )}

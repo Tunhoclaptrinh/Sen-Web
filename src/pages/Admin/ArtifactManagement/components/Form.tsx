@@ -112,10 +112,6 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
           const formattedValues = {
             ...initialValues,
-            shortDescription: initialValues.shortDescription,
-            locationInSite: initialValues.locationInSite,
-            historicalContext: initialValues.historicalContext,
-            culturalSignificance: initialValues.culturalSignificance,
             relatedHeritageIds: relatedHeri,
             relatedHistoryIds: relatedHistoryArr,
           };
@@ -517,6 +513,14 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     key={isEdit ? `cult-edit-${initialValues?.id}` : "cult-create"}
                     height={250} 
                     placeholder="Giá trị văn hóa..." 
+                  />
+                </Form.Item>
+
+                <Form.Item name="references" label="Nguồn tham khảo">
+                  <TinyEditor 
+                    key={isEdit ? `ref-edit-${initialValues?.id}` : "ref-create"}
+                    height={200} 
+                    placeholder="Nhập các nguồn tham khảo..." 
                   />
                 </Form.Item>
               </>
