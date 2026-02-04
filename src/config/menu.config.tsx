@@ -104,6 +104,11 @@ export const adminMenu: IMenuItem[] = [
                 path: '/admin/shop',
                 name: 'Cửa hàng vật phẩm',
             },
+            {
+                key: 'leaderboard',
+                path: '/admin/leaderboard',
+                name: 'Bảng xếp hạng',
+            },
         ]
     },
     {
@@ -266,7 +271,6 @@ export const researcherMenu: IMenuItem[] = [
         children: [
             { key: 'chapters', path: '/researcher/chapters', name: 'Chương' },
             { key: 'levels', path: '/researcher/levels', name: 'Màn chơi' },
-            { key: 'rank', path: '/researcher/rank', name: 'Xếp hạng' },
         ],
     },
 ];

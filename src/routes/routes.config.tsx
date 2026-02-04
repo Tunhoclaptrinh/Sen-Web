@@ -80,6 +80,9 @@ const ResearcherArtifactManagement = lazy(
 const BadgeManagement = lazy(
   () => import("@/pages/Admin/GameManagement/BadgeManagement"),
 );
+const LeaderboardPage = lazy(
+  () => import("@/pages/Admin/GameManagement/LeaderboardManagement"),
+);
 const ShopManagement = lazy(
   () => import("@/pages/Admin/GameManagement/ShopManagement"),
 );
@@ -92,7 +95,7 @@ const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
 const LevelsPage = lazy(() => import("@/pages/Game/LevelsPage"));
 const GamePlayPage = lazy(() => import("@/pages/Game/GamePlayPage"));
 const MuseumPage = lazy(() => import("@/pages/Game/MuseumPage"));
-const LeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
+const PlayerLeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
 const QuestsPage = lazy(() => import("@/pages/Game/QuestsPage"));
 const ShopPage = lazy(() => import("@/pages/Game/ShopPage"));
 const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
@@ -222,7 +225,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "leaderboard",
-        element: <LeaderboardPage />,
+        element: <PlayerLeaderboardPage />,
       },
       {
          path: "shop",
@@ -407,8 +410,11 @@ const routes: RouteObject[] = [
         element: <BadgeManagement />,
       },
       {
-        path: "shop",
         element: <ShopManagement />,
+      },
+      {
+        path: "leaderboard",
+        element: <LeaderboardPage />, 
       },
       {
         path: "learning",

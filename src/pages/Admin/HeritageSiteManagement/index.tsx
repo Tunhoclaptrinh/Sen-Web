@@ -1,4 +1,5 @@
 import { Tag, Tabs } from "antd";
+import { useAuth } from "@/hooks/useAuth";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 
@@ -52,6 +53,8 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
     handleReject,
   } = useHeritageModel(initialFilters);
 
+  const { user } = useAuth();
+
   const onFilterChange = (key: string, value: any) => {
     updateFilters({ [key]: value });
   };
@@ -64,6 +67,10 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       width: 80,
     },
     {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: 100,
       render: (image: string | string[]) => {
         const srcRaw = resolveImage(image);
         if (!srcRaw) return null;
@@ -182,6 +189,9 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
   
   const tabItems = [
     { key: 'all', label: 'Tất cả di sản' },
+    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
+      { key: 'my', label: 'Di sản của tôi' },
+    ] : []),
     { key: 'pending', label: 'Chờ duyệt' },
     { key: 'published', label: 'Đã xuất bản' },
   ];
@@ -191,16 +201,20 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       case 'all':
         clearFilters();
         break;
+      case 'my':
+        updateFilters({ createdBy: user?.id, status: undefined });
+        break;
       case 'pending':
-        updateFilters({ status: 'pending', created_by: undefined });
+        updateFilters({ status: 'pending', createdBy: undefined });
         break;
       case 'published':
-        updateFilters({ status: 'published', created_by: undefined });
+        updateFilters({ status: 'published', createdBy: undefined });
         break;
     }
   };
 
   const getActiveTab = () => {
+    if (filters.createdBy === user?.id) return 'my';
     if (filters.status === 'pending') return 'pending';
     if (filters.status === 'published') return 'published';
     return 'all';
@@ -213,14 +227,12 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
         headerContent={
           <>
             <HeritageStats stats={stats} loading={statsLoading} />
-            <div style={{ marginTop: 16, background: '#fff', padding: '0 16px' }}>
+            <div style={{ marginTop: 16, background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
               <Tabs 
                 activeKey={getActiveTab()} 
                 items={tabItems} 
                 onChange={handleTabChange}
-                size="small"
-                style={{ marginBottom: 0 , paddingBottom: 0}}
-
+                style={{ marginBottom: 0 }}
               />
             </div>
           </>

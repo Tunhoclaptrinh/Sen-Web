@@ -1,6 +1,6 @@
 import React from "react";
 import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
-import { Dropdown, Avatar, theme } from "antd";
+import { Dropdown, Avatar, theme, Tag } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/images/logo.png";
@@ -9,6 +9,7 @@ export interface UnifiedLayoutProps extends ProLayoutProps {
   user?: {
     name?: string;
     avatar?: string;
+    role?: string;
   };
   onLogout?: () => void;
   userMenuExtraItems?: any[];
@@ -103,7 +104,16 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
                   src={user?.avatar}
                   icon={<UserOutlined />}
                 />
-                <span style={{ color: token.colorText }}>{user?.name}</span>
+                <span style={{ color: token.colorText, fontWeight: 500 }}>{user?.name}</span>
+                {user?.role && (
+                   <Tag color={
+                      user.role === 'admin' ? 'red' :
+                      user.role === 'researcher' ? 'blue' :
+                      user.role === 'curator' ? 'purple' : 'green'
+                   } bordered={false}>
+                      {user.role.toUpperCase()}
+                   </Tag>
+                )}
               </div>
             </Dropdown>
           );

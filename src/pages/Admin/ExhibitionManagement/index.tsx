@@ -3,12 +3,49 @@ import { useAuth } from '@/hooks/useAuth';
 import { PictureOutlined } from '@ant-design/icons';
 import { useExhibitionModel } from './model';
 import DataTable from '@/components/common/DataTable';
+import { getImageUrl } from '@/utils/image.helper';
 import dayjs from 'dayjs';
 
 const ExhibitionManagement: React.FC = () => {
     const model = useExhibitionModel();
 
     const columns = [
+        {
+            title: 'Hình ảnh',
+            dataIndex: 'image',
+            key: 'image',
+            width: 100,
+            align: 'center',
+            render: (url: string) => {
+                 const src = url && (url.startsWith('http') || url.startsWith('blob')) 
+                    ? url 
+                    : getImageUrl(url);
+                return (
+                    <div style={{ margin: '0 auto', width: 80, height: 50, borderRadius: 4, overflow: 'hidden', background: '#f5f5f5', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img 
+                            src={src} 
+                            alt="exhibition" 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                            onError={(e: any) => { e.target.src = 'https://via.placeholder.com/80x50?text=No+Img'; }}
+                        />
+                    </div>
+                );
+            }
+        },
+        {
+            title: 'Trạng thái duyệt',
+            dataIndex: 'status',
+            key: 'status',
+            width: 120,
+            render: (status: string) => {
+                let color = 'default';
+                let text = 'Nháp';
+                if (status === 'published') { color = 'green'; text = 'Đã xuất bản'; }
+                if (status === 'pending') { color = 'orange'; text = 'Chờ duyệt'; }
+                if (status === 'rejected') { color = 'red'; text = 'Từ chối'; }
+                return <Tag color={color}>{text}</Tag>;
+            }
+        },
         {
             title: 'Tên triển lãm',
             dataIndex: 'name',
@@ -66,19 +103,19 @@ const ExhibitionManagement: React.FC = () => {
         model.clearFilters();
         break;
       case 'my':
-        model.updateFilters({ created_by: user?.id, status: undefined });
+        model.updateFilters({ createdBy: user?.id, status: undefined });
         break;
       case 'pending':
-        model.updateFilters({ status: 'pending', created_by: undefined });
+        model.updateFilters({ status: 'pending', createdBy: undefined });
         break;
       case 'published':
-        model.updateFilters({ status: 'published', created_by: undefined });
+        model.updateFilters({ status: 'published', createdBy: undefined });
         break;
     }
   };
 
   const getActiveTab = () => {
-    if (model.filters.created_by === user?.id) return 'my';
+    if (model.filters.createdBy === user?.id) return 'my';
     if (model.filters.status === 'pending') return 'pending';
     if (model.filters.status === 'published') return 'published';
     return 'all';
@@ -110,6 +147,9 @@ const ExhibitionManagement: React.FC = () => {
                 onAdd={model.openCreate}
                 onEdit={model.openEdit}
                 onDelete={model.remove}
+                onSubmitReview={model.submitReview ? (record) => model.submitReview?.(record.id) : undefined}
+                onApprove={model.approveReview ? (record) => model.approveReview?.(record.id) : undefined}
+                onReject={model.handleReject}
             />
 
             <Modal

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { message } from "antd";
+import { message, Modal, Input } from "antd";
 import { useCRUD } from "@/hooks/useCRUD";
 import exhibitionService from "@/services/exhibition.service";
 
@@ -50,6 +50,30 @@ export const useExhibitionModel = () => {
         return success;
     };
 
+    const handleReject = async (record: any) => {
+        Modal.confirm({
+            title: 'Từ chối phê duyệt',
+            content: (
+                <div style={{ marginTop: 16 }}>
+                    <p>Lý do từ chối:</p>
+                    <Input.TextArea 
+                        rows={4} 
+                        placeholder="Nhập lý do từ chối nội dung này..." 
+                        id="reject-comment"
+                    />
+                </div>
+            ),
+            onOk: async () => {
+                const comment = (document.getElementById('reject-comment') as HTMLTextAreaElement)?.value;
+                if (!comment) {
+                    message.error('Vui lòng nhập lý do từ chối');
+                    return Promise.reject();
+                }
+                return crud.rejectReview?.(record.id, comment);
+            }
+        });
+    };
+
     return {
         ...crud,
         currentRecord,
@@ -58,5 +82,6 @@ export const useExhibitionModel = () => {
         openEdit,
         closeForm,
         handleSubmit,
+        handleReject,
     };
 };

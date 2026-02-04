@@ -168,19 +168,19 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
         clearFilters();
         break;
       case 'my':
-        updateFilters({ created_by: user?.id, status: undefined });
+        updateFilters({ createdBy: user?.id, status: undefined });
         break;
       case 'pending':
-        updateFilters({ status: 'pending', created_by: undefined });
+        updateFilters({ status: 'pending', createdBy: undefined });
         break;
       case 'published':
-        updateFilters({ status: 'published', created_by: undefined });
+        updateFilters({ status: 'published', createdBy: undefined });
         break;
     }
   };
 
   const getActiveTab = () => {
-    if (filters.created_by === user?.id) return 'my';
+    if (filters.createdBy === user?.id) return 'my';
     if (filters.status === 'pending') return 'pending';
     if (filters.status === 'published') return 'published';
     return 'all';

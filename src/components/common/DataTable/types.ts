@@ -56,6 +56,15 @@ export interface DataTableProps {
   hideCard?: boolean;
 
   /**
+   * Delete Action Customization
+   */
+    deleteConfirmTitle?: string;
+    deleteConfirmDescription?: string;
+    deleteOkText?: string;
+    deleteCancelText?: string;
+    deleteTooltip?: string;
+
+  /**
    * Action column props override
    */
     actionColumnProps?: any; // Allow overriding action column config

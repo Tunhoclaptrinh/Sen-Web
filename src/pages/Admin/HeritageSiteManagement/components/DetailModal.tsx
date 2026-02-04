@@ -88,7 +88,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         </Descriptions.Item>
 
                         <Descriptions.Item label="Loại hình">
-                            <Tag color="blue">{HeritageTypeLabels[record.type as HeritageType].toUpperCase() || record.type.toUpperCase()}</Tag>
+                            <Tag color="blue">{HeritageTypeLabels[record.type as HeritageType]?.toUpperCase() || record.type?.toUpperCase()}</Tag>
                         </Descriptions.Item>
                         <Descriptions.Item label="Khu vực">
                             {HeritageRegionLabels[record.region as keyof typeof HeritageRegionLabels] || record.region}

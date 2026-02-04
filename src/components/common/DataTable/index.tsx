@@ -94,7 +94,12 @@ const DataTable: React.FC<DataTableProps> = ({
   alertMessage,
   alertType = "info",
   actionColumnProps,
-  hideCard, // New prop
+  hideCard,
+  deleteConfirmTitle,
+  deleteConfirmDescription,
+  deleteOkText,
+  deleteCancelText,
+  deleteTooltip,
   ...tableProps
 }) => {
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
@@ -219,7 +224,7 @@ const DataTable: React.FC<DataTableProps> = ({
           case 'pending': 
             color = 'warning'; text = 'Chờ duyệt'; break;
           case 'published': 
-            color = 'success'; text = 'Đã đăng'; break;
+            color = 'success'; text = 'Đã xuất bản'; break;
           case 'rejected': 
             color = 'error'; text = 'Từ chối'; break;
         }
@@ -386,7 +391,7 @@ const DataTable: React.FC<DataTableProps> = ({
   // Base width per button (32px + 8px gap) + padding (16px)
   // If customActions exists, we add extra space or default to a safe width if not specified
   const calculatedWidth =
-    actionsWidth || Math.max(80, standardActionCount * 40 + (customActions ? 40 : 16));
+    actionsWidth || Math.max(100, standardActionCount * 42 + (customActions ? 40 : 16));
 
   const mergedActionsColumn =
     showActions || userActionColumn
@@ -494,17 +499,17 @@ const DataTable: React.FC<DataTableProps> = ({
                 {onDelete && (
                   <PermissionGuard resource={permissionResource!} action="delete" fallback={null}>
                     <Popconfirm
-                      title="Xác nhận xóa?"
-                      description="Bạn có chắc chắn muốn xóa mục này?"
+                      title={deleteConfirmTitle || "Xác nhận xóa?"}
+                      description={deleteConfirmDescription || "Bạn có chắc chắn muốn xóa mục này?"}
                       onConfirm={() => onDelete(record[rowKey])}
-                      okText="Xóa"
-                      cancelText="Hủy"
+                      okText={deleteOkText || "Xóa"}
+                      cancelText={deleteCancelText || "Hủy"}
                       okButtonProps={{ danger: true }}
                       icon={
                         <ExclamationCircleOutlined style={{ color: "#EF4444" }} />
                       }
                     >
-                      <Tooltip title="Xóa">
+                      <Tooltip title={deleteTooltip || "Xóa"}>
                         <Button
                           variant="ghost"
                           buttonSize="small"

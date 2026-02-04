@@ -1,7 +1,5 @@
-import {
-  Tag, Tabs
-} from "antd";
-
+  import { Tag, Tabs } from "antd";
+import { useAuth } from "@/hooks/useAuth";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import { 
@@ -52,6 +50,8 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
     approveReview,
     handleReject,
   } = useArtifactModel(initialFilters);
+
+  const { user } = useAuth();
 
   const onFilterChange = (key: string, value: any) => {
     updateFilters({ [key]: value });
@@ -165,6 +165,9 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
   
   const tabItems = [
     { key: 'all', label: 'Tất cả hiện vật' },
+    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
+      { key: 'my', label: 'Hiện vật của tôi' },
+    ] : []),
     { key: 'pending', label: 'Chờ duyệt' },
     { key: 'published', label: 'Đã xuất bản' },
   ];
@@ -174,16 +177,20 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
       case 'all':
         clearFilters();
         break;
+      case 'my':
+        updateFilters({ createdBy: user?.id, status: undefined });
+        break;
       case 'pending':
-        updateFilters({ status: 'pending', created_by: undefined });
+        updateFilters({ status: 'pending', createdBy: undefined });
         break;
       case 'published':
-        updateFilters({ status: 'published', created_by: undefined });
+        updateFilters({ status: 'published', createdBy: undefined });
         break;
     }
   };
 
   const getActiveTab = () => {
+    if (filters.createdBy === user?.id) return 'my';
     if (filters.status === 'pending') return 'pending';
     if (filters.status === 'published') return 'published';
     return 'all';

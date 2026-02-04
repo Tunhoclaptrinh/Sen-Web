@@ -17,6 +17,8 @@ import {
 import adminChapterService from "@/services/admin-chapter.service";
 import adminScreenService from "@/services/admin-screen.service";
 import { getImageUrl } from "@/utils/image.helper";
+import { Tabs } from "antd";
+import { useAuth } from "@/hooks/useAuth";
 
 
 
@@ -47,7 +49,10 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
     reorderLevels,
     // Filters
     filters,
-    updateFilters
+    updateFilters,
+    submitReview, 
+    approveReview, 
+    handleReject
   } = useLevelModel(chapterId ? { chapterId: chapterId } : undefined);
 
   // Screen Editor State
@@ -148,7 +153,18 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
           return <span style={{color: colors[val] || 'black'}}>{val?.toUpperCase()}</span>
       }
     },
-      {
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status: string) => {
+          const colors: any = { published: 'green', pending: 'orange', draft: 'default', rejected: 'red' };
+          const labels: any = { published: 'Đã xuất bản', pending: 'Chờ duyệt', draft: 'Nháp', rejected: 'Từ chối' };
+          return <Tag color={colors[status] || 'default'}>{labels[status] || status}</Tag>
+      }
+    },
+    {
       title: "Thứ tự",
       dataIndex: "order",
       width: 20,
@@ -163,6 +179,41 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
       render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
     },
   ];
+
+  const { user } = useAuth(); // Need to import useAuth
+  
+  const tabItems = [
+    { key: 'all', label: 'Tất cả màn chơi' },
+    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
+      { key: 'my', label: 'Màn chơi của tôi' },
+    ] : []),
+    { key: 'pending', label: 'Chờ duyệt' },
+    { key: 'published', label: 'Đã xuất bản' },
+  ];
+
+  const handleTabChange = (key: string) => {
+    switch (key) {
+      case 'all':
+        updateFilters({ status: undefined, createdBy: undefined });
+        break;
+      case 'my':
+        updateFilters({ createdBy: user?.id, status: undefined });
+        break;
+      case 'pending':
+        updateFilters({ status: 'pending', createdBy: undefined });
+        break;
+      case 'published':
+        updateFilters({ status: 'published', createdBy: undefined });
+        break;
+    }
+  };
+
+  const getActiveTab = () => {
+    if (filters.createdBy === user?.id) return 'my';
+    if (filters.status === 'pending') return 'pending';
+    if (filters.status === 'published') return 'published';
+    return 'all';
+  };
 
   // --- RENDER ---
 
@@ -269,6 +320,18 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
                 )}
             </div>
         }
+        headerContent={
+            <div style={{ marginBottom: 16 }}>
+                 <div style={{ marginTop: 16, background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+                    <Tabs 
+                        activeKey={getActiveTab()} 
+                        items={tabItems} 
+                        onChange={handleTabChange}
+                        style={{ marginBottom: 0 }}
+                    />
+                </div>
+            </div>
+        }
         loading={loading}
         columns={columns}
         dataSource={data}
@@ -285,6 +348,12 @@ const LevelManagement = ({ chapterId, chapterName, hideCard }: { chapterId?: num
         }}
         onBatchDelete={batchDelete}
         onRefresh={refresh}
+        
+        // Approval Props
+        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
+        onApprove={approveReview ? (record) => approveReview(record.id) : undefined}
+        onReject={handleReject}
+        
         hideCard={hideCard}
         customActions={(record) => (
             <Space size={4}>
