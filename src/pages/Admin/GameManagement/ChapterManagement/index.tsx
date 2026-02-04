@@ -1,7 +1,8 @@
 
 import { useState } from "react";
-import { Button, Tooltip, Image, Tag } from "antd";
+import { Button, Tooltip, Image, Tag, Tabs } from "antd";
 import { NodeIndexOutlined } from "@ant-design/icons";
+import { useAuth } from "@/hooks/useAuth";
 import DataTable from "@/components/common/DataTable";
 import ChapterForm from "./components/Form";
 import ChapterDetail from "./components/Detail";
@@ -153,10 +154,47 @@ const ChapterManagement = () => {
     }
   ];
 
+  const { user } = useAuth();
+  
+  const tabItems = [
+    { key: 'all', label: 'Tất cả chương' },
+    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
+      { key: 'my', label: 'Chương của tôi' },
+    ] : []),
+  ];
+
+  const handleTabChange = (key: string) => {
+    switch (key) {
+      case 'all':
+        updateFilters({ createdBy: undefined });
+        break;
+      case 'my':
+        updateFilters({ createdBy: user?.id });
+        break;
+    }
+  };
+
+  const getActiveTab = () => {
+    if (filterValues.createdBy === user?.id) return 'my';
+    return 'all';
+  };
+
   return (
     <>
       <DataTable
         title="Quản lý Chương Game"
+        headerContent={
+            <div style={{ marginBottom: 16 }}>
+                 <div style={{ marginTop: 16, background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+                    <Tabs 
+                        activeKey={getActiveTab()} 
+                        items={tabItems} 
+                        onChange={handleTabChange}
+                        style={{ marginBottom: 0 }}
+                    />
+                </div>
+            </div>
+        }
         loading={loading}
         permissionResource="game_content"
         columns={columns}

@@ -383,9 +383,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     <Form.Item
                       name="heritageSiteId"
                       label="Thuộc Di sản"
-                      rules={[
-                        { required: true, message: "Vui lòng chọn di sản" },
-                      ]}
+                      rules={[]}
                     >
                       <Select
                         placeholder="Chọn di sản"

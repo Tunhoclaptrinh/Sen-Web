@@ -1,6 +1,7 @@
 import { Tag, Tabs } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import { useAuth } from "@/hooks/useAuth";
 
 
 import DataTable from "@/components/common/DataTable";
@@ -124,8 +125,11 @@ const ResearcherHeritageManagement = () => {
     },
   ];
 
+  const { user } = useAuth();
+
   const tabItems = [
-    { key: 'all', label: 'Tất cả (Của tôi)' },
+    { key: 'all', label: 'Tất cả' },
+    { key: 'my', label: 'Của tôi' },
     { key: 'draft', label: 'Bản nháp' },
     { key: 'pending', label: 'Chờ duyệt' },
     { key: 'published', label: 'Đã xuất bản' },
@@ -133,14 +137,21 @@ const ResearcherHeritageManagement = () => {
   ];
 
   const handleTabChange = (key: string) => {
-    if (key === 'all') {
-        updateFilters({ status: undefined });
-    } else {
-        updateFilters({ status: key });
+    switch (key) {
+      case 'all':
+        updateFilters({ status: undefined, createdBy: undefined });
+        break;
+      case 'my':
+        updateFilters({ status: undefined, createdBy: user?.id });
+        break;
+      default:
+        updateFilters({ status: key, createdBy: undefined });
+        break;
     }
   };
 
   const getActiveTab = () => {
+    if (filters.createdBy === user?.id) return 'my';
     if (filters.status) return filters.status;
     return 'all';
   };

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { RouteObject } from "react-router-dom";
+import { RouteObject, Navigate } from "react-router-dom";
 
 // Layouts
 import MainLayout from "@/layouts/MainLayout";
@@ -265,6 +265,10 @@ const routes: RouteObject[] = [
       </RoleGuard>
     ),
     children: [
+      {
+        index: true,
+        element: <Navigate to="/researcher/heritage-sites" replace />,
+      },
       {
         path: "heritage-sites",
         element: <ResearcherHeritageManagement />,
