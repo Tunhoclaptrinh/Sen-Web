@@ -53,7 +53,6 @@ const Profile = () => {
   const [collectionsLoading, setCollectionsLoading] = useState(false);
   // const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [favoritesLoading] = useState<boolean>(false);
-  const [favoritesLoading] = useState<boolean>(false);
   const [activityLoading, setActivityLoading] = useState(false);
   const [badgesLoading, setBadgesLoading] = useState(false);
 
