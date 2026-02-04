@@ -570,6 +570,17 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     stopAll();
     if (!audioBase64) return;
 
+    // 🎭 Restore emotion từ message khi replay
+    const message = chatHistory.find(m => m.id === messageId);
+    if (message?.emotion) {
+      console.log('🎭 Restoring emotion for replay:', message.emotion);
+      dispatch(updateSenSettings({
+        gesture: (message.emotion.gesture || 'normal') as 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back',
+        mouthState: (message.emotion.mouthState || 'smile') as 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue' | 'angry',
+        eyeState: (message.emotion.eyeState || 'normal') as 'normal' | 'blink' | 'close' | 'half' | 'like' | 'sleep',
+      }));
+    }
+
     const audioSrc = audioBase64.startsWith("data:") ? audioBase64 : `data:audio/mp3;base64,${audioBase64}`;
     const audio = new Audio(audioSrc);
     audio.muted = isMuted;
@@ -585,11 +596,25 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
         setIsSpeaking(false);
         setShouldHideCoat(false); // 👔 Hiện áo lại khi dừng
         setAudioPlaying(null);
+        
+        // 🎭 Reset về emotion mặc định sau khi phát xong
+        dispatch(updateSenSettings({
+          gesture: 'normal',
+          mouthState: 'smile',
+          eyeState: 'normal',
+        }));
     };
     audio.onpause = () => {
         setIsSpeaking(false);
         setShouldHideCoat(false); // 👔 Hiện áo lại khi pause
         setAudioPlaying(null);
+        
+        // 🎭 Reset về emotion mặc định khi pause
+        dispatch(updateSenSettings({
+          gesture: 'normal',
+          mouthState: 'smile',
+          eyeState: 'normal',
+        }));
     };
     audio.onerror = () => {
         setIsSpeaking(false);
