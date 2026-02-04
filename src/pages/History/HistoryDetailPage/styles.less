@@ -148,6 +148,15 @@
             padding-bottom: 24px;
         }
 
+        .content-section-title {
+            font-family: 'Aleo', serif;
+            font-size: 26px;
+            margin-top: 32px;
+            margin-bottom: 24px;
+            color: #d4380d;
+            font-weight: 700;
+        }
+
         .article-body-content {
             font-size: 18px;
             line-height: 1.8;
@@ -180,6 +189,72 @@
                 li {
                     margin-bottom: 12px;
                 }
+            }
+
+            em {
+                font-style: italic;
+                display: inline;
+                text-align: left;
+            }
+
+            blockquote {
+                font-size: 18px;
+                font-style: italic;
+                border-left: 4px solid #d4380d;
+                margin: 24px 0;
+                padding: 16px 24px;
+                background: #fff5f5;
+                font-family: 'Aleo', serif;
+            }
+
+            // Wikipedia-style captions and thumbs
+            .thumb {
+                margin-bottom: 24px;
+                clear: both;
+                &.tright {
+                    float: right;
+                    margin-left: 24px;
+                }
+                &.tleft {
+                    float: left;
+                    margin-right: 24px;
+                }
+                .thumbinner {
+                    background: #f8f9fa;
+                    border: 1px solid #c8ccd1;
+                    padding: 3px;
+                    border-radius: 2px;
+                    
+                    .thumbcaption {
+                        padding: 8px;
+                        font-size: 13px;
+                        color: #54595d;
+                        line-height: 1.4;
+                        text-align: left;
+                        font-family: 'Roboto', sans-serif;
+                    }
+                }
+            }
+        }
+
+        .references-section {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+
+            h3 {
+                font-family: 'Aleo', serif;
+                font-size: 26px;
+                margin-bottom: 16px;
+                color: #d4380d;
+                font-weight: 700;
+            }
+
+            .references-content {
+                font-family: 'Roboto', sans-serif;
+                font-size: 15px;
+                line-height: 1.6;
+                color: #555;
             }
         }
         

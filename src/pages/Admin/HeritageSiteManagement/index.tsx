@@ -84,7 +84,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       },
     },
     {
-      title: "Tên Di Sản",
+      title: "Tên Di sản",
       dataIndex: "name",
       key: "nameLike",
       width: 250,
@@ -324,7 +324,7 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
-        initialValues={currentRecord}
+        initialValues={currentRecord || undefined}
         loading={loading}
       />
 

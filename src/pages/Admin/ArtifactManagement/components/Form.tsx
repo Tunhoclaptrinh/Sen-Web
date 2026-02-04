@@ -67,9 +67,9 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   ids: initialValues.relatedHeritageIds.join(","),
                 })
               : Promise.resolve({ success: true, data: [] }),
-            initialValues.related_history_ids?.length > 0
+            initialValues.relatedHistoryIds?.length > 0
               ? historyService.getAll({
-                  ids: initialValues.related_history_ids.join(","),
+                  ids: initialValues.relatedHistoryIds.join(","),
                 })
               : Promise.resolve({ success: true, data: [] }),
           ]);
@@ -94,7 +94,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
           // Map related history to {label, value}
           const relatedHistoryArr = (
-            initialValues.related_history_ids || []
+            initialValues.relatedHistoryIds || []
           ).map((id: any) => {
             const hist =
               relHistoryRes.success && relHistoryRes.data
@@ -112,10 +112,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
           const formattedValues = {
             ...initialValues,
-            shortDescription:
-              initialValues.short_description || initialValues.shortDescription,
             relatedHeritageIds: relatedHeri,
-            related_history_ids: relatedHistoryArr,
+            relatedHistoryIds: relatedHistoryArr,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
@@ -187,15 +185,15 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           "dimensions",
           "condition",
           "creator",
-          "location_in_site",
+          "locationInSite",
           "isOnDisplay",
         ];
         const tab2Fields = [
           "description",
-          "historical_context",
-          "cultural_significance",
+          "historicalContext",
+          "culturalSignificance",
         ];
-        const tab3Fields = ["relatedHeritageIds", "related_history_ids"];
+        const tab3Fields = ["relatedHeritageIds", "relatedHistoryIds"];
 
         if (tab1Fields.includes(firstErrorField)) {
           setActiveTab("1");
@@ -223,10 +221,10 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         typeof item === "object" ? (item.url || item.response?.url || "") : item
       ) || [],
       shortDescription: values.shortDescription, // Sync for compatibility
-      related_heritage_ids: values.related_heritage_ids?.map((item: any) =>
+      relatedHeritageIds: values.relatedHeritageIds?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
-      related_history_ids: values.related_history_ids?.map((item: any) =>
+      relatedHistoryIds: values.relatedHistoryIds?.map((item: any) =>
         typeof item === "object" ? item.value : item,
       ) || [],
     };
@@ -460,7 +458,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item name="location_in_site" label="Vị trí trưng bày">
+                    <Form.Item name="locationInSite" label="Vị trí trưng bày">
                       <Input placeholder="Phòng số X..." />
                     </Form.Item>
                   </Col>
@@ -514,6 +512,14 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     placeholder="Giá trị văn hóa..." 
                   />
                 </Form.Item>
+
+                <Form.Item name="references" label="Nguồn tham khảo">
+                  <TinyEditor 
+                    key={isEdit ? `ref-edit-${initialValues?.id}` : "ref-create"}
+                    height={200} 
+                    placeholder="Nhập các nguồn tham khảo..." 
+                  />
+                </Form.Item>
               </>
             ),
           },
@@ -537,7 +543,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
                 <Form.Item
                   label="Lịch sử liên quan"
-                  name="related_history_ids"
+                  name="relatedHistoryIds"
                   tooltip="Các bài viết lịch sử bổ trợ thông tin cho hiện vật"
                 >
                   <DebounceSelect

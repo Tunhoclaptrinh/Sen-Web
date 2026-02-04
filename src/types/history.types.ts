@@ -25,6 +25,7 @@ export interface HistoryArticle extends BaseEntity {
   relatedArtifacts?: any[];
   relatedLevels?: any[];
   relatedProducts?: any[];
+  references?: string;
 }
 
 export interface HistoryArticleDTO {
@@ -38,6 +39,7 @@ export interface HistoryArticleDTO {
   isFeatured?: boolean;
   relatedHeritageIds?: number[];
   relatedArtifactIds?: number[];
+  references?: string;
 }
 
 export interface HistorySearchParams {

@@ -73,7 +73,7 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
             const res = await adminLevelService.getAll({
                 page: 1, 
                 limit: 50, 
-                chapter_id: chapterId 
+                chapterId: chapterId  // ✅ Fix: Use camelCase to match database field
             });
             console.log("Levels fetched:", res);
             

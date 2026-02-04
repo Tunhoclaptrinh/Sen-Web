@@ -196,10 +196,10 @@ const DashboardPage = () => {
       </Row>
 
       {/* System Info */}
-      <Card style={{ marginTop: 24 }} title="Thông Tin Hệ Thống">
+      <Card style={{ marginTop: 24 }} title="Thông tin Hệ thống">
         <Row gutter={[16, 16]}>
           <Col span={8}>
-            <Text strong>Phiên Bản:</Text>
+            <Text strong>Phiên bản:</Text>
             <br />
             <Text>v2.0.0</Text>
           </Col>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,31 +8,30 @@ import {
   Col,
   Typography,
   Empty,
-  Tabs,
-  Divider,
   Button,
-  Image,
+  Divider,
   Tag,
+  Tabs,
 } from "antd";
 import {
-  CalendarOutlined,
-  UserOutlined,
+  EnvironmentOutlined,
   HeartOutlined,
   HeartFilled,
+  CalendarOutlined,
+  StarFilled,
+  UserOutlined,
   ShareAltOutlined,
   RocketOutlined,
-  EnvironmentOutlined,
   ShopOutlined,
-  CameraOutlined,
-  StarFilled,
-  GlobalOutlined,
-  SafetyCertificateFilled,
-  InfoCircleOutlined,
-  SkinOutlined,
-  ExpandOutlined,
   HistoryOutlined,
   FolderAddOutlined,
+  CameraOutlined,
+  InfoCircleOutlined,
+  ExpandOutlined,
+  SafetyCertificateFilled,
+  GlobalOutlined,
 } from "@ant-design/icons";
+import { Image } from "antd";
 import { fetchArtifactById } from "@store/slices/artifactSlice";
 import favoriteService from "@/services/favorite.service";
 import artifactService from "@/services/artifact.service";
@@ -40,13 +39,17 @@ import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
+import type { Artifact, HeritageSite, HistoryArticle } from "@/types";
+import {
+  ArtifactTypeLabels,
+  ArtifactConditionLabels,
+} from "@/types/artifact.types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
-import type { Artifact } from "@/types";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import { useViewTracker } from "@/hooks/useViewTracker";
 import "./styles.less";
 
-const { Paragraph, Title } = Typography;
+const { Title } = Typography;
 
 const ArtifactDetailPage = () => {
   const { id } = useParams();
@@ -60,8 +63,8 @@ const ArtifactDetailPage = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
-  const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
-  const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
+  const [relatedHeritage, setRelatedHeritage] = useState<HeritageSite[]>([]);
+  const [relatedHistory, setRelatedHistory] = useState<HistoryArticle[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
 
@@ -99,10 +102,10 @@ const ArtifactDetailPage = () => {
     try {
       const currentId = currentItem.id;
 
-      // 1. Fetch related artifacts (same heritage site)
+      // 1. Fetch related artifacts (same heritage site or random)
       if (currentItem.heritageSiteId) {
         const res = await artifactService.getAll({
-          heritage_site_id: currentItem.heritageSiteId,
+          heritageSiteId: currentItem.heritageSiteId,
           limit: 4,
         });
         if (res.data) {
@@ -124,6 +127,10 @@ const ArtifactDetailPage = () => {
       if (relHeriIds.length > 0) {
         const res = await heritageService.getAll({ ids: relHeriIds.join(",") });
         if (res.data) setRelatedHeritage(res.data);
+      } else if (currentItem.heritageSiteId) {
+         // Fallback to the parent heritage site
+         const res = await heritageService.getById(currentItem.heritageSiteId);
+         if (res.data) setRelatedHeritage([res.data]);
       }
 
       // 3. Fetch related history
@@ -174,20 +181,14 @@ const ArtifactDetailPage = () => {
 
   if (loading)
     return (
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="loading-container">
         <Spin size="large" />
       </div>
     );
 
   if (!artifact) return <Empty description="Không tìm thấy hiện vật" />;
 
+  // Image helpers
   const rawMainImage =
     resolveImage(artifact.mainImage) ||
     resolveImage(artifact.image) ||
@@ -197,58 +198,41 @@ const ArtifactDetailPage = () => {
     "https://via.placeholder.com/1200x600/1a1a1a/ffffff?text=No+Image",
   );
 
-  // Aggregate all potential images
-  const allRawImages = [
-    ...(artifact.mainImage
-      ? Array.isArray(artifact.mainImage)
-        ? artifact.mainImage
-        : [artifact.mainImage]
-      : []),
-    ...(artifact.image
-      ? Array.isArray(artifact.image)
-        ? artifact.image
-        : [artifact.image]
-      : []),
+  const galleryImages = Array.from(new Set([
+    ...(artifact.mainImage ? (Array.isArray(artifact.mainImage) ? artifact.mainImage : [artifact.mainImage]) : []),
+    ...(artifact.image ? (Array.isArray(artifact.image) ? artifact.image : [artifact.image]) : []),
     ...(artifact.images || []),
-  ];
+  ]))
+  .filter((img): img is string => !!img)
+  .map(img => getImageUrl(img));
 
-  // Unique and resolved
-  const galleryImages = Array.from(new Set(allRawImages))
-    .filter((img) => typeof img === "string")
-    .map((img) => getImageUrl(img));
+  const authorName = artifact.authorName || artifact.author || artifact.creator || "Không rõ";
+  const artifactTypeLabel = artifact.artifactType ? (ArtifactTypeLabels[artifact.artifactType] || artifact.artifactType) : "Hiện vật";
+  const conditionLabel = artifact.condition ? (ArtifactConditionLabels[artifact.condition] || artifact.condition) : "Tốt";
 
   return (
     <div className="artifact-detail-page">
-      {/* 1. Hero Section */}
-      <section
-        className="artifact-detail-hero"
-        style={{ backgroundColor: "#1a1a1a" }}
-      >
-        <img
-          src={mainImage}
-          alt={artifact.name}
-          className="artifact-hero-img"
-          style={{ backgroundColor: "#1a1a1a", objectFit: "cover" }}
-          onError={(e) => {
-            e.currentTarget.src =
-              "https://via.placeholder.com/1200x600/1a1a1a/ffffff?text=No+Image";
-          }}
+      {/* 1. HERO SECTION */}
+      <section className="detail-hero">
+        <div
+          className="hero-bg"
+          style={{ backgroundImage: `url('${mainImage}')` }}
         />
-        <div className="artifact-hero-overlay">
-          <div className="artifact-hero-container">
+        <div className="hero-overlay">
+          <div className="hero-content">
             <Tag
               color="var(--primary-color)"
               style={{ border: "none", marginBottom: 16 }}
             >
-              {artifact.artifactType?.toUpperCase() || "ARTIFACT"}
+              {artifactTypeLabel.toUpperCase()}
             </Tag>
             <h1>{artifact.name}</h1>
-            <div className="artifact-hero-meta">
+            <div className="hero-meta">
               <span>
-                <CalendarOutlined /> {artifact.yearCreated}
+                <CalendarOutlined /> {artifact.yearCreated || "Không rõ niên đại"}
               </span>
               <span>
-                <UserOutlined /> {artifact.authorName || artifact.author || artifact.creator || "Hệ thống"}
+                <UserOutlined /> {authorName}
               </span>
               <span>
                 <HistoryOutlined /> {artifact.views || 0} lượt xem
@@ -257,7 +241,7 @@ const ArtifactDetailPage = () => {
           </div>
 
           {/* Gallery Button */}
-          <div className="hero-gallery-btn-wrapper">
+          <div style={{ position: "absolute", bottom: 32, right: 32 }}>
             <Button
               icon={<CameraOutlined />}
               size="large"
@@ -284,32 +268,29 @@ const ArtifactDetailPage = () => {
         </div>
       </section>
 
-      {/* 2. Main Content with Tabs */}
-      <section className="main-content">
-        <div
-          className="content-wrapper"
-          style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}
-        >
+      <div className="content-container">
           <Tabs
             defaultActiveKey="description"
-            size="large"
+            className="heritage-tabs"
+            centered
             items={[
               {
                 key: "description",
-                label: "Mô Tả",
+                label: "Mô tả",
                 children: (
                   <div className="article-main-wrapper">
-                    <div className="article-meta-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
-                      <div style={{ display: 'flex', gap: 24, color: '#888' }}>
-                        <span>
-                          <CalendarOutlined /> {artifact.yearCreated}
-                        </span>
-                        <span>
-                          <UserOutlined /> {artifact.authorName || artifact.author || artifact.creator || "Hệ thống"}
-                        </span>
-                        <span>
-                          <HistoryOutlined /> {artifact.views || 0} lượt xem
-                        </span>
+                    {/* Article Header Meta */}
+                    <div className="article-meta-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                        <SpaceItem
+                          icon={<CalendarOutlined />}
+                          text={String(artifact.yearCreated || "N/A")}
+                        />
+                        <SpaceItem icon={<UserOutlined />} text={authorName} />
+                        <SpaceItem
+                          icon={<HistoryOutlined />}
+                          text={`${artifact.views || 0} views`}
+                        />
                       </div>
                       <div className="action-row" style={{ display: 'flex', gap: 8 }}>
                         <Button
@@ -351,170 +332,211 @@ const ArtifactDetailPage = () => {
                         }}
                     />
                     </div>
-                    <h3 className="section-title">Câu Chuyện & Ý Nghĩa</h3>
-                    <div className="description-text">
-                      <Paragraph>{artifact.description}</Paragraph>
+
+                    <h2 className="article-main-title">{artifact.name}</h2>
+                    <div className="article-body-content">
+                      <h3 className="content-section-title">Thông tin chi tiết</h3>
+                      <div dangerouslySetInnerHTML={{ __html: artifact.description || "" }} />
+                      
                       {artifact.historicalContext && (
-                        <Paragraph>
-                          <strong>Ngữ Cảnh Lịch Sử:</strong>{" "}
-                          {artifact.historicalContext}
-                        </Paragraph>
+                        <>
+                          <h3 className="content-section-title">Ngữ cảnh Lịch sử</h3>
+                          <div dangerouslySetInnerHTML={{ __html: artifact.historicalContext }} />
+                        </>
                       )}
+                      
                       {artifact.culturalSignificance && (
-                        <Paragraph>
-                          <strong>Ý Nghĩa Văn Hóa:</strong>{" "}
-                          {artifact.culturalSignificance}
-                        </Paragraph>
+                        <>
+                          <h3 className="content-section-title">Ý nghĩa Văn hóa</h3>
+                          <div dangerouslySetInnerHTML={{ __html: artifact.culturalSignificance }} />
+                        </>
                       )}
+
+                        {artifact.references && (
+                          <div className="references-section">
+                            <h3>Nguồn tham khảo</h3>
+                            <div className="references-content" dangerouslySetInnerHTML={{ __html: artifact.references }} />
+                          </div>
+                        )}
                     </div>
 
-                    {galleryImages.length > 0 && (
-                      <>
-                        <h3 className="section-title" style={{ marginTop: 32 }}>
-                          Hình Ảnh Chi Tiết
-                        </h3>
-                        <div className="image-gallery">
-                          {galleryImages.map((img, idx) => (
-                            <img
-                              key={idx}
-                              src={img}
-                              alt={`Detail ${idx}`}
-                              onClick={() => setPreviewVisible(true)}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
+                    <div className="article-footer-info">
+                        <Divider />
+                    </div>
                   </div>
                 ),
               },
               {
                 key: "info",
-                label: "Thông Tin",
+                label: "Thông tin",
                 children: (
                   <div className="article-main-wrapper">
-                    <div className="info-box-premium">
-                      <Row gutter={[48, 24]}>
-                        <Col xs={24} md={12}>
-                          <ul className="info-list">
-                            <li>
-                              <div className="icon-wrapper">
-                                <InfoCircleOutlined />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Tên hiện vật</span>
-                                <span className="value">{artifact.name}</span>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="icon-wrapper">
-                                <SkinOutlined />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Loại hiện vật</span>
-                                <span className="value">
-                                  {artifact.artifactType}
-                                </span>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="icon-wrapper">
-                                <HistoryOutlined />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Thời kỳ / Năm</span>
-                                <span className="value">
-                                  {artifact.yearCreated}
-                                </span>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="icon-wrapper">
-                                <StarFilled />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Tình trạng</span>
-                                <span className="value highlight-status">
-                                  {artifact.condition}
-                                </span>
-                              </div>
-                            </li>
-                          </ul>
-                        </Col>
-                        <Col xs={24} md={12}>
-                          <ul className="info-list">
-                            <li>
-                              <div className="icon-wrapper">
-                                <GlobalOutlined />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Chất liệu</span>
-                                <span className="value">
-                                  {artifact.material}
-                                </span>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="icon-wrapper">
-                                <ExpandOutlined />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Kích thước</span>
-                                <span className="value">
-                                  {artifact.dimensions}
-                                </span>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="icon-wrapper star-icon">
-                                <StarFilled />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Đánh giá chung</span>
-                                <span className="value">
-                                  {artifact.rating || 0}/5{" "}
-                                  <span className="sub">
-                                    ({artifact.totalReviews || 0} reviews)
+                    <div
+                        className="info-tab-content"
+                        style={{ maxWidth: 900, margin: "0 auto" }}
+                    >
+                      <div className="info-box-premium info-card-widget large-format">
+                        <Row gutter={[48, 24]}>
+                          <Col xs={24} md={12}>
+                            <h3 className="info-section-title">
+                               Đặc Điểm Hiện Vật
+                            </h3>
+                            <ul className="info-grid-list">
+                              <li>
+                                <div className="icon-wrapper">
+                                  <InfoCircleOutlined />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Loại hiện vật</span>
+                                  <span className="value">
+                                    {artifactTypeLabel}
                                   </span>
-                                </span>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="icon-wrapper unesco-icon">
-                                <SafetyCertificateFilled />
-                              </div>
-                              <div className="info-text">
-                                <span className="label">Phân loại di sản</span>
-                                <span className="value highlight-unesco">
-                                  Bảo vật Quốc gia
-                                </span>
-                              </div>
-                            </li>
-                          </ul>
-                        </Col>
-                      </Row>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="icon-wrapper">
+                                  <CalendarOutlined />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Thời kỳ / Năm</span>
+                                  <span className="value">
+                                    {artifact.yearCreated || "Không rõ"}
+                                  </span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="icon-wrapper">
+                                  <GlobalOutlined />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Chất liệu</span>
+                                  <span className="value">
+                                    {artifact.material || "Không rõ"}
+                                  </span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="icon-wrapper">
+                                  <StarFilled />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Tình trạng</span>
+                                  <span className="value highlight">
+                                    {conditionLabel}
+                                  </span>
+                                </div>
+                              </li>
+                            </ul>
+                          </Col>
+                          <Col xs={24} md={12}>
+                            <h3 className="info-section-title">
+                               Chi tiết & Giá trị
+                            </h3>
+                            <ul className="info-grid-list">
+                              <li>
+                                <div className="icon-wrapper">
+                                  <ExpandOutlined />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Kích thước</span>
+                                  <span className="value">
+                                    {artifact.dimensions || "N/A"}
+                                  </span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="icon-wrapper">
+                                  <UserOutlined />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Tác giả / Nguồn</span>
+                                  <span className="value">
+                                    {authorName}
+                                  </span>
+                                </div>
+                              </li>
+                               <li>
+                                <div className="icon-wrapper star-icon">
+                                  <StarFilled />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Đánh giá chung</span>
+                                  <span className="value">
+                                    {artifact.rating || 0}/5{" "}
+                                    <span className="sub">
+                                      ({artifact.totalReviews || 0} đánh giá)
+                                    </span>
+                                  </span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="icon-wrapper unesco-icon">
+                                  <SafetyCertificateFilled />
+                                </div>
+                                <div className="info-text">
+                                  <span className="label">Vị trí trưng bày</span>
+                                  <span className="value highlight-unesco">
+                                    {artifact.locationInSite || artifact.currentLocation || "Tại di tích"}
+                                  </span>
+                                </div>
+                              </li>
+                            </ul>
+                          </Col>
+                        </Row>
 
-                      <Divider dashed />
+                        {(artifact.weight || artifact.origin || artifact.acquisitionDate) && (
+                          <>
+                            <Divider dashed />
+                            <Row gutter={[48, 24]}>
+                               {artifact.weight && (
+                                 <Col xs={24} md={8}>
+                                    <div style={{ display: 'flex', gap: 12 }}>
+                                        <div style={{ fontWeight: 600, color: '#888', textTransform: 'uppercase', fontSize: 11 }}>Trọng lượng:</div>
+                                        <div style={{ fontWeight: 500 }}>{artifact.weight}</div>
+                                    </div>
+                                 </Col>
+                               )}
+                               {artifact.origin && (
+                                 <Col xs={24} md={8}>
+                                    <div style={{ display: 'flex', gap: 12 }}>
+                                        <div style={{ fontWeight: 600, color: '#888', textTransform: 'uppercase', fontSize: 11 }}>Nguồn gốc:</div>
+                                        <div style={{ fontWeight: 500 }}>{artifact.origin}</div>
+                                    </div>
+                                 </Col>
+                               )}
+                               {artifact.acquisitionDate && (
+                                 <Col xs={24} md={8}>
+                                    <div style={{ display: 'flex', gap: 12 }}>
+                                        <div style={{ fontWeight: 600, color: '#888', textTransform: 'uppercase', fontSize: 11 }}>Ngày tiếp nhận:</div>
+                                        <div style={{ fontWeight: 500 }}>{artifact.acquisitionDate}</div>
+                                    </div>
+                                 </Col>
+                               )}
+                            </Row>
+                          </>
+                        )}
 
-                      <div className="info-footer-actions">
-                        <div className="action-buttons-group">
-                          <Button
-                            className={`btn-favorite ${isFavorite ? "active" : ""}`}
-                            icon={
-                              isFavorite ? <HeartFilled /> : <HeartOutlined />
-                            }
-                            onClick={handleToggleFavorite}
-                            size="large"
-                          >
-                            {isFavorite ? "Đã Thích" : "Yêu Thích"}
-                          </Button>
-                          <Button 
-                            icon={<ShareAltOutlined />} 
-                            size="large"
-                            onClick={handleShare}
-                          >
-                            Chia Sẻ
-                          </Button>
+                        <Divider dashed />
+
+                        <div className="info-footer-actions">
+                            <div className="booking-note">
+                                <span>* Hiện vật đang được trưng bày tại {artifact.locationInSite || "Bảo tàng / Di tích"}.</span>
+                                <span className="promo-text">Liên hệ Sen để biết thêm thông tin chi tiết.</span>
+                            </div>
+                           <div className="action-buttons">
+                              <Button
+                                size="large"
+                                className="direction-btn"
+                                icon={<EnvironmentOutlined />}
+                                onClick={() => {
+                                    if (relatedHeritage && relatedHeritage.length > 0) {
+                                        navigate(`/heritage/${relatedHeritage[0].id}`);
+                                    }
+                                }}
+                              >
+                                Xem điểm đến
+                              </Button>
+                           </div>
                         </div>
                       </div>
                     </div>
@@ -526,110 +548,42 @@ const ArtifactDetailPage = () => {
                 label: "Khám phá",
                 children: (
                   <div className="article-main-wrapper">
-                    {/* 1. Related Games / Interactive (MOCK UI) */}
-                    <div
-                      className="discovery-block"
-                      style={{ marginBottom: 48 }}
-                    >
+                    {/* 1. Related Games */}
+                    <div className="discovery-block" style={{ marginBottom: 48 }}>
                       <Title level={3}>
-                        <RocketOutlined /> Trải nghiệm Lịch sử
+                        <RocketOutlined /> Trải nghiệm Hiện vật
                       </Title>
-                      <p>
-                        Tham gia các màn chơi tương tác để hiểu rõ hơn về hiện
-                        vật này.
+                      <p style={{ marginBottom: 24 }}>
+                        Tương tác 3D và tham gia trò chơi liên quan đến hiện vật.
                       </p>
                       <Row gutter={[16, 16]}>
                         <Col xs={24} md={12}>
-                          <div
-                            className="game-card-mini"
-                            style={{
-                              border: "1px solid #eee",
-                              borderRadius: 12,
-                              padding: 16,
-                              display: "flex",
-                              gap: 16,
-                              alignItems: "center",
-                            }}
-                          >
-                            <div
-                              className="game-thumb"
-                              style={{
-                                width: 80,
-                                height: 80,
-                                borderRadius: 8,
-                                background: "#eee",
-                                backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`,
-                                backgroundSize: "cover",
-                              }}
-                            />
+                          <div className="game-card-mini" style={{ border: "1px solid #eee", borderRadius: 12, padding: 16, display: "flex", gap: 16, alignItems: "center" }}>
+                            <div className="game-thumb" style={{ width: 80, height: 80, borderRadius: 8, background: "#eee", backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`, backgroundSize: "cover" }} />
                             <div className="game-info" style={{ flex: 1 }}>
-                              <h4 style={{ margin: 0, fontSize: 16 }}>
-                                Khám phá Rồng đá
-                              </h4>
-                              <div style={{ color: "#888", fontSize: 13 }}>
-                                Giải mã bí ẩn về rồng đá thời Lê
-                              </div>
+                                <h4 style={{ margin: 0, fontSize: 16 }}>Khám phá 3D</h4>
+                                <div style={{ color: "#888", fontSize: 13 }}>Xem chi tiết mọi góc cạnh của hiện vật</div>
                             </div>
-                            <Button
-                              type="primary"
-                              shape="round"
-                              icon={<RocketOutlined />}
-                            >
-                              Chơi Ngay
-                            </Button>
+                            <Button type="primary" shape="round" icon={<RocketOutlined />}>Xem ngay</Button>
                           </div>
                         </Col>
-                        <Col xs={24} md={12}>
-                          <div
-                            className="game-card-mini"
-                            style={{
-                              border: "1px solid #eee",
-                              borderRadius: 12,
-                              padding: 16,
-                              display: "flex",
-                              gap: 16,
-                              alignItems: "center",
-                            }}
-                          >
-                            <div
-                              className="game-thumb"
-                              style={{
-                                width: 80,
-                                height: 80,
-                                borderRadius: 8,
-                                background: "#eee",
-                                backgroundImage: `url(https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200)`,
-                                backgroundSize: "cover",
-                              }}
-                            />
+                         <Col xs={24} md={12}>
+                          <div className="game-card-mini" style={{ border: "1px solid #eee", borderRadius: 12, padding: 16, display: "flex", gap: 16, alignItems: "center" }}>
+                            <div className="game-thumb" style={{ width: 80, height: 80, borderRadius: 8, background: "#eee", backgroundImage: `url(https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200)`, backgroundSize: "cover" }} />
                             <div className="game-info" style={{ flex: 1 }}>
-                              <h4 style={{ margin: 0, fontSize: 16 }}>
-                                Bảo vệ Hoàng Thành
-                              </h4>
-                              <div style={{ color: "#888", fontSize: 13 }}>
-                                Bảo vệ di sản khỏi xâm lược
-                              </div>
+                                <h4 style={{ margin: 0, fontSize: 16 }}>Giải đố Lịch sử</h4>
+                                <div style={{ color: "#888", fontSize: 13 }}>Thử thách kiến thức về hiện vật này</div>
                             </div>
-                            <Button
-                              type="primary"
-                              shape="round"
-                              icon={<RocketOutlined />}
-                            >
-                              Chơi Ngay
-                            </Button>
+                            <Button type="primary" shape="round" icon={<RocketOutlined />}>Chơi ngay</Button>
                           </div>
                         </Col>
                       </Row>
                       <Divider />
                     </div>
 
-                    {/* 2. Related Heritage Sites & History */}
-                    {(relatedHeritage.length > 0 ||
-                      relatedHistory.length > 0) && (
-                      <div
-                        className="discovery-block"
-                        style={{ marginBottom: 48 }}
-                      >
+                    {/* 2. Related Heritage */}
+                     {(relatedHeritage.length > 0 || relatedHistory.length > 0) && (
+                      <div className="discovery-block" style={{ marginBottom: 48 }}>
                         <Title level={3}>
                           <EnvironmentOutlined /> Di sản & Lịch sử liên quan
                         </Title>
@@ -645,187 +599,71 @@ const ArtifactDetailPage = () => {
                             </Col>
                           ))}
                         </Row>
-                        <Divider />
+                         <Divider />
                       </div>
                     )}
 
-                    {/* 3. Related Products (MOCK UI) */}
+                    {/* 3. Products */}
                     <div className="discovery-block">
                       <Title level={3}>
                         <ShopOutlined /> Sản phẩm Văn hóa
                       </Title>
-                      <p>
-                        Các sản phẩm lưu niệm và văn hóa liên quan đến hiện vật
-                        này.
-                      </p>
-                      <Row gutter={[16, 16]}>
+                       <Row gutter={[16, 16]}>
                         <Col xs={24} sm={12} md={6}>
-                          <div
-                            className="product-card"
-                            style={{
-                              textAlign: "center",
-                              border: "1px solid #f0f0f0",
-                              borderRadius: 8,
-                              padding: 16,
-                            }}
-                          >
-                            <div
-                              className="prod-img"
-                              style={{
-                                height: 200,
-                                marginBottom: 16,
-                                borderRadius: 8,
-                                overflow: "hidden",
-                                background: "#f5f5f5",
-                              }}
-                            >
-                              <img
-                                src="https://images.unsplash.com/photo-1599525281489-0824b223c285?w=400"
-                                alt="Product"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </div>
-                            <h4 style={{ marginBottom: 8, fontSize: 15 }}>
-                              Mô hình Rồng đá
-                            </h4>
-                            <div
-                              style={{
-                                color: "#d4380d",
-                                fontWeight: "bold",
-                                fontSize: 16,
-                                marginBottom: 12,
-                              }}
-                            >
-                              350,000 đ
-                            </div>
-                            <Button block type="primary" ghost>
-                              Xem chi tiết
-                            </Button>
+                          <div className="product-card" style={{ textAlign: "center" }}>
+                             <div className="prod-img" style={{ height: 200, marginBottom: 16, borderRadius: 8, overflow: "hidden" }}>
+                              <img src="https://images.unsplash.com/photo-1599525281489-0824b223c285?w=400" alt="Product" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                             </div>
+                             <h4 style={{ marginBottom: 8 }}>Mô hình thu nhỏ</h4>
+                             <div style={{ color: "#d4380d", fontWeight: "bold", marginBottom: 12 }}>350,000 đ</div>
+                             <Button block>Xem chi tiết</Button>
                           </div>
                         </Col>
-                        <Col xs={24} sm={12} md={6}>
-                          <div
-                            className="product-card"
-                            style={{
-                              textAlign: "center",
-                              border: "1px solid #f0f0f0",
-                              borderRadius: 8,
-                              padding: 16,
-                            }}
-                          >
-                            <div
-                              className="prod-img"
-                              style={{
-                                height: 200,
-                                marginBottom: 16,
-                                borderRadius: 8,
-                                overflow: "hidden",
-                                background: "#f5f5f5",
-                              }}
-                            >
-                              <img
-                                src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400"
-                                alt="Product"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </div>
-                            <h4 style={{ marginBottom: 8, fontSize: 15 }}>
-                              Móc khóa Rồng đá
-                            </h4>
-                            <div
-                              style={{
-                                color: "#d4380d",
-                                fontWeight: "bold",
-                                fontSize: 16,
-                                marginBottom: 12,
-                              }}
-                            >
-                              45,000 đ
-                            </div>
-                            <Button block type="primary" ghost>
-                              Xem chi tiết
-                            </Button>
-                          </div>
-                        </Col>
-                        <Col xs={24} sm={12} md={6}>
-                          <div
-                            className="product-card"
-                            style={{
-                              textAlign: "center",
-                              border: "1px solid #f0f0f0",
-                              borderRadius: 8,
-                              padding: 16,
-                            }}
-                          >
-                            <div
-                              className="prod-img"
-                              style={{
-                                height: 200,
-                                marginBottom: 16,
-                                borderRadius: 8,
-                                overflow: "hidden",
-                                background: "#f5f5f5",
-                              }}
-                            >
-                              <img
-                                src="https://images.unsplash.com/photo-1555169062-013468b47731?w=400"
-                                alt="Product"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </div>
-                            <h4 style={{ marginBottom: 8, fontSize: 15 }}>
-                              Tranh Rồng đá
-                            </h4>
-                            <div
-                              style={{
-                                color: "#d4380d",
-                                fontWeight: "bold",
-                                fontSize: 16,
-                                marginBottom: 12,
-                              }}
-                            >
-                              280,000 đ
-                            </div>
-                            <Button block type="primary" ghost>
-                              Xem chi tiết
-                            </Button>
+                         <Col xs={24} sm={12} md={6}>
+                          <div className="product-card" style={{ textAlign: "center" }}>
+                             <div className="prod-img" style={{ height: 200, marginBottom: 16, borderRadius: 8, overflow: "hidden" }}>
+                              <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400" alt="Product" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                             </div>
+                             <h4 style={{ marginBottom: 8 }}>Móc khóa kỷ niệm</h4>
+                             <div style={{ color: "#d4380d", fontWeight: "bold", marginBottom: 12 }}>45,000 đ</div>
+                             <Button block>Xem chi tiết</Button>
                           </div>
                         </Col>
                       </Row>
                     </div>
+
                   </div>
                 ),
               },
             ]}
           />
-        </div>
-      </section>
+      </div>
 
-      {/* 3. Related Artifacts Section */}
-      <section className="related-section">
-        <h2 className="related-title">Hiện Vật Liên Quan</h2>
-        <Row gutter={[24, 24]}>
-          {relatedArtifacts.map((item) => (
-            <Col xs={24} sm={12} lg={8} key={item.id}>
-              <ArticleCard data={item} type="artifact" />
-            </Col>
-          ))}
-        </Row>
-      </section>
+       {/* RELATED ARTIFACTS (Bottom) */}
+      <div className="related-bottom-section">
+        <div className="content-container">
+          <Divider />
+          <Title level={3} className="section-title">
+            Hiện vật liên quan
+          </Title>
+          <Row gutter={[24, 24]}>
+            {relatedArtifacts.map((item) => (
+              <Col xs={24} sm={12} md={8} key={item.id}>
+                <ArticleCard data={item} type="artifact" />
+              </Col>
+            ))}
+          </Row>
+        </div>
+      </div>
     </div>
   );
 };
+
+// Helper Components
+const SpaceItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
+  <span className="meta-space-item">
+    {icon} <span style={{ marginLeft: 6 }}>{text}</span>
+  </span>
+);
 
 export default ArtifactDetailPage;

@@ -44,7 +44,7 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number }> = ({
           <div className="stat-item">
             <span className="stat-label">Điểm</span>
             <span className="stat-value">
-              {entry.totalPoints.toLocaleString()}
+              {(entry.totalPoints || 0).toLocaleString()}
             </span>
           </div>
           <div className="stat-item">
@@ -91,7 +91,7 @@ const LeaderboardPage: React.FC = () => {
     {
       title: "Người chơi",
       key: "player",
-      render: (_: any, record: LeaderboardEntry) => (
+      render: (_: unknown, record: LeaderboardEntry) => (
         <div className="player-info-cell">
           <Avatar src={getImageUrl(record.userAvatar)} icon={<UserOutlined />} />
           <div className="user-info">
@@ -111,7 +111,7 @@ const LeaderboardPage: React.FC = () => {
           icon={<StarOutlined />}
           style={{ borderRadius: 12, padding: "2px 12px" }}
         >
-          {points.toLocaleString()}
+          {(points || 0).toLocaleString()}
         </Tag>
       ),
     },
