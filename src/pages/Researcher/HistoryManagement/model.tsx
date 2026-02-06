@@ -1,5 +1,5 @@
 import {useState, useMemo, useEffect} from "react";
-import {message, Modal, Input} from "antd";
+import {message} from "antd";
 import historyService from "@/services/history.service";
 import {useCRUD} from "@/hooks/useCRUD";
 import {useAuth} from "@/hooks/useAuth";
@@ -132,7 +132,7 @@ export const useHistoryModel = () => {
     // Auto-set author and status for researcher
     const payload = {
       ...values,
-      author: user?.fullName || user?.username,
+      author: user?.name || user?.email,
       status: "draft", // Default to draft for new researcher content
     };
 

@@ -1,4 +1,4 @@
-import {Modal, Descriptions, Tabs, Tag, Image, Space, Typography, List, Card} from "antd";
+import {Modal, Descriptions, Tabs, Tag, Image, Space, Typography, List, Card, Badge} from "antd";
 import {getImageUrl} from "@/utils/image.helper";
 import {
   ReadOutlined,

@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from "react";
+import React, {useState} from "react";
 import {Tag, Avatar, Space, message, Tabs, Popconfirm, Tooltip} from "antd";
 import {UserOutlined, ReloadOutlined, TrophyOutlined} from "@ant-design/icons";
 import {Button} from "@/components/common";
