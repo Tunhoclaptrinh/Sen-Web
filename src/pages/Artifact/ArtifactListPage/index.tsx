@@ -1,31 +1,17 @@
-import { useState } from "react";
-import {
-  Form,
-  Input,
-  Select,
-  Row,
-  Col,
-  Space,
-  Tag,
-  Button,
-  message,
-  Avatar,
-  Tooltip,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import {useState} from "react";
+import {Form, Input, Select, Row, Col, Space, Tag, Button, message, Avatar, Tooltip} from "antd";
+import {EditOutlined, DeleteOutlined, EyeOutlined} from "@ant-design/icons";
 // @ts-ignore
-import { useCRUD } from "@hooks/useCRUD";
+import {useCRUD} from "@hooks/useCRUD";
 import artifactService from "@services/artifact.service";
 import DataTable from "@components/common/DataTable";
 import FormModal from "@components/common/FormModal";
+import {useAuth} from "@/hooks/useAuth";
 
-const { TextArea } = Input;
+const {TextArea} = Input;
 
 const ArtifactListPage = () => {
+  const {user} = useAuth();
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -67,19 +53,14 @@ const ArtifactListPage = () => {
       key: "images",
       width: 100,
       render: (images: string[]) => (
-        <Avatar
-          shape="square"
-          size={60}
-          src={images && images.length > 0 ? images[0] : ""}
-          icon={<EyeOutlined />}
-        />
+        <Avatar shape="square" size={60} src={images && images.length > 0 ? images[0] : ""} icon={<EyeOutlined />} />
       ),
     },
     {
       title: "Tên hiện vật",
       dataIndex: "name",
       key: "name",
-      render: (text: string) => <b style={{ color: "#1890ff" }}>{text}</b>,
+      render: (text: string) => <b style={{color: "#1890ff"}}>{text}</b>,
     },
     {
       title: "Triều đại",
@@ -101,7 +82,7 @@ const ArtifactListPage = () => {
           common: "gray",
           rare: "blue",
           epic: "purple",
-          legendary: "gold"
+          legendary: "gold",
         };
 
         return <Tag color={colorMap[rarity] || "default"}>{rarity?.toUpperCase()}</Tag>;
@@ -114,19 +95,10 @@ const ArtifactListPage = () => {
       render: (_: any, record: any) => (
         <Space size="middle">
           <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "orange" }} />}
-              onClick={() => handleEdit(record)}
-            />
+            <Button type="text" icon={<EditOutlined style={{color: "orange"}} />} onClick={() => handleEdit(record)} />
           </Tooltip>
           <Tooltip title="Xóa">
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDelete(record.id)}
-            />
+            <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
           </Tooltip>
         </Space>
       ),
@@ -162,9 +134,10 @@ const ArtifactListPage = () => {
   };
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{padding: 24}}>
       <DataTable
         title="Quản lý Hiện Vật"
+        user={user}
         loading={loading}
         columns={columns}
         dataSource={data}
@@ -178,9 +151,7 @@ const ArtifactListPage = () => {
         onSearch={search}
         onAdd={handleCreate}
         onDelete={(keys: any) => batchDelete(keys)}
-        extraActions={[
-
-        ]}
+        extraActions={[]}
       />
 
       <FormModal
@@ -191,27 +162,15 @@ const ArtifactListPage = () => {
         form={form}
         width={800}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="name"
-                label="Tên hiện vật"
-                rules={[{ required: true, message: "Vui lòng nhập tên" }]}
-              >
+              <Form.Item name="name" label="Tên hiện vật" rules={[{required: true, message: "Vui lòng nhập tên"}]}>
                 <Input placeholder="Nhập tên hiện vật..." />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
-                name="dynasty"
-                label="Triều đại"
-                rules={[{ required: true }]}
-              >
+              <Form.Item name="dynasty" label="Triều đại" rules={[{required: true}]}>
                 <Select placeholder="Chọn triều đại">
                   <Select.Option value="Lý">Nhà Lý</Select.Option>
                   <Select.Option value="Trần">Nhà Trần</Select.Option>
@@ -224,11 +183,7 @@ const ArtifactListPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="category"
-                label="Danh mục"
-                rules={[{ required: true }]}
-              >
+              <Form.Item name="category" label="Danh mục" rules={[{required: true}]}>
                 <Select placeholder="Loại hiện vật">
                   <Select.Option value="Gốm sứ">Gốm sứ</Select.Option>
                   <Select.Option value="Trang phục">Trang phục</Select.Option>

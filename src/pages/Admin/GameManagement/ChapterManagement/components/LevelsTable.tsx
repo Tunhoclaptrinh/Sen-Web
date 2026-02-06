@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Tag, Button, Tooltip, Table, message } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
-import { Level } from "@/types/game.types";
-import { useCRUD } from "@/hooks/useCRUD";
+import {useState, useMemo} from "react";
+import {Tag, Tooltip, Table, message} from "antd";
+import {EyeOutlined} from "@ant-design/icons";
+import {Button} from "@/components/common";
+import {Level} from "@/types/game.types";
+import {useCRUD} from "@/hooks/useCRUD";
 import adminLevelService from "@/services/admin-level.service";
-import { useMemo } from "react";
 import ScreensDrawer from "../../LevelManagement/components/ScreensDrawer";
 
 interface LevelsTableProps {
@@ -12,7 +12,7 @@ interface LevelsTableProps {
   chapterName: string;
 }
 
-const LevelsTable: React.FC<LevelsTableProps> = ({ chapterId }) => {
+const LevelsTable: React.FC<LevelsTableProps> = ({chapterId}) => {
   const [screensDrawerOpen, setScreensDrawerOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
 
@@ -21,7 +21,7 @@ const LevelsTable: React.FC<LevelsTableProps> = ({ chapterId }) => {
     () => ({
       pageSize: 10,
       autoFetch: true,
-      defaultFilters: { chapterId: chapterId },  // ✅ Fix: Use camelCase
+      defaultFilters: {chapterId: chapterId}, // ✅ Fix: Use camelCase
       onError: (action: string, error: any) => {
         console.error(`Error ${action} level:`, error);
         message.error(`Thao tác thất bại: ${error.message}`);
@@ -83,10 +83,12 @@ const LevelsTable: React.FC<LevelsTableProps> = ({ chapterId }) => {
       render: (_: any, record: Level) => (
         <Tooltip title="Xem Screens">
           <Button
-            type="text"
+            variant="ghost"
+            buttonSize="small"
             icon={<EyeOutlined />}
             onClick={() => openScreens(record)}
-            style={{ color: "var(--primary-color)" }}
+            className="action-btn-standard"
+            style={{color: "var(--primary-color)"}}
           />
         </Tooltip>
       ),
@@ -108,13 +110,7 @@ const LevelsTable: React.FC<LevelsTableProps> = ({ chapterId }) => {
         rowKey="id"
       />
 
-      {selectedLevel && (
-        <ScreensDrawer
-          open={screensDrawerOpen}
-          onClose={closeScreens}
-          level={selectedLevel}
-        />
-      )}
+      {selectedLevel && <ScreensDrawer open={screensDrawerOpen} onClose={closeScreens} level={selectedLevel} />}
     </>
   );
 };

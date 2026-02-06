@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Modal, Space, Tag } from "antd";
-import { useCRUD } from "@hooks/useCRUD";
+import {useState} from "react";
+import {Modal, Space, Tag} from "antd";
+import {useCRUD} from "@hooks/useCRUD";
 import heritageService from "@services/heritage.service";
 import DataTable from "@components/common/DataTable";
-import type { HeritageSite } from "@/types";
+import {HeritageSite} from "@/types";
+import {useAuth} from "@/hooks/useAuth";
 
 /**
  * Heritage List Page
@@ -11,6 +12,7 @@ import type { HeritageSite } from "@/types";
  * No create/edit/delete operations
  */
 const HeritageListPage = () => {
+  const {user} = useAuth();
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [viewingRecord, setViewingRecord] = useState<HeritageSite | null>(null);
 
@@ -41,11 +43,11 @@ const HeritageListPage = () => {
       placeholder: "Chọn vùng",
       width: 150,
       options: [
-        { label: "Hà Nội", value: "Hà Nội" },
-        { label: "Huế", value: "Huế" },
-        { label: "Hội An", value: "Hội An" },
-        { label: "Quảng Nam", value: "Quảng Nam" },
-        { label: "Đà Nẵng", value: "Đà Nẵng" },
+        {label: "Hà Nội", value: "Hà Nội"},
+        {label: "Huế", value: "Huế"},
+        {label: "Hội An", value: "Hội An"},
+        {label: "Quảng Nam", value: "Quảng Nam"},
+        {label: "Đà Nẵng", value: "Đà Nẵng"},
       ],
     },
     {
@@ -53,10 +55,10 @@ const HeritageListPage = () => {
       placeholder: "Chọn loại",
       width: 150,
       options: [
-        { label: "Di tích", value: "monument" },
-        { label: "Đền chùa", value: "temple" },
-        { label: "Bảo tàng", value: "museum" },
-        { label: "Thành cổ", value: "ancient_city" },
+        {label: "Di tích", value: "monument"},
+        {label: "Đền chùa", value: "temple"},
+        {label: "Bảo tàng", value: "museum"},
+        {label: "Thành cổ", value: "ancient_city"},
       ],
     },
     {
@@ -64,8 +66,8 @@ const HeritageListPage = () => {
       placeholder: "UNESCO",
       width: 120,
       options: [
-        { label: "Có", value: true },
-        { label: "Không", value: false },
+        {label: "Có", value: true},
+        {label: "Không", value: false},
       ],
     },
   ];
@@ -133,8 +135,7 @@ const HeritageListPage = () => {
       key: "entranceFee",
       width: 120,
       sorter: true,
-      render: (fee: any) =>
-        fee ? `${fee.toLocaleString("vi-VN")} đ` : "Miễn phí",
+      render: (fee: any) => (fee ? `${fee.toLocaleString("vi-VN")} đ` : "Miễn phí"),
     },
     {
       title: "Đánh Giá",
@@ -150,14 +151,10 @@ const HeritageListPage = () => {
       key: "unescoListed",
       width: 100,
       filters: [
-        { text: "Có", value: true },
-        { text: "Không", value: false },
+        {text: "Có", value: true},
+        {text: "Không", value: false},
       ],
-      render: (unesco: any) => (
-        <Tag color={unesco ? "green" : "default"}>
-          {unesco ? "Có" : "Không"}
-        </Tag>
-      ),
+      render: (unesco: any) => <Tag color={unesco ? "green" : "default"}>{unesco ? "Có" : "Không"}</Tag>,
     },
   ];
 
@@ -180,7 +177,7 @@ const HeritageListPage = () => {
    * Handle Filter Change
    */
   const handleFilterChange = (key: string, value: any) => {
-    updateFilters({ [key]: value });
+    updateFilters({[key]: value});
   };
 
   /**
@@ -191,9 +188,10 @@ const HeritageListPage = () => {
   };
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{padding: 24}}>
       <DataTable
         // Data
+        user={user}
         data={data}
         loading={loading}
         columns={columns}
@@ -228,7 +226,7 @@ const HeritageListPage = () => {
         width={700}
       >
         {viewingRecord && (
-          <Space direction="vertical" style={{ width: "100%" }} size="middle">
+          <Space direction="vertical" style={{width: "100%"}} size="middle">
             <div>
               <strong>Tên:</strong> {viewingRecord.name}
             </div>
@@ -245,20 +243,14 @@ const HeritageListPage = () => {
               <strong>Địa chỉ:</strong> {viewingRecord.address || "N/A"}
             </div>
             <div>
-              <strong>Năm thành lập:</strong>{" "}
-              {viewingRecord.yearEstablished || "N/A"}
+              <strong>Năm thành lập:</strong> {viewingRecord.yearEstablished || "N/A"}
             </div>
             <div>
               <strong>Phí vào cửa:</strong>{" "}
-              {viewingRecord.entranceFee
-                ? `${viewingRecord.entranceFee.toLocaleString("vi-VN")} đ`
-                : "Miễn phí"}
+              {viewingRecord.entranceFee ? `${viewingRecord.entranceFee.toLocaleString("vi-VN")} đ` : "Miễn phí"}
             </div>
             <div>
-              <strong>Đánh giá:</strong>{" "}
-              {viewingRecord.rating
-                ? `⭐ ${viewingRecord.rating.toFixed(1)}`
-                : "N/A"}
+              <strong>Đánh giá:</strong> {viewingRecord.rating ? `⭐ ${viewingRecord.rating.toFixed(1)}` : "N/A"}
             </div>
             <div>
               <strong>UNESCO:</strong>{" "}

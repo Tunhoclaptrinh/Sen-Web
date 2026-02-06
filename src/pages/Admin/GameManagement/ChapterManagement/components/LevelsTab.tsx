@@ -1,20 +1,21 @@
-import { useState } from "react";
-import { Tag, Button, Tooltip, message } from "antd";
-import { AppstoreOutlined } from "@ant-design/icons";
+import {useState} from "react";
+import {Tag, Tooltip, message} from "antd";
+import {AppstoreOutlined} from "@ant-design/icons";
+import {Button} from "@/components/common";
 import DataTable from "@/components/common/DataTable";
 import LevelForm from "../../LevelManagement/components/Form";
 import ScreensDrawer from "../../LevelManagement/components/ScreensDrawer";
-import { Level } from "@/types/game.types";
-import { useCRUD } from "@/hooks/useCRUD";
+import {Level} from "@/types/game.types";
+import {useCRUD} from "@/hooks/useCRUD";
 import adminLevelService from "@/services/admin-level.service";
-import { useMemo } from "react";
+import {useMemo} from "react";
 
 interface LevelsTabProps {
   chapterId: string;
   chapterName: string;
 }
 
-const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
+const LevelsTab: React.FC<LevelsTabProps> = ({chapterId, chapterName}) => {
   // UI State
   const [formVisible, setFormVisible] = useState(false);
   const [currentLevel, setCurrentLevel] = useState<Level | null>(null);
@@ -27,7 +28,7 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
     () => ({
       pageSize: 10,
       autoFetch: true,
-      defaultFilters: { chapterId: chapterId },
+      defaultFilters: {chapterId: chapterId},
       onError: (action: string, error: any) => {
         console.error(`Error ${action} level:`, error);
         message.error(`Thao tác thất bại: ${error.message}`);
@@ -126,9 +127,11 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
       render: (_: any, record: Level) => (
         <Tooltip title="Quản lý Screens">
           <Button
-            type="text"
+            variant="ghost"
+            buttonSize="small"
             icon={<AppstoreOutlined />}
             onClick={() => openScreens(record)}
+            className="action-btn-standard"
           />
         </Tooltip>
       ),
@@ -137,8 +140,8 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
 
   return (
     <>
-      <div style={{ marginBottom: 16 }}>
-        <p style={{ color: "#666", marginBottom: 8 }}>
+      <div style={{marginBottom: 16}}>
+        <p style={{color: "#666", marginBottom: 8}}>
           Chương: <strong>{chapterName}</strong>
         </p>
       </div>
@@ -168,17 +171,11 @@ const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
-        initialValues={currentLevel ? currentLevel : { chapterId: chapterId }}
+        initialValues={currentLevel ? currentLevel : {chapterId: chapterId}}
         loading={crud.loading}
       />
 
-      {selectedLevel && (
-        <ScreensDrawer
-          open={screensDrawerOpen}
-          onClose={closeScreens}
-          level={selectedLevel}
-        />
-      )}
+      {selectedLevel && <ScreensDrawer open={screensDrawerOpen} onClose={closeScreens} level={selectedLevel} />}
     </>
   );
 };

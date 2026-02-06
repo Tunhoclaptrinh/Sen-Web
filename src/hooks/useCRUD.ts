@@ -620,6 +620,24 @@ export const useCRUD = (service: any, options: any = {}) => {
         [service, fetchAll]
     );
 
+    const revertReview = useCallback(
+        async (id: any) => {
+            try {
+                setLoading(true);
+                await service.revertReview(id);
+                message.success('Đã hoàn về bản nháp');
+                await fetchAll();
+                return true;
+            } catch (err) {
+                message.error('Thao tác thất bại');
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        },
+        [service, fetchAll]
+    );
+
     useEffect(() => {
         if (autoFetch) {
             fetchAll();
@@ -663,6 +681,7 @@ export const useCRUD = (service: any, options: any = {}) => {
         submitReview: typeof service.submitReview === 'function' ? submitReview : undefined,
         approveReview: typeof service.approveReview === 'function' ? approveReview : undefined,
         rejectReview: typeof service.rejectReview === 'function' ? rejectReview : undefined,
+        revertReview: typeof service.revertReview === 'function' ? revertReview : undefined,
 
         // Batch operations
         batchDelete,

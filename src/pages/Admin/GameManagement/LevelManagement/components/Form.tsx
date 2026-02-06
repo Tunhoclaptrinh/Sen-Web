@@ -1,4 +1,4 @@
-import { Input, InputNumber, Select, Row, Col, Form, Typography, Divider, Radio, Space } from "antd";
+import { Input, InputNumber, Select, Row, Col, Form, Typography, Divider, Radio, Space, DatePicker } from "antd";
 import { 
     SettingOutlined, 
     CustomerServiceOutlined, 
@@ -12,6 +12,8 @@ import adminChapterService from "@/services/admin-chapter.service";
 import adminLevelService from "@/services/admin-level.service";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import FileUpload from "@/components/common/Upload/FileUpload";
+import { useAuth } from "@/hooks/useAuth";
+import dayjs from "dayjs";
 
 const { Text, Title } = Typography;
 
@@ -33,6 +35,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
     title = "Thông tin Màn chơi",
 }) => {
     const [form] = Form.useForm();
+    const { user } = useAuth();
     const [chapters, setChapters] = useState<any[]>([]);
     const [levels, setLevels] = useState<any[]>([]);
     
@@ -46,7 +49,10 @@ const LevelForm: React.FC<LevelFormProps> = ({
     useEffect(() => {
         if (open) {
             if (initialValues?.id) {
-                form.setFieldsValue(initialValues);
+                form.setFieldsValue({
+                    ...initialValues,
+                    publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined
+                });
                 // Smart detect mode from initial value
                 if (initialValues.thumbnail && (initialValues.thumbnail.startsWith("http") || initialValues.thumbnail.startsWith("/"))) {
                     // If it's a URL, we default to upload if it's internal, link if it's external?
@@ -64,7 +70,9 @@ const LevelForm: React.FC<LevelFormProps> = ({
                 }
                 form.setFieldsValue({
                     difficulty: "easy",
-                    passingScore: 70
+                    passingScore: 70,
+                    author: user?.name,
+                    publishDate: dayjs()
                 });
                 setThumbnailMode("upload");
                 setMusicMode("link");
@@ -182,6 +190,16 @@ const LevelForm: React.FC<LevelFormProps> = ({
                                     rules={[{ required: true, message: "Nhập mô tả" }]}
                                 >
                                     <Input.TextArea rows={2} placeholder="Mô tả ngắn gọn về màn chơi này..." showCount maxLength={200} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item name="author" label="Tác giả">
+                                    <Input placeholder="Tên người tạo..." readOnly />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item name="publishDate" label="Ngày đăng">
+                                    <DatePicker style={{ width: '100%' }} disabled placeholder="Tự động khi duyệt" />
                                 </Form.Item>
                             </Col>
                         </Row>

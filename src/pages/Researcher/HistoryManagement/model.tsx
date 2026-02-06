@@ -1,153 +1,190 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { message } from "antd";
+import {useState, useMemo, useEffect} from "react";
+import {message, Modal, Input} from "antd";
 import historyService from "@/services/history.service";
-import { useCRUD } from "@/hooks/useCRUD";
-import { useAuth } from "@/hooks/useAuth";
+import {useCRUD} from "@/hooks/useCRUD";
+import {useAuth} from "@/hooks/useAuth";
 
-export const useResearcherHistoryModel = () => {
-    const { user } = useAuth();
-    
-    // Stats State
-    const [stats, setStats] = useState<any>(null);
-    const [statsLoading, setStatsLoading] = useState(false);
+export const useHistoryModel = () => {
+  const {user} = useAuth();
 
-    // UI State
-    const [currentRecord, setCurrentRecord] = useState<any | null>(null);
-    const [formVisible, setFormVisible] = useState(false);
-    const [detailVisible, setDetailVisible] = useState(false);
+  // Stats State
+  const [stats, setStats] = useState<any>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
 
-    // CRUD Setup - FORCE createdBy filter
-    const crudOptions = useMemo(() => ({
-        pageSize: 10,
-        autoFetch: true,
-        initialFilters: { createdBy: user?.id }, // RESTRICTION
-        onError: (action: string, error: any) => {
-            console.error(`Error ${action} history:`, error);
-            message.error(`Thao tác thất bại: ${error.message}`);
-        },
-        initialSort: { field: 'id', order: 'desc' },
-    }), [user?.id]);
+  // Filter Logic
+  const initialFilters = useMemo(
+    () => ({
+      createdBy: user?.id,
+    }),
+    [user?.id],
+  );
 
-    const crud = useCRUD(historyService, crudOptions);
+  // UI State
+  const [currentRecord, setCurrentRecord] = useState<any | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
+  const [detailVisible, setDetailVisible] = useState(false);
 
-    // Stats Logic - Might need backend filtering by createdBy too if stats are global
-    const fetchStats = async () => {
-        setStatsLoading(true);
-        try {
-            const response = await historyService.getStats();
-            if (response.success && response.data) {
-                setStats(response.data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch history stats", error);
-        } finally {
-            setStatsLoading(false);
-        }
-    };
+  // CRUD Setup
+  const crudOptions = useMemo(
+    () => ({
+      pageSize: 10,
+      autoFetch: true,
+      initialFilters,
+      onError: (action: string, error: any) => {
+        console.error(`Error ${action} history:`, error);
+        message.error(`Thao tác thất bại: ${error.message}`);
+      },
+      initialSort: {field: "id", order: "desc"},
+    }),
+    [initialFilters],
+  );
 
-    useEffect(() => {
-        if (user?.id) {
-            fetchStats();
-        }
-    }, [user?.id]);
+  const crud = useCRUD(historyService, crudOptions);
 
-    // const [importLoading, setImportLoading] = useState(false);
+  // Stats Logic
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      // Fetch stats filtered by user
+      const response = await historyService.getStats({createdBy: user?.id});
+      if (response.success && response.data) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch history stats", error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
-    // Business Logic
-    const deleteHistory = async (id: number) => {
-        const success = await crud.remove(id);
-        if (success) {
-            fetchStats();
-            if (currentRecord?.id === id) {
-                setDetailVisible(false);
-                setCurrentRecord(null);
-            }
-        }
-        return success;
-    };
+  useEffect(() => {
+    if (user?.id) fetchStats();
+  }, [user?.id]);
 
-    const batchDeleteHistories = async (keys: React.Key[]) => {
-        const success = await crud.batchDelete(keys);
-        if (success) fetchStats();
-        return success;
-    };
+  const [importLoading, setImportLoading] = useState(false);
 
-    const revertToDraft = useCallback(async (id: any) => {
-        const result = await historyService.revertReview(id);
-        if (result.success) {
-            message.success('Đã hoàn về bản nháp');
-            crud.refresh();
-            fetchStats();
-        }
-        return result.success;
-    }, [crud, fetchStats]);
-
-    // UI Handlers
-    const openCreate = () => {
-        setCurrentRecord(null);
-        setFormVisible(true);
-    };
-
-    const openEdit = (record: any) => {
-        setCurrentRecord(record);
-        setFormVisible(true);
-    };
-
-    const openDetail = (record: any) => {
-        setCurrentRecord(record);
-        setDetailVisible(true);
-    };
-
-    const closeForm = () => {
-        setFormVisible(false);
-        setCurrentRecord(null);
-    };
-
-    const closeDetail = () => {
+  // Business Logic
+  const deleteHistory = async (id: number) => {
+    const success = await crud.remove(id);
+    if (success) {
+      fetchStats();
+      if (currentRecord?.id === id) {
         setDetailVisible(false);
         setCurrentRecord(null);
+      }
+    }
+    return success;
+  };
+
+  const batchDeleteHistories = async (keys: React.Key[]) => {
+    const success = await crud.batchDelete(keys);
+    if (success) fetchStats();
+    return success;
+  };
+
+  const importData = async (file: File) => {
+    setImportLoading(true);
+    try {
+      const response = await historyService.import(file);
+      if (response.success) {
+        message.success("Import dữ liệu thành công");
+        crud.refresh();
+        fetchStats();
+      } else {
+        message.error("Import thất bại: " + response.message);
+      }
+    } catch (error) {
+      message.error("Import thất bại");
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  // UI Handlers
+  const openCreate = () => {
+    setCurrentRecord(null);
+    setFormVisible(true);
+  };
+
+  const openEdit = (record: any) => {
+    setCurrentRecord(record);
+    setFormVisible(true);
+  };
+
+  const openDetail = (record: any) => {
+    setCurrentRecord(record);
+    setDetailVisible(true);
+  };
+
+  const closeForm = () => {
+    setFormVisible(false);
+    setCurrentRecord(null);
+  };
+
+  const closeDetail = () => {
+    setDetailVisible(false);
+    setCurrentRecord(null);
+  };
+
+  const handleSubmit = async (values: any) => {
+    let success = false;
+
+    // Auto-set author and status for researcher
+    const payload = {
+      ...values,
+      author: user?.fullName || user?.username,
+      status: "draft", // Default to draft for new researcher content
     };
 
-    const handleSubmit = async (values: any) => {
-        let success = false;
-        if (currentRecord) {
-            success = await crud.update(currentRecord.id, values);
-        } else {
-            // Ensure createdBy is set on create (though backend usually does this)
-            success = await crud.create({ ...values, createdBy: user?.id });
-        }
+    if (currentRecord) {
+      success = await crud.update(currentRecord.id, values); // Don't override status on update unless explicitly needed
+    } else {
+      success = await crud.create(payload);
+    }
 
-        if (success) {
-            fetchStats();
-            closeForm();
-        }
-        return success;
-    };
+    if (success) {
+      fetchStats();
+      closeForm();
+    }
+    return success;
+  };
 
-    const exportData = (params?: any) => historyService.export(params);
-    const importData = (file: File) => historyService.import(file);
-    const downloadTemplate = () => historyService.downloadTemplate();
+  const downloadTemplate = async () => {
+    try {
+      const blob = await historyService.downloadTemplate();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "history_import_template.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      message.success("Tải mẫu thành công");
+    } catch (error) {
+      message.error("Tải mẫu thất bại");
+    }
+  };
 
-    return {
-        ...crud,
-        stats,
-        statsLoading,
-        // importLoading,
-        currentRecord,
-        formVisible,
-        detailVisible,
-        fetchStats,
-        deleteHistory,
-        batchDeleteHistories,
-        revertToDraft,
-        handleSubmit,
-        downloadTemplate,
-        exportData,
-        importData,
-        openCreate,
-        openEdit,
-        openDetail,
-        closeForm,
-        closeDetail
-    };
+  return {
+    ...crud,
+    stats,
+    statsLoading,
+    importLoading,
+    currentRecord,
+    formVisible,
+    detailVisible,
+    fetchStats,
+    deleteHistory,
+    batchDeleteHistories,
+    importData,
+    downloadTemplate,
+    handleSubmit,
+    submitReview: crud.submitReview,
+    revertReview: crud.revertReview,
+    openCreate,
+    openEdit,
+    openDetail,
+    closeForm,
+    closeDetail,
+  };
 };

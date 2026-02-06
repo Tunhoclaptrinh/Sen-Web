@@ -1,15 +1,15 @@
-import { useState, useMemo } from "react";
-import { message, Modal } from "antd";
-import { Chapter } from "@/types";
+import {useState, useMemo} from "react";
+import {message, Modal, Input} from "antd";
+import {Chapter} from "@/types";
 import adminChapterService from "@/services/admin-chapter.service";
-import { useAuth } from "@/hooks/useAuth";
-import { useCRUD } from "@/hooks/useCRUD";
+import {useAuth} from "@/hooks/useAuth";
+import {useCRUD} from "@/hooks/useCRUD";
 
 export const useChapterModel = () => {
   // UI State
   const [currentRecord, setCurrentRecord] = useState<Chapter | null>(null);
-  const [formVisible, setFormVisible] = useState(false);
-  const [detailVisible, setDetailVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"view" | "edit" | "create">("create");
 
   // CRUD Setup
   const crudOptions = useMemo(
@@ -29,48 +29,46 @@ export const useChapterModel = () => {
   // UI Handlers
   const openCreate = () => {
     setCurrentRecord(null);
-    setFormVisible(true);
+    setModalMode("create");
+    setModalOpen(true);
   };
 
   const openEdit = (record: Chapter) => {
     setCurrentRecord(record);
-    setFormVisible(true);
+    setModalMode("edit");
+    setModalOpen(true);
   };
 
   const openDetail = (record: Chapter) => {
     setCurrentRecord(record);
-    setDetailVisible(true);
+    setModalMode("view");
+    setModalOpen(true);
   };
 
-  const closeForm = () => {
-    setFormVisible(false);
+  const closeModal = () => {
+    setModalOpen(false);
     setCurrentRecord(null);
   };
 
-  const closeDetail = () => {
-    setDetailVisible(false);
-    setCurrentRecord(null);
-  };
-
-  const { user } = useAuth(); // Need to import useAuth
+  const {user} = useAuth();
 
   const handleSubmit = async (values: any) => {
     let success = false;
-    
+
     // Auto-set status for Admin
-    if (user?.role === 'admin' && !values.status) {
-        values.status = 'published';
-    } else if (user?.role === 'researcher' && !values.status) {
-        values.status = 'pending';
+    if (user?.role === "admin" && !values.status) {
+      values.status = "published";
+    } else if (user?.role === "researcher" && !values.status) {
+      values.status = "pending";
     }
 
-    if (currentRecord) {
+    if (currentRecord && modalMode === "edit") {
       // Update existing chapter
       // Check if order changed and conflicts with another chapter
       if (values.order && values.order !== currentRecord.order) {
         // Find chapter with the same order
         const conflictingChapter = crud.data.find(
-          (ch: Chapter) => ch.order === values.order && ch.id !== currentRecord.id
+          (ch: Chapter) => ch.order === values.order && ch.id !== currentRecord.id,
         );
 
         if (conflictingChapter) {
@@ -85,7 +83,7 @@ export const useChapterModel = () => {
                     <strong>"{conflictingChapter.name}"</strong>.
                   </p>
                   <p>Bạn có muốn đổi thứ tự của 2 chương này không?</p>
-                  <ul style={{ marginTop: 12, paddingLeft: 20 }}>
+                  <ul style={{marginTop: 12, paddingLeft: 20}}>
                     <li>
                       <strong>{currentRecord.name}</strong>: {currentRecord.order} → {values.order}
                     </li>
@@ -112,7 +110,7 @@ export const useChapterModel = () => {
               message.error("Không thể đổi thứ tự chương khác");
               return false;
             }
-            
+
             message.success(`Đã đổi thứ tự với chương "${conflictingChapter.name}"`);
           } else {
             return false;
@@ -123,32 +121,67 @@ export const useChapterModel = () => {
       success = await crud.update(currentRecord.id, values);
     } else {
       // Create new chapter - remove order from values, backend will auto set
-      const { order, ...createValues } = values;
+      const {order, ...createValues} = values;
       // Ensure status is set for create as well
-      if (user?.role === 'admin' && !createValues.status) createValues.status = 'published';
-      if (user?.role === 'researcher' && !createValues.status) createValues.status = 'pending';
-      
+      if (user?.role === "admin" && !createValues.status) createValues.status = "published";
+      if (user?.role === "researcher" && !createValues.status) createValues.status = "pending";
+
       success = await crud.create(createValues);
     }
 
     if (success) {
-      closeForm();
+      closeModal();
     }
     return success;
+  };
+
+  const handleReject = async (record: Chapter) => {
+    Modal.confirm({
+      title: "Từ chối phê duyệt",
+      content: (
+        <div style={{marginTop: 16}}>
+          <p>Lý do từ chối:</p>
+          <Input.TextArea rows={4} placeholder="Nhập lý do từ chối nội dung này..." id="reject-comment" />
+        </div>
+      ),
+      onOk: async () => {
+        const comment = (document.getElementById("reject-comment") as HTMLTextAreaElement)?.value;
+        if (!comment) {
+          message.error("Vui lòng nhập lý do từ chối");
+          return Promise.reject();
+        }
+        return crud.rejectReview?.(record.id, comment);
+      },
+    });
+  };
+
+  const reorderChapters = async (newOrderIds: number[]) => {
+    try {
+      await adminChapterService.reorder(newOrderIds);
+      message.success("Cập nhật thứ tự hoàn tất");
+      crud.refresh();
+    } catch (error: any) {
+      console.error("Reorder error:", error);
+      message.error("Lỗi khi sắp xếp: " + (error.message || "Unknown error"));
+      throw error;
+    }
   };
 
   return {
     ...crud,
     currentRecord,
-    formVisible,
-    detailVisible,
+    modalOpen,
+    modalMode,
     handleSubmit,
     deleteItem: crud.remove,
     batchDelete: crud.batchDelete,
     openCreate,
     openEdit,
     openDetail,
-    closeForm,
-    closeDetail,
+    closeModal,
+    submitReview: crud.submitReview,
+    approveReview: crud.approveReview,
+    handleReject,
+    reorderChapters,
   };
 };

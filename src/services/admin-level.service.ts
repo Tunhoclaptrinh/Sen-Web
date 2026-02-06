@@ -1,7 +1,7 @@
-import BaseService from './base.service';
+import ReviewableBaseService from './reviewable.service';
 import { Level } from '@/types/game.types';
 
-class AdminLevelService extends BaseService<Level> {
+class AdminLevelService extends ReviewableBaseService<Level> {
     constructor() {
         super('/admin/levels');
     }

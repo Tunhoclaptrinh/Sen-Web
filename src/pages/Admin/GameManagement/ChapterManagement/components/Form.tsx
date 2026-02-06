@@ -1,7 +1,9 @@
-import { Input, InputNumber, Row, Col, Form, Switch, Radio, ColorPicker } from "antd";
+import { Input, InputNumber, Row, Col, Form, Switch, Radio, ColorPicker, DatePicker } from "antd";
 import { FormModal } from "@/components/common";
 import { useEffect, useState } from "react";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
+import { useAuth } from "@/hooks/useAuth";
+import dayjs from "dayjs";
 
 interface ChapterFormProps {
   open: boolean;
@@ -58,19 +60,25 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
   title = "Thông tin Chương",
 }) => {
   const [form] = Form.useForm();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (open) {
       if (initialValues) {
         // Edit mode: set values from record
-        form.setFieldsValue(initialValues);
+        form.setFieldsValue({
+            ...initialValues,
+            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined
+        });
       } else {
         // Create mode: reset to default values
         form.resetFields();
         form.setFieldsValue({
           requiredPetals: 0,
           color: '#1890ff',
-          isActive: true
+          isActive: true,
+          author: user?.name,
+          publishDate: dayjs()
         });
       }
     }
@@ -146,6 +154,19 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
               placeholder="Mô tả chi tiết về nội dung và ý nghĩa của chương..."
             />
           </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="author" label="Tác giả">
+                <Input placeholder="Tên người tạo..." readOnly />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="publishDate" label="Ngày đăng">
+                <DatePicker style={{ width: '100%' }} disabled placeholder="Tự động khi duyệt" />
+              </Form.Item>
+            </Col>
+          </Row>
         </Col>
 
         {/* Right Column: Visuals & Status */}

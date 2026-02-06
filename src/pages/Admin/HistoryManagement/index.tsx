@@ -1,54 +1,50 @@
-import { Tag, Tabs } from "antd";
-import { useAuth } from "@/hooks/useAuth";
-import { DownloadOutlined } from "@ant-design/icons";
-import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import {Tag, Tabs} from "antd";
+import {useAuth} from "@/hooks/useAuth";
+import {DownloadOutlined} from "@ant-design/icons";
+import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import DataTable from "@components/common/DataTable";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 import HistoryForm from "./components/Form";
 import HistoryDetailModal from "./components/DetailModal";
 import HistoryStats from "./components/Stats";
-import { useHistoryModel } from "./model";
+import {useHistoryModel} from "./model";
 
-const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) => {
-    const {
-        data,
-        loading,
-        pagination,
-        handleTableChange,
-        search,
-        selectedIds,
-        setSelectedIds,
-        refresh,
-        updateFilters,
-        filters,
-        clearFilters,
-        stats,
-        statsLoading,
-        deleteHistory,
-        batchDeleteHistories,
-        exportData,
-        importData,
-        downloadTemplate,
-        importLoading,
-        handleSubmit,
-        // UI State & Handlers
-        currentRecord,
-        formVisible,
-        detailVisible,
-        openCreate,
-        openEdit,
-        openDetail,
-        closeForm,
-        closeDetail,
-        submitReview,
-        approveReview,
-        handleReject,
-    } = useHistoryModel(initialFilters);
-
-  const onFilterChange = (key: string, value: any) => {
-    updateFilters({ [key]: value });
-  };
+const HistoryManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
+  const {
+    data,
+    loading,
+    pagination,
+    handleTableChange,
+    search,
+    selectedIds,
+    setSelectedIds,
+    refresh,
+    updateFilters,
+    filters,
+    clearFilters,
+    stats,
+    statsLoading,
+    deleteHistory,
+    batchDeleteHistories,
+    exportData,
+    importData,
+    downloadTemplate,
+    importLoading,
+    handleSubmit,
+    // UI State & Handlers
+    currentRecord,
+    formVisible,
+    detailVisible,
+    openCreate,
+    openEdit,
+    openDetail,
+    closeForm,
+    closeDetail,
+    submitReview: _submitReview,
+    approveReview: _approveReview,
+    handleReject: _handleReject,
+  } = useHistoryModel(initialFilters);
 
   const columns = [
     {
@@ -69,16 +65,15 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
         if (!srcRaw) return null;
         const src = getImageUrl(srcRaw);
         return (
-          <img 
-            src={src} 
-            alt="History" 
-            style={{ 
-              width: 80, 
-              height: 50, 
-              objectFit: 'cover', 
+          <img
+            src={src}
+            alt="History"
+            style={{
+              width: 80,
+              height: 50,
+              objectFit: "cover",
               borderRadius: 4,
-              border: '1px solid #f0f0f0' 
-            }} 
+            }}
           />
         );
       },
@@ -96,16 +91,14 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       dataIndex: "authorName",
       key: "authorName",
       width: 150,
-      render: (authorName: string, record: any) => (
-        <Tag color="blue">{authorName || record.author || 'Hệ thống'}</Tag>
-      )
+      render: (authorName: string, record: any) => <Tag color="blue">{authorName || record.author || "Hệ thống"}</Tag>,
     },
     {
       title: "Ngày đăng",
       dataIndex: "publishDate",
       key: "publishDate",
       width: 150,
-      render: (date: string) => date ? dayjs(date).format('DD/MM/YYYY') : 'N/A',
+      render: (date: string) => (date ? dayjs(date).format("DD/MM/YYYY") : "N/A"),
     },
     {
       title: "Cập nhật lần cuối",
@@ -114,7 +107,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       width: 150,
       render: (date: string, record: any) => {
         const finalDate = date || record.publishDate;
-        return finalDate ? dayjs(finalDate).format('DD/MM/YYYY') : 'N/A';
+        return finalDate ? dayjs(finalDate).format("DD/MM/YYYY") : "N/A";
       },
     },
     {
@@ -128,80 +121,66 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       title: "Di sản",
       key: "heritageCount",
       width: 100,
-      render: (_: any, record: any) => (
-        <Tag color="cyan">{(record.relatedHeritageIds || []).length} DS</Tag>
-      ),
+      render: (_: any, record: any) => <Tag color="cyan">{(record.relatedHeritageIds || []).length} DS</Tag>,
     },
     {
       title: "Hiện vật",
       key: "artifactCount",
       width: 100,
-      render: (_: any, record: any) => (
-        <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>
-      ),
+      render: (_: any, record: any) => <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>,
     },
     {
       title: "Trạng thái",
       dataIndex: "isActive",
       key: "isActive",
       width: 120,
-      render: (isActive: boolean) => (
-        <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "HIỂN THỊ" : "ĐÃ ẨN"}
-        </Tag>
-      ),
+      render: (isActive: boolean) => <Tag color={isActive ? "green" : "red"}>{isActive ? "HIỂN THỊ" : "ĐÃ ẨN"}</Tag>,
     },
   ];
 
-  const { user } = useAuth();
-  
+  const {user} = useAuth();
+
   const tabItems = [
-    { key: 'all', label: 'Tất cả bài viết' },
-    ...(user?.role === 'researcher' || user?.role === 'admin' ? [
-      { key: 'my', label: 'Bài viết của tôi' },
-    ] : []),
-    { key: 'pending', label: 'Chờ duyệt' },
-    { key: 'published', label: 'Đã xuất bản' },
+    {key: "all", label: "Tất cả bài viết"},
+    ...(user?.role === "researcher" || user?.role === "admin" ? [{key: "my", label: "Bài viết của tôi"}] : []),
+    {key: "pending", label: "Chờ duyệt"},
+    {key: "published", label: "Đã xuất bản"},
   ];
 
   const handleTabChange = (key: string) => {
     switch (key) {
-      case 'all':
+      case "all":
         clearFilters();
         break;
-      case 'my':
-        updateFilters({ createdBy: user?.id, status: undefined });
+      case "my":
+        updateFilters({createdBy: user?.id, status: undefined});
         break;
-      case 'pending':
-        updateFilters({ status: 'pending', createdBy: undefined });
+      case "pending":
+        updateFilters({status: "pending", createdBy: undefined});
         break;
-      case 'published':
-        updateFilters({ status: 'published', createdBy: undefined });
+      case "published":
+        updateFilters({status: "published", createdBy: undefined});
         break;
     }
   };
 
   const getActiveTab = () => {
-    if (filters.createdBy === user?.id) return 'my';
-    if (filters.status === 'pending') return 'pending';
-    if (filters.status === 'published') return 'published';
-    return 'all';
+    if (filters.createdBy === user?.id) return "my";
+    if (filters.status === "pending") return "pending";
+    if (filters.status === "published") return "published";
+    return "all";
   };
 
   return (
     <div>
       <DataTable
         title="Quản lý Bài viết Lịch sử"
+        user={user}
         headerContent={
-          <div style={{ marginBottom: 16 }}>
+          <div style={{marginBottom: 16}}>
             <HistoryStats stats={stats} loading={statsLoading} />
-            <div style={{ marginTop: 16, background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
-              <Tabs 
-                activeKey={getActiveTab()} 
-                items={tabItems} 
-                onChange={handleTabChange}
-                style={{ marginBottom: 0 }}
-              />
+            <div style={{marginTop: 16, background: "#fff", padding: "0 16px", borderRadius: "8px 8px 0 0"}}>
+              <Tabs activeKey={getActiveTab()} items={tabItems} onChange={handleTabChange} style={{marginBottom: 0}} />
             </div>
           </div>
         }
@@ -221,18 +200,15 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteHistory}
-        onSubmitReview={submitReview ? (record) => submitReview(record.id) : undefined}
-        onApprove={approveReview ? (record) => approveReview(record.id) : undefined}
-        onReject={handleReject}
         onBatchDelete={batchDeleteHistories}
         batchOperations={true}
         batchActions={[
           {
-            key: 'export',
-            label: 'Export đã chọn',
+            key: "export",
+            label: "Export đã chọn",
             icon: <DownloadOutlined />,
-            onClick: (ids: any[]) => exportData('xlsx', ids),
-          }
+            onClick: (ids: any[]) => exportData("xlsx", ids),
+          },
         ]}
         importable={true}
         importLoading={importLoading}
@@ -240,15 +216,15 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
         exportLoading={loading}
         onImport={importData}
         onDownloadTemplate={downloadTemplate}
-        onExport={exportData} 
+        onExport={exportData}
         onRefresh={refresh}
         filters={[
           {
             key: "isActive",
             placeholder: "Trạng thái",
             options: [
-              { label: "Đang hiển thị", value: true },
-              { label: "Đã ẩn", value: false },
+              {label: "Đang hiển thị", value: true},
+              {label: "Đã ẩn", value: false},
             ],
           },
           {
@@ -256,31 +232,31 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
             placeholder: "Tác giả",
             type: "input",
             operators: ["like", "eq"],
-            defaultOperator: "like"
+            defaultOperator: "like",
           },
           {
-             key: "publishDate",
-             placeholder: "Ngày đăng",
-             type: "date",
-             operators: ["eq", "gte", "lte"],
-             defaultOperator: "eq"
+            key: "publishDate",
+            placeholder: "Ngày đăng",
+            type: "date",
+            operators: ["eq", "gte", "lte"],
+            defaultOperator: "eq",
           },
           {
             key: "category",
             placeholder: "Danh mục",
             // Assuming categories are fetched or static? For now simplified.
-            type: "input", 
-            operators: ["like"], 
-            defaultOperator: "like"
-          }
+            type: "input",
+            operators: ["like"],
+            defaultOperator: "like",
+          },
         ]}
         filterValues={filters}
-        onFilterChange={onFilterChange}
-        onClearFilters={clearFilters}
+        onFilterChange={(key, value) => updateFilters({[key]: value})}
+        onClearFilters={() => refresh()}
       />
 
       <HistoryForm
-        key={currentRecord?.id || 'create'}
+        key={currentRecord?.id || "create"}
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
@@ -289,11 +265,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
         isEdit={!!currentRecord}
       />
 
-      <HistoryDetailModal
-        record={currentRecord}
-        open={detailVisible}
-        onCancel={closeDetail}
-      />
+      <HistoryDetailModal record={currentRecord} open={detailVisible} onCancel={closeDetail} />
     </div>
   );
 };
