@@ -99,9 +99,26 @@ export const useExhibitionModel = () => {
 
     const submitReview = async (id: any) => {
         const success = await crud.submitReview?.(id);
-        if (success) fetchStats();
+        if (success) {
+            message.success("Đã gửi yêu cầu duyệt thành công");
+            fetchStats();
+        }
         return success;
     };
+
+    const revertToDraft = async (id: any) => {
+        const result = await exhibitionService.revertReview(id);
+        if (result.success) {
+            message.success("Đã hoàn về bản nháp");
+            crud.refresh();
+            fetchStats();
+        }
+        return result.success;
+    };
+
+    const exportData = (params?: any) => exhibitionService.export(params);
+    const importData = (file: File) => exhibitionService.import(file);
+    const downloadTemplate = () => exhibitionService.downloadTemplate();
 
     // Artifacts Logic
     const [availableArtifacts, setAvailableArtifacts] = useState<any[]>([]);
@@ -109,7 +126,7 @@ export const useExhibitionModel = () => {
     const fetchArtifacts = async () => {
         try {
             // Fetch all artifacts (or filter by user if needed)
-            const response = await artifactService.getAll({ _limit: 1000 }); // Temporary limit
+            const response = await artifactService.getAll({ _limit: 100 }); // Temporary limit
             if (response.success && response.data) {
                 setAvailableArtifacts(response.data);
             }
@@ -139,5 +156,9 @@ export const useExhibitionModel = () => {
         handleSubmit,
         remove,
         submitReview,
+        revertToDraft,
+        exportData,
+        importData,
+        downloadTemplate,
     };
 };

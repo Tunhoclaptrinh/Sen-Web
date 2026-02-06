@@ -63,12 +63,14 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
       dataIndex: "id",
       key: "id",
       width: 80,
+      align: "center" as const,
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       width: 100,
+      align: "center" as const,
       render: (image: string | string[]) => {
         const srcRaw = resolveImage(image);
         if (!srcRaw) return null;
@@ -95,6 +97,15 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
       width: 250,
       searchable: true,
       align: "left" as const,
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "authorName",
+      key: "authorName",
+      width: 150,
+      render: (authorName: string, record: any) => (
+        <Tag color="blue">{authorName || record.author || 'Hệ thống'}</Tag>
+      )
     },
     {
       title: "Loại hình",
@@ -131,7 +142,7 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
     },
     {
       title: "Trưng bày",
-      dataIndex: "is_on_display",
+      dataIndex: "isOnDisplay",
       key: "isOnDisplay",
       width: 100,
       render: (onDisplay: boolean) => onDisplay ? <Tag color="green">CÓ</Tag> : <Tag color="red">KHÔNG</Tag>,
@@ -153,11 +164,25 @@ const ArtifactManagement = ({ initialFilters = {} }: { initialFilters?: any }) =
       ),
     },
     {
-      title: "Tác giả",
-      dataIndex: "authorName",
-      key: "authorName",
-      width: 120,
-      render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+        width: 120,
+        render: (status: string) => {
+            const colors: any = {
+                draft: 'default',
+                pending: 'orange',
+                published: 'green',
+                rejected: 'red'
+            };
+            const labels: any = {
+                draft: 'Nháp',
+                pending: 'Chờ duyệt',
+                published: 'Đã xuất bản',
+                rejected: 'Từ chối'
+            };
+            return <Tag color={colors[status] || 'default'}>{labels[status] || status}</Tag>;
+        }
     },
   ];
 

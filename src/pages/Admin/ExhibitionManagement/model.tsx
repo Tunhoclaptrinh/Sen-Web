@@ -138,7 +138,7 @@ export const useExhibitionModel = () => {
     const fetchArtifacts = async () => {
         try {
             // Fetch all artifacts for admin selection
-            const response = await artifactService.getAll({ _limit: 1000 });
+            const response = await artifactService.getAll({ _limit: 100 });
             if (response.success && response.data) {
                 setAvailableArtifacts(response.data);
             }

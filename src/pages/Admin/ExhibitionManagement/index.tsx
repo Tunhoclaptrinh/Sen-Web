@@ -15,85 +15,103 @@ const ExhibitionManagement: React.FC = () => {
 
     const columns = [
         {
-            title: 'Hình ảnh',
-            dataIndex: 'image',
-            key: 'image',
-            width: 100,
-            align: 'center',
-            render: (url: string) => {
-                 const src = url && (url.startsWith('http') || url.startsWith('blob')) 
-                    ? url 
-                    : getImageUrl(url);
-                return (
-                    <div style={{ margin: '0 auto', width: 80, height: 50, borderRadius: 4, overflow: 'hidden', background: '#f5f5f5', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <img 
-                            src={src || '/placeholder-image.png'} 
-                            alt="exhibition" 
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                            onError={(e: any) => { 
-                                if (!e.target.dataset.fallback) {
-                                    e.target.dataset.fallback = 'true';
-                                    e.target.style.display = 'none';
-                                    e.target.parentElement.innerHTML = '<span style="color:#999;font-size:10px">No Img</span>';
-                                }
-                            }}
-                        />
-                    </div>
-                );
-            }
-        },
-        {
-            title: 'Trạng thái duyệt',
-            dataIndex: 'status',
-            key: 'status',
-            width: 120,
-            render: (status: string) => {
-                let color = 'default';
-                let text = 'Nháp';
-                if (status === 'published') { color = 'green'; text = 'Đã xuất bản'; }
-                if (status === 'pending') { color = 'orange'; text = 'Chờ duyệt'; }
-                if (status === 'rejected') { color = 'red'; text = 'Từ chối'; }
-                return <Tag color={color}>{text}</Tag>;
-            }
-        },
-        {
-            title: 'Tên triển lãm',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Chủ đề',
-            dataIndex: 'theme',
-            key: 'theme',
-            width: 150,
-        },
-        {
-            title: 'Thời gian',
-            key: 'duration',
-            width: 250,
-            render: (_: any, record: any) => {
-                if (record.isPermanent) return <Tag color="blue">VĨNH VIỄN</Tag>;
-                return (
-                    <span style={{ fontSize: '12px' }}>
-                        {dayjs(record.startDate).format('DD/MM/YYYY')} - {dayjs(record.endDate).format('DD/MM/YYYY')}
-                    </span>
-                );
-            }
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'isActive',
-            key: 'isActive',
-            width: 120,
-            render: (val: boolean) => val ? <Tag color="green">ĐANG MỞ</Tag> : <Tag>ĐÃ ĐÓNG</Tag>
-        },
-        {
-            title: 'Tác giả',
-            dataIndex: 'authorName',
-            key: 'authorName',
-            width: 120,
-            render: (author: string) => <Tag color="orange">{author || 'Hệ thống'}</Tag>
-        },
+            title: "ID",
+        dataIndex: "id",
+        key: "id",
+        width: 80,
+        align: "center" as const,
+    },
+    {
+        title: 'Hình ảnh',
+        dataIndex: 'image',
+        key: 'image',
+        width: 100,
+        align: 'center' as const,
+        render: (url: string) => {
+             const src = url && (url.startsWith('http') || url.startsWith('blob')) 
+                ? url 
+                : getImageUrl(url);
+            return (
+                <div style={{ margin: '0 auto', width: 80, height: 50, borderRadius: 4, overflow: 'hidden', background: '#f5f5f5', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img 
+                        src={src || '/placeholder-image.png'} 
+                        alt="exhibition" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        onError={(e: any) => { 
+                            if (!e.target.dataset.fallback) {
+                                e.target.dataset.fallback = 'true';
+                                e.target.style.display = 'none';
+                                e.target.parentElement.innerHTML = '<span style="color:#999;font-size:10px">No Img</span>';
+                            }
+                        }}
+                    />
+                </div>
+            );
+        }
+    },
+    {
+        title: 'Tên triển lãm',
+        dataIndex: 'name',
+        key: 'name',
+        align: 'left' as const,
+        searchable: true,
+    },
+    {
+        title: 'Tác giả',
+        dataIndex: 'authorName',
+        key: 'authorName',
+        width: 150,
+        render: (authorName: string, record: any) => (
+            <Tag color="blue">{authorName || record.author || 'Hệ thống'}</Tag>
+        )
+    },
+    {
+        title: 'Chủ đề',
+        dataIndex: 'theme',
+        key: 'theme',
+        width: 150,
+    },
+    {
+        title: 'Thời gian',
+        key: 'duration',
+        width: 250,
+        render: (_: any, record: any) => {
+            if (record.isPermanent) return <Tag color="blue">VĨNH VIỄN</Tag>;
+            return (
+                <span style={{ fontSize: '12px' }}>
+                    {dayjs(record.startDate).format('DD/MM/YYYY')} - {dayjs(record.endDate).format('DD/MM/YYYY')}
+                </span>
+            );
+        }
+    },
+    {
+        title: 'Công khai',
+        dataIndex: 'isActive',
+        key: 'isActive',
+        width: 120,
+        render: (val: boolean) => val ? <Tag color="green">ĐANG MỞ</Tag> : <Tag>ĐÃ ĐÓNG</Tag>
+    },
+    {
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+        width: 120,
+        render: (status: string) => {
+            const colors: any = {
+                draft: 'default',
+                pending: 'orange',
+                published: 'green',
+                rejected: 'red'
+            };
+            const labels: any = {
+                draft: 'Nháp',
+                pending: 'Chờ duyệt',
+                published: 'Đã xuất bản',
+                rejected: 'Từ chối'
+            };
+            return <Tag color={colors[status] || 'default'}>{labels[status] || status}</Tag>;
+        }
+    },
     ];
 
   const { user } = useAuth();
@@ -133,12 +151,12 @@ const ExhibitionManagement: React.FC = () => {
 
     return (
         <>
-            <ExhibitionStats stats={model.stats} loading={model.statsLoading} />
             <DataTable
                 title="Quản lý Triển lãm ảo"
                 headerContent={
                     <div style={{ marginBottom: 16 }}>
-                        <div style={{ background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+                        <div style={{ background: '#fff', padding: '16px', borderRadius: '8px' }}>
+                            <ExhibitionStats stats={model.stats} loading={model.statsLoading} />
                             <Tabs 
                                 activeKey={getActiveTab()} 
                                 items={tabItems} 
@@ -177,7 +195,7 @@ const ExhibitionManagement: React.FC = () => {
                     initialValues={model.currentRecord ? {
                         ...model.currentRecord,
                         dates: [dayjs(model.currentRecord.startDate), dayjs(model.currentRecord.endDate)]
-                    } : { isActive: true, isPermanent: false }}
+                    } : { isActive: true, isPermanent: false, curator: user?.name }}
                     onFinish={(values) => {
                         const { dates, ...rest } = values;
                         if (dates && !rest.isPermanent) {
@@ -206,7 +224,7 @@ const ExhibitionManagement: React.FC = () => {
                             name="curator"
                             label="Người phụ trách"
                         >
-                            <Input placeholder="Tên cán bộ phụ trách" />
+                            <Input placeholder="Tên cán bộ phụ trách" readOnly />
                         </Form.Item>
                     </div>
 

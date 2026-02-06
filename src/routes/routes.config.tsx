@@ -101,11 +101,17 @@ const ResearcherExhibitionManagement = lazy(
 const ExhibitionDetailPage = lazy(
   () => import("@/pages/Admin/ExhibitionManagement/ExhibitionDetailPage"),
 );
+const ResearcherHistoryManagement = lazy(
+  () => import("@/pages/Researcher/HistoryManagement"),
+);
 const ResearcherChapterManagement = lazy(
   () => import("@/pages/Researcher/ChapterManagement"),
 );
 const ResearcherLevelManagement = lazy(
   () => import("@/pages/Researcher/LevelManagement"),
+);
+const ResearcherLearningManagement = lazy(
+  () => import("@/pages/Researcher/LearningManagement"),
 );
 
 // Game Pages
@@ -318,11 +324,11 @@ const routes: RouteObject[] = [
       },
       {
         path: "history",
-        element: <HistoryManagement />,
+        element: <ResearcherHistoryManagement />,
       },
       {
         path: "learning",
-        element: <LearningManagement />,
+        element: <ResearcherLearningManagement />,
       },
       {
         path: "chapters",

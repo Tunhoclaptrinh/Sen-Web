@@ -1,5 +1,5 @@
-import { Tag, Tabs } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { Tag, Tabs, Space, Tooltip, Popconfirm, Button, message } from "antd";
+import { DownloadOutlined, EditOutlined, DeleteOutlined, UndoOutlined, SendOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import { 
   ArtifactType, 
@@ -13,7 +13,7 @@ import DataTable from "@/components/common/DataTable";
 import ArtifactDetailModal from "@/pages/Admin/ArtifactManagement/components/DetailModal";
 import ArtifactForm from "@/pages/Admin/ArtifactManagement/components/Form";
 
-import { useArtifactModel } from "@/pages/Admin/ArtifactManagement/model";
+import { useResearcherArtifactModel } from "./model";
 
 const ResearcherArtifactManagement = () => {
   const {
@@ -35,6 +35,8 @@ const ResearcherArtifactManagement = () => {
     downloadTemplate,
     importLoading,
     handleSubmit,
+    revertToDraft,
+    submitReview,
     // UI State & Handlers
     currentRecord,
     formVisible,
@@ -44,7 +46,14 @@ const ResearcherArtifactManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
-  } = useArtifactModel();
+  } = useResearcherArtifactModel();
+
+  const handleSubmitReview = async (record: any) => {
+      const success = await submitReview?.(record.id);
+      if (success) {
+          message.success("Đã gửi yêu cầu duyệt thành công");
+      }
+  };
 
   const onFilterChange = (key: string, value: any) => {
     updateFilters({ [key]: value });
@@ -56,12 +65,14 @@ const ResearcherArtifactManagement = () => {
       dataIndex: "id",
       key: "id",
       width: 80,
+      align: "center" as const,
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       width: 100,
+      align: "center" as const,
       render: (image: string | string[]) => {
         const srcRaw = resolveImage(image);
         if (!srcRaw) return null;
@@ -77,6 +88,10 @@ const ResearcherArtifactManagement = () => {
               borderRadius: 4,
               border: '1px solid #f0f0f0' 
             }} 
+            onError={(e: any) => {
+              e.target.onerror = null;
+              e.target.src = 'https://placehold.co/80x50?text=No+Img';
+            }}
           />
         );
       },
@@ -88,6 +103,15 @@ const ResearcherArtifactManagement = () => {
       width: 250,
       searchable: true,
       align: "left" as const,
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "authorName",
+      key: "authorName",
+      width: 150,
+      render: (authorName: string, record: any) => (
+        <Tag color="blue">{authorName || record.author || 'Tôi'}</Tag>
+      )
     },
     {
       title: "Loại hình",
@@ -133,13 +157,83 @@ const ResearcherArtifactManagement = () => {
         return <Tag color={color}>{ArtifactConditionLabels[cond]?.toUpperCase() || cond}</Tag>;
       }
     },
+     // Explicit Actions Column to bypass PermissionGuard if needed, similar to Heritage
+     {
+        title: "Thao tác",
+        key: "actions",
+        width: 150,
+        align: "center" as const,
+        render: (_: any, record: any) => {
+            const canSubmit = record.status === 'draft' || record.status === 'rejected' || !record.status;
+            const canRevert = record.status === 'pending';
+             // Researcher can always edit/delete their own items (which is all they see)
+            return (
+                <Space size={4}>
+                     {canSubmit && (
+                        <Tooltip title="Gửi duyệt">
+                          <Button 
+                            icon={<SendOutlined />} 
+                            size="small" 
+                            type="text" 
+                            style={{ color: "var(--primary-color)" }}
+                            onClick={() => handleSubmitReview(record)}
+                          />
+                        </Tooltip>
+                    )}
+
+                    {canRevert && (
+                        <Tooltip title="Hoàn về bản nháp">
+                            <Popconfirm
+                                title="Hủy gửi duyệt?"
+                                description="Bạn có muốn rút lại yêu cầu và hoàn về nháp?"
+                                onConfirm={() => revertToDraft?.(record.id)}
+                            >
+                                <Button 
+                                    icon={<UndoOutlined />} 
+                                    size="small" 
+                                    type="text" 
+                                    style={{ color: "#faad14" }} // warning color
+                                />
+                            </Popconfirm>
+                        </Tooltip>
+                    )}
+                    
+                    <Tooltip title="Chỉnh sửa">
+                      <Button 
+                        icon={<EditOutlined />} 
+                        size="small" 
+                        type="text" 
+                        style={{ color: "var(--primary-color)" }}
+                        onClick={() => openEdit(record)}
+                      />
+                    </Tooltip>
+
+                    <Tooltip title="Xóa">
+                        <Popconfirm
+                            title="Bạn có chắc muốn xóa?"
+                            onConfirm={() => deleteArtifact(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                            okButtonProps={{ danger: true }}
+                        >
+                          <Button 
+                            icon={<DeleteOutlined />} 
+                            size="small" 
+                            type="text" 
+                            danger 
+                          />
+                        </Popconfirm>
+                    </Tooltip>
+                </Space>
+            );
+        }
+    }
   ];
 
   const { user } = useAuth();
 
   const tabItems = [
     { key: 'all', label: 'Tất cả' },
-    { key: 'my', label: 'Của tôi' },
     { key: 'draft', label: 'Bản nháp' },
     { key: 'pending', label: 'Chờ duyệt' },
     { key: 'published', label: 'Đã xuất bản' },
@@ -149,21 +243,20 @@ const ResearcherArtifactManagement = () => {
   const handleTabChange = (key: string) => {
     switch (key) {
       case 'all':
-        updateFilters({ status: undefined, createdBy: undefined });
-        break;
-      case 'my':
         updateFilters({ status: undefined, createdBy: user?.id });
         break;
       default:
-        updateFilters({ status: key, createdBy: undefined });
+        updateFilters({ status: key, createdBy: user?.id });
         break;
     }
   };
 
   const getActiveTab = () => {
-    if (filters.createdBy === user?.id) return 'my';
-    if (filters.status) return filters.status;
-    return 'all';
+    const status = filters.status;
+    // Handle case where status might be an array (from Table filters) or empty
+    if (!status || (Array.isArray(status) && status.length === 0)) return 'all';
+    if (Array.isArray(status)) return status[0];
+    return status;
   };
 
   return (
@@ -198,7 +291,7 @@ const ResearcherArtifactManagement = () => {
         onView={openDetail}
         onEdit={openEdit}
         onDelete={deleteArtifact}
-        onSubmitReview={undefined}
+        onSubmitReview={handleSubmitReview}
         onApprove={undefined} // No approve
         onReject={undefined} // No reject
         onBatchDelete={batchDeleteArtifacts}
@@ -208,7 +301,7 @@ const ResearcherArtifactManagement = () => {
             key: 'export',
             label: 'Export đã chọn',
             icon: <DownloadOutlined />,
-            onClick: (ids: any[]) => exportData('xlsx', ids),
+            onClick: (ids: any[]) => exportData({ format: 'xlsx', filters: { id: ids } }),
           }
         ]}
         importable={true}

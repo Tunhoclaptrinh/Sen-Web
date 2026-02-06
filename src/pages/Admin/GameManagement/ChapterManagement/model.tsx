@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { message, Modal } from "antd";
 import { Chapter } from "@/types";
 import adminChapterService from "@/services/admin-chapter.service";
+import { useAuth } from "@/hooks/useAuth";
 import { useCRUD } from "@/hooks/useCRUD";
 
 export const useChapterModel = () => {
@@ -51,8 +52,17 @@ export const useChapterModel = () => {
     setCurrentRecord(null);
   };
 
+  const { user } = useAuth(); // Need to import useAuth
+
   const handleSubmit = async (values: any) => {
     let success = false;
+    
+    // Auto-set status for Admin
+    if (user?.role === 'admin' && !values.status) {
+        values.status = 'published';
+    } else if (user?.role === 'researcher' && !values.status) {
+        values.status = 'pending';
+    }
 
     if (currentRecord) {
       // Update existing chapter
@@ -114,6 +124,10 @@ export const useChapterModel = () => {
     } else {
       // Create new chapter - remove order from values, backend will auto set
       const { order, ...createValues } = values;
+      // Ensure status is set for create as well
+      if (user?.role === 'admin' && !createValues.status) createValues.status = 'published';
+      if (user?.role === 'researcher' && !createValues.status) createValues.status = 'pending';
+      
       success = await crud.create(createValues);
     }
 

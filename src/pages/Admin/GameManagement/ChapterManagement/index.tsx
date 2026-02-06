@@ -112,6 +112,21 @@ const ChapterManagement = () => {
       render: (val: number) => `${val} cánh hoa`,
     },
     {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+      align: 'center',
+      render: (status: string) => {
+          let color = 'default';
+          let text = 'Nháp';
+          if (status === 'published') { color = 'green'; text = 'Đã xuất bản'; }
+          else if (status === 'pending') { color = 'gold'; text = 'Chờ duyệt'; }
+          else if (status === 'rejected') { color = 'red'; text = 'Từ chối'; }
+          return <Tag color={color}>{text}</Tag>;
+      }
+    },
+    {
       title: "Tác giả",
       dataIndex: "authorName",
       key: "authorName",

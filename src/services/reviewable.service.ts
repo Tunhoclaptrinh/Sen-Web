@@ -57,6 +57,21 @@ class ReviewableBaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial
       throw error;
     }
   }
+
+  /**
+   * REVERT item to draft
+   */
+  async revertReview(id: number | string): Promise<BaseApiResponse<T>> {
+    try {
+      const response = await apiClient.patch<BaseApiResponse<T>>(
+        `${this.endpoint}/${id}/revert`
+      );
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] revertReview error:`, error);
+      throw error;
+    }
+  }
 }
 
 export default ReviewableBaseService;

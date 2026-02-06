@@ -56,12 +56,14 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       dataIndex: "id",
       key: "id",
       width: 80,
+      align: "center" as const,
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       width: 100,
+      align: "center" as const,
       render: (image: string) => {
         const srcRaw = resolveImage(image);
         if (!srcRaw) return null;
@@ -95,7 +97,7 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       key: "authorName",
       width: 150,
       render: (authorName: string, record: any) => (
-        <Tag color="orange">{authorName || record.author || 'Hệ thống'}</Tag>
+        <Tag color="blue">{authorName || record.author || 'Hệ thống'}</Tag>
       )
     },
     {
@@ -123,17 +125,6 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       sorter: true,
     },
     {
-      title: "Trạng thái",
-      dataIndex: "isActive",
-      key: "isActive",
-      width: 120,
-      render: (isActive: boolean) => (
-        <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "HIỂN THỊ" : "ĐÃ ẨN"}
-        </Tag>
-      ),
-    },
-    {
       title: "Di sản",
       key: "heritageCount",
       width: 100,
@@ -147,6 +138,17 @@ const HistoryManagement = ({ initialFilters = {} }: { initialFilters?: any }) =>
       width: 100,
       render: (_: any, record: any) => (
         <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "isActive",
+      key: "isActive",
+      width: 120,
+      render: (isActive: boolean) => (
+        <Tag color={isActive ? "green" : "red"}>
+          {isActive ? "HIỂN THỊ" : "ĐÃ ẨN"}
+        </Tag>
       ),
     },
   ];

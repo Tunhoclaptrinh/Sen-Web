@@ -1,21 +1,17 @@
-import { Tag, Tabs, message, Space, Button, Tooltip, Popconfirm } from "antd";
-import { DownloadOutlined, EditOutlined, DeleteOutlined, SendOutlined, UndoOutlined } from "@ant-design/icons";
-import { getImageUrl } from "@/utils/image.helper";
+import { Tag, Tabs, Space, Tooltip, Popconfirm, Button, message } from "antd";
+import { DownloadOutlined, EditOutlined, DeleteOutlined, UndoOutlined, SendOutlined } from "@ant-design/icons";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import DataTable from "@/components/common/DataTable";
+import dayjs from 'dayjs';
 import { useAuth } from "@/hooks/useAuth";
 
+import HistoryForm from "@/pages/Admin/HistoryManagement/components/Form";
+import HistoryDetailModal from "@/pages/Admin/HistoryManagement/components/DetailModal";
+import HistoryStats from "@/pages/Admin/HistoryManagement/components/Stats";
 
-import DataTable from "@/components/common/DataTable";
+import { useResearcherHistoryModel } from "./model";
 
-import HeritageDetailModal from "@/pages/Admin/HeritageSiteManagement/components/DetailModal";
-import HeritageForm from "@/pages/Admin/HeritageSiteManagement/components/Form";
-
-import {
-  HeritageType,
-  HeritageTypeLabels,
-} from "@/types";
-import { useResearcherHeritageModel } from "./model";
-
-const ResearcherHeritageManagement = () => {
+const ResearcherHistoryManagement = () => {
   const {
     data,
     loading,
@@ -28,15 +24,17 @@ const ResearcherHeritageManagement = () => {
     updateFilters,
     filters,
     clearFilters,
-    deleteHeritage,
-    batchDeleteHeritages,
+    stats,
+    statsLoading,
+    deleteHistory,
+    batchDeleteHistories,
     exportData,
     importData,
     downloadTemplate,
-    importLoading,
+    // importLoading,
     handleSubmit,
-    submitReview, 
-    revertToDraft, // IMPORTED
+    revertToDraft,
+    submitReview,
     // UI State & Handlers
     currentRecord,
     formVisible,
@@ -46,8 +44,10 @@ const ResearcherHeritageManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
-  } = useResearcherHeritageModel();
-  
+  } = useResearcherHistoryModel();
+
+  const { user } = useAuth();
+
   const handleSubmitReview = async (record: any) => {
       const success = await submitReview?.(record.id);
       if (success) {
@@ -71,41 +71,38 @@ const ResearcherHeritageManagement = () => {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
-      width: 80,
-      align: 'center' as const,
+      width: 100,
+      align: "center" as const,
       render: (image: string) => {
-          if (!image) {
-             return (
-                <div style={{ margin: '0 auto', width: 60, height: 36, borderRadius: 4, background: '#f5f5f5', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                     <span style={{ fontSize: 20, color: '#d9d9d9', display: 'flex' }}>📷</span>
-                </div>
-             );
-          }
-          return (
-              <div style={{ margin: '0 auto', width: 60, height: 36, borderRadius: 4, overflow: 'hidden', background: '#f5f5f5', border: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img 
-                  src={getImageUrl(image)} 
-                  alt="thumbnail" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => { 
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null; // Prevent loop
-                      target.src = 'https://placehold.co/60x36?text=Error'; 
-                      target.style.display = 'none'; 
-                      (target.parentNode as HTMLElement).innerHTML = '<span style="font-size: 20px; color: #d9d9d9">📷</span>';
-                  }}
-                />
-              </div>
-          );
-      }
+        const srcRaw = resolveImage(image);
+        if (!srcRaw) return null;
+        const src = getImageUrl(srcRaw);
+        return (
+          <img 
+            src={src} 
+            alt="History" 
+            style={{ 
+              width: 80, 
+              height: 50, 
+              objectFit: 'cover', 
+              borderRadius: 4,
+              border: '1px solid #f0f0f0' 
+            }} 
+            onError={(e: any) => {
+              e.target.onerror = null;
+              e.target.src = 'https://placehold.co/80x50?text=No+Img';
+            }}
+          />
+        );
+      },
     },
     {
-      title: "Tên Di Sản",
-      dataIndex: "name",
-      key: "nameLike",
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "titleLike",
       width: 250,
+      ellipsis: true,
       searchable: true,
-      align: "left" as const,
     },
     {
       title: "Tác giả",
@@ -116,14 +113,20 @@ const ResearcherHeritageManagement = () => {
         <Tag color="blue">{authorName || record.author || 'Tôi'}</Tag>
       )
     },
+
     {
-      title: "Loại hình",
-      dataIndex: "type",
-      key: "type",
+      title: "Ngày đăng",
+      dataIndex: "publishDate",
+      key: "publishDate",
       width: 150,
-      render: (type: HeritageType) => (
-        <Tag color="blue">{HeritageTypeLabels[type]?.toUpperCase() || type}</Tag>
-      ),
+      render: (date: string) => date ? dayjs(date).format('DD/MM/YYYY') : 'N/A',
+    },
+    {
+      title: "Lượt xem",
+      dataIndex: "views",
+      key: "views",
+      width: 100,
+      sorter: true,
     },
     {
         title: 'Trạng thái',
@@ -147,15 +150,6 @@ const ResearcherHeritageManagement = () => {
         }
     },
     {
-      title: "UNESCO",
-      dataIndex: "unescoListed",
-      key: "unescoListed",
-      width: 100,
-      render: (listed: boolean) =>
-        listed ? <Tag color="green">CÓ</Tag> : <Tag color={"red"}>KHÔNG</Tag>,
-    },
-    // Explicit Actions Column to bypass PermissionGuard
-    {
         title: "Thao tác",
         key: "actions",
         width: 150,
@@ -163,7 +157,7 @@ const ResearcherHeritageManagement = () => {
         render: (_: any, record: any) => {
             const canSubmit = record.status === 'draft' || record.status === 'rejected' || !record.status;
             const canRevert = record.status === 'pending';
-            // Researcher can always edit/delete their own items (which is all they see)
+             // Researcher can always edit/delete their own items (which is all they see)
             return (
                 <Space size={4}>
                      {canSubmit && (
@@ -208,7 +202,7 @@ const ResearcherHeritageManagement = () => {
                     <Tooltip title="Xóa">
                         <Popconfirm
                             title="Bạn có chắc muốn xóa?"
-                            onConfirm={() => deleteHeritage(record.id)}
+                            onConfirm={() => deleteHistory(record.id)}
                             okText="Xóa"
                             cancelText="Hủy"
                             okButtonProps={{ danger: true }}
@@ -226,8 +220,6 @@ const ResearcherHeritageManagement = () => {
         }
     }
   ];
-
-  const { user } = useAuth();
 
   const tabItems = [
     { key: 'all', label: 'Tất cả' },
@@ -258,20 +250,22 @@ const ResearcherHeritageManagement = () => {
   return (
     <>
       <DataTable
-        title="Quản lý Di sản Văn hóa (Cá nhân)"
+        title="Quản lý Bài viết Lịch sử (Cá nhân)"
         headerContent={
-            <div style={{ background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
+          <div style={{ marginBottom: 16 }}>
+            <HistoryStats stats={stats} loading={statsLoading} />
+            <div style={{ marginTop: 16, background: '#fff', padding: '0 16px', borderRadius: '8px 8px 0 0' }}>
               <Tabs 
                 activeKey={getActiveTab()} 
                 items={tabItems} 
                 onChange={handleTabChange}
-                size="small"
-                style={{ marginBottom: 0 , paddingBottom: 0}}
+                style={{ marginBottom: 0 }}
               />
             </div>
+          </div>
         }
         loading={loading}
-        permissionResource="heritage_sites"
+        permissionResource="history_articles"
         columns={columns}
         dataSource={data}
         pagination={pagination}
@@ -285,11 +279,11 @@ const ResearcherHeritageManagement = () => {
         }}
         onView={openDetail}
         onEdit={openEdit}
-        onDelete={deleteHeritage}
-        onSubmitReview={handleSubmitReview} // Connected
-        onApprove={undefined} 
-        onReject={undefined}
-        onBatchDelete={batchDeleteHeritages}
+        onDelete={deleteHistory}
+        onSubmitReview={handleSubmitReview}
+        onApprove={undefined} // No approve for researchers
+        onReject={undefined} // No reject for researchers
+        onBatchDelete={batchDeleteHistories}
         batchOperations={true}
         batchActions={[
           {
@@ -300,7 +294,7 @@ const ResearcherHeritageManagement = () => {
           }
         ]}
         importable={true}
-        importLoading={importLoading}
+        importLoading={loading}
         exportable={true}
         exportLoading={loading}
         onImport={importData}
@@ -312,17 +306,17 @@ const ResearcherHeritageManagement = () => {
         onClearFilters={clearFilters}
       />
 
-      <HeritageForm
+      <HistoryForm
         key={currentRecord?.id || 'create'}
-        isEdit={!!currentRecord}
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
         initialValues={currentRecord || undefined}
         loading={loading}
+        isEdit={!!currentRecord}
       />
 
-      <HeritageDetailModal
+      <HistoryDetailModal
         record={currentRecord}
         open={detailVisible}
         onCancel={closeDetail}
@@ -331,4 +325,4 @@ const ResearcherHeritageManagement = () => {
   );
 };
 
-export default ResearcherHeritageManagement;
+export default ResearcherHistoryManagement;

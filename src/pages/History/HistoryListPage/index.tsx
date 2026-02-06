@@ -50,6 +50,7 @@ const HistoryListPage: React.FC = () => {
             const response = await historyService.getAll({
                 page: pagination.current,
                 limit: pagination.pageSize,
+                status: 'published',
                 ...filters,
             });
             

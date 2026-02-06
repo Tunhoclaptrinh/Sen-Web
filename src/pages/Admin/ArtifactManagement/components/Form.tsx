@@ -15,6 +15,7 @@ import {
   Button as StyledButton,
   DebounceSelect,
 } from "@/components/common";
+import { useAuth } from "@/hooks/useAuth";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {
   ArtifactType,
@@ -46,6 +47,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   loading = false,
   isEdit = false,
 }) => {
+  const { user } = useAuth();
   const [form] = Form.useForm();
   const [heritageSites, setHeritageSites] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -137,6 +139,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           isOnDisplay: true,
           condition: ArtifactCondition.GOOD,
           yearCreated: undefined,
+          creator: user?.name
         });
       }
     };
@@ -455,7 +458,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   </Col>
                   <Col span={8}>
                     <Form.Item name="creator" label="Tác giả/Nghệ nhân">
-                      <Input placeholder="Tên tác giả..." />
+                      <Input placeholder="Tên tác giả..." readOnly />
                     </Form.Item>
                   </Col>
                   <Col span={8}>

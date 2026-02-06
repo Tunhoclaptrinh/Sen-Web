@@ -1,7 +1,8 @@
-import { Tag, Tabs } from "antd";
+import { Tag, Tabs, Space, Button, Tooltip, Popconfirm } from "antd";
 import { useAuth } from "@/hooks/useAuth";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DownloadOutlined, EditOutlined, DeleteOutlined, SendOutlined, CheckCircleOutlined, CloseCircleOutlined, EyeOutlined } from "@ant-design/icons";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
+
 
 
 import DataTable from "@/components/common/DataTable";
@@ -65,12 +66,14 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       dataIndex: "id",
       key: "id",
       width: 80,
+      align: "center" as const,
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       width: 100,
+      align: "center" as const,
       render: (image: string | string[]) => {
         const srcRaw = resolveImage(image);
         if (!srcRaw) return null;
@@ -97,6 +100,15 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       width: 250,
       searchable: true,
       align: "left" as const,
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "authorName",
+      key: "authorName",
+      width: 150,
+      render: (authorName: string, record: any) => (
+        <Tag color="blue">{authorName || record.author || 'Tôi'}</Tag>
+      )
     },
     {
       title: "Loại hình",
@@ -178,11 +190,129 @@ const HeritageSiteManagement = ({ initialFilters = {} }: { initialFilters?: any 
       ),
     },
     {
-      title: "Tác giả",
-      dataIndex: "authorName",
-      key: "authorName",
-      width: 120,
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+        width: 120,
+        render: (status: string) => {
+            const colors: any = {
+                draft: 'default',
+                pending: 'orange',
+                published: 'green',
+                rejected: 'red'
+            };
+            const labels: any = {
+                draft: 'Nháp',
+                pending: 'Chờ duyệt',
+                published: 'Đã xuất bản',
+                rejected: 'Từ chối'
+            };
+            return <Tag color={colors[status] || 'default'}>{labels[status] || status}</Tag>;
+        }
     },
+    {
+        title: "Thao tác",
+        key: "actions",
+        width: 180,
+        fixed: "right" as const,
+        align: "center" as const,
+        render: (_: any, record: any) => {
+            // Check ownership
+            const isOwner = record.createdBy === user?.id; 
+            
+            // Show submit if it's in a state that allows submission (draft/rejected/new)
+            // BUT: If not owner, we show it disabled with a message
+            const showSubmit = (record.status === 'draft' || record.status === 'rejected' || !record.status);
+            const submitDisabled = !isOwner;
+            const submitTooltip = submitDisabled 
+                ? `Tác giả ${record.authorName || 'khác'} đang lưu nháp, chưa gửi duyệt` 
+                : "Gửi duyệt";
+
+            const canApprove = record.status === 'pending';
+            const canReject = record.status === 'pending';
+            
+            return (
+                <Space size={4}>
+                    {showSubmit && (
+                        <Tooltip title={submitTooltip}>
+                          {/* Wrap disabled button in span for tooltip to work */}
+                          <span style={{ display: 'inline-block', cursor: submitDisabled ? 'not-allowed' : 'pointer' }}>
+                              <Button 
+                                icon={<SendOutlined />} 
+                                size="small" 
+                                type="text" 
+                                disabled={submitDisabled}
+                                style={{ color: submitDisabled ? undefined : "var(--primary-color)" }}
+                                onClick={() => !submitDisabled && submitReview?.(record.id)}
+                              />
+                          </span>
+                        </Tooltip>
+                    )}
+
+                    {canApprove && (
+                        <Tooltip title="Phê duyệt">
+                          <Button 
+                            icon={<CheckCircleOutlined />} 
+                            size="small" 
+                            type="text" 
+                            style={{ color: "#52c41a" }}
+                            onClick={() => approveReview?.(record.id)}
+                          />
+                        </Tooltip>
+                    )}
+
+                    {canReject && (
+                        <Tooltip title="Từ chối">
+                          <Button 
+                            icon={<CloseCircleOutlined />} 
+                            size="small" 
+                            type="text" 
+                            style={{ color: "#ff4d4f" }}
+                            onClick={() => handleReject(record)}
+                          />
+                        </Tooltip>
+                    )}
+
+                    <Tooltip title="Xem chi tiết">
+                        <Button 
+                            icon={<EyeOutlined />} 
+                            size="small" 
+                            type="text" 
+                            style={{ color: "var(--primary-color)" }}
+                            onClick={() => openDetail(record)}
+                        />
+                    </Tooltip>
+                    
+                    <Tooltip title="Chỉnh sửa">
+                      <Button 
+                        icon={<EditOutlined />} 
+                        size="small" 
+                        type="text" 
+                        style={{ color: "var(--primary-color)" }}
+                        onClick={() => openEdit(record)}
+                      />
+                    </Tooltip>
+
+                    <Tooltip title="Xóa">
+                        <Popconfirm
+                            title="Bạn có chắc muốn xóa?"
+                            onConfirm={() => deleteHeritage(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                            okButtonProps={{ danger: true }}
+                        >
+                          <Button 
+                            icon={<DeleteOutlined />} 
+                            size="small" 
+                            type="text" 
+                            danger 
+                          />
+                        </Popconfirm>
+                    </Tooltip>
+                </Space>
+            );
+        }
+    }
   ];
 
 

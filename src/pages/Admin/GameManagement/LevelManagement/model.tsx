@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { message, Modal, Input } from "antd";
 import { Level } from "@/types";
 import adminLevelService from "@/services/admin-level.service";
+import { useAuth } from "@/hooks/useAuth";
 import { useCRUD } from "@/hooks/useCRUD";
 
 // Default screens for new level
@@ -79,8 +80,17 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
         setCurrentRecord(null);
     };
 
+    const { user } = useAuth(); // Need to import useAuth
+
     const handleSubmit = async (values: any) => {
         let success = false;
+
+        // Auto-set status for Admin
+        if (user?.role === 'admin' && !values.status) {
+            values.status = 'published';
+        } else if (user?.role === 'researcher' && !values.status) {
+            values.status = 'pending';
+        }
 
         // Determine if it's an update or create based on ID in currentRecord
         const recordId = (currentRecord as any)?.id;
@@ -95,6 +105,10 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
             // Ensure we don't accidentally send an ID field during creation
             const { id: _, ...createData } = values; 
             
+            // Ensure status is set for create
+            if (user?.role === 'admin' && !createData.status) createData.status = 'published';
+            if (user?.role === 'researcher' && !createData.status) createData.status = 'pending';
+
             const defaultScreens = getDefaultScreens();
             const createValues = {
                 ...createData,

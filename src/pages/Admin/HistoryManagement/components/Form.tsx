@@ -2,6 +2,7 @@ import { Input, Switch, Row, Col, Form, Tabs, message } from "antd";
 import { FormModal, TinyEditor, Button as StyledButton, DebounceSelect } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
@@ -25,6 +26,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   loading = false,
   isEdit = false,
 }) => {
+  const { user } = useAuth();
   const [form] = Form.useForm();
   const [activeTab, setActiveTab] = useState("1");
   const isEditMode = isEdit || (initialValues && initialValues.id);
@@ -92,7 +94,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
             form.setFieldsValue({
                 isActive: true,
                 publishDate: dayjs(),
-                views: 0
+                views: 0,
+                author: user?.name
             });
         }
     };
@@ -247,7 +250,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                         <Row gutter={16}>
                             <Col span={8}>
                                 <Form.Item name="author" label="Tác giả">
-                                    <Input placeholder="Tên tác giả..." />
+                                    <Input placeholder="Tên tác giả..." readOnly />
                                 </Form.Item>
                             </Col>
                             <Col span={8}>
