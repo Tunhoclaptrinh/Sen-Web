@@ -2,10 +2,11 @@ import { useMemo, useState } from "react";
 import { message } from "antd";
 import { useCRUD } from "@/hooks/useCRUD";
 import shopService from "@/services/shop.service";
+import type { ShopItem } from "@/types/shop.types";
 
 export const useShopModel = () => {
     // UI State
-    const [currentRecord, setCurrentRecord] = useState<any | null>(null);
+    const [currentRecord, setCurrentRecord] = useState<ShopItem | null>(null);
     const [formVisible, setFormVisible] = useState(false);
 
     // CRUD Setup

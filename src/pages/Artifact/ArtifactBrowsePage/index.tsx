@@ -8,8 +8,11 @@ import {
     Spin,
     Empty,
     Typography,
-    Pagination
+    Pagination,
+    Select,
+    DatePicker
 } from 'antd';
+import dayjs from 'dayjs';
 import {
     SearchOutlined,
     CalendarOutlined,
@@ -29,12 +32,12 @@ const ArtifactBrowsePage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     interface FilterState {
         q: string;
-        year_created?: string;
+        yearCreated?: string;
         dynasty?: string;
     }
     const [filters, setFilters] = useState<FilterState>({
         q: '',
-        year_created: undefined,
+        yearCreated: undefined,
         dynasty: undefined,
     });
     // Random artifact state
@@ -125,15 +128,19 @@ const ArtifactBrowsePage: React.FC = () => {
                     {/* Year Created */}
                     <div className="filter-item">
                         <CalendarOutlined />
-                        <Input
-                            bordered={false}
+                        <DatePicker 
+                            picker="year" 
                             placeholder="Năm tạo tác"
+                            suffixIcon={null} /* Remove default calendar icon */
                             allowClear
-                            value={filters.year_created}
-                            onPressEnter={(e) =>
-                                setFilters((prev) => ({ ...prev, year_created: e.currentTarget.value as any }))
+                            style={{ width: '100%' }}
+                            value={filters.yearCreated ? dayjs(filters.yearCreated, 'YYYY') : null}
+                            onChange={(date, dateString) => 
+                                setFilters((prev) => ({ 
+                                    ...prev, 
+                                    yearCreated: dateString as string 
+                                }))
                             }
-                            onChange={(e) => setFilters((prev) => ({ ...prev, year_created: e.target.value as any }))}
                         />
                     </div>
 
@@ -142,15 +149,29 @@ const ArtifactBrowsePage: React.FC = () => {
                     {/* Dynasty */}
                     <div className="filter-item">
                         <UserOutlined />
-                        <Input
-                             bordered={false}
+                        <Select
                             placeholder="Triều đại"
                             allowClear
-                             value={filters.dynasty}
-                            onPressEnter={(e) =>
-                                setFilters((prev) => ({ ...prev, dynasty: e.currentTarget.value as any }))
-                            }
-                             onChange={(e) => setFilters((prev) => ({ ...prev, dynasty: e.target.value as any }))}
+                            showSearch
+                            style={{ width: '100%' }}
+                            value={filters.dynasty}
+                            onChange={(value) => setFilters((prev) => ({ ...prev, dynasty: value }))}
+                            options={[
+                                { value: 'Văn hóa Đông Sơn', label: 'Văn hóa Đông Sơn' },
+                                { value: 'Văn hóa Sa Huỳnh', label: 'Văn hóa Sa Huỳnh' },
+                                { value: 'Văn hóa Óc Eo', label: 'Văn hóa Óc Eo' },
+                                { value: 'Nhà Ngô', label: 'Nhà Ngô' },
+                                { value: 'Nhà Đinh', label: 'Nhà Đinh' },
+                                { value: 'Nhà Tiền Lê', label: 'Nhà Tiền Lê' },
+                                { value: 'Nhà Lý', label: 'Nhà Lý' },
+                                { value: 'Nhà Trần', label: 'Nhà Trần' },
+                                { value: 'Nhà Hồ', label: 'Nhà Hồ' },
+                                { value: 'Nhà Hậu Lê', label: 'Nhà Hậu Lê' },
+                                { value: 'Nhà Mạc', label: 'Nhà Mạc' },
+                                { value: 'Nhà Tây Sơn', label: 'Nhà Tây Sơn' },
+                                { value: 'Nhà Nguyễn', label: 'Nhà Nguyễn' },
+                                { value: 'Thời Pháp thuộc', label: 'Thời Pháp thuộc' },
+                            ]}
                         />
                     </div>
 
@@ -162,13 +183,13 @@ const ArtifactBrowsePage: React.FC = () => {
                             onClick={() => {
                                 setFilters({
                                     q: '',
-                                    year_created: undefined,
+                                    yearCreated: undefined,
                                     dynasty: undefined,
                                 });
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         >
-                            Xóa Lọc
+                            Xóa lọc
                         </Button>
                     </div>
                 </div>

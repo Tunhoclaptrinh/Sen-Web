@@ -9,10 +9,10 @@ export enum HeritageType {
   MONUMENT = "monument",
   TEMPLE = "temple",
   MUSEUM = "museum",
-  ARCHAEOLOGICAL_SITE = "archaeologicalSite",
-  HISTORIC_BUILDING = "historicBuilding",
-  NATURAL_HERITAGE = "naturalHeritage",
-  INTANGIBLE_HERITAGE = "intangibleHeritage",
+  ARCHAEOLOGICAL_SITE = "archaeological_site",
+  HISTORIC_BUILDING = "historic_building",
+  NATURAL_HERITAGE = "natural_heritage",
+  INTANGIBLE_HERITAGE = "intangible_heritage",
 }
 
 // Heritage Type Labels (Vietnamese)

@@ -172,7 +172,7 @@ const HeritageBrowsePage: React.FC = () => {
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         >
-                            Xóa Lọc
+                            Xóa lọc
                         </Button>
                     </div>
                 </div>

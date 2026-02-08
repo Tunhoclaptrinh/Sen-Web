@@ -532,7 +532,7 @@ const DataTable: React.FC<DataTableProps> = ({
           <Space wrap>
             {onAdd && (
               <Button variant="primary" onClick={onAdd} buttonSize="small">
-                <PlusOutlined /> Thêm Mới
+                <PlusOutlined /> Thêm mới
               </Button>
             )}
 

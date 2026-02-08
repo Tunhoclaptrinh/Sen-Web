@@ -327,9 +327,13 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   // Fetch history when opening
   useEffect(() => {
     if (open && user && currentCharacter) {
-      dispatch(fetchChatHistory({ characterId: currentCharacter.id, limit: 50 }));
+      dispatch(fetchChatHistory({ 
+        characterId: currentCharacter.id, 
+        limit: 50,
+        levelId: activeContext?.levelId 
+      }));
     }
-  }, [open, user, currentCharacter, dispatch]);
+  }, [open, user, currentCharacter, activeContext?.levelId, dispatch]);
 
   // Set default character if not present or force Sen on open
   useEffect(() => {
@@ -573,7 +577,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     // 🎭 Restore emotion từ message khi replay
     const message = chatHistory.find(m => m.id === messageId);
     if (message?.emotion) {
-      console.log('🎭 Restoring emotion for replay:', message.emotion);
       dispatch(updateSenSettings({
         gesture: (message.emotion.gesture || 'normal') as 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back',
         mouthState: (message.emotion.mouthState || 'smile') as 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue' | 'angry',
@@ -842,7 +845,12 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                     className="control-button delete-button"
                     icon={<DeleteOutlined />} 
                     onClick={() => {
-                        if (currentCharacter) dispatch(clearChatHistory(currentCharacter.id));
+                        if (currentCharacter) {
+                            dispatch(clearChatHistory({ 
+                                characterId: currentCharacter.id, 
+                                levelId: activeContext?.levelId 
+                            }));
+                        }
                     }}
                     type="text"
                     disabled={chatHistory.length === 0}

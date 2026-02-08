@@ -102,24 +102,10 @@ const ArtifactDetailPage = () => {
     try {
       const currentId = currentItem.id;
 
-      // 1. Fetch related artifacts (same heritage site or random)
-      if (currentItem.heritageSiteId) {
-        const res = await artifactService.getAll({
-          heritageSiteId: currentItem.heritageSiteId,
-          limit: 4,
-        });
-        if (res.data) {
-          setRelatedArtifacts(
-            res.data.filter((a) => a.id !== currentId).slice(0, 3),
-          );
-        }
-      } else {
-        const res = await artifactService.getAll({ limit: 4 });
-        if (res.data) {
-          setRelatedArtifacts(
-            res.data.filter((a) => a.id !== currentId).slice(0, 3),
-          );
-        }
+      // 1. Fetch related artifacts
+      const res = await artifactService.getRelated(currentId);
+      if (res.data) {
+        setRelatedArtifacts(res.data.slice(0, 3));
       }
 
       // 2. Fetch related heritage

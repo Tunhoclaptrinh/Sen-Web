@@ -1,16 +1,5 @@
 import BaseService from './base.service';
-
-export interface ShopItem {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    currency: 'coins' | 'petals';
-    type: 'avatar' | 'title' | 'theme' | 'collectible';
-    image: string;
-    isAvailable?: boolean;
-    isActive: boolean;
-}
+import type { ShopItem } from '@/types/shop.types';
 
 class ShopService extends BaseService<ShopItem> {
     constructor() {

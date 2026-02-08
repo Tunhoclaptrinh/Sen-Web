@@ -52,10 +52,10 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                         {type === 'artifact' ? (
                             <>
                                 <span className="meta-item">
-                                    <CalendarOutlined /> {data.yearCreated || 'N/A'}
+                                    <CalendarOutlined /> {data.yearCreated || dayjs(data.publishDate || data.createdAt).format('YYYY') || 'N/A'}
                                 </span>
                                 <span className="meta-item">
-                                    <UserOutlined /> {data.dynasty || 'Unknown Dynasty'}
+                                    <UserOutlined /> {data.dynasty || data.creator || data.author_name || 'Không rõ triều đại'}
                                 </span>
                             </>
                         ) : (

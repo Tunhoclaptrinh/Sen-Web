@@ -99,9 +99,10 @@ class AIService extends BaseService {
     }
 
     // Get chat history
-    async getChatHistory(characterId?: number, limit: number = 50): Promise<ChatMessage[]> {
+    async getChatHistory(characterId?: number, limit: number = 50, levelId?: number): Promise<ChatMessage[]> {
         const params: any = { limit };
         if (characterId) params.characterId = characterId;
+        if (levelId) params.levelId = levelId;
         
         const response = await this.get('/history', params);
         // Backend now returns properly formatted ChatMessage[] with role user/assistant
@@ -141,9 +142,13 @@ class AIService extends BaseService {
     }
 
     // Clear chat history
-    async clearHistory(characterId?: number): Promise<{ success: boolean }> {
-        // Append characterId to query params if present
-        const path = characterId ? `/history?characterId=${characterId}` : '/history';
+    async clearHistory(characterId?: number, levelId?: number): Promise<{ success: boolean }> {
+        // Append query params if present
+        const queryParams = new URLSearchParams();
+        if (characterId) queryParams.append('characterId', characterId.toString());
+        if (levelId) queryParams.append('levelId', levelId.toString());
+        
+        const path = queryParams.toString() ? `/history?${queryParams.toString()}` : '/history';
         const response = await this.deleteRequest(path);
         return response.data || { success: true };
     }

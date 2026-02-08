@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useState } from 'react';
 import {
     Row,
@@ -126,7 +127,7 @@ const HistoryListPage: React.FC = () => {
                                 setPagination((prev) => ({ ...prev, current: 1 }));
                             }}
                         >
-                            Xóa Lọc
+                            Xóa lọc
                         </Button>
                     </div>
                 </div>

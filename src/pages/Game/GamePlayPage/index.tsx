@@ -34,7 +34,7 @@ import TimelineScreen from "@/components/Game/Screens/TimelineScreen";
 import ImageViewerScreen from "@/components/Game/Screens/ImageViewerScreen";
 import VideoScreen from "@/components/Game/Screens/VideoScreen";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
-import { setOverlayOpen, setActiveContext } from "@/store/slices/aiSlice";
+import { setOverlayOpen, setActiveContext, clearChatHistory } from "@/store/slices/aiSlice";
 
 import "./styles.less";
 
@@ -70,6 +70,7 @@ const GamePlayPage: React.FC = () => {
   useEffect(() => {
     if (levelId) {
       initGame(parseInt(levelId));
+      dispatch(setActiveContext({ levelId: parseInt(levelId) }));
     }
     return () => {
         // Cleanup BGM
@@ -77,8 +78,10 @@ const GamePlayPage: React.FC = () => {
             bgmAudioRef.current.pause();
             bgmAudioRef.current = null;
         }
+        // Cleanup context
+        dispatch(setActiveContext(null));
     };
-  }, [levelId]);
+  }, [levelId, dispatch]);
 
   // Handle BGM Playback
   useEffect(() => {
@@ -212,6 +215,9 @@ const GamePlayPage: React.FC = () => {
       );
       setCompletionData(result);
       setGameCompleted(true);
+      
+      // Xoá lịch sử chat của màn chơi khi hoàn thành
+      dispatch(clearChatHistory({ levelId: parseInt(levelId) }));
       
 
       
@@ -479,7 +485,6 @@ const GamePlayPage: React.FC = () => {
                   pointerEvents: 'auto'
               }}
               onClick={() => {
-                  dispatch(setActiveContext({ levelId: levelInfo?.id }));
                   dispatch(setOverlayOpen({ open: true, mode: 'absolute' }));
               }}
           />

@@ -106,7 +106,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
               size={size}
               block
             >
-              Xóa Bộ Lọc
+              Xóa bộ lọc
             </Button>
           </Col>
         )}
@@ -154,7 +154,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onClick={handleClearFilters}
           size={size}
         >
-          Xóa Bộ Lọc
+          Xóa bộ lọc
         </Button>
       )}
     </Space>

@@ -94,9 +94,9 @@ export const fetchCharacters = createAsyncThunk(
 // Fetch chat history
 export const fetchChatHistory = createAsyncThunk(
     'ai/fetchChatHistory',
-    async (params: { characterId?: number; limit?: number }, { rejectWithValue }) => {
+    async (params: { characterId?: number; limit?: number; levelId?: number }, { rejectWithValue }) => {
         try {
-            const data = await aiService.getChatHistory(params.characterId, params.limit);
+            const data = await aiService.getChatHistory(params.characterId, params.limit, params.levelId);
             return data;
         } catch (error: unknown) {
             return rejectWithValue((error as Error).message || 'Failed to fetch chat history');
@@ -157,10 +157,10 @@ export const getExplanation = createAsyncThunk(
 // Clear chat history
 export const clearChatHistory = createAsyncThunk(
     'ai/clearChatHistory',
-    async (characterId: number, { rejectWithValue }) => {
+    async (params: { characterId?: number; levelId?: number }, { rejectWithValue }) => {
         try {
-            await aiService.clearHistory(characterId);
-            return characterId;
+            await aiService.clearHistory(params.characterId, params.levelId);
+            return params;
         } catch (error: unknown) {
             return rejectWithValue((error as Error).message || 'Failed to clear chat history');
         }

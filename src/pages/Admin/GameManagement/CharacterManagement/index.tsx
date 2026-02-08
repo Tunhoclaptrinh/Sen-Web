@@ -6,6 +6,13 @@ import DataTable from '@/components/common/DataTable';
 
 const CharacterManagement: React.FC = () => {
     const model = useCharacterModel();
+    const [form] = Form.useForm();
+
+    // Auto-set voiceId when gender changes
+    const handleGenderChange = (gender: string) => {
+        const voiceId = gender === 'male' ? 'vi-VN-NamMinhNeural' : 'vi-VN-HoaiMyNeural';
+        form.setFieldValue('voiceId', voiceId);
+    };
 
     const columns = [
         {
@@ -34,6 +41,20 @@ const CharacterManagement: React.FC = () => {
                     legendary: 'orange'
                 };
                 return <Tag color={colors[rarity]}>{rarity.toUpperCase()}</Tag>;
+            }
+        },
+        {
+            title: 'Giới tính',
+            dataIndex: 'gender',
+            key: 'gender',
+            width: 100,
+            render: (gender: string) => {
+                const config = {
+                    male: { text: 'Nam', color: 'blue' },
+                    female: { text: 'Nữ', color: 'pink' }
+                };
+                const g = config[gender as keyof typeof config] || { text: gender, color: 'default' };
+                return <Tag color={g.color}>{g.text}</Tag>;
             }
         },
         {
@@ -83,8 +104,9 @@ const CharacterManagement: React.FC = () => {
                 destroyOnClose
             >
                 <Form
+                    form={form}
                     layout="vertical"
-                    initialValues={model.currentRecord || { rarity: 'common', is_collectible: true }}
+                    initialValues={model.currentRecord || { rarity: 'common', isCollectible: true, gender: 'female', voiceId: 'vi-VN-HoaiMyNeural' }}
                     onFinish={model.handleSubmit}
                 >
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -95,6 +117,24 @@ const CharacterManagement: React.FC = () => {
                         >
                             <Input placeholder="Ví dụ: Chú Tễu" />
                         </Form.Item>
+                        <Form.Item
+                            name="gender"
+                            label="Giới tính"
+                            rules={[{ required: true, message: 'Chọn giới tính' }]}
+                        >
+                            <Select placeholder="Chọn giới tính" onChange={handleGenderChange}>
+                                <Select.Option value="female">♀️ Nữ (Giọng HoaiMy)</Select.Option>
+                                <Select.Option value="male">♂️ Nam (Giọng NamMinh)</Select.Option>
+                            </Select>
+                        </Form.Item>
+                    </div>
+
+                    {/* Hidden field for voiceId - auto set by gender */}
+                    <Form.Item name="voiceId" hidden>
+                        <Input />
+                    </Form.Item>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <Form.Item
                             name="rarity"
                             label="Độ hiếm"

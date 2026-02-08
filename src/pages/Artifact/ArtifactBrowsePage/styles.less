@@ -5,7 +5,12 @@
   background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3);
   overflow-x: hidden;
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: "Aleo", serif;
   }
 
@@ -13,8 +18,6 @@
     position: relative;
     width: 100%;
   }
-
- 
 
   /* Hero Section */
   .hero-section {
@@ -52,7 +55,7 @@
         font-size: 48px;
         color: #fff;
         margin-bottom: 24px;
-        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
 
       .hero-subtitle {
@@ -60,7 +63,7 @@
         font-weight: 500;
         margin-bottom: 48px;
         color: #e1ac66;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
       }
     }
   }
@@ -81,7 +84,7 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(24px);
       padding: 8px;
-      border-radius: 100px; 
+      border-radius: 100px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); // Premium shadow
       border: 1px solid rgba(255, 255, 255, 0.8);
 
@@ -100,45 +103,123 @@
         padding: 0 16px;
         display: flex;
         align-items: center;
+        gap: 16px; /* Space between icon and input */
 
         /* Special sizing for search to make it bigger */
         &.search-item {
-            flex: 1.8; 
+          flex: 1.8;
         }
 
         /* Icon styling */
         .anticon {
           color: var(--primary-color);
-          font-size: 18px;
-          margin-right: 12px;
+          font-size: 20px; /* Slightly bigger */
           opacity: 0.8;
         }
 
-        /* Ant Input/Select overrides for seamless look */
+        /* Ant Input/Select/Picker overrides for seamless look */
         .ant-input-affix-wrapper,
-        .ant-picker {
+        .ant-picker,
+        .ant-select {
+          width: 100%;
           background: transparent !important;
           border: none !important;
           box-shadow: none !important;
           padding: 0 !important;
           height: auto !important;
-          
+
           input {
             font-size: 16px;
             font-weight: 500;
             color: #333;
-            &::placeholder { color: #999; font-weight: 400; }
+            &::placeholder {
+              color: #888;
+              font-weight: 400;
+            }
+          }
+
+          /* Select specific overrides */
+          .ant-select-selector {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            padding-right: 50px !important; /* Make room for 2 icons */
+            
+            .ant-select-selection-placeholder {
+              color: #888;
+              font-weight: 400;
+              font-size: 16px;
+              padding-left: 0 !important;
+            }
+            .ant-select-selection-item {
+              font-weight: 500;
+              font-size: 16px;
+              color: #333;
+              padding-left: 0 !important;
+            }
+          }
+          
+          /* Fix icon positions - Side by Side (Foolproof) */
+          .ant-select-arrow {
+            right: 12px !important; /* Far right */
+            top: 50% !important;
+            margin-top: -7px;
+            opacity: 1 !important; /* Always visible */
+          }
+          
+          .ant-select-clear {
+            right: 32px !important; /* To the left of arrow */
+            top: 50% !important;
+            margin-top: -7px;
+            z-index: 2; 
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.2s;
+          }
+          
+          /* Show clear on hover (if value exists) */
+          .ant-select-allow-clear:hover .ant-select-clear {
+             opacity: 1;
+          }
+          
+           /* DatePicker specific - similar padding */
+          .ant-picker-input {
+             padding-right: 45px !important; /* Room for 2 icons */
+          }
+          
+          .ant-picker-input > input {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            &::placeholder { color: #888; font-weight: 400; }
+          }
+          
+          /* Same logic for DatePicker */
+          .ant-picker-suffix {
+              right: 0 !important;
+              transition: opacity 0.2s;
+              color: var(--primary-color); 
+          }
+          
+          .ant-picker:hover .ant-picker-suffix {
+              opacity: 0; 
+          }
+          
+          .ant-picker-clear {
+              right: 0 !important;
+              position: absolute;
+              background: transparent;
           }
         }
-        
+
         /* Plain Input override */
         .ant-input {
-           background: transparent !important;
-           border: none !important;
-           box-shadow: none !important;
-           padding: 0 !important;
-           font-size: 16px;
-           font-weight: 500;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          font-size: 16px;
+          font-weight: 500;
         }
       }
 
@@ -155,7 +236,7 @@
 
       .filter-action {
         padding-left: 8px;
-        
+
         @media (max-width: 992px) {
           padding-left: 0;
           margin-top: 8px;
@@ -165,7 +246,7 @@
       .delete-filter-btn {
         height: 56px;
         border-radius: 100px; /* Circle/Pill */
-        background: var(--primary-color); 
+        background: var(--primary-color);
         border: none;
         color: #fff;
         font-weight: 600;
@@ -183,9 +264,9 @@
           transform: translateY(-2px);
           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
-        
+
         &:active {
-            transform: scale(0.98);
+          transform: scale(0.98);
         }
       }
     }
@@ -207,7 +288,7 @@
     .featured-container {
       display: flex;
       flex-direction: column;
-      
+
       .image-wrapper {
         width: 100%;
         border-radius: 20px 20px 0 0;
@@ -225,10 +306,10 @@
         background: #fff;
         padding: 40px 50px;
         border-radius: 0 0 20px 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         border: 1px solid #f0f0f0;
         border-top: none;
-        
+
         .card-meta {
           display: flex;
           gap: 20px;
@@ -254,7 +335,7 @@
         }
 
         .action-btn {
-          background: #6ABE45;
+          background: #6abe45;
           color: #fff;
           border: none;
           padding: 10px 32px;
@@ -262,7 +343,7 @@
           font-weight: 700;
           cursor: pointer;
           transition: all 0.3s;
-          
+
           &:hover {
             background: #5aa63a;
             transform: translateY(-2px);
@@ -316,7 +397,11 @@
   }
 
   @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }

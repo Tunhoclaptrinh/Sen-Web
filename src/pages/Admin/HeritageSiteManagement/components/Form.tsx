@@ -73,66 +73,96 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           const heritageId = initialValues.id as number;
           if (!heritageId) return;
 
-          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] =
-            await Promise.all([
-              heritageService.getTimeline(heritageId),
-              heritageService.getArtifacts(heritageId),
-              (initialValues.relatedArtifactIds?.length ?? 0) > 0
-                ? artifactService.getAll({
-                    ids: initialValues.relatedArtifactIds!.join(","),
-                  })
-                : Promise.resolve({ success: true, data: [] }),
-              (initialValues.relatedHistoryIds?.length ?? 0) > 0
-                ? historyService.getAll({
-                    ids: initialValues.relatedHistoryIds!.join(","),
-                  })
-                : Promise.resolve({ success: true, data: [] }),
-            ]);
+          const [timelineRes, artifactsRes] = await Promise.all([
+            heritageService.getTimeline(heritageId),
+            heritageService.getArtifacts(heritageId),
+          ]);
 
           const timeline = timelineRes.success
             ? timelineRes.data
             : initialValues.timeline || [];
 
-          // Map related artifacts to {label, value}
+          // ✅ FIX: Fetch related artifacts individually
           const artifactMap = new Map();
           if (artifactsRes.success && artifactsRes.data) {
             artifactsRes.data.forEach((art: Artifact) =>
               artifactMap.set(art.id, art),
             );
           }
-          if (relArtifactsRes.success && relArtifactsRes.data) {
-            relArtifactsRes.data.forEach((art: Artifact) =>
-              artifactMap.set(art.id, art),
-            );
+
+          if (initialValues.relatedArtifactIds && initialValues.relatedArtifactIds.length > 0) {
+            for (const id of initialValues.relatedArtifactIds) {
+              try {
+                const actualId = typeof id === "object" && id !== null ? Number((id as any).value) : Number(id);
+                if (!artifactMap.has(actualId)) {
+                  const res: any = await artifactService.getById(actualId);
+                  // Handle double-nested response: {success, data: {success, data: {...}}}
+                  let artifact: any = res?.data || res;
+                  if (artifact?.success && artifact?.data) {
+                    artifact = artifact.data; // Unwrap second level
+                  }
+                  if (artifact?.id) {
+                    const normalizedId = Number(artifact.id);
+                    artifactMap.set(normalizedId, artifact);
+                  }
+                }
+              } catch (err) {
+                console.warn(`Failed to fetch artifact ${id}:`, err);
+              }
+            }
           }
 
-          const relatedArtifacts = (
-            initialValues.relatedArtifactIds || []
-          ).map((id: number | { label: string; value: number }) => {
-            const art = artifactMap.get(typeof id === "object" ? id.value : id);
+          // Deduplicate and map artifacts
+          const relatedArtifacts = Array.from(
+            new Set(
+              (initialValues.relatedArtifactIds || []).map((id: any) => 
+                typeof id === "object" && id !== null ? Number(id.value) : Number(id)
+              )
+            )
+          ).map((actualId) => {
+            const art = artifactMap.get(Number(actualId));
             return art
               ? { label: art.name, value: art.id }
-              : typeof id === "object"
-                ? id
-                : { label: `ID: ${id}`, value: id };
+              : { label: `ID: ${actualId}`, value: Number(actualId) };
           });
 
-          // Map related history to {label, value}
-          const relatedHistory = (initialValues.relatedHistoryIds || []).map(
-            (id: number | { label: string; value: number }) => {
-              const hist = relHistoryRes.success
-                ? relHistoryRes.data?.find(
-                    (h: HistoryArticle) =>
-                      h.id === (typeof id === "object" ? id.value : id),
-                  )
-                : null;
-              return hist
-                ? { label: hist.title, value: hist.id }
-                : typeof id === "object"
-                  ? id
-                  : { label: `ID: ${id}`, value: id };
-            },
-          );
+          // ✅ FIX: Fetch related history individually
+          const historyMap = new Map();
+          if (initialValues.relatedHistoryIds && initialValues.relatedHistoryIds.length > 0) {
+            for (const id of initialValues.relatedHistoryIds) {
+              try {
+                const actualId = typeof id === "object" && id !== null ? Number((id as any).value) : Number(id);
+                if (!historyMap.has(actualId)) {
+                  const res: any = await historyService.getById(actualId);
+                  // Handle double-nested response: {success, data: {success, data: {...}}}
+                  let history: any = res?.data || res;
+                  if (history?.success && history?.data) {
+                    history = history.data; // Unwrap second level
+                  }
+                  if (history?.id) {
+                    const normalizedId = Number(history.id);
+                    historyMap.set(normalizedId, history);
+                  }
+                }
+              } catch (err) {
+                console.warn(`Failed to fetch history ${id}:`, err);
+              }
+            }
+          }
+
+          // Deduplicate and map history
+          const relatedHistory = Array.from(
+            new Set(
+              (initialValues.relatedHistoryIds || []).map((id: any) => 
+                typeof id === "object" && id !== null ? Number(id.value) : Number(id)
+              )
+            )
+          ).map((actualId) => {
+            const hist = historyMap.get(Number(actualId));
+            return hist
+              ? { label: hist.title, value: hist.id }
+              : { label: `ID: ${actualId}`, value: Number(actualId) };
+          });
 
           const formattedValues: any = {
             ...initialValues,

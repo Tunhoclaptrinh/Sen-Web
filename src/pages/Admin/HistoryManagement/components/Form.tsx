@@ -38,30 +38,77 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         // 1. Edit Mode
         if (open && isEditMode) {
             try {
-                // Fetch labels for related IDs
-                const [relHeritageRes, relArtifactRes] = await Promise.all([
-                    initialValues.relatedHeritageIds?.length > 0 
-                      ? heritageService.getAll({ ids: initialValues.relatedHeritageIds.join(',') })
-                      : Promise.resolve({ success: true, data: [] }),
-                    initialValues.relatedArtifactIds?.length > 0
-                      ? artifactService.getAll({ ids: initialValues.relatedArtifactIds.join(',') })
-                      : Promise.resolve({ success: true, data: [] })
-                ]);
+                // ✅ FIX: Fetch labels for related IDs individually to ensure data
+                const heritageMap = new Map();
+                if (initialValues.relatedHeritageIds?.length > 0) {
+                  for (const id of initialValues.relatedHeritageIds) {
+                    try {
+                      // Extract actual ID (could be object {value: id} or primitive) - NORMALIZE TO NUMBER
+                      const actualId = typeof id === 'object' && id !== null ? Number((id as any).value) : Number(id);
+                      if (!heritageMap.has(actualId)) {
+                        const res = await heritageService.getById(actualId);
+                        // Handle double-nested response: {success, data: {success, data: {...}}}
+                        let heritage: any = res?.data || res;
+                        if (heritage?.success && heritage?.data) {
+                          heritage = heritage.data; // Unwrap second level
+                        }
+                        if (heritage?.id) {
+                          const normalizedId = Number(heritage.id);
+                          heritageMap.set(normalizedId, heritage);
+                        }
+                      }
+                    } catch (err) {
+                      console.warn(`Failed to fetch heritage ${id}:`, err);
+                    }
+                  }
+                }
 
-                // Map related heritage to {label, value}
-                const relatedHeri = (initialValues.relatedHeritageIds || []).map((id: any) => {
-                    const heri = relHeritageRes.success && relHeritageRes.data 
-                      ? relHeritageRes.data.find((h: any) => h.id === (typeof id === 'object' ? id.value : id)) 
-                      : null;
-                    return heri ? { label: heri.name, value: heri.id } : (typeof id === 'object' ? id : { label: `ID: ${id}`, value: id });
+                const artifactMap = new Map();
+                if (initialValues.relatedArtifactIds?.length > 0) {
+                  for (const id of initialValues.relatedArtifactIds) {
+                    try {
+                      // Extract actual ID (could be object {value: id} or primitive) - NORMALIZE TO NUMBER
+                      const actualId = typeof id === 'object' && id !== null ? Number((id as any).value) : Number(id);
+                      if (!artifactMap.has(actualId)) {
+                        const res = await artifactService.getById(actualId);
+                        // Handle double-nested response: {success, data: {success, data: {...}}}
+                        let artifact: any = res?.data || res;
+                        if (artifact?.success && artifact?.data) {
+                          artifact = artifact.data; // Unwrap second level
+                        }
+                        if (artifact?.id) {
+                          const normalizedId = Number(artifact.id);
+                          artifactMap.set(normalizedId, artifact);
+                        }
+                      }
+                    } catch (err) {
+                      console.warn(`Failed to fetch artifact ${id}:`, err);
+                    }
+                  }
+                }
+
+                // Deduplicate and map related heritage to {label, value}
+                const relatedHeri = Array.from(
+                  new Set(
+                    (initialValues.relatedHeritageIds || []).map((id: any) => 
+                      typeof id === 'object' && id !== null ? Number(id.value) : Number(id)
+                    )
+                  )
+                ).map((actualId) => {
+                  const heri = heritageMap.get(Number(actualId));
+                  return heri ? { label: heri.name, value: heri.id } : { label: `ID: ${actualId}`, value: Number(actualId) };
                 });
 
-                // Map related artifacts to {label, value}
-                const relatedArtifacts = (initialValues.relatedArtifactIds || []).map((id: any) => {
-                    const art = relArtifactRes.success && relArtifactRes.data 
-                      ? relArtifactRes.data.find((a: any) => a.id === (typeof id === 'object' ? id.value : id)) 
-                      : null;
-                    return art ? { label: art.name, value: art.id } : (typeof id === 'object' ? id : { label: `ID: ${id}`, value: id });
+                // Deduplicate and map related artifacts to {label, value}
+                const relatedArtifacts = Array.from(
+                  new Set(
+                    (initialValues.relatedArtifactIds || []).map((id: any) => 
+                      typeof id === 'object' && id !== null ? Number(id.value) : Number(id)
+                    )
+                  )
+                ).map((actualId) => {
+                  const art = artifactMap.get(Number(actualId));
+                  return art ? { label: art.name, value: art.id } : { label: `ID: ${actualId}`, value: Number(actualId) };
                 });
 
                 const formattedValues = {
