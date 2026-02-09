@@ -10,12 +10,14 @@ import {
   EyeOutlined,
   ShareAltOutlined,
   RocketOutlined,
+  FolderAddOutlined,
 } from "@ant-design/icons";
 import exhibitionService, {Exhibition} from "@/services/exhibition.service";
 import artifactService from "@/services/artifact.service";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import {useAuth} from "@/hooks/useAuth";
 import ArticleCard from "@/components/common/cards/ArticleCard";
+import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import dayjs from "dayjs";
 import "./styles.less";
 
@@ -29,6 +31,7 @@ const ExhibitionDetailPage: React.FC = () => {
   const [exhibition, setExhibition] = useState<Exhibition | null>(null);
   const [artifacts, setArtifacts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -245,6 +248,15 @@ const ExhibitionDetailPage: React.FC = () => {
                 <Button
                   size="large"
                   className="secondary-action-btn"
+                  icon={<FolderAddOutlined />}
+                  onClick={() => setShowCollectionModal(true)}
+                  style={{marginTop: 12, width: "100%"}}
+                >
+                  Lưu vào BST
+                </Button>
+                <Button
+                  size="large"
+                  className="secondary-action-btn"
                   icon={<ArrowLeftOutlined />}
                   onClick={() => navigate("/exhibitions")}
                 >
@@ -255,6 +267,16 @@ const ExhibitionDetailPage: React.FC = () => {
           </Col>
         </Row>
       </div>
+
+      <AddToCollectionModal
+        visible={showCollectionModal}
+        onCancel={() => setShowCollectionModal(false)}
+        item={{
+          id: exhibition.id,
+          type: "exhibition",
+          name: exhibition.name,
+        }}
+      />
     </div>
   );
 };
