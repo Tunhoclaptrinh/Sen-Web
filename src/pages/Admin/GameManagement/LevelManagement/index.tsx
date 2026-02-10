@@ -1,5 +1,5 @@
-import {Space, Tooltip, Button as AntButton, Select, Card, Tag, Popconfirm, Tabs} from "antd";
-import {Button, DataTable, PermissionGuard} from "@/components/common";
+import {Space, Tooltip, Button as AntButton, Select, Card, Tag, Tabs, Modal} from "antd";
+import {Button, DataTable} from "@/components/common";
 import {useState, useEffect} from "react";
 import LevelForm from "./components/Form";
 import ScreenList from "./components/ScreenList";
@@ -16,7 +16,12 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   UndoOutlined,
+  MenuOutlined,
+  EditOutlined,
+  EyeOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
+import {Popover, Divider} from "antd";
 
 import adminChapterService from "@/services/admin-chapter.service";
 import adminScreenService from "@/services/admin-screen.service";
@@ -379,8 +384,6 @@ const LevelManagement = ({
         searchable
         onSearch={search}
         onAdd={openCreate}
-        onEdit={openEdit}
-        onDelete={deleteItem}
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
@@ -414,133 +417,165 @@ const LevelManagement = ({
           const canReject = record.status === "pending";
           const canRejectUnpublish = record.status === "unpublish_pending";
 
-          return (
-            <Space size={4}>
-              {showSubmit && (
-                <PermissionGuard resource="game_levels" action="update" fallback={null}>
-                  <Tooltip title={submitTooltip}>
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<SendOutlined />}
-                      disabled={submitDisabled}
-                      style={{color: submitDisabled ? undefined : "var(--primary-color)"}}
-                      className="action-btn-standard"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        !submitDisabled && submitReview?.(record.id);
-                      }}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+          const items = [];
 
-              {canApprove && (
-                <PermissionGuard resource="game_levels" action="approve" fallback={null}>
-                  <Tooltip title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}>
-                    <Popconfirm
-                      title={record.status === "unpublish_pending" ? "Phê duyệt gỡ bài?" : "Phê duyệt đăng bài?"}
-                      description={
-                        record.status === "unpublish_pending"
-                          ? "Nội dung sẽ được gỡ xuống và chuyển về trạng thái Nháp."
-                          : "Nội dung sẽ được hiển thị công khai."
-                      }
-                      onConfirm={(e) => {
-                        e?.stopPropagation();
-                        if (record.status === "unpublish_pending") {
-                          revertReview?.(record.id);
-                        } else {
-                          approveReview?.(record.id);
-                        }
-                      }}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={<CheckCircleOutlined />}
-                        className="action-btn-standard"
-                        style={{color: "#52c41a"}}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              {canReject && (
-                <PermissionGuard resource="game_levels" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối duyệt">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<CloseCircleOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleReject(record);
-                      }}
-                      className="action-btn-standard"
-                      style={{color: "#ff4d4f"}}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              {canRejectUnpublish && (
-                <PermissionGuard resource="game_levels" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối gỡ bài (Lấy lại trạng thái Đã xuất bản)">
-                    <Popconfirm
-                      title="Từ chối gỡ bài?"
-                      description="Nội dung sẽ tiếp tục giữ trạng thái Đã xuất bản."
-                      onConfirm={(e) => {
-                        e?.stopPropagation();
-                        approveReview?.(record.id);
-                      }}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={<UndoOutlined />}
-                        className="action-btn-standard"
-                        style={{color: "#ff4d4f"}}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              <Tooltip title="Chạy thử (Run Level)">
+          if (showSubmit) {
+            items.push(
+              <Tooltip title={submitTooltip} key="submit">
                 <Button
                   variant="ghost"
                   buttonSize="small"
-                  icon={<PlayCircleOutlined />}
+                  icon={<SendOutlined />}
+                  disabled={submitDisabled}
+                  onClick={() => !submitDisabled && submitReview?.(record.id)}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (canApprove) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-approve" />);
+            items.push(
+              <Tooltip
+                title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}
+                key="approve"
+              >
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<CheckCircleOutlined />}
+                  onClick={() =>
+                    record.status === "unpublish_pending" ? revertReview?.(record.id) : approveReview?.(record.id)
+                  }
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (canReject) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-reject" />);
+            items.push(
+              <Tooltip title="Từ chối duyệt" key="reject">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => handleReject(record)}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (canRejectUnpublish) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-reject-unpublish" />);
+            items.push(
+              <Tooltip title="Từ chối gỡ bài" key="rejectUnpublish">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<UndoOutlined />}
+                  onClick={() => approveReview?.(record.id)}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (items.length > 0) items.push(<Divider type="vertical" key="div-simulate" />);
+          items.push(
+            <Tooltip title="Chạy thử (Run)" key="simulate">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<PlayCircleOutlined />}
+                onClick={() => handleRunLevel(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
+
+          if (!shouldRestrictAdmin) {
+            items.push(<Divider type="vertical" key="div-screens" />);
+            items.push(
+              <Tooltip title="Quản lý Screens" key="screens">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<AppstoreOutlined />}
+                  onClick={() => enterScreenMode(record)}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          items.push(<Divider type="vertical" key="div-edit" />);
+          items.push(
+            <Tooltip title="Chỉnh sửa" key="edit">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<EditOutlined />}
+                onClick={() => openEdit(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
+
+          items.push(<Divider type="vertical" key="div-delete" />);
+          items.push(
+            <Tooltip title="Xóa" key="delete">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  Modal.confirm({
+                    title: "Bạn có chắc muốn xóa?",
+                    onOk: () => deleteItem(record.id),
+                    okText: "Xóa",
+                    cancelText: "Hủy",
+                    okButtonProps: {danger: true},
+                  });
+                }}
+                style={{color: "#ff4d4f"}}
+              />
+            </Tooltip>,
+          );
+
+          const popoverContent = <div style={{display: "flex", alignItems: "center", gap: "4px"}}>{items}</div>;
+
+          return (
+            <Space size={8}>
+              <Tooltip title="Xem chi tiết">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<EyeOutlined />}
+                  onClick={() => openEdit(record)}
                   className="action-btn-standard"
                   style={{color: "var(--primary-color)"}}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRunLevel(record);
-                  }}
                 />
               </Tooltip>
 
-              {!shouldRestrictAdmin && (
-                <Tooltip title="Quản lý Screens">
+              {items.length > 0 && (
+                <Popover
+                  content={popoverContent}
+                  trigger="click"
+                  placement="bottomRight"
+                  overlayClassName="action-popover"
+                >
                   <Button
                     variant="ghost"
                     buttonSize="small"
-                    icon={<AppstoreOutlined />}
+                    icon={<MenuOutlined />}
                     className="action-btn-standard"
                     style={{color: "var(--primary-color)"}}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      enterScreenMode(record);
-                    }}
                   />
-                </Tooltip>
+                </Popover>
               )}
             </Space>
           );

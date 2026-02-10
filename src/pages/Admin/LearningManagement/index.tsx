@@ -1,7 +1,16 @@
 import {Tag, Tabs, Space, Tooltip} from "antd";
-import {CheckCircleOutlined, CloseCircleOutlined, SendOutlined, UndoOutlined} from "@ant-design/icons";
-import {Popconfirm} from "antd";
-import {Button, PermissionGuard} from "@/components/common";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  SendOutlined,
+  UndoOutlined,
+  MenuOutlined,
+  EditOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
+import {Popover, Divider, Modal} from "antd";
+import {Button} from "@/components/common";
 import {useAuth} from "@/hooks/useAuth";
 import {getImageUrl} from "@/utils/image.helper";
 
@@ -181,9 +190,6 @@ const LearningManagement: React.FC = () => {
         searchable
         onSearch={model.search}
         onAdd={model.openCreate}
-        onEdit={model.openEdit}
-        onView={model.openDetail}
-        onDelete={model.remove}
         onRefresh={model.refresh}
         // Selection & Batch
         rowSelection={{
@@ -213,87 +219,137 @@ const LearningManagement: React.FC = () => {
           const canReject = record.status === "pending";
           const canRejectUnpublish = record.status === "unpublish_pending";
 
+          const items = [];
+
+          if (showSubmit) {
+            items.push(
+              <Tooltip title={submitTooltip} key="submit">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<SendOutlined />}
+                  disabled={submitDisabled}
+                  onClick={() => !submitDisabled && _submitReview?.(record.id)}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (canApprove) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-approve" />);
+            items.push(
+              <Tooltip
+                title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}
+                key="approve"
+              >
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<CheckCircleOutlined />}
+                  onClick={() =>
+                    record.status === "unpublish_pending" ? _revertReview?.(record.id) : _approveReview?.(record.id)
+                  }
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (canReject) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-reject" />);
+            items.push(
+              <Tooltip title="Từ chối duyệt" key="reject">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => _handleReject(record)}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (canRejectUnpublish) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-reject-unpublish" />);
+            items.push(
+              <Tooltip title="Từ chối gỡ bài" key="rejectUnpublish">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<UndoOutlined />}
+                  onClick={() => _approveReview?.(record.id)}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (items.length > 0) items.push(<Divider type="vertical" key="div-edit" />);
+          items.push(
+            <Tooltip title="Chỉnh sửa" key="edit">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<EditOutlined />}
+                onClick={() => model.openEdit(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
+
+          items.push(<Divider type="vertical" key="div-delete" />);
+          items.push(
+            <Tooltip title="Xóa" key="delete">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  Modal.confirm({
+                    title: "Bạn có chắc muốn xóa?",
+                    onOk: () => model.remove(record.id),
+                    okText: "Xóa",
+                    cancelText: "Hủy",
+                    okButtonProps: {danger: true},
+                  });
+                }}
+                style={{color: "#ff4d4f"}}
+              />
+            </Tooltip>,
+          );
+
+          const popoverContent = <div style={{display: "flex", alignItems: "center", gap: "4px"}}>{items}</div>;
+
           return (
-            <Space size={4}>
-              {showSubmit && (
-                <PermissionGuard resource="learning_modules" action="update" fallback={null}>
-                  <Tooltip title={submitTooltip}>
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<SendOutlined />}
-                      disabled={submitDisabled}
-                      onClick={() => !submitDisabled && _submitReview?.(record.id)}
-                      className="action-btn-standard"
-                      style={{color: submitDisabled ? undefined : "var(--primary-color)"}}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+            <Space size={8}>
+              <Tooltip title="Xem chi tiết">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<EyeOutlined />}
+                  onClick={() => model.openDetail(record)}
+                  className="action-btn-standard"
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>
 
-              {canApprove && (
-                <PermissionGuard resource="learning_modules" action="approve" fallback={null}>
-                  <Tooltip title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}>
-                    <Popconfirm
-                      title={record.status === "unpublish_pending" ? "Phê duyệt gỡ bài?" : "Phê duyệt đăng bài?"}
-                      description={
-                        record.status === "unpublish_pending"
-                          ? "Nội dung sẽ được gỡ xuống và chuyển về trạng thái Nháp."
-                          : "Nội dung sẽ được hiển thị công khai."
-                      }
-                      onConfirm={() =>
-                        record.status === "unpublish_pending" ? _revertReview?.(record.id) : _approveReview?.(record.id)
-                      }
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={<CheckCircleOutlined />}
-                        className="action-btn-standard"
-                        style={{color: "#52c41a"}}
-                      />
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              {canReject && (
-                <PermissionGuard resource="learning_modules" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối duyệt">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<CloseCircleOutlined />}
-                      onClick={() => _handleReject(record)}
-                      className="action-btn-standard"
-                      style={{color: "#ff4d4f"}}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              {canRejectUnpublish && (
-                <PermissionGuard resource="learning_modules" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối gỡ bài (Lấy lại trạng thái Đã xuất bản)">
-                    <Popconfirm
-                      title="Từ chối gỡ bài?"
-                      description="Nội dung sẽ tiếp tục giữ trạng thái Đã xuất bản."
-                      onConfirm={() => _approveReview?.(record.id)}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={<UndoOutlined />}
-                        className="action-btn-standard"
-                        style={{color: "#ff4d4f"}}
-                      />
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
+              {items.length > 0 && (
+                <Popover
+                  content={popoverContent}
+                  trigger="click"
+                  placement="bottomRight"
+                  overlayClassName="action-popover"
+                >
+                  <Button
+                    variant="ghost"
+                    buttonSize="small"
+                    icon={<MenuOutlined />}
+                    className="action-btn-standard"
+                    style={{color: "var(--primary-color)"}}
+                  />
+                </Popover>
               )}
             </Space>
           );

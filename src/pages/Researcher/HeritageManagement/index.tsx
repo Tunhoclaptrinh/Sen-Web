@@ -1,4 +1,4 @@
-import {Tag, Tabs, Space, Tooltip, Popconfirm} from "antd";
+import {Tag, Tabs, Space, Tooltip, Popover, Divider, Modal} from "antd";
 import {
   DownloadOutlined,
   SendOutlined,
@@ -6,8 +6,10 @@ import {
   DeleteOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
+  EditOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
-import {Button, PermissionGuard} from "@/components/common";
+import {Button} from "@/components/common";
 import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 import {getImageUrl} from "@/utils/image.helper";
 import {useAuth} from "@/hooks/useAuth";
@@ -236,10 +238,6 @@ const ResearcherHeritageManagement = () => {
             disabled: record.createdBy !== user?.id,
           }),
         }}
-        onView={openDetail}
-        onEdit={openEdit}
-        // Remove generic onDelete to handle it manually in customActions
-        // onDelete={deleteHeritage}
         onRefresh={refresh}
         customActions={(record) => {
           const canSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
@@ -248,115 +246,154 @@ const ResearcherHeritageManagement = () => {
           const canDelete = record.status === "draft" || record.status === "rejected";
           const isPendingUnpublish = record.status === "unpublish_pending";
 
-          return (
-            <Space size={4}>
-              {canSubmit && (
-                <PermissionGuard resource="heritage_sites" action="update" fallback={null}>
-                  <Tooltip title="Gửi duyệt">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      onClick={() => submitReview?.(record.id)}
-                      className="action-btn-standard"
-                      style={{color: "var(--primary-color)"}}
-                    >
-                      <SendOutlined />
-                    </Button>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+          const items = [];
 
-              {canRevert && (
-                <PermissionGuard resource="heritage_sites" action="update" fallback={null}>
-                  <Tooltip title="Hoàn về nháp">
-                    <Popconfirm
-                      title="Hủy gửi duyệt?"
-                      description="Bạn có muốn rút lại yêu cầu và hoàn về nháp?"
-                      onConfirm={() => revertReview?.(record.id)}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        className="action-btn-standard"
-                        style={{color: "#faad14"}}
-                      >
-                        <UndoOutlined />
-                      </Button>
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+          if (canSubmit) {
+            items.push(
+              <Tooltip title="Gửi duyệt" key="submit">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<SendOutlined />}
+                  onClick={() => submitReview?.(record.id)}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-              {canUnpublish && (
-                <PermissionGuard resource="heritage_sites" action="update" fallback={null}>
-                  <Tooltip title="Gỡ nội dung (Hạ bài)">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      className="action-btn-standard"
-                      style={{color: "#faad14"}}
-                      onClick={() => {
-                        setCurrentRecord(record);
-                        setUnpublishModalVisible(true);
-                      }}
-                    >
-                      <UndoOutlined rotate={180} />
-                    </Button>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+          if (canRevert) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-revert" />);
+            items.push(
+              <Tooltip title="Hoàn về nháp" key="revert">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<UndoOutlined />}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Hủy gửi duyệt?",
+                      content: "Bạn có muốn rút lại yêu cầu và hoàn về nháp?",
+                      onOk: () => revertReview?.(record.id),
+                      okText: "Đồng ý",
+                      cancelText: "Hủy",
+                    });
+                  }}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-              {isPendingUnpublish && (
-                <PermissionGuard resource="heritage_sites" action="update" fallback={null}>
-                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
-                    <Popconfirm
-                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
-                      description={
+          if (canUnpublish) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-unpublish" />);
+            items.push(
+              <Tooltip title="Gỡ nội dung (Hạ bài)" key="unpublish">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<UndoOutlined rotate={180} />}
+                  onClick={() => {
+                    setCurrentRecord(record);
+                    setUnpublishModalVisible(true);
+                  }}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          if (isPendingUnpublish) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-toggle-active" />);
+            items.push(
+              <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"} key="toggleActive">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?",
+                      content:
                         record.isActive === false
                           ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
-                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
-                      }
-                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        className="action-btn-standard"
-                        style={{color: record.isActive === false ? "#52c41a" : "#faad14"}}
-                      >
-                        {record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                      </Button>
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ.",
+                      onOk: () => handleSubmit({id: record.id, isActive: record.isActive === false}),
+                    });
+                  }}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-              {canDelete && (
-                <PermissionGuard resource="heritage_sites" action="delete" fallback={null}>
-                  <Popconfirm
-                    title="Xóa di sản?"
-                    description="Hành động này không thể hoàn tác."
-                    onConfirm={() => deleteHeritage(record.id)}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                    okButtonProps={{danger: true}}
-                  >
-                    <Tooltip title="Xóa">
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        className="action-btn-standard action-btn-delete"
-                        style={{color: "#ff4d4f"}}
-                      >
-                        <DeleteOutlined />
-                      </Button>
-                    </Tooltip>
-                  </Popconfirm>
-                </PermissionGuard>
+          if (items.length > 0) items.push(<Divider type="vertical" key="div-edit" />);
+          items.push(
+            <Tooltip title="Chỉnh sửa" key="edit">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<EditOutlined />}
+                onClick={() => openEdit(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
+
+          if (canDelete) {
+            items.push(<Divider type="vertical" key="div-delete" />);
+            items.push(
+              <Tooltip title="Xóa" key="delete">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Xóa di sản?",
+                      content: "Hành động này không thể hoàn tác.",
+                      onOk: () => deleteHeritage(record.id),
+                      okText: "Xóa",
+                      cancelText: "Hủy",
+                      okButtonProps: {danger: true},
+                    });
+                  }}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
+
+          const popoverContent = <div style={{display: "flex", alignItems: "center", gap: "4px"}}>{items}</div>;
+
+          return (
+            <Space size={8}>
+              <Tooltip title="Xem chi tiết">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<EyeOutlined />}
+                  onClick={() => openDetail(record)}
+                  className="action-btn-standard"
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>
+
+              {items.length > 0 && (
+                <Popover
+                  content={popoverContent}
+                  trigger="click"
+                  placement="bottomRight"
+                  overlayClassName="action-popover"
+                >
+                  <Button
+                    variant="ghost"
+                    buttonSize="small"
+                    icon={<MenuOutlined />}
+                    className="action-btn-standard"
+                    style={{color: "var(--primary-color)"}}
+                  />
+                </Popover>
               )}
             </Space>
           );

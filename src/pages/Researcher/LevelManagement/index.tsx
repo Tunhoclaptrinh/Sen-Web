@@ -1,5 +1,5 @@
-import {Space, Tooltip, Select, Card, Tag, Popconfirm, message, Tabs} from "antd";
-import {DataTable, Button, PermissionGuard} from "@/components/common";
+import {Space, Tooltip, Select, Card, Tag, Modal, message, Tabs, Popover, Divider} from "antd";
+import {DataTable, Button} from "@/components/common";
 import {useState, useEffect} from "react";
 // Reuse Admin Components
 import LevelForm from "@/pages/Admin/GameManagement/LevelManagement/components/Form";
@@ -20,6 +20,8 @@ import {
   DeleteOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
+  MenuOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 
@@ -379,7 +381,7 @@ const ResearcherLevelManagement = ({
         searchable
         onSearch={search}
         onAdd={openCreate}
-        onEdit={openEdit}
+        // onEdit={openEdit}
         // onDelete={deleteItem} // Manual Handling
         rowSelection={{
           selectedRowKeys: selectedIds,
@@ -393,169 +395,193 @@ const ResearcherLevelManagement = ({
         onRefresh={refresh}
         customActions={(record) => {
           const isOwner = record.createdBy === user?.id;
-          const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const showRevert = record.status === "pending" || record.status === "unpublish_pending";
-          const showUnpublish = record.status === "published";
-          const showDelete = record.status === "draft" || record.status === "rejected";
+          const canSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
+          const canRevert = record.status === "pending" || record.status === "unpublish_pending";
+          const canUnpublish = record.status === "published";
+          const canDelete = record.status === "draft" || record.status === "rejected";
           const isPendingUnpublish = record.status === "unpublish_pending";
 
-          const submitDisabled = !isOwner;
-          const submitTooltip = submitDisabled
-            ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
-            : "Gửi duyệt";
+          const items = [];
 
-          const revertDisabled = !isOwner;
-          const revertTooltip = revertDisabled ? "Chỉ tác giả mới có thể rút lại yêu cầu" : "Rút lại yêu cầu";
+          if (canSubmit) {
+            items.push(
+              <Tooltip title="Gửi duyệt" key="submit">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<SendOutlined />}
+                  disabled={!isOwner}
+                  onClick={() => !!isOwner && submitReview?.(record.id)}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-          return (
-            <Space size={4}>
-              {showSubmit && (
-                <PermissionGuard resource="game_levels" action="update" fallback={null}>
-                  <Tooltip title={submitTooltip}>
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<SendOutlined />}
-                      disabled={submitDisabled}
-                      style={{color: submitDisabled ? undefined : "var(--primary-color)"}}
-                      className="action-btn-standard"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        !submitDisabled && submitReview?.(record.id);
-                      }}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+          if (canRevert) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-revert" />);
+            items.push(
+              <Tooltip title="Hoàn về nháp" key="revert">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<UndoOutlined />}
+                  disabled={!isOwner}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Hủy gửi duyệt?",
+                      content: "Bạn có muốn rút lại yêu cầu và hoàn về nháp?",
+                      onOk: () => revertReview?.(record.id),
+                      okText: "Đồng ý",
+                      cancelText: "Hủy",
+                    });
+                  }}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-              {showRevert && (
-                <PermissionGuard resource="game_levels" action="update" fallback={null}>
-                  <Tooltip title={revertTooltip}>
-                    <Popconfirm
-                      title="Hủy gửi duyệt?"
-                      description="Bạn có muốn rút lại yêu cầu và hoàn về nháp?"
-                      onConfirm={() => revertReview?.(record.id)}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                      disabled={revertDisabled}
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={<UndoOutlined />}
-                        disabled={revertDisabled}
-                        className="action-btn-standard"
-                        style={{color: revertDisabled ? undefined : "#faad14"}}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+          if (canUnpublish) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-unpublish" />);
+            items.push(
+              <Tooltip title="Gỡ nội dung (Hạ bài)" key="unpublish">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={<UndoOutlined rotate={180} />}
+                  disabled={!isOwner}
+                  onClick={() => {
+                    setCurrentRecord(record);
+                    setUnpublishModalVisible(true);
+                  }}
+                  style={{color: "#ff4d4f"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-              {showUnpublish && (
-                <PermissionGuard resource="game_levels" action="update" fallback={null}>
-                  <Tooltip title={isOwner ? "Gỡ nội dung (Hạ bài)" : "Chỉ tác giả mới có thể gỡ bài"}>
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<UndoOutlined rotate={180} />}
-                      disabled={!isOwner}
-                      className="action-btn-standard"
-                      style={{color: !isOwner ? undefined : "#faad14"}}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (isOwner) {
-                          setCurrentRecord(record);
-                          setUnpublishModalVisible(true);
-                        }
-                      }}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              {isPendingUnpublish && (
-                <PermissionGuard resource="game_levels" action="update" fallback={null}>
-                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
-                    <Popconfirm
-                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
-                      description={
+          if (isPendingUnpublish) {
+            if (items.length > 0) items.push(<Divider type="vertical" key="div-toggle-active" />);
+            items.push(
+              <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"} key="toggleActive">
+                <Button
+                  variant="ghost"
+                  buttonSize="small"
+                  icon={record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  disabled={!isOwner}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?",
+                      content:
                         record.isActive === false
                           ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
-                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
-                      }
-                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                      disabled={!isOwner}
-                    >
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                        disabled={!isOwner}
-                        className="action-btn-standard"
-                        style={{color: !isOwner ? undefined : record.isActive === false ? "#52c41a" : "#faad14"}}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Popconfirm>
-                  </Tooltip>
-                </PermissionGuard>
-              )}
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ.",
+                      onOk: () => handleSubmit({id: record.id, isActive: record.isActive === false}),
+                    });
+                  }}
+                  style={{color: "var(--primary-color)"}}
+                />
+              </Tooltip>,
+            );
+          }
 
-              {showDelete && (
-                <PermissionGuard resource="game_levels" action="delete" fallback={null}>
-                  <Popconfirm
-                    title="Xóa màn?"
-                    description="Hành động này không thể hoàn tác."
-                    onConfirm={() => deleteItem(record.id)}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                    okButtonProps={{danger: true}}
-                    disabled={!isOwner}
-                  >
-                    <Tooltip title={isOwner ? "Xóa" : "Chỉ tác giả được xóa"}>
-                      <Button
-                        variant="ghost"
-                        buttonSize="small"
-                        icon={<DeleteOutlined />}
-                        disabled={!isOwner}
-                        className="action-btn-standard action-btn-delete"
-                        style={{color: !isOwner ? undefined : "#ff4d4f"}}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Tooltip>
-                  </Popconfirm>
-                </PermissionGuard>
-              )}
+          if (items.length > 0) items.push(<Divider type="vertical" key="div-simulate" />);
+          items.push(
+            <Tooltip title="Chạy thử (Run Level)" key="simulate">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<PlayCircleOutlined />}
+                onClick={() => handleRunLevel(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
 
-              <Tooltip title="Chạy thử (Run Level)">
+          items.push(<Divider type="vertical" key="div-screens" />);
+          items.push(
+            <Tooltip title="Quản lý Screens" key="screens">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<AppstoreOutlined />}
+                onClick={() => enterScreenMode(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
+
+          items.push(<Divider type="vertical" key="div-edit" />);
+          items.push(
+            <Tooltip title="Chỉnh sửa" key="edit">
+              <Button
+                variant="ghost"
+                buttonSize="small"
+                icon={<EditOutlined />}
+                onClick={() => openEdit(record)}
+                style={{color: "var(--primary-color)"}}
+              />
+            </Tooltip>,
+          );
+
+          if (canDelete) {
+            items.push(<Divider type="vertical" key="div-delete" />);
+            items.push(
+              <Tooltip title="Xóa" key="delete">
                 <Button
                   variant="ghost"
                   buttonSize="small"
-                  icon={<PlayCircleOutlined />}
-                  style={{color: "var(--primary-color)"}}
-                  className="action-btn-standard"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRunLevel(record);
+                  icon={<DeleteOutlined />}
+                  danger={true}
+                  disabled={!isOwner}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Xóa màn?",
+                      content: "Hành động này không thể hoàn tác.",
+                      onOk: () => deleteItem(record.id),
+                      okText: "Xóa",
+                      cancelText: "Hủy",
+                      okButtonProps: {danger: true},
+                    });
                   }}
+                  style={{color: "#ff4d4f"}}
                 />
-              </Tooltip>
-              <Tooltip title="Quản lý Screens">
+              </Tooltip>,
+            );
+          }
+
+          const popoverContent = <div style={{display: "flex", alignItems: "center", gap: "4px"}}>{items}</div>;
+
+          return (
+            <Space size={8}>
+              <Tooltip title="Xem chi tiết">
                 <Button
                   variant="ghost"
                   buttonSize="small"
-                  icon={<AppstoreOutlined />}
-                  style={{color: "var(--primary-color)"}}
+                  icon={<EyeOutlined />}
+                  onClick={() => openEdit(record)}
                   className="action-btn-standard"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    enterScreenMode(record);
-                  }}
+                  style={{color: "var(--primary-color)"}}
                 />
               </Tooltip>
+
+              {items.length > 0 && (
+                <Popover
+                  content={popoverContent}
+                  trigger="click"
+                  placement="bottomRight"
+                  overlayClassName="action-popover"
+                >
+                  <Button
+                    variant="ghost"
+                    buttonSize="small"
+                    icon={<MenuOutlined />}
+                    className="action-btn-standard"
+                    style={{color: "var(--primary-color)"}}
+                  />
+                </Popover>
+              )}
             </Space>
           );
         }}
