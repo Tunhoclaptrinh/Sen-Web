@@ -62,6 +62,11 @@ const LevelManagement = ({
     submitReview,
     approveReview,
     handleReject,
+    // Import/Export
+    importLoading,
+    exportLoading,
+    importData,
+    exportData,
   } = useLevelModel(chapterId ? {chapterId: chapterId} : undefined);
 
   // Screen Editor State
@@ -378,6 +383,13 @@ const LevelManagement = ({
           onChange: setSelectedIds,
         }}
         onBatchDelete={batchDelete}
+        // Import/Export
+        importable={true}
+        importLoading={importLoading}
+        onImport={importData}
+        exportable={true}
+        exportLoading={exportLoading}
+        onExport={exportData}
         onRefresh={refresh}
         hideCard={hideCard}
         customActions={(record) => {

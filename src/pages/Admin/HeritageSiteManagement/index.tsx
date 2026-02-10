@@ -201,19 +201,21 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
       fixed: "right" as const,
       align: "center" as const,
       render: (_: any, record: any) => {
-        // Check ownership
+        // Permissions
+        const isAdmin = user?.role === "admin";
         const isOwner = record.createdBy === user?.id;
+        const canEditOrDelete = isAdmin || isOwner;
 
         // Show submit if it's in a state that allows submission (draft/rejected/new)
-        // BUT: If not owner, we show it disabled with a message
+        // BUT: Only the owner can submit for review
         const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
         const submitDisabled = !isOwner;
         const submitTooltip = submitDisabled
           ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
           : "Gửi duyệt";
 
-        const canApprove = record.status === "pending";
-        const canReject = record.status === "pending";
+        const canApprove = isAdmin && record.status === "pending";
+        const canReject = isAdmin && record.status === "pending";
 
         return (
           <Space size={4}>
@@ -268,7 +270,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
               />
             </Tooltip>
 
-            {isOwner && (
+            {canEditOrDelete && (
               <Tooltip title="Chỉnh sửa">
                 <Button
                   variant="ghost"
@@ -281,7 +283,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
               </Tooltip>
             )}
 
-            {isOwner && (
+            {canEditOrDelete && (
               <Tooltip title="Xóa">
                 <Popconfirm
                   title="Bạn có chắc muốn xóa?"

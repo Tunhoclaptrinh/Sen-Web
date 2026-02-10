@@ -24,36 +24,42 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
   const [form] = Form.useForm();
   const {user} = useAuth();
 
-  useEffect(() => {
-    if (initialValues) {
-      form.setFieldsValue({
-        ...initialValues,
-        dates:
-          initialValues.startDate && initialValues.endDate
-            ? [dayjs(initialValues.startDate), dayjs(initialValues.endDate)]
-            : undefined,
-      });
-    } else {
-      form.setFieldsValue({
+  const memoizedInitialValues = React.useMemo(() => {
+    if (!initialValues)
+      return {
         isActive: true,
         isPermanent: false,
         curator: user?.name,
         author: user?.name,
-      });
+      };
+
+    return {
+      ...initialValues,
+      publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
+      dates:
+        initialValues.startDate && initialValues.endDate
+          ? [dayjs(initialValues.startDate), dayjs(initialValues.endDate)]
+          : undefined,
+    };
+  }, [initialValues, user]);
+
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(memoizedInitialValues);
     }
-  }, [initialValues, form, user]);
+  }, [memoizedInitialValues, form, initialValues]);
 
   const handleFinish = (values: any) => {
     const {dates, ...rest} = values;
-    if (dates && !rest.isPermanent) {
-      rest.startDate = dates[0].format("YYYY-MM-DD");
-      rest.endDate = dates[1].format("YYYY-MM-DD");
+    if (dates && Array.isArray(dates) && dates.length === 2 && !rest.isPermanent) {
+      rest.startDate = dates[0].toISOString();
+      rest.endDate = dates[1].toISOString();
     }
     onSubmit(rest);
   };
 
   return (
-    <Form layout="vertical" form={form} onFinish={handleFinish} initialValues={initialValues}>
+    <Form layout="vertical" form={form} onFinish={handleFinish} initialValues={memoizedInitialValues}>
       <Form.Item name="name" label="Tên triển lãm" rules={[{required: true, message: "Vui lòng nhập tên"}]}>
         <Input prefix={<PictureOutlined />} placeholder="Ví dụ: Triển lãm Gốm Chu Đậu" />
       </Form.Item>

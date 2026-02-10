@@ -3,6 +3,7 @@ import {PlusOutlined, MinusCircleOutlined} from "@ant-design/icons";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {useAuth} from "@/hooks/useAuth";
+import dayjs from "dayjs";
 
 import {
   HeritageType,
@@ -20,7 +21,7 @@ import {
   Artifact,
   HistoryArticle,
 } from "@/types";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useMemo} from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
@@ -49,6 +50,22 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const {user} = useAuth();
+
+  const memoizedInitialValues = useMemo(() => {
+    if (!initialValues)
+      return {
+        isActive: true,
+        unescoListed: false,
+        yearEstablished: new Date().getFullYear(),
+        author: user?.name,
+        publishDate: dayjs(),
+      };
+
+    return {
+      ...initialValues,
+      publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
+    };
+  }, [initialValues, user]);
 
   useEffect(() => {
     const initData = async () => {
@@ -112,6 +129,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
           const formattedValues: any = {
             ...initialValues,
+            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
             timeline: timeline,
             relatedArtifactIds: relatedArtifacts,
             relatedHistoryIds: relatedHistory,
@@ -146,6 +164,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           // Fallback to initialValues if fetch fails
           const fallbackValues = {
             ...initialValues,
+            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
           };
 
           // Set available provinces based on region for fallback
@@ -180,17 +199,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
         setSelectedRegion("");
         setAvailableProvinces([]);
-        form.setFieldsValue({
-          isActive: true,
-          unescoListed: false,
-          yearEstablished: new Date().getFullYear(),
-          author: user?.name,
-        });
+        form.setFieldsValue(memoizedInitialValues);
       }
     };
 
     initData();
-  }, [open, isEdit, initialValues, form]);
+  }, [open, isEdit, initialValues, form, memoizedInitialValues]);
 
   const [activeTab, setActiveTab] = useState("1");
   const [availableProvinces, setAvailableProvinces] = useState<HeritageProvince[]>([]);
@@ -361,12 +375,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       width={1000}
       form={form}
       loading={loading}
+      initialValues={memoizedInitialValues}
       preserve={false}
-      initialValues={{
-        isActive: true,
-        unescoListed: false,
-        ...initialValues,
-      }}
       footer={
         <div style={{display: "flex", justifyContent: "center", gap: "8px"}}>
           <StyledButton

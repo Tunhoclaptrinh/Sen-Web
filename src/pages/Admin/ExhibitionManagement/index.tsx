@@ -1,11 +1,13 @@
-import {Tag, Tabs, Modal} from "antd";
+import {Tag, Tabs, Modal, Space, Tooltip} from "antd";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "@/hooks/useAuth";
+import {SendOutlined, CheckCircleOutlined, CloseCircleOutlined, UndoOutlined} from "@ant-design/icons";
 import {useExhibitionModel} from "./model";
 import ExhibitionStats from "./components/Stats";
 import ExhibitionDetailModal from "./components/DetailModal";
 import ExhibitionForm from "./components/Form";
 import DataTable from "@/components/common/DataTable";
+import {Button, PermissionGuard} from "@/components/common";
 import {getImageUrl} from "@/utils/image.helper";
 import dayjs from "dayjs";
 
@@ -175,6 +177,7 @@ const ExhibitionManagement: React.FC = () => {
           </div>
         }
         loading={model.loading}
+        permissionResource="exhibitions"
         columns={columns}
         dataSource={model.data}
         pagination={model.pagination}
@@ -185,6 +188,105 @@ const ExhibitionManagement: React.FC = () => {
         onEdit={model.openEdit}
         onView={model.openDetail}
         onDelete={model.remove}
+        onRefresh={model.refresh}
+        // Selection & Batch
+        rowSelection={{
+          selectedRowKeys: model.selectedIds,
+          onChange: model.setSelectedIds,
+        }}
+        batchOperations={true}
+        onBatchDelete={model.batchDelete}
+        // Import/Export
+        importable={true}
+        importLoading={model.importLoading}
+        onImport={model.importData}
+        onDownloadTemplate={model.downloadTemplate}
+        exportable={true}
+        exportLoading={model.exportLoading}
+        onExport={model.exportData}
+        customActions={(record) => {
+          const isOwner = record.createdBy === user?.id;
+
+          const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
+          const showRevert = record.status === "pending";
+
+          const submitDisabled = !isOwner;
+          const submitTooltip = submitDisabled
+            ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
+            : "Gửi duyệt";
+
+          const revertDisabled = !isOwner;
+          const revertTooltip = revertDisabled ? "Chỉ tác giả mới có thể rút lại yêu cầu" : "Rút lại yêu cầu";
+
+          const canApprove = record.status === "pending";
+          const canReject = record.status === "pending";
+
+          return (
+            <Space size={4}>
+              {showSubmit && (
+                <PermissionGuard resource="exhibitions" action="update" fallback={null}>
+                  <Tooltip title={submitTooltip}>
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      icon={<SendOutlined />}
+                      disabled={submitDisabled}
+                      onClick={() => !submitDisabled && _submitReview?.(record.id)}
+                      className="action-btn-standard"
+                      style={{color: submitDisabled ? undefined : "var(--primary-color)"}}
+                    />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {showRevert && (
+                <PermissionGuard resource="exhibitions" action="update" fallback={null}>
+                  <Tooltip title={revertTooltip}>
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      icon={<UndoOutlined />}
+                      disabled={revertDisabled}
+                      onClick={() => !revertDisabled && _revertReview?.(record.id)}
+                      className="action-btn-standard"
+                      style={{color: revertDisabled ? undefined : "#faad14"}}
+                    />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canApprove && (
+                <PermissionGuard resource="exhibitions" action="approve" fallback={null}>
+                  <Tooltip title="Phê duyệt">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      icon={<CheckCircleOutlined />}
+                      onClick={() => _approveReview?.(record.id)}
+                      className="action-btn-standard"
+                      style={{color: "#52c41a"}}
+                    />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canReject && (
+                <PermissionGuard resource="exhibitions" action="approve" fallback={null}>
+                  <Tooltip title="Từ chối">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      icon={<CloseCircleOutlined />}
+                      onClick={() => _handleReject(record)}
+                      className="action-btn-standard"
+                      style={{color: "#ff4d4f"}}
+                    />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+            </Space>
+          );
+        }}
       />
 
       <Modal

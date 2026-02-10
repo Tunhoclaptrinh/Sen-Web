@@ -88,7 +88,7 @@ export const useResearcherHeritageModel = () => {
 
   // Helper functions (placeholders if features disabled for researcher)
   // Service Handlers
-  const exportData = (params?: any) => heritageService.export(params);
+  // Service Handlers
 
   const importData = (file: File) => heritageService.import(file);
 
@@ -97,7 +97,6 @@ export const useResearcherHeritageModel = () => {
   return {
     ...crud,
     importLoading,
-    exportData,
     importData,
     downloadTemplate,
     handleSubmit,

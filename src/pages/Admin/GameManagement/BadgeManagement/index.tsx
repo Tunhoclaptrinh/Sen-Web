@@ -65,6 +65,14 @@ const BadgeManagement: React.FC = () => {
           selectedRowKeys: model.selectedIds,
           onChange: model.setSelectedIds,
         }}
+        // Import/Export
+        importable={true}
+        importLoading={model.importLoading}
+        onImport={model.importData}
+        onDownloadTemplate={model.downloadTemplate}
+        exportable={true}
+        exportLoading={model.exportLoading}
+        onExport={model.exportData}
       />
 
       <Modal

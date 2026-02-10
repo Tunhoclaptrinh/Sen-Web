@@ -257,7 +257,7 @@ const ResearcherLearningManagement: React.FC = () => {
             key: "export",
             label: "Export đã chọn",
             icon: <DownloadOutlined />,
-            onClick: (ids: any[]) => exportData({format: "xlsx", filters: {id: ids}}),
+            onClick: (ids: any[]) => exportData("xlsx", ids),
           },
         ]}
         importable={true}

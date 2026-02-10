@@ -370,6 +370,9 @@ const ResearcherLevelManagement = ({
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
+          getCheckboxProps: (record: any) => ({
+            disabled: record.createdBy !== user?.id,
+          }),
         }}
         onBatchDelete={batchDelete}
         batchOperations={true}

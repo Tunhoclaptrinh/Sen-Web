@@ -78,10 +78,6 @@ export const useResearcherLearningModel = () => {
     return success;
   };
 
-  const exportData = (params?: any) => learningService.export(params);
-  const importData = (file: File) => learningService.import(file);
-  const downloadTemplate = () => learningService.downloadTemplate();
-
   return {
     ...crud,
     handleSubmit,
@@ -95,9 +91,6 @@ export const useResearcherLearningModel = () => {
     openDetail,
     closeDetail,
     detailVisible,
-    exportData,
-    importData,
-    downloadTemplate,
     // Alias for semantic clarity
     deleteLearning: crud.remove,
   };

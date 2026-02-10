@@ -1,7 +1,7 @@
 import {Input, Switch, Row, Col, Form, Tabs, message, DatePicker} from "antd";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useMemo} from "react";
 import {useAuth} from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
@@ -33,6 +33,22 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   useEffect(() => {
     if (open) setActiveTab("1");
   }, [open]);
+
+  const memoizedInitialValues = useMemo(() => {
+    if (!initialValues) {
+      return {
+        isActive: true,
+        publishDate: dayjs(),
+        views: 0,
+        author: user?.name,
+      };
+    }
+
+    return {
+      ...initialValues,
+      publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
+    };
+  }, [initialValues, user]);
 
   useEffect(() => {
     const initData = async () => {
@@ -76,18 +92,14 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
           });
 
           const formattedValues = {
-            ...initialValues,
-            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
+            ...memoizedInitialValues,
             relatedHeritageIds: relatedHeri,
             relatedArtifactIds: relatedArtifacts,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
           console.error("Failed to init history data", error);
-          form.setFieldsValue({
-            ...initialValues,
-            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
-          });
+          form.setFieldsValue(memoizedInitialValues);
         }
       }
       // 2. Create Mode -> Aggressive Reset
@@ -100,17 +112,12 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         form.setFieldsValue(resetValues);
         form.resetFields();
 
-        form.setFieldsValue({
-          isActive: true,
-          publishDate: dayjs(),
-          views: 0,
-          author: user?.name,
-        });
+        form.setFieldsValue(memoizedInitialValues);
       }
     };
 
     initData();
-  }, [open, isEditMode, initialValues, form]);
+  }, [open, isEditMode, initialValues, form, memoizedInitialValues]);
 
   const handleOk = async (values: any) => {
     // Transform values before submit
@@ -203,7 +210,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       width={1000}
       form={form}
       loading={loading}
-      preserve={false}
+      initialValues={memoizedInitialValues}
       footer={
         <div style={{display: "flex", justifyContent: "center", gap: "8px"}}>
           <StyledButton variant="outline" onClick={onCancel} style={{minWidth: "120px"}}>

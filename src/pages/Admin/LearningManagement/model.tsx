@@ -99,10 +99,38 @@ export const useLearningModel = () => {
     });
   };
 
+  const [importLoading, setImportLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+
+  // Business Logic
+  const importData = async (file: File) => {
+    setImportLoading(true);
+    try {
+      const result = await crud.importData(file);
+      return result;
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  const exportData = async (options: any = "xlsx", ids: any[] = []) => {
+    setExportLoading(true);
+    try {
+      const result = await crud.exportData(options, ids);
+      return result;
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   return {
     ...crud,
     currentRecord,
     formVisible,
+    importLoading,
+    exportLoading,
+    importData,
+    exportData,
     openCreate,
     openEdit,
     closeForm,

@@ -5,6 +5,7 @@ import TinyEditor from "@/components/common/TinyEditor";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {FormModal, Button as StyledButton} from "@/components/common";
 import {useAuth} from "@/hooks/useAuth";
+import dayjs from "dayjs";
 
 interface LearningFormProps {
   visible: boolean;
@@ -41,23 +42,31 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
   const [form] = Form.useForm();
   const {user} = useAuth();
 
+  const memoizedInitialValues = React.useMemo(() => {
+    if (!initialValues)
+      return {
+        difficulty: "easy",
+        estimatedDuration: 30,
+        contentType: "article",
+        quiz: {passingScore: 50, questions: []},
+        author: user?.name,
+      };
+
+    return {
+      ...initialValues,
+      publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
+    };
+  }, [initialValues, user]);
+
   React.useEffect(() => {
     if (visible) {
       form.resetFields();
       setCurrentStep(0);
       if (initialValues) {
-        form.setFieldsValue(initialValues);
-      } else {
-        form.setFieldsValue({
-          difficulty: "easy",
-          estimatedDuration: 30,
-          contentType: "article",
-          quiz: {passingScore: 50, questions: []},
-          author: user?.name,
-        });
+        form.setFieldsValue(memoizedInitialValues);
       }
     }
-  }, [visible, initialValues, form]);
+  }, [visible, memoizedInitialValues, form, initialValues]);
 
   const handleFinish = (values: any) => {
     // Auto-generate IDs for questions if missing
@@ -140,7 +149,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
         </Steps>
       </div>
 
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
+      <Form form={form} layout="vertical" onFinish={handleFinish} initialValues={memoizedInitialValues}>
         <div style={{display: currentStep === 0 ? "block" : "none"}}>
           <Row gutter={16}>
             <Col span={12}>

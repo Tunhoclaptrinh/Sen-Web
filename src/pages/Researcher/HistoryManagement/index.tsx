@@ -186,6 +186,9 @@ const HistoryManagement = () => {
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
+          getCheckboxProps: (record: any) => ({
+            disabled: record.createdBy !== user?.id,
+          }),
         }}
         onView={openDetail}
         onEdit={openEdit}

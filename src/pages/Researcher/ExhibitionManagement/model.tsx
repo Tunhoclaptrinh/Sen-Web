@@ -100,8 +100,6 @@ export const useExhibitionModel = () => {
     return success;
   };
 
-  const exportData = (params?: any) => exhibitionService.export(params);
-  const importData = (file: File) => exhibitionService.import(file);
   const downloadTemplate = () => exhibitionService.downloadTemplate();
 
   // Artifacts Logic
@@ -142,8 +140,6 @@ export const useExhibitionModel = () => {
     submitReview: crud.submitReview,
     revertReview: crud.revertReview,
     refresh: crud.refresh,
-    exportData,
-    importData,
     downloadTemplate,
   };
 };

@@ -217,6 +217,9 @@ const ResearcherHeritageManagement = () => {
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
+          getCheckboxProps: (record: any) => ({
+            disabled: record.createdBy !== user?.id,
+          }),
         }}
         onView={openDetail}
         onEdit={openEdit}
@@ -276,7 +279,7 @@ const ResearcherHeritageManagement = () => {
             key: "export",
             label: "Export đã chọn",
             icon: <DownloadOutlined />,
-            onClick: (ids: any[]) => exportData?.({format: "xlsx", filters: {id: ids}}),
+            onClick: (ids: any[]) => exportData("xlsx", ids),
           },
         ]}
         importable={true}

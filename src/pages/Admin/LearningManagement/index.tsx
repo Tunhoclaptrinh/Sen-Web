@@ -167,8 +167,23 @@ const LearningManagement: React.FC = () => {
         onView={model.openDetail}
         onDelete={model.remove}
         onRefresh={model.refresh}
+        // Selection & Batch
+        rowSelection={{
+          selectedRowKeys: model.selectedIds,
+          onChange: model.setSelectedIds,
+        }}
+        batchOperations={true}
+        onBatchDelete={model.batchDelete}
+        // Import/Export
+        importable={true}
+        importLoading={model.importLoading}
+        onImport={model.importData}
+        onDownloadTemplate={model.downloadTemplate}
+        exportable={true}
+        onExport={model.exportData}
         customActions={(record) => {
           const isOwner = record.createdBy === user?.id;
+
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
           const showRevert = record.status === "pending";
 
