@@ -1,10 +1,18 @@
 import {Tag, Tabs, Space, Tooltip, Popconfirm} from "antd";
-import {DownloadOutlined, SendOutlined, UndoOutlined} from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  SendOutlined,
+  UndoOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import {Button, PermissionGuard} from "@/components/common";
+import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
-import dayjs from "dayjs";
+import {formatDate} from "@/utils/formatters";
 
 import HistoryForm from "../../Admin/HistoryManagement/components/Form";
 import HistoryDetailModal from "../../Admin/HistoryManagement/components/DetailModal";
@@ -43,6 +51,11 @@ const HistoryManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish,
   } = useHistoryModel();
   const {user} = useAuth();
 
@@ -87,11 +100,8 @@ const HistoryManagement = () => {
       searchable: true,
     },
     {
-      title: "Ngày đăng",
-      dataIndex: "publishDate",
-      key: "publishDate",
       width: 150,
-      render: (date: string) => (date ? dayjs(date).format("DD/MM/YYYY") : "N/A"),
+      render: (date: string) => formatDate(date, "DD/MM/YYYY") || "N/A",
     },
     {
       title: "Lượt xem",
@@ -111,12 +121,14 @@ const HistoryManagement = () => {
           pending: "orange",
           published: "green",
           rejected: "red",
+          unpublish_pending: "warning",
         };
         const labels: any = {
           draft: "Nháp",
           pending: "Chờ duyệt",
           published: "Đã xuất bản",
           rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
         };
         return <Tag color={colors[status] || "default"}>{labels[status] || status}</Tag>;
       },
@@ -134,6 +146,7 @@ const HistoryManagement = () => {
     {key: "all", label: "Tất cả bài viết của tôi"},
     {key: "pending", label: "Chờ duyệt"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ gỡ bài"},
     {key: "rejected", label: "Bị từ chối"},
   ];
 
@@ -148,6 +161,9 @@ const HistoryManagement = () => {
       case "published":
         updateFilters({status: "published"});
         break;
+      case "unpublish_pending":
+        updateFilters({status: "unpublish_pending"});
+        break;
       case "rejected":
         updateFilters({status: "rejected"});
         break;
@@ -157,6 +173,7 @@ const HistoryManagement = () => {
   const getActiveTab = () => {
     if (filters.status === "pending") return "pending";
     if (filters.status === "published") return "published";
+    if (filters.status === "unpublish_pending") return "unpublish_pending";
     if (filters.status === "rejected") return "rejected";
     return "all";
   };
@@ -192,7 +209,7 @@ const HistoryManagement = () => {
         }}
         onView={openDetail}
         onEdit={openEdit}
-        onDelete={deleteHistory}
+        // onDelete={deleteHistory} // Manual handling
         onBatchDelete={batchDeleteHistories}
         batchOperations={true}
         batchActions={[
@@ -213,7 +230,10 @@ const HistoryManagement = () => {
         onRefresh={refresh}
         customActions={(record) => {
           const canSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const canRevert = record.status === "pending";
+          const canRevert = record.status === "pending" || record.status === "unpublish_pending";
+          const canUnpublish = record.status === "published";
+          const canDelete = record.status === "draft" || record.status === "rejected";
+          const isPendingUnpublish = record.status === "unpublish_pending";
 
           return (
             <Space size={4}>
@@ -255,6 +275,76 @@ const HistoryManagement = () => {
                   </Tooltip>
                 </PermissionGuard>
               )}
+
+              {canUnpublish && (
+                <PermissionGuard resource="history_articles" action="update" fallback={null}>
+                  <Tooltip title="Gỡ nội dung (Hạ bài)">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      className="action-btn-standard"
+                      style={{color: "#faad14"}}
+                      onClick={() => {
+                        setCurrentRecord(record);
+                        setUnpublishModalVisible(true);
+                      }}
+                    >
+                      <UndoOutlined rotate={180} />
+                    </Button>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {isPendingUnpublish && (
+                <PermissionGuard resource="history_articles" action="update" fallback={null}>
+                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
+                    <Popconfirm
+                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
+                      description={
+                        record.isActive === false
+                          ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
+                      }
+                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard"
+                        style={{color: record.isActive === false ? "#52c41a" : "#faad14"}}
+                      >
+                        {record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                      </Button>
+                    </Popconfirm>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canDelete && (
+                <PermissionGuard resource="history_articles" action="delete" fallback={null}>
+                  <Popconfirm
+                    title="Xóa bài viết?"
+                    description="Hành động này không thể hoàn tác."
+                    onConfirm={() => deleteHistory(record.id)}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                    okButtonProps={{danger: true}}
+                  >
+                    <Tooltip title="Xóa">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard action-btn-delete"
+                        style={{color: "#ff4d4f"}}
+                      >
+                        <DeleteOutlined />
+                      </Button>
+                    </Tooltip>
+                  </Popconfirm>
+                </PermissionGuard>
+              )}
             </Space>
           );
         }}
@@ -271,6 +361,24 @@ const HistoryManagement = () => {
       />
 
       <HistoryDetailModal record={currentRecord} open={detailVisible} onCancel={closeDetail} />
+
+      <UnpublishReasonModal
+        open={unpublishModalVisible}
+        onCancel={() => {
+          setUnpublishModalVisible(false);
+          setCurrentRecord(null);
+        }}
+        onConfirm={async (reason) => {
+          if (currentRecord) {
+            const success = await requestUnpublish?.(currentRecord.id, reason);
+            if (success) {
+              setUnpublishModalVisible(false);
+              setCurrentRecord(null);
+            }
+          }
+        }}
+        loading={loading}
+      />
     </div>
   );
 };

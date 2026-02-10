@@ -1,6 +1,14 @@
 import {Tag, Tabs, Space, Tooltip, Popconfirm} from "antd";
-import {DownloadOutlined, SendOutlined, UndoOutlined} from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  SendOutlined,
+  UndoOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import {Button, PermissionGuard} from "@/components/common";
+import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import {ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLabels} from "@/types";
 import {useAuth} from "@/hooks/useAuth";
@@ -41,6 +49,11 @@ const ResearcherArtifactManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish,
   } = useResearcherArtifactModel();
 
   const {user} = useAuth();
@@ -114,12 +127,14 @@ const ResearcherArtifactManagement = () => {
           pending: "orange",
           published: "green",
           rejected: "red",
+          unpublish_pending: "warning",
         };
         const labels: any = {
           draft: "Nháp",
           pending: "Chờ duyệt",
           published: "Đã xuất bản",
           rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
         };
         return <Tag color={colors[status]}>{labels[status] || status}</Tag>;
       },
@@ -145,6 +160,7 @@ const ResearcherArtifactManagement = () => {
     {key: "draft", label: "Bản nháp"},
     {key: "pending", label: "Chờ duyệt"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ gỡ bài"},
     {key: "rejected", label: "Bị từ chối"},
   ];
 
@@ -197,11 +213,14 @@ const ResearcherArtifactManagement = () => {
         }}
         onView={openDetail}
         onEdit={openEdit}
-        onDelete={deleteArtifact}
+        // onDelete={deleteArtifact} // Handle manually
         onRefresh={refresh}
         customActions={(record) => {
           const canSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const canRevert = record.status === "pending";
+          const canRevert = record.status === "pending" || record.status === "unpublish_pending";
+          const canUnpublish = record.status === "published";
+          const canDelete = record.status === "draft" || record.status === "rejected";
+          const isPendingUnpublish = record.status === "unpublish_pending";
 
           return (
             <Space size={4}>
@@ -243,6 +262,76 @@ const ResearcherArtifactManagement = () => {
                   </Tooltip>
                 </PermissionGuard>
               )}
+
+              {canUnpublish && (
+                <PermissionGuard resource="artifacts" action="update" fallback={null}>
+                  <Tooltip title="Gỡ nội dung (Hạ bài)">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      className="action-btn-standard"
+                      style={{color: "#faad14"}}
+                      onClick={() => {
+                        setCurrentRecord(record);
+                        setUnpublishModalVisible(true);
+                      }}
+                    >
+                      <UndoOutlined rotate={180} />
+                    </Button>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {isPendingUnpublish && (
+                <PermissionGuard resource="artifacts" action="update" fallback={null}>
+                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
+                    <Popconfirm
+                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
+                      description={
+                        record.isActive === false
+                          ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
+                      }
+                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard"
+                        style={{color: record.isActive === false ? "#52c41a" : "#faad14"}}
+                      >
+                        {record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                      </Button>
+                    </Popconfirm>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canDelete && (
+                <PermissionGuard resource="artifacts" action="delete" fallback={null}>
+                  <Popconfirm
+                    title="Xóa hiện vật?"
+                    description="Hành động này không thể hoàn tác."
+                    onConfirm={() => deleteArtifact(record.id)}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                    okButtonProps={{danger: true}}
+                  >
+                    <Tooltip title="Xóa">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard action-btn-delete"
+                        style={{color: "#ff4d4f"}}
+                      >
+                        <DeleteOutlined />
+                      </Button>
+                    </Tooltip>
+                  </Popconfirm>
+                </PermissionGuard>
+              )}
             </Space>
           );
         }}
@@ -277,6 +366,24 @@ const ResearcherArtifactManagement = () => {
       />
 
       <ArtifactDetailModal record={currentRecord} open={detailVisible} onCancel={closeDetail} />
+
+      <UnpublishReasonModal
+        open={unpublishModalVisible}
+        onCancel={() => {
+          setUnpublishModalVisible(false);
+          setCurrentRecord(null);
+        }}
+        onConfirm={async (reason) => {
+          if (currentRecord) {
+            const success = await requestUnpublish?.(currentRecord.id, reason);
+            if (success) {
+              setUnpublishModalVisible(false);
+              setCurrentRecord(null);
+            }
+          }
+        }}
+        loading={loading}
+      />
     </>
   );
 };

@@ -1,5 +1,6 @@
 import {Tag, Tabs, Space, Tooltip} from "antd";
-import {CheckCircleOutlined, CloseCircleOutlined, SendOutlined} from "@ant-design/icons";
+import {CheckCircleOutlined, CloseCircleOutlined, SendOutlined, UndoOutlined} from "@ant-design/icons";
+import {Popconfirm} from "antd";
 import {Button, PermissionGuard} from "@/components/common";
 import {useAuth} from "@/hooks/useAuth";
 import {getImageUrl} from "@/utils/image.helper";
@@ -14,6 +15,7 @@ const LearningManagement: React.FC = () => {
     submitReview: _submitReview,
     approveReview: _approveReview,
     handleReject: _handleReject,
+    revertReview: _revertReview,
     ...model
   } = useLearningModel();
   const {user} = useAuth();
@@ -103,8 +105,20 @@ const LearningManagement: React.FC = () => {
       key: "status",
       width: 120,
       render: (status: string) => {
-        const colors: any = {published: "green", pending: "orange", draft: "default", rejected: "red"};
-        const labels: any = {published: "Đã xuất bản", pending: "Chờ duyệt", draft: "Nháp", rejected: "Từ chối"};
+        const colors: any = {
+          published: "green",
+          pending: "orange",
+          draft: "default",
+          rejected: "red",
+          unpublish_pending: "warning",
+        };
+        const labels: any = {
+          published: "Đã xuất bản",
+          pending: "Chờ duyệt",
+          draft: "Nháp",
+          rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
+        };
         return <Tag color={colors[status] || "default"}>{labels[status] || status}</Tag>;
       },
     },
@@ -113,8 +127,9 @@ const LearningManagement: React.FC = () => {
   const tabItems = [
     {key: "all", label: "Tất cả bài học"},
     ...(user?.role === "researcher" || user?.role === "admin" ? [{key: "my", label: "Bài học của tôi"}] : []),
-    {key: "pending", label: "Chờ duyệt"},
+    {key: "pending", label: "Chờ duyệt Đăng"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ duyệt Gỡ"},
   ];
 
   const handleTabChange = (key: string) => {
@@ -131,6 +146,9 @@ const LearningManagement: React.FC = () => {
       case "published":
         model.updateFilters({status: "published", createdBy: undefined});
         break;
+      case "unpublish_pending":
+        model.updateFilters({status: "unpublish_pending", createdBy: undefined});
+        break;
     }
   };
 
@@ -138,6 +156,7 @@ const LearningManagement: React.FC = () => {
     if (model.filters.createdBy === user?.id) return "my";
     if (model.filters.status === "pending") return "pending";
     if (model.filters.status === "published") return "published";
+    if (model.filters.status === "unpublish_pending") return "unpublish_pending";
     return "all";
   };
 
@@ -190,8 +209,9 @@ const LearningManagement: React.FC = () => {
             ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
             : "Gửi duyệt";
 
-          const canApprove = record.status === "pending";
+          const canApprove = record.status === "pending" || record.status === "unpublish_pending";
           const canReject = record.status === "pending";
+          const canRejectUnpublish = record.status === "unpublish_pending";
 
           return (
             <Space size={4}>
@@ -213,22 +233,35 @@ const LearningManagement: React.FC = () => {
 
               {canApprove && (
                 <PermissionGuard resource="learning_modules" action="approve" fallback={null}>
-                  <Tooltip title="Phê duyệt">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<CheckCircleOutlined />}
-                      onClick={() => _approveReview?.(record.id)}
-                      className="action-btn-standard"
-                      style={{color: "#52c41a"}}
-                    />
+                  <Tooltip title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}>
+                    <Popconfirm
+                      title={record.status === "unpublish_pending" ? "Phê duyệt gỡ bài?" : "Phê duyệt đăng bài?"}
+                      description={
+                        record.status === "unpublish_pending"
+                          ? "Nội dung sẽ được gỡ xuống và chuyển về trạng thái Nháp."
+                          : "Nội dung sẽ được hiển thị công khai."
+                      }
+                      onConfirm={() =>
+                        record.status === "unpublish_pending" ? _revertReview?.(record.id) : _approveReview?.(record.id)
+                      }
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<CheckCircleOutlined />}
+                        className="action-btn-standard"
+                        style={{color: "#52c41a"}}
+                      />
+                    </Popconfirm>
                   </Tooltip>
                 </PermissionGuard>
               )}
 
               {canReject && (
                 <PermissionGuard resource="learning_modules" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối">
+                  <Tooltip title="Từ chối duyệt">
                     <Button
                       variant="ghost"
                       buttonSize="small"
@@ -237,6 +270,28 @@ const LearningManagement: React.FC = () => {
                       className="action-btn-standard"
                       style={{color: "#ff4d4f"}}
                     />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canRejectUnpublish && (
+                <PermissionGuard resource="learning_modules" action="approve" fallback={null}>
+                  <Tooltip title="Từ chối gỡ bài (Lấy lại trạng thái Đã xuất bản)">
+                    <Popconfirm
+                      title="Từ chối gỡ bài?"
+                      description="Nội dung sẽ tiếp tục giữ trạng thái Đã xuất bản."
+                      onConfirm={() => _approveReview?.(record.id)}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<UndoOutlined />}
+                        className="action-btn-standard"
+                        style={{color: "#ff4d4f"}}
+                      />
+                    </Popconfirm>
                   </Tooltip>
                 </PermissionGuard>
               )}

@@ -1,8 +1,16 @@
 import {Tag, Tabs, Modal, Space, Tooltip, Popconfirm} from "antd";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "@/hooks/useAuth";
-import {DownloadOutlined, SendOutlined, UndoOutlined} from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  SendOutlined,
+  UndoOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import {Button, PermissionGuard} from "@/components/common";
+import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 import {useExhibitionModel} from "./model";
 import DataTable from "@/components/common/DataTable";
 import ExhibitionStats from "@/pages/Admin/ExhibitionManagement/components/Stats";
@@ -39,6 +47,11 @@ const ResearcherExhibitionManagement: React.FC = () => {
     importData,
     downloadTemplate,
     refresh,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish,
   } = useExhibitionModel();
   const {user} = useAuth();
   const navigate = useNavigate();
@@ -140,12 +153,14 @@ const ResearcherExhibitionManagement: React.FC = () => {
           pending: "orange",
           published: "green",
           rejected: "red",
+          unpublish_pending: "warning",
         };
         const labels: any = {
           draft: "Nháp",
           pending: "Chờ duyệt",
           published: "Đã xuất bản",
           rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
         };
         return <Tag color={colors[status] || "default"}>{labels[status] || status}</Tag>;
       },
@@ -156,6 +171,7 @@ const ResearcherExhibitionManagement: React.FC = () => {
     {key: "my", label: "Tất cả"},
     {key: "pending", label: "Chờ duyệt"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ gỡ bài"},
     {key: "rejected", label: "Bị từ chối"},
   ];
 
@@ -204,7 +220,7 @@ const ResearcherExhibitionManagement: React.FC = () => {
         onAdd={openCreate}
         onEdit={openEdit}
         onView={openDetail}
-        onDelete={remove}
+        // onDelete={remove} // Manual handling
         onRefresh={refresh}
         rowSelection={{
           selectedRowKeys: filters.ids || [],
@@ -215,7 +231,10 @@ const ResearcherExhibitionManagement: React.FC = () => {
         }}
         customActions={(record) => {
           const canSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const canRevert = record.status === "pending";
+          const canRevert = record.status === "pending" || record.status === "unpublish_pending";
+          const canUnpublish = record.status === "published";
+          const canDelete = record.status === "draft" || record.status === "rejected";
+          const isPendingUnpublish = record.status === "unpublish_pending";
 
           return (
             <Space size={4}>
@@ -255,6 +274,76 @@ const ResearcherExhibitionManagement: React.FC = () => {
                       </Button>
                     </Popconfirm>
                   </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canUnpublish && (
+                <PermissionGuard resource="exhibitions" action="update" fallback={null}>
+                  <Tooltip title="Gỡ nội dung (Hạ bài)">
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      className="action-btn-standard"
+                      style={{color: "#faad14"}}
+                      onClick={() => {
+                        setCurrentRecord(record);
+                        setUnpublishModalVisible(true);
+                      }}
+                    >
+                      <UndoOutlined rotate={180} />
+                    </Button>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {isPendingUnpublish && (
+                <PermissionGuard resource="exhibitions" action="update" fallback={null}>
+                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
+                    <Popconfirm
+                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
+                      description={
+                        record.isActive === false
+                          ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
+                      }
+                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard"
+                        style={{color: record.isActive === false ? "#52c41a" : "#faad14"}}
+                      >
+                        {record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                      </Button>
+                    </Popconfirm>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canDelete && (
+                <PermissionGuard resource="exhibitions" action="delete" fallback={null}>
+                  <Popconfirm
+                    title="Xóa triển lãm?"
+                    description="Hành động này không thể hoàn tác."
+                    onConfirm={() => remove(record.id)}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                    okButtonProps={{danger: true}}
+                  >
+                    <Tooltip title="Xóa">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        className="action-btn-standard action-btn-delete"
+                        style={{color: "#ff4d4f"}}
+                      >
+                        <DeleteOutlined />
+                      </Button>
+                    </Tooltip>
+                  </Popconfirm>
                 </PermissionGuard>
               )}
             </Space>
@@ -303,6 +392,24 @@ const ResearcherExhibitionManagement: React.FC = () => {
         visible={detailVisible}
         onClose={closeDetail}
         onViewFull={(id: any) => navigate(`/researcher/exhibitions/${id}`)}
+      />
+
+      <UnpublishReasonModal
+        open={unpublishModalVisible}
+        onCancel={() => {
+          setUnpublishModalVisible(false);
+          setCurrentRecord(null);
+        }}
+        onConfirm={async (reason) => {
+          if (currentRecord) {
+            const success = await requestUnpublish?.(currentRecord.id, reason);
+            if (success) {
+              setUnpublishModalVisible(false);
+              setCurrentRecord(null);
+            }
+          }
+        }}
+        loading={loading}
       />
     </>
   );

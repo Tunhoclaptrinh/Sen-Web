@@ -12,6 +12,7 @@ export const useResearcherHeritageModel = () => {
   const [currentRecord, setCurrentRecord] = useState<HeritageSite | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [unpublishModalVisible, setUnpublishModalVisible] = useState(false);
 
   // CRUD Setup - Scoped to User
   const crudOptions = useMemo(
@@ -101,6 +102,11 @@ export const useResearcherHeritageModel = () => {
     openDetail,
     closeForm,
     closeDetail,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish: crud.requestUnpublish,
     // Alias for semantic clarity
     deleteHeritage: crud.remove,
     batchDeleteHeritages: crud.batchDelete,

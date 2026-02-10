@@ -23,6 +23,7 @@ export const useHistoryModel = () => {
   const [currentRecord, setCurrentRecord] = useState<any | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [unpublishModalVisible, setUnpublishModalVisible] = useState(false);
 
   // CRUD Setup
   const crudOptions = useMemo(
@@ -186,5 +187,10 @@ export const useHistoryModel = () => {
     openDetail,
     closeForm,
     closeDetail,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish: crud.requestUnpublish,
   };
 };

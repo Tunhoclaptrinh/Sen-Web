@@ -1,6 +1,14 @@
 import {Tag, Tabs, Space, Tooltip, Popconfirm} from "antd";
-import {DownloadOutlined, SendOutlined, UndoOutlined} from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  SendOutlined,
+  UndoOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import {Button, PermissionGuard} from "@/components/common";
+import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
@@ -29,6 +37,11 @@ const ResearcherLearningManagement: React.FC = () => {
     formVisible,
     detailVisible,
     currentRecord,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish,
     deleteLearning,
     exportData,
     importData,
@@ -128,12 +141,14 @@ const ResearcherLearningManagement: React.FC = () => {
           pending: "orange",
           published: "green",
           rejected: "red",
+          unpublish_pending: "warning",
         };
         const labels: any = {
           draft: "Nháp",
           pending: "Chờ duyệt",
           published: "Đã xuất bản",
           rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
         };
         return <Tag color={colors[status]}>{labels[status] || status}</Tag>;
       },
@@ -145,6 +160,7 @@ const ResearcherLearningManagement: React.FC = () => {
     {key: "draft", label: "Bản nháp"},
     {key: "pending", label: "Đang chờ duyệt"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ gỡ bài"},
     {key: "rejected", label: "Bị từ chối"},
   ];
 
@@ -192,12 +208,15 @@ const ResearcherLearningManagement: React.FC = () => {
         onAdd={openCreate}
         onEdit={openEdit}
         onView={openDetail}
-        onDelete={deleteLearning}
+        // onDelete={deleteLearning} // Manual handling
         onRefresh={refresh}
         customActions={(record) => {
           const isOwner = record.createdBy === user?.id;
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
           const showRevert = record.status === "pending";
+          const showUnpublish = record.status === "published";
+          const showDelete = record.status === "draft" || record.status === "rejected";
+          const isPendingUnpublish = record.status === "unpublish_pending";
 
           const submitDisabled = !isOwner;
           const submitTooltip = submitDisabled
@@ -248,6 +267,80 @@ const ResearcherLearningManagement: React.FC = () => {
                   </Tooltip>
                 </PermissionGuard>
               )}
+
+              {showUnpublish && (
+                <PermissionGuard resource="learning_modules" action="update" fallback={null}>
+                  <Tooltip title={isOwner ? "Gỡ nội dung (Hạ bài)" : "Chỉ tác giả mới có thể gỡ bài"}>
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      icon={<UndoOutlined rotate={180} />}
+                      disabled={!isOwner}
+                      className="action-btn-standard"
+                      style={{color: !isOwner ? undefined : "#faad14"}}
+                      onClick={() => {
+                        if (isOwner) {
+                          setCurrentRecord(record);
+                          setUnpublishModalVisible(true);
+                        }
+                      }}
+                    />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {isPendingUnpublish && (
+                <PermissionGuard resource="learning_modules" action="update" fallback={null}>
+                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
+                    <Popconfirm
+                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
+                      description={
+                        record.isActive === false
+                          ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
+                      }
+                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                      disabled={!isOwner}
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                        disabled={!isOwner}
+                        className="action-btn-standard"
+                        style={{color: !isOwner ? undefined : record.isActive === false ? "#52c41a" : "#faad14"}}
+                      />
+                    </Popconfirm>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {showDelete && (
+                <PermissionGuard resource="learning_modules" action="delete" fallback={null}>
+                  <Popconfirm
+                    title="Xóa bài học?"
+                    description="Hành động này không thể hoàn tác."
+                    onConfirm={() => deleteLearning(record.id)}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                    okButtonProps={{danger: true}}
+                    disabled={!isOwner}
+                  >
+                    <Tooltip title={isOwner ? "Xóa" : "Chỉ tác giả được xóa"}>
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<DeleteOutlined />}
+                        disabled={!isOwner}
+                        className="action-btn-standard action-btn-delete"
+                        style={{color: !isOwner ? undefined : "#ff4d4f"}}
+                      />
+                    </Tooltip>
+                  </Popconfirm>
+                </PermissionGuard>
+              )}
             </Space>
           );
         }}
@@ -279,6 +372,24 @@ const ResearcherLearningManagement: React.FC = () => {
       />
 
       <LearningDetailModal open={detailVisible} onCancel={closeDetail} record={currentRecord} />
+
+      <UnpublishReasonModal
+        open={unpublishModalVisible}
+        onCancel={() => {
+          setUnpublishModalVisible(false);
+          setCurrentRecord(null);
+        }}
+        onConfirm={async (reason) => {
+          if (currentRecord) {
+            const success = await requestUnpublish?.(currentRecord.id, reason);
+            if (success) {
+              setUnpublishModalVisible(false);
+              setCurrentRecord(null);
+            }
+          }
+        }}
+        loading={loading}
+      />
     </>
   );
 };

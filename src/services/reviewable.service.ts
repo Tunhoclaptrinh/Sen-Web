@@ -1,22 +1,22 @@
 import BaseService from "./base.service";
-import type { BaseApiResponse } from "@/types";
+import type {BaseApiResponse} from "@/types";
 import apiClient from "@/config/axios.config";
 
 /**
  * ReviewableBaseService - Extension of BaseService for entities
  * that require content approval workflow.
  */
-class ReviewableBaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> 
-  extends BaseService<T, CreateDTO, UpdateDTO> {
-
+class ReviewableBaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> extends BaseService<
+  T,
+  CreateDTO,
+  UpdateDTO
+> {
   /**
    * SUBMIT item for review
    */
   async submitReview(id: number | string): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}/submit`
-      );
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}/submit`);
       return response;
     } catch (error) {
       console.error(`[${this.endpoint}] submitReview error:`, error);
@@ -29,9 +29,7 @@ class ReviewableBaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial
    */
   async approveReview(id: number | string): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}/approve`
-      );
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}/approve`);
       return response;
     } catch (error) {
       console.error(`[${this.endpoint}] approveReview error:`, error);
@@ -42,15 +40,9 @@ class ReviewableBaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial
   /**
    * REJECT item (status -> rejected)
    */
-  async rejectReview(
-    id: number | string,
-    comment: string
-  ): Promise<BaseApiResponse<T>> {
+  async rejectReview(id: number | string, comment: string): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}/reject`,
-        { comment }
-      );
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}/reject`, {comment});
       return response;
     } catch (error) {
       console.error(`[${this.endpoint}] rejectReview error:`, error);
@@ -63,12 +55,23 @@ class ReviewableBaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial
    */
   async revertReview(id: number | string): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}/revert`
-      );
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}/revert`);
       return response;
     } catch (error) {
       console.error(`[${this.endpoint}] revertReview error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * REQUEST unpublish (status -> unpublish_pending)
+   */
+  async requestUnpublish(id: number | string, reason: string): Promise<BaseApiResponse<T>> {
+    try {
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}/unpublish`, {reason});
+      return response;
+    } catch (error) {
+      console.error(`[${this.endpoint}] requestUnpublish error:`, error);
       throw error;
     }
   }

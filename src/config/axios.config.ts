@@ -57,6 +57,16 @@ apiClient.interceptors.request.use(
     if (import.meta.env.DEV) {
       console.log(`[API ${config.method?.toUpperCase()}] ${config.url}`);
     }
+
+    // [RBAC] Context injection for Backend Isolation
+    // Tell backend we are in CMS context so it can enforce strict ownership for Researchers
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (path.startsWith("/admin") || path.startsWith("/researcher")) {
+        config.headers["x-context"] = "cms";
+      }
+    }
+
     return config;
   },
   (error: AxiosError) => Promise.reject(error),

@@ -16,6 +16,7 @@ export const useExhibitionModel = () => {
   const [currentRecord, setCurrentRecord] = useState<Exhibition | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [unpublishModalVisible, setUnpublishModalVisible] = useState(false);
 
   // CRUD Setup - Default to researcher's own content
   const crudOptions = useMemo(
@@ -135,6 +136,11 @@ export const useExhibitionModel = () => {
     openDetail,
     closeDetail,
     closeForm,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish: crud.requestUnpublish,
     handleSubmit,
     remove,
     submitReview: crud.submitReview,

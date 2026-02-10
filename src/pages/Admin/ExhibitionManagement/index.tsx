@@ -1,7 +1,7 @@
-import {Tag, Tabs, Modal, Space, Tooltip} from "antd";
+import {Tag, Tabs, Modal, Space, Tooltip, Popconfirm} from "antd";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "@/hooks/useAuth";
-import {SendOutlined, CheckCircleOutlined, CloseCircleOutlined} from "@ant-design/icons";
+import {SendOutlined, CheckCircleOutlined, CloseCircleOutlined, UndoOutlined} from "@ant-design/icons";
 import {useExhibitionModel} from "./model";
 import ExhibitionStats from "./components/Stats";
 import ExhibitionDetailModal from "./components/DetailModal";
@@ -9,7 +9,7 @@ import ExhibitionForm from "./components/Form";
 import DataTable from "@/components/common/DataTable";
 import {Button, PermissionGuard} from "@/components/common";
 import {getImageUrl} from "@/utils/image.helper";
-import dayjs from "dayjs";
+import {formatDate} from "@/utils/formatters";
 
 const ExhibitionManagement: React.FC = () => {
   const {
@@ -95,7 +95,7 @@ const ExhibitionManagement: React.FC = () => {
         if (record.isPermanent) return <Tag color="blue">VĨNH VIỄN</Tag>;
         return (
           <span style={{fontSize: "12px"}}>
-            {dayjs(record.startDate).format("DD/MM/YYYY")} - {dayjs(record.endDate).format("DD/MM/YYYY")}
+            {formatDate(record.startDate, "DD/MM/YYYY")} - {formatDate(record.endDate, "DD/MM/YYYY")}
           </span>
         );
       },
@@ -118,12 +118,14 @@ const ExhibitionManagement: React.FC = () => {
           pending: "orange",
           published: "green",
           rejected: "red",
+          unpublish_pending: "warning",
         };
         const labels: any = {
           draft: "Nháp",
           pending: "Chờ duyệt",
           published: "Đã xuất bản",
           rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
         };
         return <Tag color={colors[status] || "default"}>{labels[status] || status}</Tag>;
       },
@@ -135,8 +137,9 @@ const ExhibitionManagement: React.FC = () => {
   const tabItems = [
     {key: "all", label: "Tất cả triển lãm"},
     ...(user?.role === "researcher" || user?.role === "admin" ? [{key: "my", label: "Triển lãm của tôi"}] : []),
-    {key: "pending", label: "Chờ duyệt"},
+    {key: "pending", label: "Chờ duyệt Đăng"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ duyệt Gỡ"},
   ];
 
   const handleTabChange = (key: string) => {
@@ -153,6 +156,9 @@ const ExhibitionManagement: React.FC = () => {
       case "published":
         model.updateFilters({status: "published", createdBy: undefined});
         break;
+      case "unpublish_pending":
+        model.updateFilters({status: "unpublish_pending", createdBy: undefined});
+        break;
     }
   };
 
@@ -160,6 +166,7 @@ const ExhibitionManagement: React.FC = () => {
     if (model.filters.createdBy === user?.id) return "my";
     if (model.filters.status === "pending") return "pending";
     if (model.filters.status === "published") return "published";
+    if (model.filters.status === "unpublish_pending") return "unpublish_pending";
     return "all";
   };
 
@@ -214,8 +221,9 @@ const ExhibitionManagement: React.FC = () => {
             ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
             : "Gửi duyệt";
 
-          const canApprove = record.status === "pending";
+          const canApprove = record.status === "pending" || record.status === "unpublish_pending";
           const canReject = record.status === "pending";
+          const canRejectUnpublish = record.status === "unpublish_pending";
 
           return (
             <Space size={4}>
@@ -237,22 +245,35 @@ const ExhibitionManagement: React.FC = () => {
 
               {canApprove && (
                 <PermissionGuard resource="exhibitions" action="approve" fallback={null}>
-                  <Tooltip title="Phê duyệt">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<CheckCircleOutlined />}
-                      onClick={() => _approveReview?.(record.id)}
-                      className="action-btn-standard"
-                      style={{color: "#52c41a"}}
-                    />
+                  <Tooltip title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}>
+                    <Popconfirm
+                      title={record.status === "unpublish_pending" ? "Phê duyệt gỡ bài?" : "Phê duyệt đăng bài?"}
+                      description={
+                        record.status === "unpublish_pending"
+                          ? "Nội dung sẽ được gỡ xuống và chuyển về trạng thái Nháp."
+                          : "Nội dung sẽ được hiển thị công khai."
+                      }
+                      onConfirm={() =>
+                        record.status === "unpublish_pending" ? _revertReview?.(record.id) : _approveReview?.(record.id)
+                      }
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<CheckCircleOutlined />}
+                        className="action-btn-standard"
+                        style={{color: "#52c41a"}}
+                      />
+                    </Popconfirm>
                   </Tooltip>
                 </PermissionGuard>
               )}
 
               {canReject && (
                 <PermissionGuard resource="exhibitions" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối">
+                  <Tooltip title="Từ chối duyệt">
                     <Button
                       variant="ghost"
                       buttonSize="small"
@@ -261,6 +282,28 @@ const ExhibitionManagement: React.FC = () => {
                       className="action-btn-standard"
                       style={{color: "#ff4d4f"}}
                     />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canRejectUnpublish && (
+                <PermissionGuard resource="exhibitions" action="approve" fallback={null}>
+                  <Tooltip title="Từ chối gỡ bài (Lấy lại trạng thái Đã xuất bản)">
+                    <Popconfirm
+                      title="Từ chối gỡ bài?"
+                      description="Nội dung sẽ tiếp tục giữ trạng thái Đã xuất bản."
+                      onConfirm={() => _approveReview?.(record.id)}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<UndoOutlined />}
+                        className="action-btn-standard"
+                        style={{color: "#ff4d4f"}}
+                      />
+                    </Popconfirm>
                   </Tooltip>
                 </PermissionGuard>
               )}

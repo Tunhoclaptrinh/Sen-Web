@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Tooltip, Tag, Tabs, Space, message} from "antd";
+import {Tooltip, Tag, Tabs, Space, message, Popconfirm} from "antd";
 import {Button, PermissionGuard} from "@/components/common";
 import {
   NodeIndexOutlined,
@@ -8,6 +8,7 @@ import {
   SendOutlined,
   PlayCircleOutlined,
   OrderedListOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import {useAuth} from "@/hooks/useAuth";
 import DataTable from "@/components/common/DataTable";
@@ -49,6 +50,7 @@ const ChapterManagement = () => {
     submitReview,
     approveReview,
     handleReject,
+    revertReview,
     reorderChapters,
   } = useChapterModel();
 
@@ -197,6 +199,10 @@ const ChapterManagement = () => {
           color = "red";
           text = "Từ chối";
           icon = <CloseCircleOutlined />;
+        } else if (status === "unpublish_pending") {
+          color = "warning";
+          text = "Chờ gỡ bài";
+          icon = <UndoOutlined rotate={180} />;
         }
         return (
           <Tag color={color} icon={icon}>
@@ -253,8 +259,9 @@ const ChapterManagement = () => {
   const tabItems = [
     {key: "all", label: "Tất cả"},
     {key: "draft", label: "Bản nháp"},
-    {key: "pending", label: "Chờ duyệt"},
+    {key: "pending", label: "Chờ duyệt Đăng"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ duyệt Gỡ"},
     {key: "rejected", label: "Bị từ chối"},
     ...(user?.role === "researcher" || user?.role === "admin" ? [{key: "my", label: "Chương của tôi"}] : []),
   ];
@@ -275,6 +282,7 @@ const ChapterManagement = () => {
 
   const getActiveTab = () => {
     if (filterValues.createdBy === user?.id) return "my";
+    if (filterValues.status === "unpublish_pending") return "unpublish_pending";
     return filterValues.status || "all";
   };
 
@@ -310,14 +318,14 @@ const ChapterManagement = () => {
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
+          getCheckboxProps: (record: any) => ({
+            disabled: record.createdBy !== user?.id,
+          }),
         }}
         batchOperations={true}
         onRefresh={refresh}
         customActions={(record) => {
           const isOwner = record.createdBy === user?.id;
-          const isAdmin = user?.role === "admin";
-          const isResearcherContent = record.author && record.author !== "Hệ thống" && !isOwner;
-          const shouldRestrictAdmin = isAdmin && isResearcherContent;
 
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
           const submitDisabled = !isOwner;
@@ -325,8 +333,9 @@ const ChapterManagement = () => {
             ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
             : "Gửi duyệt";
 
-          const canApprove = record.status === "pending";
+          const canApprove = record.status === "pending" || record.status === "unpublish_pending";
           const canReject = record.status === "pending";
+          const canRejectUnpublish = record.status === "unpublish_pending";
 
           return (
             <Space size={4}>
@@ -351,25 +360,41 @@ const ChapterManagement = () => {
 
               {canApprove && (
                 <PermissionGuard resource="game_content" action="approve" fallback={null}>
-                  <Tooltip title="Phê duyệt">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<CheckCircleOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        approveReview?.(record.id);
+                  <Tooltip title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}>
+                    <Popconfirm
+                      title={record.status === "unpublish_pending" ? "Phê duyệt gỡ bài?" : "Phê duyệt đăng bài?"}
+                      description={
+                        record.status === "unpublish_pending"
+                          ? "Nội dung sẽ được gỡ xuống và chuyển về trạng thái Nháp."
+                          : "Nội dung sẽ được hiển thị công khai."
+                      }
+                      onConfirm={(e) => {
+                        e?.stopPropagation();
+                        if (record.status === "unpublish_pending") {
+                          revertReview?.(record.id);
+                        } else {
+                          approveReview?.(record.id);
+                        }
                       }}
-                      className="action-btn-standard"
-                      style={{color: "#52c41a"}}
-                    />
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<CheckCircleOutlined />}
+                        className="action-btn-standard"
+                        style={{color: "#52c41a"}}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Popconfirm>
                   </Tooltip>
                 </PermissionGuard>
               )}
 
               {canReject && (
                 <PermissionGuard resource="game_content" action="approve" fallback={null}>
-                  <Tooltip title="Từ chối">
+                  <Tooltip title="Từ chối duyệt">
                     <Button
                       variant="ghost"
                       buttonSize="small"
@@ -381,6 +406,32 @@ const ChapterManagement = () => {
                       className="action-btn-standard"
                       style={{color: "#ff4d4f"}}
                     />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {canRejectUnpublish && (
+                <PermissionGuard resource="game_content" action="approve" fallback={null}>
+                  <Tooltip title="Từ chối gỡ bài (Lấy lại trạng thái Đã xuất bản)">
+                    <Popconfirm
+                      title="Từ chối gỡ bài?"
+                      description="Nội dung sẽ tiếp tục giữ trạng thái Đã xuất bản."
+                      onConfirm={(e) => {
+                        e?.stopPropagation();
+                        approveReview?.(record.id);
+                      }}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<UndoOutlined />}
+                        className="action-btn-standard"
+                        style={{color: "#ff4d4f"}}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Popconfirm>
                   </Tooltip>
                 </PermissionGuard>
               )}

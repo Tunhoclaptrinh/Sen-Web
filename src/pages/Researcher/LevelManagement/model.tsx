@@ -24,6 +24,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
   // UI State
   const [currentRecord, setCurrentRecord] = useState<Level | null>(null);
   const [formVisible, setFormVisible] = useState(false);
+  const [unpublishModalVisible, setUnpublishModalVisible] = useState(false);
 
   // CRUD Setup
   const crudOptions = useMemo(
@@ -144,6 +145,11 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     openCreate,
     openEdit,
     closeForm,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish: crud.requestUnpublish,
     // Screen Mode
     isScreenMode,
     currentLevel,

@@ -17,7 +17,11 @@ import {
   UndoOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
 } from "@ant-design/icons";
+import UnpublishReasonModal from "@/components/common/UnpublishReasonModal";
 
 import adminChapterService from "@/services/admin-chapter.service";
 import adminScreenService from "@/services/admin-screen.service";
@@ -63,6 +67,11 @@ const ResearcherLevelManagement = ({
     // Filters
     filters,
     updateFilters,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish,
   } = useLevelModel(chapterId ? {chapterId: chapterId} : undefined);
 
   // Screen Editor State
@@ -206,6 +215,10 @@ const ResearcherLevelManagement = ({
           color = "red";
           text = "Từ chối";
           icon = <CloseCircleOutlined />;
+        } else if (status === "unpublish_pending") {
+          color = "warning";
+          text = "Chờ gỡ bài";
+          icon = <UndoOutlined rotate={180} />;
         }
         return (
           <Tag color={color} icon={icon}>
@@ -229,6 +242,7 @@ const ResearcherLevelManagement = ({
     {key: "draft", label: "Bản nháp"},
     {key: "pending", label: "Chờ duyệt"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ gỡ bài"},
     {key: "rejected", label: "Bị từ chối"},
   ];
 
@@ -366,7 +380,7 @@ const ResearcherLevelManagement = ({
         onSearch={search}
         onAdd={openCreate}
         onEdit={openEdit}
-        onDelete={deleteItem}
+        // onDelete={deleteItem} // Manual Handling
         rowSelection={{
           selectedRowKeys: selectedIds,
           onChange: setSelectedIds,
@@ -380,7 +394,10 @@ const ResearcherLevelManagement = ({
         customActions={(record) => {
           const isOwner = record.createdBy === user?.id;
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const showRevert = record.status === "pending";
+          const showRevert = record.status === "pending" || record.status === "unpublish_pending";
+          const showUnpublish = record.status === "published";
+          const showDelete = record.status === "draft" || record.status === "rejected";
+          const isPendingUnpublish = record.status === "unpublish_pending";
 
           const submitDisabled = !isOwner;
           const submitTooltip = submitDisabled
@@ -433,6 +450,83 @@ const ResearcherLevelManagement = ({
                       />
                     </Popconfirm>
                   </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {showUnpublish && (
+                <PermissionGuard resource="game_levels" action="update" fallback={null}>
+                  <Tooltip title={isOwner ? "Gỡ nội dung (Hạ bài)" : "Chỉ tác giả mới có thể gỡ bài"}>
+                    <Button
+                      variant="ghost"
+                      buttonSize="small"
+                      icon={<UndoOutlined rotate={180} />}
+                      disabled={!isOwner}
+                      className="action-btn-standard"
+                      style={{color: !isOwner ? undefined : "#faad14"}}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isOwner) {
+                          setCurrentRecord(record);
+                          setUnpublishModalVisible(true);
+                        }
+                      }}
+                    />
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {isPendingUnpublish && (
+                <PermissionGuard resource="game_levels" action="update" fallback={null}>
+                  <Tooltip title={record.isActive === false ? "Hiện nội dung" : "Ẩn nội dung"}>
+                    <Popconfirm
+                      title={record.isActive === false ? "Hiện nội dung?" : "Ẩn nội dung?"}
+                      description={
+                        record.isActive === false
+                          ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
+                          : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ."
+                      }
+                      onConfirm={() => handleSubmit({id: record.id, isActive: record.isActive === false})}
+                      okText="Đồng ý"
+                      cancelText="Hủy"
+                      disabled={!isOwner}
+                    >
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={record.isActive === false ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                        disabled={!isOwner}
+                        className="action-btn-standard"
+                        style={{color: !isOwner ? undefined : record.isActive === false ? "#52c41a" : "#faad14"}}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Popconfirm>
+                  </Tooltip>
+                </PermissionGuard>
+              )}
+
+              {showDelete && (
+                <PermissionGuard resource="game_levels" action="delete" fallback={null}>
+                  <Popconfirm
+                    title="Xóa màn?"
+                    description="Hành động này không thể hoàn tác."
+                    onConfirm={() => deleteItem(record.id)}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                    okButtonProps={{danger: true}}
+                    disabled={!isOwner}
+                  >
+                    <Tooltip title={isOwner ? "Xóa" : "Chỉ tác giả được xóa"}>
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        icon={<DeleteOutlined />}
+                        disabled={!isOwner}
+                        className="action-btn-standard action-btn-delete"
+                        style={{color: !isOwner ? undefined : "#ff4d4f"}}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Tooltip>
+                  </Popconfirm>
                 </PermissionGuard>
               )}
 
@@ -501,6 +595,24 @@ const ResearcherLevelManagement = ({
         onCancel={() => setReorderVisible(false)}
         levels={data}
         onSave={reorderLevels}
+      />
+
+      <UnpublishReasonModal
+        open={unpublishModalVisible}
+        onCancel={() => {
+          setUnpublishModalVisible(false);
+          setCurrentRecord(null);
+        }}
+        onConfirm={async (reason) => {
+          if (currentRecord) {
+            const success = await requestUnpublish?.(currentRecord.id, reason);
+            if (success) {
+              setUnpublishModalVisible(false);
+              setCurrentRecord(null);
+            }
+          }
+        }}
+        loading={loading}
       />
     </>
   );

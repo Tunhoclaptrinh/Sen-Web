@@ -9,6 +9,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EyeOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 
@@ -54,6 +55,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
     submitReview: _submitReview,
     approveReview: _approveReview,
     handleReject: _handleReject,
+    revertReview: _revertReview,
   } = useHeritageModel(initialFilters);
 
   const {user} = useAuth();
@@ -159,7 +161,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
       title: "Giá vé",
       dataIndex: "entranceFee",
       width: 120,
-      render: (fee: number) => (fee ? `${fee.toLocaleString()} VND` : "Miễn phí"),
+      render: (fee: number) => (fee ? `${fee.toLocaleString("vi-VN")} VND` : "Miễn phí"),
     },
     {
       title: "Hiện vật",
@@ -184,12 +186,14 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
           pending: "orange",
           published: "green",
           rejected: "red",
+          unpublish_pending: "warning",
         };
         const labels: any = {
           draft: "Nháp",
           pending: "Chờ duyệt",
           published: "Đã xuất bản",
           rejected: "Từ chối",
+          unpublish_pending: "Chờ gỡ bài",
         };
         return <Tag color={colors[status] || "default"}>{labels[status] || status}</Tag>;
       },
@@ -214,8 +218,9 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
           ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
           : "Gửi duyệt";
 
-        const canApprove = isAdmin && record.status === "pending";
+        const canApprove = isAdmin && (record.status === "pending" || record.status === "unpublish_pending");
         const canReject = isAdmin && record.status === "pending";
+        const canRejectUnpublish = isAdmin && record.status === "unpublish_pending";
 
         return (
           <Space size={4}>
@@ -234,20 +239,33 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
             )}
 
             {canApprove && (
-              <Tooltip title="Phê duyệt">
-                <Button
-                  variant="ghost"
-                  buttonSize="small"
-                  icon={<CheckCircleOutlined />}
-                  onClick={() => _approveReview?.(record.id)}
-                  className="action-btn-standard"
-                  style={{color: "#52c41a"}}
-                />
+              <Tooltip title={record.status === "unpublish_pending" ? "Phê duyệt Gỡ bài" : "Phê duyệt Đăng bài"}>
+                <Popconfirm
+                  title={record.status === "unpublish_pending" ? "Phê duyệt gỡ bài?" : "Phê duyệt đăng bài?"}
+                  description={
+                    record.status === "unpublish_pending"
+                      ? "Nội dung sẽ được gỡ xuống và chuyển về trạng thái Nháp."
+                      : "Nội dung sẽ được hiển thị công khai."
+                  }
+                  onConfirm={() =>
+                    record.status === "unpublish_pending" ? _revertReview?.(record.id) : _approveReview?.(record.id)
+                  }
+                  okText="Đồng ý"
+                  cancelText="Hủy"
+                >
+                  <Button
+                    variant="ghost"
+                    buttonSize="small"
+                    icon={<CheckCircleOutlined />}
+                    className="action-btn-standard"
+                    style={{color: "#52c41a"}}
+                  />
+                </Popconfirm>
               </Tooltip>
             )}
 
             {canReject && (
-              <Tooltip title="Từ chối">
+              <Tooltip title="Từ chối duyệt">
                 <Button
                   variant="ghost"
                   buttonSize="small"
@@ -256,6 +274,26 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
                   className="action-btn-standard"
                   style={{color: "#ff4d4f"}}
                 />
+              </Tooltip>
+            )}
+
+            {canRejectUnpublish && (
+              <Tooltip title="Từ chối gỡ bài (Lấy lại trạng thái Đã xuất bản)">
+                <Popconfirm
+                  title="Từ chối gỡ bài?"
+                  description="Nội dung sẽ tiếp tục giữ trạng thái Đã xuất bản."
+                  onConfirm={() => _approveReview?.(record.id)}
+                  okText="Đồng ý"
+                  cancelText="Hủy"
+                >
+                  <Button
+                    variant="ghost"
+                    buttonSize="small"
+                    icon={<UndoOutlined />}
+                    className="action-btn-standard"
+                    style={{color: "#ff4d4f"}}
+                  />
+                </Popconfirm>
               </Tooltip>
             )}
 
@@ -311,8 +349,9 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
   const tabItems = [
     {key: "all", label: "Tất cả di sản"},
     ...(user?.role === "researcher" || user?.role === "admin" ? [{key: "my", label: "Di sản của tôi"}] : []),
-    {key: "pending", label: "Chờ duyệt"},
+    {key: "pending", label: "Chờ duyệt Đăng"},
     {key: "published", label: "Đã xuất bản"},
+    {key: "unpublish_pending", label: "Chờ duyệt Gỡ"},
   ];
 
   const handleTabChange = (key: string) => {
@@ -329,6 +368,9 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
       case "published":
         updateFilters({status: "published", createdBy: undefined});
         break;
+      case "unpublish_pending":
+        updateFilters({status: "unpublish_pending", createdBy: undefined});
+        break;
     }
   };
 
@@ -336,6 +378,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
     if (filters.createdBy === user?.id) return "my";
     if (filters.status === "pending") return "pending";
     if (filters.status === "published") return "published";
+    if (filters.status === "unpublish_pending") return "unpublish_pending";
     return "all";
   };
 

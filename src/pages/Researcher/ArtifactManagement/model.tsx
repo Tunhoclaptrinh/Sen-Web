@@ -12,6 +12,7 @@ export const useResearcherArtifactModel = () => {
   const [currentRecord, setCurrentRecord] = useState<Artifact | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [unpublishModalVisible, setUnpublishModalVisible] = useState(false);
 
   // CRUD Setup - Scoped to User
   const crudOptions = useMemo(
@@ -104,6 +105,11 @@ export const useResearcherArtifactModel = () => {
     openDetail,
     closeForm,
     closeDetail,
+    setCurrentRecord,
+    // Unpublish
+    unpublishModalVisible,
+    setUnpublishModalVisible,
+    requestUnpublish: crud.requestUnpublish,
     // Alias for semantic clarity
     deleteArtifact: crud.remove,
     batchDeleteArtifacts: crud.batchDelete,
