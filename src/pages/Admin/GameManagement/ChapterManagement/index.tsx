@@ -320,9 +320,9 @@ const ChapterManagement = () => {
           const shouldRestrictAdmin = isAdmin && isResearcherContent;
 
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const submitDisabled = shouldRestrictAdmin;
-          const submitTooltip = shouldRestrictAdmin
-            ? `Đang được tác giả ${record.authorName || "khác"} biên tập`
+          const submitDisabled = !isOwner;
+          const submitTooltip = submitDisabled
+            ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
             : "Gửi duyệt";
 
           const canApprove = record.status === "pending";

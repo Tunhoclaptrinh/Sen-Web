@@ -206,6 +206,13 @@ const ResearcherExhibitionManagement: React.FC = () => {
         onView={openDetail}
         onDelete={remove}
         onRefresh={refresh}
+        rowSelection={{
+          selectedRowKeys: filters.ids || [],
+          onChange: (keys: any[]) => updateFilters({ids: keys}),
+          getCheckboxProps: (record: any) => ({
+            disabled: record.createdBy !== user?.id,
+          }),
+        }}
         customActions={(record) => {
           const canSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
           const canRevert = record.status === "pending";

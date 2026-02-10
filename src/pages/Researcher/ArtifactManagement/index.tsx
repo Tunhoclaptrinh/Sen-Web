@@ -29,7 +29,6 @@ const ResearcherArtifactManagement = () => {
     exportData,
     importData,
     downloadTemplate,
-    importLoading,
     handleSubmit,
     revertToDraft,
     submitReview,
@@ -258,7 +257,7 @@ const ResearcherArtifactManagement = () => {
           },
         ]}
         importable={true}
-        importLoading={importLoading}
+        importLoading={loading}
         exportable={true}
         exportLoading={loading}
         onImport={importData}

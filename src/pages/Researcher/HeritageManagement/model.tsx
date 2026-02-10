@@ -12,7 +12,6 @@ export const useResearcherHeritageModel = () => {
   const [currentRecord, setCurrentRecord] = useState<HeritageSite | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
-  const [importLoading] = useState(false); // Kept for interface compatibility but unused setter removed
 
   // CRUD Setup - Scoped to User
   const crudOptions = useMemo(
@@ -88,17 +87,9 @@ export const useResearcherHeritageModel = () => {
 
   // Helper functions (placeholders if features disabled for researcher)
   // Service Handlers
-  // Service Handlers
-
-  const importData = (file: File) => heritageService.import(file);
-
-  const downloadTemplate = () => heritageService.downloadTemplate();
 
   return {
     ...crud,
-    importLoading,
-    importData,
-    downloadTemplate,
     handleSubmit,
     submitReview: crud.submitReview,
     revertReview: crud.revertReview,

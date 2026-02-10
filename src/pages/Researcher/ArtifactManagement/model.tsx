@@ -12,7 +12,6 @@ export const useResearcherArtifactModel = () => {
   const [currentRecord, setCurrentRecord] = useState<Artifact | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
-  const [importLoading] = useState(false);
 
   // CRUD Setup - Scoped to User
   const crudOptions = useMemo(
@@ -82,8 +81,7 @@ export const useResearcherArtifactModel = () => {
 
   // Helper functions (placeholders if features disabled for researcher)
   // Service Handlers
-  const importData = (file: File) => artifactService.import(file);
-  const downloadTemplate = () => artifactService.downloadTemplate();
+  // const exportData = ... (already removed)
 
   const revertToDraft = async (id: any) => {
     const result = await artifactService.revertReview(id);
@@ -96,9 +94,6 @@ export const useResearcherArtifactModel = () => {
 
   return {
     ...crud,
-    importLoading,
-    importData,
-    downloadTemplate,
     handleSubmit,
     revertToDraft,
     currentRecord,

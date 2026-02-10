@@ -1,9 +1,8 @@
 import {Tag, Tabs, Space, Tooltip} from "antd";
-import {CheckCircleOutlined, CloseCircleOutlined} from "@ant-design/icons";
+import {CheckCircleOutlined, CloseCircleOutlined, SendOutlined} from "@ant-design/icons";
 import {Button, PermissionGuard} from "@/components/common";
 import {useAuth} from "@/hooks/useAuth";
 import {getImageUrl} from "@/utils/image.helper";
-import {SendOutlined, UndoOutlined} from "@ant-design/icons";
 
 import {useLearningModel} from "./model";
 import DataTable from "@/components/common/DataTable";
@@ -185,15 +184,11 @@ const LearningManagement: React.FC = () => {
           const isOwner = record.createdBy === user?.id;
 
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;
-          const showRevert = record.status === "pending";
 
           const submitDisabled = !isOwner;
           const submitTooltip = submitDisabled
             ? `Tác giả ${record.authorName || "khác"} đang lưu nháp, chưa gửi duyệt`
             : "Gửi duyệt";
-
-          const revertDisabled = !isOwner;
-          const revertTooltip = revertDisabled ? "Chỉ tác giả mới có thể rút lại yêu cầu" : "Rút lại yêu cầu";
 
           const canApprove = record.status === "pending";
           const canReject = record.status === "pending";
@@ -211,22 +206,6 @@ const LearningManagement: React.FC = () => {
                       onClick={() => !submitDisabled && _submitReview?.(record.id)}
                       className="action-btn-standard"
                       style={{color: submitDisabled ? undefined : "var(--primary-color)"}}
-                    />
-                  </Tooltip>
-                </PermissionGuard>
-              )}
-
-              {showRevert && (
-                <PermissionGuard resource="learning_modules" action="update" fallback={null}>
-                  <Tooltip title={revertTooltip}>
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      icon={<UndoOutlined />}
-                      disabled={revertDisabled}
-                      onClick={() => !revertDisabled && model.revertReview?.(record.id)}
-                      className="action-btn-standard"
-                      style={{color: revertDisabled ? undefined : "#faad14"}}
                     />
                   </Tooltip>
                 </PermissionGuard>

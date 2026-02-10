@@ -30,7 +30,6 @@ const ResearcherHeritageManagement = () => {
     exportData,
     importData,
     downloadTemplate,
-    importLoading,
     handleSubmit,
     submitReview,
     revertReview,
@@ -283,7 +282,7 @@ const ResearcherHeritageManagement = () => {
           },
         ]}
         importable={true}
-        importLoading={importLoading}
+        importLoading={loading}
         exportable={true}
         exportLoading={loading}
         onImport={importData}
