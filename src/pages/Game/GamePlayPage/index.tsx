@@ -306,8 +306,8 @@ const GamePlayPage: React.FC = () => {
               </Title>
               <Paragraph className="completion-subtitle">
                 {completionData.passed === false
-                  ? `Bạn chưa đủ điểm qua màn. Hãy thử lại nhé!`
-                  : `Bạn đã xuất sắc vượt qua màn chơi này với số điểm: ${completionData.score}`}
+                  ? `Bạn chưa đủ cúp để qua màn. Hãy thử lại nhé!`
+                  : `Bạn đã xuất sắc vượt qua màn chơi này với: ${completionData.score} 🏆`}
               </Paragraph>
             </div>
 
@@ -317,7 +317,7 @@ const GamePlayPage: React.FC = () => {
                 {completionData.passed === false ? (
                   <div className="score-breakdown">
                     <div className="breakdown-row">
-                      <span>Điểm đạt được:</span>
+                      <span>Cúp đạt được:</span>
                       <span>{completionData.score}</span>
                     </div>
                     <div className="breakdown-divider"></div>
@@ -331,7 +331,7 @@ const GamePlayPage: React.FC = () => {
                     {completionData.breakdown && (
                       <>
                         <div className="breakdown-row">
-                          <span>Điểm màn chơi:</span>
+                          <span>Cúp màn chơi:</span>
                           <span>{completionData.breakdown.baseScore}</span>
                         </div>
                         {completionData.breakdown.timeBonus > 0 && (
@@ -344,7 +344,7 @@ const GamePlayPage: React.FC = () => {
                       </>
                     )}
                     <div className="breakdown-row total">
-                      <span>Tổng điểm:</span>
+                      <span>Tổng cúp:</span>
                       <span>{completionData.score}</span>
                     </div>
                   </div>
@@ -449,9 +449,9 @@ const GamePlayPage: React.FC = () => {
           </div>
 
           <div className="score-display">
-            <span className="current-score">Điểm: {score}</span>
+            <span className="current-score">Cúp: {score}</span>
             {currentScreen?.potentialScore && !currentScreen.isCompleted && (
-              <span className="potential-score" title="Điểm có thể đạt được">
+              <span className="potential-score" title="Cúp có thể đạt được">
                 (+{currentScreen.potentialScore})
               </span>
             )}

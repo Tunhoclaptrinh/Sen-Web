@@ -1,21 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Tabs,
-  Button,
-  Spin,
-  Empty,
-  Progress,
-  Tag,
-  message,
-  Modal,
-  Typography,
-  Space,
-} from "antd";
-import { StatisticsCard } from "@/components/common";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Row, Col, Card, Tabs, Button, Spin, Empty, Progress, Tag, message, Modal, Typography, Space} from "antd";
+import {StatisticsCard} from "@/components/common";
 import {
   TrophyOutlined,
   CalendarOutlined,
@@ -24,8 +10,8 @@ import {
   GiftOutlined,
   RocketOutlined,
 } from "@ant-design/icons";
-import { motion, AnimatePresence } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {motion, AnimatePresence} from "framer-motion";
+import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {
   fetchActiveQuests,
   startQuest,
@@ -34,17 +20,18 @@ import {
   clearError,
   QuestState,
 } from "@/store/slices/questSlice";
-import type { Quest } from "@/types/quest.types";
+import type {Quest} from "@/types/quest.types";
 import "./styles.less";
-import { getImageUrl } from "@/utils/image.helper";
+import {getImageUrl} from "@/utils/image.helper";
 
-const { Title, Paragraph } = Typography;
+const {Title, Paragraph} = Typography;
 
 const QuestsPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { activeQuests, activeLoading, error, successMessage } = useAppSelector(
-    (state) => (state.quest || { activeQuests: [], activeLoading: false, error: null, successMessage: null }) as QuestState
+  const {activeQuests, activeLoading, error, successMessage} = useAppSelector(
+    (state) =>
+      (state.quest || {activeQuests: [], activeLoading: false, error: null, successMessage: null}) as QuestState,
   );
   const [activeTab, setActiveTab] = useState("all");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
@@ -155,7 +142,7 @@ const QuestsPage: React.FC = () => {
   };
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: {opacity: 0},
     visible: {
       opacity: 1,
       transition: {
@@ -165,7 +152,7 @@ const QuestsPage: React.FC = () => {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: {y: 20, opacity: 0},
     visible: {
       y: 0,
       opacity: 1,
@@ -209,25 +196,15 @@ const QuestsPage: React.FC = () => {
 
   return (
     <div className="premium-quests-page">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="page-header"
-      >
+      <motion.div initial={{opacity: 0, y: -20}} animate={{opacity: 1, y: 0}} className="page-header">
         <Title level={1} className="main-title">
           <TrophyOutlined className="title-icon" /> Đường đến Vinh quang
         </Title>
-        <Paragraph className="subtitle">
-          Hoàn thành thử thách, nhận báu vật di truyền và thăng cấp bản thân
-        </Paragraph>
+        <Paragraph className="subtitle">Hoàn thành thử thách, nhận báu vật di truyền và thăng cấp bản thân</Paragraph>
       </motion.div>
 
       <div className="stats-container">
-        <StatisticsCard
-          data={statsData}
-          hideCard
-          colSpan={{ xs: 12, sm: 12, md: 6 }}
-        />
+        <StatisticsCard data={statsData} hideCard colSpan={{xs: 12, sm: 12, md: 6}} />
       </div>
 
       <div className="tabs-container glass-morphism">
@@ -236,11 +213,11 @@ const QuestsPage: React.FC = () => {
           onChange={setActiveTab}
           centered
           items={[
-            { key: "all", label: "Tất cả" },
-            { key: "daily", label: "Hằng ngày" },
-            { key: "weekly", label: "Hằng tuần" },
-            { key: "achievement", label: "Thành tích" },
-            { key: "exploration", label: "Thám hiểm" },
+            {key: "all", label: "Tất cả"},
+            {key: "daily", label: "Hằng ngày"},
+            {key: "weekly", label: "Hằng tuần"},
+            {key: "achievement", label: "Thành tích"},
+            {key: "exploration", label: "Thám hiểm"},
           ]}
         />
       </div>
@@ -254,34 +231,27 @@ const QuestsPage: React.FC = () => {
           className="quests-grid-container"
         >
           {getQuestsByTab().length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div initial={{opacity: 0}} animate={{opacity: 1}}>
               <Empty description="Hiện không có nhiệm vụ nào trong mục này" />
             </motion.div>
           ) : (
             <Row gutter={[24, 24]}>
               {getQuestsByTab().map((quest) => (
                 <Col xs={24} sm={12} lg={8} key={quest.id}>
-                  <motion.div variants={itemVariants} whileHover={{ y: -5 }}>
+                  <motion.div variants={itemVariants} whileHover={{y: -5}}>
                     <Card
                       className={`quest-card glass-morphism ${quest.progress?.status || "locked"}`}
                       cover={
                         quest.thumbnail && (
                           <div className="quest-image-container">
-                            <img
-                              alt={quest.title}
-                              src={getImageUrl(quest.thumbnail)}
-                              className="quest-image"
-                            />
+                            <img alt={quest.title} src={getImageUrl(quest.thumbnail)} className="quest-image" />
                             <div className="quest-overlay" />
                           </div>
                         )
                       }
                     >
                       <div className="quest-type-tag">
-                        <Tag
-                          color={getTypeColor(quest.type)}
-                          icon={getTypeIcon(quest.type)}
-                        >
+                        <Tag color={getTypeColor(quest.type)} icon={getTypeIcon(quest.type)}>
                           {quest.type.toUpperCase()}
                         </Tag>
                       </div>
@@ -289,7 +259,7 @@ const QuestsPage: React.FC = () => {
                       <Title level={4} className="quest-title">
                         {quest.title}
                       </Title>
-                      <Paragraph ellipsis={{ rows: 2 }} className="quest-desc">
+                      <Paragraph ellipsis={{rows: 2}} className="quest-desc">
                         {quest.description}
                       </Paragraph>
 
@@ -298,25 +268,16 @@ const QuestsPage: React.FC = () => {
                           <div className="progress-info">
                             <span>Tiến độ</span>
                             <span>
-                             currentValue: {quest.progress.currentValue}/
-                              {quest.requirements[0]?.target}
+                              currentValue: {quest.progress.currentValue}/{quest.requirements[0]?.target}
                             </span>
                           </div>
                           <Progress
                             percent={Math.round(
-                              (quest.progress.currentValue /
-                                (quest.requirements[0]?.target || 1)) *
-                                100,
+                              (quest.progress.currentValue / (quest.requirements[0]?.target || 1)) * 100,
                             )}
-                            status={
-                              quest.progress.isCompleted ? "success" : "active"
-                            }
+                            status={quest.progress.isCompleted ? "success" : "active"}
                             showInfo={false}
-                            strokeColor={
-                              quest.progress.isCompleted
-                                ? "#52c41a"
-                                : "#1890ff"
-                            }
+                            strokeColor={quest.progress.isCompleted ? "#52c41a" : "#1890ff"}
                           />
                         </div>
                       ) : (
@@ -328,20 +289,10 @@ const QuestsPage: React.FC = () => {
                       <div className="quest-rewards-summary">
                         <Space>
                           {quest.rewards.experience && (
-                            <span className="reward-item">
-                              ⭐ {quest.rewards.experience}
-                            </span>
+                            <span className="reward-item">🏆 {quest.rewards.experience}</span>
                           )}
-                          {quest.rewards.petals && (
-                            <span className="reward-item">
-                              🌸 {quest.rewards.petals}
-                            </span>
-                          )}
-                          {quest.rewards.badge && (
-                            <span className="reward-item">
-                              🏅 {quest.rewards.badge}
-                            </span>
-                          )}
+                          {quest.rewards.petals && <span className="reward-item">🌸 {quest.rewards.petals}</span>}
+                          {quest.rewards.badge && <span className="reward-item">🏅 {quest.rewards.badge}</span>}
                         </Space>
                       </div>
 
@@ -366,28 +317,15 @@ const QuestsPage: React.FC = () => {
                             Nhận Thưởng
                           </Button>
                         ) : quest.progress.status === "claimed" ? (
-                          <Button
-                            block
-                            disabled
-                            className="action-btn claimed-btn"
-                          >
+                          <Button block disabled className="action-btn claimed-btn">
                             <CheckCircleOutlined /> Đã Hoàn Thành
                           </Button>
                         ) : (
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <Button
-                              ghost
-                              type="primary"
-                              onClick={() => handleViewDetail(quest)}
-                              style={{ flex: 1 }}
-                            >
+                          <div style={{display: "flex", gap: 8}}>
+                            <Button ghost type="primary" onClick={() => handleViewDetail(quest)} style={{flex: 1}}>
                               Chi tiết
                             </Button>
-                            <Button
-                              type="primary"
-                              onClick={() => handleNavigate(quest)}
-                              style={{ flex: 1 }}
-                            >
+                            <Button type="primary" onClick={() => handleNavigate(quest)} style={{flex: 1}}>
                               Thực hiện
                             </Button>
                           </div>
@@ -412,15 +350,11 @@ const QuestsPage: React.FC = () => {
       >
         {selectedQuest && (
           <div className="quest-modal-content">
-            <Paragraph className="modal-desc">
-              {selectedQuest.description}
-            </Paragraph>
+            <Paragraph className="modal-desc">{selectedQuest.description}</Paragraph>
 
             <div className="modal-section">
               <Title level={5}>Yêu cầu</Title>
-              <Paragraph>
-                {selectedQuest.requirements[0]?.description}
-              </Paragraph>
+              <Paragraph>{selectedQuest.requirements[0]?.description}</Paragraph>
             </div>
 
             <div className="modal-section">
@@ -428,26 +362,20 @@ const QuestsPage: React.FC = () => {
               <div className="rewards-grid">
                 {selectedQuest.rewards.experience && (
                   <div className="modal-reward">
-                    <div className="reward-icon">⭐</div>
-                    <div className="reward-val">
-                      {selectedQuest.rewards.experience} XP
-                    </div>
+                    <div className="reward-icon">🏆</div>
+                    <div className="reward-val">{selectedQuest.rewards.experience} Cúp</div>
                   </div>
                 )}
                 {selectedQuest.rewards.petals && (
                   <div className="modal-reward">
                     <div className="reward-icon">🌸</div>
-                    <div className="reward-val">
-                      {selectedQuest.rewards.petals} Cánh
-                    </div>
+                    <div className="reward-val">{selectedQuest.rewards.petals} Cánh</div>
                   </div>
                 )}
                 {selectedQuest.rewards.coins && (
                   <div className="modal-reward">
                     <div className="reward-icon">💰</div>
-                    <div className="reward-val">
-                      {selectedQuest.rewards.coins} Xu
-                    </div>
+                    <div className="reward-val">{selectedQuest.rewards.coins} Xu</div>
                   </div>
                 )}
               </div>
