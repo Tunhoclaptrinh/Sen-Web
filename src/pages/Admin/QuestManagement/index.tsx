@@ -76,7 +76,14 @@ const QuestManagement: React.FC = () => {
           initialValues={model.currentRecord || {type: "daily", isActive: true}}
           onFinish={model.handleSubmit}
         >
-          <Form.Item name="title" label="Tiêu đề nhiệm vụ" rules={[{required: true, message: "Vui lòng nhập tiêu đề"}]}>
+          <Form.Item
+            name="title"
+            label="Tiêu đề nhiệm vụ"
+            rules={[
+              {required: true, message: "Vui lòng nhập tiêu đề"},
+              {min: 5, message: "Tiêu đề nhiệm vụ yêu cầu tối thiểu 5 ký tự"},
+            ]}
+          >
             <Input prefix={<FlagOutlined />} placeholder="Ví dụ: Hoàn thành 3 màn chơi" />
           </Form.Item>
 
@@ -93,7 +100,11 @@ const QuestManagement: React.FC = () => {
             </Form.Item>
           </div>
 
-          <Form.Item name="description" label="Mô tả nhiệm vụ">
+          <Form.Item
+            name="description"
+            label="Mô tả nhiệm vụ"
+            rules={[{min: 10, message: "Mô tả nhiệm vụ yêu cầu tối thiểu 10 ký tự"}]}
+          >
             <Input.TextArea rows={3} placeholder="Mô tả chi tiết cách thực hiện" />
           </Form.Item>
 

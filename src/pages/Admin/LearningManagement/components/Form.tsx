@@ -156,7 +156,10 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
               <Form.Item
                 name="title"
                 label="Tiêu đề bài học"
-                rules={[{required: true, message: "Vui lòng nhập tiêu đề"}]}
+                rules={[
+                  {required: true, message: "Vui lòng nhập tiêu đề"},
+                  {min: 5, message: "Tiêu đề bài học yêu cầu tối thiểu 5 ký tự"},
+                ]}
               >
                 <Input prefix={<ReadOutlined />} placeholder="Ví dụ: Lịch sử nhà Đinh" />
               </Form.Item>
@@ -227,6 +230,10 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                   label="Nội dung bài học (HTML)"
                   trigger="onChange"
                   validateTrigger={["onChange", "onBlur"]}
+                  rules={[
+                    {required: true, message: "Vui lòng nhập nội dung"},
+                    {min: 20, message: "Nội dung bài học yêu cầu tối thiểu 20 ký tự"},
+                  ]}
                 >
                   <TinyEditor height={400} placeholder="Soạn thảo nội dung bài học..." />
                 </Form.Item>
@@ -238,7 +245,11 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
             }}
           </Form.Item>
 
-          <Form.Item name="description" label="Mô tả ngắn">
+          <Form.Item
+            name="description"
+            label="Mô tả ngắn"
+            rules={[{min: 10, message: "Mô tả ngắn yêu cầu tối thiểu 10 ký tự"}]}
+          >
             <Input.TextArea rows={2} />
           </Form.Item>
         </div>

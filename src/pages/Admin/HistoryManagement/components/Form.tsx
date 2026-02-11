@@ -249,7 +249,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     <Form.Item
                       name="title"
                       label="Tiêu đề bài viết"
-                      rules={[{required: true, message: "Vui lòng nhập tiêu đề"}]}
+                      rules={[
+                        {required: true, message: "Vui lòng nhập tiêu đề"},
+                        {min: 5, message: "Tiêu đề yêu cầu tối thiểu 5 ký tự"},
+                      ]}
                     >
                       <Input placeholder="Nhập tiêu đề bài viết lịch sử..." />
                     </Form.Item>
@@ -261,7 +264,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     <Form.Item
                       name="shortDescription"
                       label="Mô tả ngắn"
-                      rules={[{required: true, message: "Vui lòng nhập mô tả ngắn"}]}
+                      rules={[
+                        {required: true, message: "Vui lòng nhập mô tả ngắn"},
+                        {min: 20, message: "Mô tả ngắn yêu cầu tối thiểu 20 ký tự"},
+                      ]}
                     >
                       <Input.TextArea rows={3} placeholder="Mô tả tóm tắt nội dung..." />
                     </Form.Item>
@@ -296,7 +302,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 <Form.Item
                   name="content"
                   label="Nội dung bài viết"
-                  rules={[{required: true, message: "Vui lòng nhập nội dung"}]}
+                  rules={[
+                    {required: true, message: "Vui lòng nhập nội dung"},
+                    {min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự"},
+                  ]}
                 >
                   <TinyEditor
                     height={500}

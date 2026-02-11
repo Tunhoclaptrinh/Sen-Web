@@ -63,10 +63,17 @@ const CategoryManagement: React.FC = () => {
         destroyOnClose
       >
         <Form layout="vertical" initialValues={model.currentRecord || {}} onFinish={model.handleSubmit}>
-          <Form.Item name="name" label="Tên danh mục" rules={[{required: true, message: "Vui lòng nhập tên danh mục"}]}>
+          <Form.Item
+            name="name"
+            label="Tên danh mục"
+            rules={[
+              {required: true, message: "Vui lòng nhập tên danh mục"},
+              {min: 3, message: "Tên danh mục yêu cầu tối thiểu 3 ký tự"},
+            ]}
+          >
             <Input placeholder="Ví dụ: Kiến trúc cổ, Nghệ thuật" />
           </Form.Item>
-          <Form.Item name="description" label="Mô tả">
+          <Form.Item name="description" label="Mô tả" rules={[{min: 10, message: "Mô tả yêu cầu tối thiểu 10 ký tự"}]}>
             <Input.TextArea rows={4} placeholder="Mô tả về danh mục này" />
           </Form.Item>
           <Form.Item name="icon" label="Icon (Emoji hoặc Class)">

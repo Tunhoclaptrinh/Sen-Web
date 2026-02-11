@@ -421,7 +421,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     <Form.Item
                       name="shortDescription"
                       label="Mô tả ngắn"
-                      rules={[{required: true, message: "Vui lòng nhập mô tả ngắn"}]}
+                      rules={[
+                        {required: true, message: "Vui lòng nhập mô tả ngắn"},
+                        {min: 20, message: "Mô tả ngắn yêu cầu tối thiểu 20 ký tự"},
+                      ]}
                     >
                       <Input.TextArea
                         rows={2}
@@ -435,7 +438,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     <Form.Item
                       name="name"
                       label="Tên Di sản"
-                      rules={[{required: true, message: "Vui lòng nhập tên di sản"}]}
+                      rules={[
+                        {required: true, message: "Vui lòng nhập tên di sản"},
+                        {min: 5, message: "Tên di sản yêu cầu tối thiểu 5 ký tự"},
+                      ]}
                     >
                       <Input placeholder="Nhập tên di sản (VD: Hoàng thành Thăng Long)" />
                     </Form.Item>
@@ -481,7 +487,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     <Form.Item
                       name="address"
                       label="Địa chỉ"
-                      rules={[{required: true, message: "Vui lòng nhập địa chỉ"}]}
+                      rules={[
+                        {required: true, message: "Vui lòng nhập địa chỉ"},
+                        {min: 10, message: "Địa chỉ yêu cầu tối thiểu 10 ký tự"},
+                      ]}
                     >
                       <Input placeholder="Nhập địa chỉ cụ thể" />
                     </Form.Item>
@@ -575,7 +584,14 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             label: "Mô tả chi tiết",
             children: (
               <>
-                <Form.Item name="description" label="Mô tả" rules={[{required: true, message: "Vui lòng nhập mô tả"}]}>
+                <Form.Item
+                  name="description"
+                  label="Mô tả"
+                  rules={[
+                    {required: true, message: "Vui lòng nhập mô tả"},
+                    {min: 10, message: "Mô tả chi tiết yêu cầu tối thiểu 10 ký tự"},
+                  ]}
+                >
                   <TinyEditor
                     key={isEdit ? `desc-edit-${initialValues?.id}` : "desc-create"}
                     height={400}
@@ -642,7 +658,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                             <Form.Item
                               {...restField}
                               name={[name, "title"]}
-                              rules={[{required: true, message: "Nhập tiêu đề"}]}
+                              rules={[
+                                {required: true, message: "Nhập tiêu đề"},
+                                {min: 5, message: "Tiêu đề yêu cầu tối thiểu 5 ký tự"},
+                              ]}
                               style={{margin: 0}}
                             >
                               <Input placeholder="Tiêu đề sự kiện" style={{width: 200}} />
@@ -661,7 +680,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                                 ))}
                               </Select>
                             </Form.Item>
-                            <Form.Item {...restField} name={[name, "description"]} style={{flex: 1, margin: 0}}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, "description"]}
+                              rules={[{min: 10, message: "Mô tả yêu cầu tối thiểu 10 ký tự"}]}
+                              style={{flex: 1, margin: 0}}
+                            >
                               <Input placeholder="Mô tả sự kiện" style={{width: "100%"}} />
                             </Form.Item>
                             <MinusCircleOutlined onClick={() => remove(name)} style={{color: "red"}} />

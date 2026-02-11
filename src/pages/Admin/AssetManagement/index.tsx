@@ -87,7 +87,14 @@ const AssetManagement: React.FC = () => {
             >
               <Input placeholder="Ví dụ: QR001, ART_VN_01" />
             </Form.Item>
-            <Form.Item name="name" label="Tên đối tượng" rules={[{required: true, message: "Vui lòng nhập tên"}]}>
+            <Form.Item
+              name="name"
+              label="Tên đối tượng"
+              rules={[
+                {required: true, message: "Vui lòng nhập tên"},
+                {min: 3, message: "Tên đối tượng yêu cầu tối thiểu 3 ký tự"},
+              ]}
+            >
               <Input placeholder="Ví dụ: Trống đồng Ngọc Lũ" />
             </Form.Item>
           </div>

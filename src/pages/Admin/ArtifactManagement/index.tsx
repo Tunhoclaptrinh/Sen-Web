@@ -333,6 +333,7 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
         onFilterChange={onFilterChange}
         onClearFilters={clearFilters}
         customActions={(record) => {
+          const status = record.status;
           const isOwner = record.createdBy === user?.id;
 
           const showSubmit = record.status === "draft" || record.status === "rejected" || !record.status;

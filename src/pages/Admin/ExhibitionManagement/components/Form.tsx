@@ -60,12 +60,19 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
 
   return (
     <Form layout="vertical" form={form} onFinish={handleFinish} initialValues={memoizedInitialValues}>
-      <Form.Item name="name" label="Tên triển lãm" rules={[{required: true, message: "Vui lòng nhập tên"}]}>
+      <Form.Item
+        name="name"
+        label="Tên triển lãm"
+        rules={[
+          {required: true, message: "Vui lòng nhập tên"},
+          {min: 5, message: "Tên triển lãm yêu cầu tối thiểu 5 ký tự"},
+        ]}
+      >
         <Input prefix={<PictureOutlined />} placeholder="Ví dụ: Triển lãm Gốm Chu Đậu" />
       </Form.Item>
 
       <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px"}}>
-        <Form.Item name="theme" label="Chủ đề">
+        <Form.Item name="theme" label="Chủ đề" rules={[{min: 2, message: "Chủ đề yêu cầu tối thiểu 2 ký tự"}]}>
           <Input placeholder="Ví dụ: Gốm sứ, Lịch sử" />
         </Form.Item>
         <Form.Item name="curator" label="Người phụ trách">
@@ -111,7 +118,14 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
         }
       </Form.Item>
 
-      <Form.Item name="description" label="Mô tả">
+      <Form.Item
+        name="description"
+        label="Mô tả"
+        rules={[
+          {required: true, message: "Vui lòng nhập mô tả"},
+          {min: 20, message: "Mô tả triển lãm yêu cầu tối thiểu 20 ký tự"},
+        ]}
+      >
         <Input.TextArea rows={4} placeholder="Mô tả nội dung triển lãm" />
       </Form.Item>
 

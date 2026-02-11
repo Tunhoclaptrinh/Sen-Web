@@ -134,7 +134,10 @@ const SupportPage: React.FC = () => {
                 <Form.Item
                   name="message"
                   label="Nội dung cần hỗ trợ"
-                  rules={[{required: true, message: "Vui lòng nhập nội dung"}]}
+                  rules={[
+                    {required: true, message: "Vui lòng nhập nội dung"},
+                    {min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự"},
+                  ]}
                 >
                   <Input.TextArea rows={5} placeholder="Mô tả vấn đề bạn đang gặp phải..." />
                 </Form.Item>
