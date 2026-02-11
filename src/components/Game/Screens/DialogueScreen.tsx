@@ -42,7 +42,9 @@ const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
 
       if (currentDialogue.audio) {
         try {
-          const audioUrl = getImageUrl(currentDialogue.audio);
+          const audioUrl = getImageUrl(
+            currentDialogue.audio || (currentDialogue as any).audioUrl || (currentDialogue as any).url,
+          );
           console.log("Playing dialogue audio:", audioUrl);
           audioRef.current = new Audio(audioUrl);
           audioRef.current.play().catch((e) => {

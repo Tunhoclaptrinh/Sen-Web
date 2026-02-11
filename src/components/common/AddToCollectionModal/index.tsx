@@ -129,7 +129,7 @@ const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({visible, onC
                     <List.Item.Meta
                       avatar={<FolderAddOutlined style={{fontSize: 24, color: "#1890ff"}} />}
                       title={col.name}
-                      description={`${col.totalItems} mục`}
+                      description={`${col.totalItems || 0} mục`}
                     />
                   </List.Item>
                 );

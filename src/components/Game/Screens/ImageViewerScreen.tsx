@@ -21,7 +21,7 @@ const ImageViewerScreen: React.FC<Props> = ({data, onNext, loading}) => {
   // Support multiple data structures
   const content = data.content || {};
 
-  const imageUrl = (data as any).image || content.imageUrl || data.backgroundImage;
+  const imageUrl = content.imageUrl || data.backgroundImage;
   const title = (data as any).caption || content.title || "Hình ảnh chi tiết";
   const description =
     (data as any).description ||

@@ -64,7 +64,8 @@ export interface Level {
   type: "story" | "quiz" | "mixed";
   difficulty: "easy" | "medium" | "hard";
   order: number;
-  thumbnail?: string;
+  backgroundImage?: string;
+  thumbnail?: string; // Keeping as optional/legacy just in case, but prefer backgroundImage
   isCompleted: boolean;
   isLocked: boolean;
   playerBestScore?: number;

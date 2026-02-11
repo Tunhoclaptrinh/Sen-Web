@@ -29,6 +29,7 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import learningService, {LearningModule} from "@/services/learning.service";
 import {motion, AnimatePresence} from "framer-motion";
+import {getYouTubeEmbedUrl} from "@/utils/youtube.helper";
 
 const {Title, Paragraph, Text} = Typography;
 
@@ -119,45 +120,7 @@ const LearningDetail: React.FC = () => {
   };
 
   const getEmbedUrl = (url?: string) => {
-    if (!url) return "";
-    try {
-      let videoId = "";
-
-      // If already embed, extract ID to ensure clean URL without strange params
-      if (url.includes("/embed/")) {
-        const parts = url.split("/embed/");
-        if (parts[1]) {
-          videoId = parts[1].split("?")[0];
-        }
-      }
-      // Handle youtu.be/ID
-      else if (url.includes("youtu.be/")) {
-        videoId = url.split("youtu.be/")[1]?.split("?")[0];
-      }
-      // Handle youtube.com/watch?v=ID
-      else if (url.includes("v=")) {
-        const vParam = url.split("v=")[1];
-        if (vParam) {
-          videoId = vParam.split("&")[0];
-        }
-      }
-
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
-
-      // If it Looks like YouTube but we failed to extract ID, return null to avoid embedding 'youtube.com' (refused to connect)
-      if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        console.warn("Invalid YouTube URL:", url);
-        return null;
-      }
-
-      // Return original for other providers (vimeo etc)
-      return url;
-    } catch (e) {
-      console.error("Error parsing video URL:", e);
-      return null;
-    }
+    return getYouTubeEmbedUrl(url);
   };
 
   const handleQuizSubmit = async () => {

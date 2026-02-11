@@ -81,7 +81,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
           </span>
           {type === "collection" && (
             <span className="meta-item">
-              <AppstoreOutlined /> {data.total_items ?? 0} mục
+              <AppstoreOutlined /> {data.totalItems ?? data.total_items ?? 0} mục
             </span>
           )}
           {type !== "collection" && (

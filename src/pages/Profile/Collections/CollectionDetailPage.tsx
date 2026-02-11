@@ -125,7 +125,7 @@ const CollectionDetailPage = () => {
               </Title>
               {collection.description && <Paragraph type="secondary">{collection.description}</Paragraph>}
               <div style={{color: "#888"}}>
-                <span>{collection.totalItems} mục</span>
+                <span>{collection.totalItems || 0} mục</span>
                 <span style={{margin: "0 8px"}}>•</span>
                 <span>{collection.isPublic ? "Công khai" : "Riêng tư"}</span>
               </div>

@@ -6,14 +6,14 @@
   display: flex;
   flex-direction: column;
   padding: 0;
-  height: calc(100vh - 64px - 12px); 
+  height: calc(100vh - 64px - 12px);
   min-height: 0;
   overflow: hidden;
-  
-  // Adjust margins: 
+
+  // Adjust margins:
   // Top: -12px
   // Sides/Bottom: -24px (Full bleed)
-  margin: -12px -24px -24px -24px; 
+  margin: -12px -24px -24px -24px;
 
   // Normal mode - fixed size container
   &:not(.fullscreen-mode) {
@@ -29,14 +29,14 @@
       max-width: 100%;
       max-height: 100%;
       margin: 0 auto;
-      
+
       flex: 1;
 
       position: relative;
       background: #000;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: none; 
+      box-shadow: none;
       transform: none !important;
     }
   }
@@ -48,9 +48,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 9999;
+    z-index: 1000;
     padding: 0;
-    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     // Override base styles
     height: 100vh !important;
     margin: 0 !important;
@@ -109,12 +113,8 @@
     align-items: center;
     justify-content: space-between;
     z-index: 100;
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    pointer-events: none; 
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
 
     .back-button {
       pointer-events: auto;
@@ -149,41 +149,41 @@
       align-items: center;
 
       .potential-score {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: 500;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
       }
-        
+
       .score-gained-popup {
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          color: #ffd700;
-          font-size: 20px;
-          font-weight: 800;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-          animation: floatUpFade 1.5s forwards;
-          pointer-events: none;
-          white-space: nowrap;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #ffd700;
+        font-size: 20px;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        animation: floatUpFade 1.5s forwards;
+        pointer-events: none;
+        white-space: nowrap;
       }
     }
   }
 
   // Animation for score popup
   @keyframes floatUpFade {
-      0% {
-          opacity: 0;
-          transform: translate(-50%, 0);
-      }
-      20% {
-          opacity: 1;
-          transform: translate(-50%, -20px);
-      }
-      100% {
-          opacity: 0;
-          transform: translate(-50%, -50px);
-      }
+    0% {
+      opacity: 0;
+      transform: translate(-50%, 0);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, -20px);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50px);
+    }
   }
 
   .game-viewport {
@@ -195,206 +195,208 @@
 
 // Completion screen contained within the layout
 .game-completion {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .game-page-background();
+  padding: 12px;
+  border-radius: 0;
+  overflow: hidden;
+
+  .completion-card {
     width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .game-page-background(); 
-    padding: 12px;
-    border-radius: 12px; 
-    min-height: 90vh;
+    max-width: 900px;
+    .game-card-style();
+    padding: 20px; // Compacted
+    text-align: center;
+    // Let it take natural height, ensure it doesn't overflow parent if excessively tall
+    // but aim to fit without scrolling first.
+    max-height: 100%;
 
-    .completion-card {
-      width: 100%;
-      max-width: 900px;
-      .game-card-style(); 
-      padding: 20px; // Compacted
-      text-align: center;
-      // Let it take natural height, ensure it doesn't overflow parent if excessively tall
-      // but aim to fit without scrolling first.
-      max-height: 100%; 
-      
-      // If content strictly fits, no scrollbar needed.
-      // If it barely overflows, we hide it to satisfy user, but keep auto as fallback logic
-      overflow-y: auto; 
-      &::-webkit-scrollbar {
-          display: none; // HIDE SCROLLBAR VISUALLY
-      }
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+    // If content strictly fits, no scrollbar needed.
+    // If it barely overflows, we hide it to satisfy user, but keep auto as fallback logic
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      display: none; // HIDE SCROLLBAR VISUALLY
+    }
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 
-      // --- CUSTOM COMPACT LAYOUT ---
-      .custom-completion-layout {
-          display: flex;
-          flex-direction: column;
-          gap: 12px; // Reduced gap
-          height: 100%;
-          justify-content: center;
+    // --- CUSTOM COMPACT LAYOUT ---
+    .custom-completion-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 12px; // Reduced gap
+      height: 100%;
+      justify-content: center;
+    }
+
+    .completion-header {
+      flex-shrink: 0;
+      .completion-title.ant-typography {
+        .game-title-style();
+        font-size: 24px; // Smaller
+        margin: 4px 0 2px 0; // Very tight
+        line-height: 1.2;
       }
 
-      .completion-header {
-          flex-shrink: 0;
-          .completion-title.ant-typography {
-              .game-title-style(); 
-              font-size: 24px; // Smaller
-              margin: 4px 0 2px 0; // Very tight
-              line-height: 1.2;
-          }
-          
-          .completion-subtitle.ant-typography {
-              .game-subtitle-style(); 
-              font-size: 15px;
-              color: @text-color-primary;
-              margin-bottom: 0;
-          }
-      }
-
-      .completion-body-row {
-          display: flex;
-          align-items: stretch;
-          gap: 24px;
-          justify-content: center;
-          flex-shrink: 0; // Don't shrink to nothing
-          
-          @media (max-width: 768px) {
-              flex-direction: column;
-              gap: 16px;
-          }
-
-          .completion-section {
-              flex: 1;
-              min-width: 260px;
-              display: flex;
-              flex-direction: column;
-          }
-      }
-
-      // Reuse styles
-      .score-breakdown {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          background: rgba(0, 0, 0, 0.03);
-          border-radius: 12px;
-          padding: 16px;
-          border: 1px dashed @gold-border;
-          
-          &.success {
-              background: rgba(255, 215, 0, 0.05);
-              border-color: @gold-color;
-          }
-
-          .breakdown-row {
-              display: flex;
-              justify-content: space-between;
-              color: @text-color-primary;
-              font-size: 15px;
-              margin-bottom: 8px;
-              font-family: @font-serif;
-              
-              &.bonus {
-                  color: #389e0d; 
-                  font-weight: 600;
-              }
-              
-              &.total {
-                  font-weight: bold;
-                  color: @seal-red;
-                  font-size: 18px;
-                  margin-top: 8px;
-                  padding-top: 8px;
-                  border-top: 1px dashed @gold-border;
-                  margin-bottom: 0;
-              }
-          }
-           .breakdown-divider {
-              height: 1px;
-              background: rgba(0, 0, 0, 0.05);
-              margin: 4px 0;
-           }
-      }
-
-      .rewards-summary {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        background: #fff;
-        padding: 16px;
-        border-radius: 12px;
-        border: 1px solid #eee;
-
-        &.info-only {
-            background: #fffcf0;
-            border-color: #ffe58f;
-        }
-
-        h4.ant-typography {
-            color: @text-color-primary !important;
-            font-family: @font-serif;
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-
-        .rewards-grid {
-          display: flex;
-          justify-content: center;
-          gap: 24px;
-          
-          .reward-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 15px;
-            font-weight: 600;
-            color: @text-color-primary;
-            
-            .reward-icon {
-                font-size: 36px;
-                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-            }
-            
-            .reward-value {
-                color: @bronze-color;
-                &.coins { color: @seal-red; }
-            }
-          }
-        }
-      }
-      
-      .completion-footer {
-          display: flex;
-          justify-content: center;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-top: 8px;
-          flex-shrink: 0;
-
-          .ant-btn-primary {
-              .game-btn-primary(); 
-              min-width: 140px;
-              height: 44px;
-          }
-          
-          .ant-btn-default {
-              height: 44px;
-              border-radius: 8px;
-              font-family: @font-serif;
-              font-weight: 600;
-              font-size: 1rem;
-              color: @text-color-primary;
-              border: 2px solid @gold-border;
-              background: transparent;
-              
-              &:hover {
-                  color: @seal-red;
-                  border-color: @seal-red;
-                  background: rgba(139, 29, 29, 0.05);
-              }
-          }
+      .completion-subtitle.ant-typography {
+        .game-subtitle-style();
+        font-size: 15px;
+        color: @text-color-primary;
+        margin-bottom: 0;
       }
     }
+
+    .completion-body-row {
+      display: flex;
+      align-items: stretch;
+      gap: 24px;
+      justify-content: center;
+      flex-shrink: 0; // Don't shrink to nothing
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .completion-section {
+        flex: 1;
+        min-width: 260px;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    // Reuse styles
+    .score-breakdown {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px dashed @gold-border;
+
+      &.success {
+        background: rgba(255, 215, 0, 0.05);
+        border-color: @gold-color;
+      }
+
+      .breakdown-row {
+        display: flex;
+        justify-content: space-between;
+        color: @text-color-primary;
+        font-size: 15px;
+        margin-bottom: 8px;
+        font-family: @font-serif;
+
+        &.bonus {
+          color: #389e0d;
+          font-weight: 600;
+        }
+
+        &.total {
+          font-weight: bold;
+          color: @seal-red;
+          font-size: 18px;
+          margin-top: 8px;
+          padding-top: 8px;
+          border-top: 1px dashed @gold-border;
+          margin-bottom: 0;
+        }
+      }
+      .breakdown-divider {
+        height: 1px;
+        background: rgba(0, 0, 0, 0.05);
+        margin: 4px 0;
+      }
+    }
+
+    .rewards-summary {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+
+      &.info-only {
+        background: #fffcf0;
+        border-color: #ffe58f;
+      }
+
+      h4.ant-typography {
+        color: @text-color-primary !important;
+        font-family: @font-serif;
+        margin-bottom: 12px;
+        font-size: 16px;
+      }
+
+      .rewards-grid {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+
+        .reward-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          font-size: 15px;
+          font-weight: 600;
+          color: @text-color-primary;
+
+          .reward-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+          }
+
+          .reward-value {
+            color: @bronze-color;
+            &.coins {
+              color: @seal-red;
+            }
+          }
+        }
+      }
+    }
+
+    .completion-footer {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      flex-shrink: 0;
+
+      .ant-btn-primary {
+        .game-btn-primary();
+        min-width: 140px;
+        height: 44px;
+      }
+
+      .ant-btn-default {
+        height: 44px;
+        border-radius: 8px;
+        font-family: @font-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: @text-color-primary;
+        border: 2px solid @gold-border;
+        background: transparent;
+
+        &:hover {
+          color: @seal-red;
+          border-color: @seal-red;
+          background: rgba(139, 29, 29, 0.05);
+        }
+      }
+    }
+  }
 }

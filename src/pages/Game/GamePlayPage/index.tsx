@@ -286,15 +286,9 @@ const GamePlayPage: React.FC = () => {
     }
   };
 
-  if (loading && !currentScreen && !gameCompleted) {
-    return (
-      <div className="game-loading">
-        <Spin size="large" tip="Đang tải dữ liệu game..." />
-      </div>
-    );
-  }
-
-  if (gameCompleted && completionData) {
+  // Render Completion Screen
+  const renderCompletion = () => {
+    if (!completionData) return null;
     return (
       <div className="game-completion">
         <Card className="completion-card">
@@ -412,10 +406,11 @@ const GamePlayPage: React.FC = () => {
         </Card>
       </div>
     );
-  }
+  };
 
-  return (
-    <div className={`gameplay-page ${isFullscreen ? "fullscreen-mode" : ""}`}>
+  // Render Active Game Content
+  const renderGameContent = () => {
+    return (
       <div className="game-container">
         <div className="game-overlay-ui">
           <Button
@@ -496,15 +491,36 @@ const GamePlayPage: React.FC = () => {
             style={{position: "absolute", bottom: 20, right: 80, zIndex: 100}}
           />
         </AudioSettingsPopover>
-
-        <Button
-          icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-          onClick={() => setIsFullscreen(!isFullscreen)}
-          className="fullscreen-button"
-          size="large"
-          title={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
-        />
       </div>
+    );
+  };
+
+  const renderContent = () => {
+    if (loading && !currentScreen && !gameCompleted) {
+      return (
+        <div className="game-loading">
+          <Spin size="large" tip="Đang tải dữ liệu game..." />
+        </div>
+      );
+    }
+    if (gameCompleted && completionData) {
+      return renderCompletion();
+    }
+    return renderGameContent();
+  };
+
+  return (
+    <div className={`gameplay-page ${isFullscreen ? "fullscreen-mode" : ""}`}>
+      {renderContent()}
+
+      <Button
+        icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+        onClick={() => setIsFullscreen(!isFullscreen)}
+        className="fullscreen-button"
+        size="large"
+        title={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
+      />
+
       <AIChat open={isChatOpen} onClose={() => dispatch(setOverlayOpen(false))} position="absolute" />
     </div>
   );

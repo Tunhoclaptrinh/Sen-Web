@@ -68,8 +68,8 @@ const LevelForm: React.FC<LevelFormProps> = ({
         form.setFieldsValue(memoizedInitialValues);
         // Smart detect mode from initial value
         if (
-          initialValues.thumbnail &&
-          (initialValues.thumbnail.startsWith("http") || initialValues.thumbnail.startsWith("/"))
+          initialValues.backgroundImage &&
+          (initialValues.backgroundImage.startsWith("http") || initialValues.backgroundImage.startsWith("/"))
         ) {
           setThumbnailMode("upload");
         }
@@ -149,11 +149,11 @@ const LevelForm: React.FC<LevelFormProps> = ({
                   </Radio.Button>
                 </Radio.Group>
                 {thumbnailMode === "upload" ? (
-                  <Form.Item name="thumbnail" noStyle>
+                  <Form.Item name="backgroundImage" noStyle>
                     <ImageUpload maxCount={1} />
                   </Form.Item>
                 ) : (
-                  <Form.Item name="thumbnail" noStyle>
+                  <Form.Item name="backgroundImage" noStyle>
                     <Input placeholder="Dán link ảnh (https://...)" style={{marginTop: 8}} />
                   </Form.Item>
                 )}

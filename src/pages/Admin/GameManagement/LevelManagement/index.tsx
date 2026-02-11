@@ -137,8 +137,8 @@ const LevelManagement = ({
   const columns = [
     {
       title: "Hình ảnh",
-      dataIndex: "thumbnail",
-      key: "thumbnail",
+      dataIndex: "backgroundImage",
+      key: "backgroundImage",
       width: 40,
       align: "center" as const,
       render: (url: string) => (
