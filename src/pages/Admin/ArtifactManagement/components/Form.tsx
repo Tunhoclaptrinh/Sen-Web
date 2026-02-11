@@ -1,32 +1,12 @@
-import {
-  Input,
-  InputNumber,
-  Select,
-  Switch,
-  Row,
-  Col,
-  Form,
-  Tabs,
-  message,
-} from "antd";
-import {
-  FormModal,
-  TinyEditor,
-  Button as StyledButton,
-  DebounceSelect,
-} from "@/components/common";
+import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message} from "antd";
+import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
+import {useAuth} from "@/hooks/useAuth";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
-import {
-  ArtifactType,
-  ArtifactCondition,
-  ArtifactTypeLabels,
-  ArtifactConditionLabels,
-} from "@/types";
-import { useEffect, useState } from "react";
+import {ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLabels} from "@/types";
+import {useEffect, useState} from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import categoryService from "@/services/category.service";
-
 
 interface ArtifactFormProps {
   open: boolean;
@@ -46,6 +26,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   loading = false,
   isEdit = false,
 }) => {
+  const {user} = useAuth();
   const [form] = Form.useForm();
   const [heritageSites, setHeritageSites] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -66,48 +47,38 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
               ? heritageService.getAll({
                   ids: initialValues.relatedHeritageIds.join(","),
                 })
-              : Promise.resolve({ success: true, data: [] }),
+              : Promise.resolve({success: true, data: []}),
             initialValues.relatedHistoryIds?.length > 0
               ? historyService.getAll({
                   ids: initialValues.relatedHistoryIds.join(","),
                 })
-              : Promise.resolve({ success: true, data: [] }),
+              : Promise.resolve({success: true, data: []}),
           ]);
 
           // Map related heritage to {label, value}
-          const relatedHeri = (initialValues.relatedHeritageIds || []).map(
-            (id: any) => {
-              const heri =
-                relHeritageRes.success && relHeritageRes.data
-                  ? relHeritageRes.data.find(
-                      (h: any) =>
-                        h.id === (typeof id === "object" ? id.value : id),
-                    )
-                  : null;
-              return heri
-                ? { label: heri.name, value: heri.id }
-                : typeof id === "object"
-                  ? id
-                  : { label: `ID: ${id}`, value: id };
-            },
-          );
-
-          // Map related history to {label, value}
-          const relatedHistoryArr = (
-            initialValues.relatedHistoryIds || []
-          ).map((id: any) => {
-            const hist =
-              relHistoryRes.success && relHistoryRes.data
-                ? relHistoryRes.data.find(
-                    (h: any) =>
-                      h.id === (typeof id === "object" ? id.value : id),
-                  )
+          const relatedHeri = (initialValues.relatedHeritageIds || []).map((id: any) => {
+            const heri =
+              relHeritageRes.success && relHeritageRes.data
+                ? relHeritageRes.data.find((h: any) => h.id === (typeof id === "object" ? id.value : id))
                 : null;
-            return hist
-              ? { label: hist.title, value: hist.id }
+            return heri
+              ? {label: heri.name, value: heri.id}
               : typeof id === "object"
                 ? id
-                : { label: `ID: ${id}`, value: id };
+                : {label: `ID: ${id}`, value: id};
+          });
+
+          // Map related history to {label, value}
+          const relatedHistoryArr = (initialValues.relatedHistoryIds || []).map((id: any) => {
+            const hist =
+              relHistoryRes.success && relHistoryRes.data
+                ? relHistoryRes.data.find((h: any) => h.id === (typeof id === "object" ? id.value : id))
+                : null;
+            return hist
+              ? {label: hist.title, value: hist.id}
+              : typeof id === "object"
+                ? id
+                : {label: `ID: ${id}`, value: id};
           });
 
           const formattedValues = {
@@ -120,23 +91,24 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           console.error("Failed to init artifact data", error);
           form.setFieldsValue(initialValues);
         }
-      } 
+      }
       // 2. Chế độ Thêm mới (isEdit = false) -> Reset form
       else if (open && !isEdit) {
         // Aggressively clear all fields because form instance persists
         const currentFields = form.getFieldsValue(true);
         const resetValues = Object.keys(currentFields).reduce((acc: any, key) => {
-            acc[key] = undefined;
-            return acc;
+          acc[key] = undefined;
+          return acc;
         }, {});
         form.setFieldsValue(resetValues);
         form.resetFields(); // Call this as well to reset errors/touched state
-        
+
         // Set defaults
         form.setFieldsValue({
           isOnDisplay: true,
           condition: ArtifactCondition.GOOD,
           yearCreated: undefined,
+          creator: user?.name,
         });
       }
     };
@@ -148,8 +120,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
     const fetchInitialData = async () => {
       try {
         const [heritageRes, categoryRes] = await Promise.all([
-          heritageService.getAll({ _limit: 100 }),
-          categoryService.getAll({ _limit: 100 }),
+          heritageService.getAll({_limit: 100}),
+          categoryService.getAll({_limit: 100}),
         ]);
 
         if (heritageRes.success) setHeritageSites(heritageRes.data || []);
@@ -188,11 +160,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           "locationInSite",
           "isOnDisplay",
         ];
-        const tab2Fields = [
-          "description",
-          "historicalContext",
-          "culturalSignificance",
-        ];
+        const tab2Fields = ["description", "historicalContext", "culturalSignificance"];
         const tab3Fields = ["relatedHeritageIds", "relatedHistoryIds"];
 
         if (tab1Fields.includes(firstErrorField)) {
@@ -212,21 +180,22 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
     // Transform values before submit
     const submitData = {
       ...values,
+      locationInSite: values.locationInSite,
+      historicalContext: values.historicalContext,
+      culturalSignificance: values.culturalSignificance,
       image: (() => {
         const raw = Array.isArray(values.image) ? values.image[0] : values.image;
         if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
         return raw || "";
       })(),
-      gallery: values.gallery?.map((item: any) => 
-        typeof item === "object" ? (item.url || item.response?.url || "") : item
-      ) || [],
+      gallery:
+        values.gallery?.map((item: any) => (typeof item === "object" ? item.url || item.response?.url || "" : item)) ||
+        [],
       shortDescription: values.shortDescription, // Sync for compatibility
-      relatedHeritageIds: values.relatedHeritageIds?.map((item: any) =>
-        typeof item === "object" ? item.value : item,
-      ) || [],
-      relatedHistoryIds: values.relatedHistoryIds?.map((item: any) =>
-        typeof item === "object" ? item.value : item,
-      ) || [],
+      relatedHeritageIds:
+        values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedHistoryIds:
+        values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
     const success = await onSubmit(submitData);
     if (success) {
@@ -237,7 +206,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   // Fetch function for Heritage Sites Search
   const fetchHeritageList = async (search: string) => {
     try {
-      const response = await heritageService.getAll({ q: search, limit: 10 });
+      const response = await heritageService.getAll({q: search, limit: 10});
       if (response.success && response.data) {
         return response.data.map((item: any) => ({
           label: item.name,
@@ -254,7 +223,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   // Fetch function for History Articles Search
   const fetchHistoryList = async (search: string) => {
     try {
-      const response = await historyService.getAll({ q: search, limit: 10 });
+      const response = await historyService.getAll({q: search, limit: 10});
       if (response.success && response.data) {
         return response.data.map((item: any) => ({
           label: item.title,
@@ -280,23 +249,18 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       preserve={false}
       initialValues={initialValues}
       footer={
-        <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+        <div style={{display: "flex", justifyContent: "center", gap: "8px"}}>
           <StyledButton
             variant="outline"
             onClick={() => {
               form.resetFields();
               onCancel();
             }}
-            style={{ minWidth: "120px" }}
+            style={{minWidth: "120px"}}
           >
             Hủy
           </StyledButton>
-          <StyledButton
-            variant="primary"
-            loading={loading}
-            onClick={handleSubmitClick}
-            style={{ minWidth: "120px" }}
-          >
+          <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{minWidth: "120px"}}>
             Lưu lại
           </StyledButton>
         </div>
@@ -329,14 +293,9 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     <Form.Item
                       name="shortDescription"
                       label="Mô tả ngắn"
-                      rules={[
-                        { required: true, message: "Vui lòng nhập mô tả ngắn" },
-                      ]}
+                      rules={[{required: true, message: "Vui lòng nhập mô tả ngắn"}]}
                     >
-                      <Input.TextArea
-                        rows={2}
-                        placeholder="Mô tả ngắn gọn về hiện vật..."
-                      />
+                      <Input.TextArea rows={2} placeholder="Mô tả ngắn gọn về hiện vật..." />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -351,6 +310,10 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                           required: true,
                           message: "Vui lòng nhập tên hiện vật",
                         },
+                        {
+                          min: 3,
+                          message: "Tên hiện vật yêu cầu tối thiểu 3 ký tự",
+                        },
                       ]}
                     >
                       <Input placeholder="Nhập tên hiện vật..." />
@@ -360,9 +323,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     <Form.Item
                       name="artifactType"
                       label="Loại hình"
-                      rules={[
-                        { required: true, message: "Vui lòng chọn loại hình" },
-                      ]}
+                      rules={[{required: true, message: "Vui lòng chọn loại hình"}]}
                     >
                       <Select placeholder="Chọn loại hình">
                         {Object.values(ArtifactType).map((type) => (
@@ -377,19 +338,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item
-                      name="heritageSiteId"
-                      label="Thuộc Di sản"
-                      rules={[
-                        { required: true, message: "Vui lòng chọn di sản" },
-                      ]}
-                    >
-                      <Select
-                        placeholder="Chọn di sản"
-                        allowClear
-                        showSearch
-                        optionFilterProp="children"
-                      >
+                    <Form.Item name="heritageSiteId" label="Thuộc Di sản" rules={[]}>
+                      <Select placeholder="Chọn di sản" allowClear showSearch optionFilterProp="children">
                         {heritageSites.map((site) => (
                           <Select.Option key={site.id} value={site.id}>
                             {site.name}
@@ -402,16 +352,9 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     <Form.Item
                       name="categoryId"
                       label="Phân loại"
-                      rules={[
-                        { required: true, message: "Vui lòng chọn phân loại" },
-                      ]}
+                      rules={[{required: true, message: "Vui lòng chọn phân loại"}]}
                     >
-                      <Select
-                        placeholder="Chọn loại hình văn hóa"
-                        allowClear
-                        showSearch
-                        optionFilterProp="children"
-                      >
+                      <Select placeholder="Chọn loại hình văn hóa" allowClear showSearch optionFilterProp="children">
                         {categories.map((cat) => (
                           <Select.Option key={cat.id} value={cat.id}>
                             {cat.name}
@@ -425,7 +368,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 <Row gutter={16}>
                   <Col span={8}>
                     <Form.Item name="yearCreated" label="Năm sáng tạo">
-                      <InputNumber style={{ width: "100%" }} controls={false} />
+                      <InputNumber style={{width: "100%"}} controls={false} />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
@@ -454,11 +397,15 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   </Col>
                   <Col span={8}>
                     <Form.Item name="creator" label="Tác giả/Nghệ nhân">
-                      <Input placeholder="Tên tác giả..." />
+                      <Input placeholder="Tên tác giả..." readOnly />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item name="locationInSite" label="Vị trí trưng bày">
+                    <Form.Item
+                      name="locationInSite"
+                      label="Vị trí trưng bày"
+                      rules={[{min: 5, message: "Vị trí trưng bày yêu cầu tối thiểu 5 ký tự"}]}
+                    >
                       <Input placeholder="Phòng số X..." />
                     </Form.Item>
                   </Col>
@@ -466,11 +413,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
                 <Row>
                   <Col span={6}>
-                    <Form.Item
-                      name="isOnDisplay"
-                      label="Đang trưng bày"
-                      valuePropName="checked"
-                    >
+                    <Form.Item name="isOnDisplay" label="Đang trưng bày" valuePropName="checked">
                       <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
                     </Form.Item>
                   </Col>
@@ -486,7 +429,10 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 <Form.Item
                   name="description"
                   label="Mô tả"
-                  rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+                  rules={[
+                    {required: true, message: "Vui lòng nhập mô tả"},
+                    {min: 20, message: "Mô tả chi tiết yêu cầu tối thiểu 20 ký tự"},
+                  ]}
                 >
                   <TinyEditor
                     key={isEdit ? `desc-edit-${initialValues?.id}` : "desc-create"}
@@ -497,7 +443,11 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item name="historicalContext" label="Bối cảnh lịch sử">
+                <Form.Item
+                  name="historicalContext"
+                  label="Bối cảnh lịch sử"
+                  rules={[{min: 20, message: "Bối cảnh lịch sử yêu cầu tối thiểu 20 ký tự"}]}
+                >
                   <TinyEditor
                     key={isEdit ? `hist-edit-${initialValues?.id}` : "hist-create"}
                     height={250}
@@ -505,19 +455,23 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item name="culturalSignificance" label="Ý nghĩa văn hóa">
-                  <TinyEditor 
+                <Form.Item
+                  name="culturalSignificance"
+                  label="Ý nghĩa văn hóa"
+                  rules={[{min: 20, message: "Ý nghĩa văn hóa yêu cầu tối thiểu 20 ký tự"}]}
+                >
+                  <TinyEditor
                     key={isEdit ? `cult-edit-${initialValues?.id}` : "cult-create"}
-                    height={250} 
-                    placeholder="Giá trị văn hóa..." 
+                    height={250}
+                    placeholder="Giá trị văn hóa..."
                   />
                 </Form.Item>
 
                 <Form.Item name="references" label="Nguồn tham khảo">
-                  <TinyEditor 
+                  <TinyEditor
                     key={isEdit ? `ref-edit-${initialValues?.id}` : "ref-create"}
-                    height={200} 
-                    placeholder="Nhập các nguồn tham khảo..." 
+                    height={200}
+                    placeholder="Nhập các nguồn tham khảo..."
                   />
                 </Form.Item>
               </>
@@ -537,7 +491,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm di sản..."
                     fetchOptions={fetchHeritageList}
-                    style={{ width: "100%" }}
+                    style={{width: "100%"}}
                   />
                 </Form.Item>
 
@@ -550,7 +504,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm bài viết..."
                     fetchOptions={fetchHistoryList}
-                    style={{ width: "100%" }}
+                    style={{width: "100%"}}
                   />
                 </Form.Item>
               </>

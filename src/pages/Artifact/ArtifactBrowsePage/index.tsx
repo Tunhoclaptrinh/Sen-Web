@@ -56,6 +56,7 @@ const ArtifactBrowsePage: React.FC = () => {
             const response = await artifactService.getAll({
                 page: pagination.current,
                 limit: pagination.pageSize,
+                status: 'published',
                 ...filters,
             });
             

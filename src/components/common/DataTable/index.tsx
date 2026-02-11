@@ -1,17 +1,5 @@
-import React, { useState } from "react";
-import {
-  Table,
-  Space,
-  Popconfirm,
-  Tooltip,
-  Badge,
-  Menu,
-  Dropdown,
-  Alert,
-  Modal,
-  Input,
-  Card,
-} from "antd";
+import React, {useState} from "react";
+import {Table, Space, Popconfirm, Tooltip, Badge, Menu, Dropdown, Alert, Modal, Input, Card} from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -25,9 +13,9 @@ import {
   SearchOutlined,
   FileExcelOutlined,
 } from "@ant-design/icons";
-import { Button, toast } from "@/components/common";
-import { DataTableProps, FilterConfig } from "./types";
-import { useDebounce } from "@/hooks";
+import {Button, toast, PermissionGuard} from "@/components/common";
+import {DataTableProps, FilterConfig} from "./types";
+import {useDebounce} from "@/hooks";
 import "./styles.less";
 import ExportModal from "./ExportModal"; // Import the modal
 import FilterBuilder from "./FilterBuilder";
@@ -45,6 +33,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onEdit,
   onDelete,
   onRefresh,
+  permissionResource,
   pagination = {
     current: 1,
     pageSize: 10,
@@ -86,7 +75,12 @@ const DataTable: React.FC<DataTableProps> = ({
   alertMessage,
   alertType = "info",
   actionColumnProps,
-  hideCard, // New prop
+  hideCard,
+  deleteConfirmTitle,
+  deleteConfirmDescription,
+  deleteOkText,
+  deleteCancelText,
+  deleteTooltip,
   ...tableProps
 }) => {
   const [internalSearchText, setInternalSearchText] = useState(searchValue);
@@ -99,13 +93,11 @@ const DataTable: React.FC<DataTableProps> = ({
   const [activeFilters, setActiveFilters] = useState<FilterConfig[]>([]);
   const [availableFilters] = useState(filters); // Keep all available filters
 
-  const [enabledFilters, setEnabledFilters] = useState<Record<string, boolean>>(
-    () => {
-      const initial: Record<string, boolean> = {};
-      filters.forEach((f) => (initial[f.key] = true));
-      return initial;
-    },
-  );
+  const [enabledFilters, setEnabledFilters] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    filters.forEach((f) => (initial[f.key] = true));
+    return initial;
+  });
 
   const getActiveFilterKey = (filterKey: string, op?: string) => {
     const filterConfig = filters.find((f) => f.key === filterKey);
@@ -121,17 +113,13 @@ const DataTable: React.FC<DataTableProps> = ({
 
     if (oldOp === newOp) return;
 
-    setOperators((prev) => ({ ...prev, [filterKey]: newOp }));
+    setOperators((prev) => ({...prev, [filterKey]: newOp}));
 
     const oldKey = oldOp === "eq" ? filterKey : `${filterKey}_${oldOp}`;
     const newKey = newOp === "eq" ? filterKey : `${filterKey}_${newOp}`;
     const currentValue = filterValues[oldKey];
 
-    if (
-      currentValue !== undefined &&
-      currentValue !== null &&
-      currentValue !== ""
-    ) {
+    if (currentValue !== undefined && currentValue !== null && currentValue !== "") {
       handleFilterChange(newKey, currentValue);
       handleFilterChange(oldKey, undefined);
     }
@@ -143,14 +131,14 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   const toggleFilterEnabled = (key: string) => {
-    setEnabledFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+    setEnabledFilters((prev) => ({...prev, [key]: !prev[key]}));
   };
 
   const addFilterCondition = (filterKey: string) => {
     const filterToAdd = availableFilters.find((f) => f.key === filterKey);
     if (filterToAdd && !activeFilters.find((f) => f.key === filterKey)) {
       setActiveFilters((prev) => [...prev, filterToAdd]);
-      setEnabledFilters((prev) => ({ ...prev, [filterKey]: true }));
+      setEnabledFilters((prev) => ({...prev, [filterKey]: true}));
     }
   };
 
@@ -160,13 +148,12 @@ const DataTable: React.FC<DataTableProps> = ({
     const filterConfig = filters.find((f) => f.key === filterKey);
     const defaultOp = filterConfig?.defaultOperator || "eq";
     const currentOp = operators[filterKey] || defaultOp;
-    
-    const activeKey =
-      currentOp === "eq" ? filterKey : `${filterKey}_${currentOp}`;
+
+    const activeKey = currentOp === "eq" ? filterKey : `${filterKey}_${currentOp}`;
     handleFilterChange(activeKey, undefined);
     // Remove from enabled filters
     setEnabledFilters((prev) => {
-      const newEnabled = { ...prev };
+      const newEnabled = {...prev};
       delete newEnabled[filterKey];
       return newEnabled;
     });
@@ -189,24 +176,23 @@ const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
-  const ColumnSearch = ({
-    setSelectedKeys,
-    selectedKeys,
-    confirm,
-    label: _label,
-  }: any) => {
+  const tableColumns = React.useMemo(() => {
+    return columns;
+  }, [columns]);
+
+  const ColumnSearch = ({setSelectedKeys, selectedKeys, confirm, label: _label}: any) => {
     const [value, setValue] = useState(selectedKeys[0] || "");
 
     // Sync value if props change
     React.useEffect(() => {
-        setValue(selectedKeys[0] || "");
+      setValue(selectedKeys[0] || "");
     }, [selectedKeys]);
 
     // Handle input change: update local value only
     const onChange = (e: any) => {
       const val = e.target.value;
       setValue(val);
-      
+
       // If cleared (empty), trigger instant refresh
       if (val === "") {
         setSelectedKeys([]);
@@ -220,19 +206,19 @@ const DataTable: React.FC<DataTableProps> = ({
         const currentKey = selectedKeys[0] || "";
         // Only debounce if value is NOT empty (empty is handled instantly by onChange)
         if (value !== currentKey && value !== "") {
-           setSelectedKeys([value]);
-           confirm({ closeDropdown: false });
+          setSelectedKeys([value]);
+          confirm({closeDropdown: false});
         }
       }, 600);
       return () => clearTimeout(timer);
     }, [value, selectedKeys, confirm, setSelectedKeys]);
 
     const onSearch = (val: string) => {
-        setValue(val); 
-        // Ensure we search with the current value
-        const keys = val ? [val] : [];
-        setSelectedKeys(keys);
-        confirm();
+      setValue(val);
+      // Ensure we search with the current value
+      const keys = val ? [val] : [];
+      setSelectedKeys(keys);
+      confirm();
     };
 
     return (
@@ -240,7 +226,7 @@ const DataTable: React.FC<DataTableProps> = ({
         className="filter-dropdown-container"
         style={{
           padding: 8,
-          width: 250, 
+          width: 250,
         }}
         onKeyDown={(e) => e.stopPropagation()}
       >
@@ -253,13 +239,13 @@ const DataTable: React.FC<DataTableProps> = ({
           allowClear
           className="filter-search-input-compact"
         />
-        <div style={{ marginTop: 8, fontSize: 13, color: "#595959", textAlign: 'right' }}>
-           <a
+        <div style={{marginTop: 8, fontSize: 13, color: "#595959", textAlign: "right"}}>
+          <a
             onClick={() => {
-              confirm(); 
+              confirm();
               setFilterModalOpen(true);
             }}
-            style={{ fontWeight: 500 }}
+            style={{fontWeight: 500}}
           >
             Xem thêm bộ lọc khác
           </a>
@@ -271,9 +257,9 @@ const DataTable: React.FC<DataTableProps> = ({
   const getColumnSearchProps = (_dataIndex: string, label: string) => ({
     filterDropdown: (props: any) => <ColumnSearch {...props} label={label} />,
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined 
+      <SearchOutlined
         className={filtered ? "active-filter-icon" : ""}
-        style={{ color: filtered ? "var(--primary-color)" : undefined }} 
+        style={{color: filtered ? "var(--primary-color)" : undefined}}
       />
     ),
     onFilter: (_value: any, _record: any) => {
@@ -294,18 +280,13 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   // Resolve selectedRowKeys from direct prop or rowSelection object
-  const activeSelectedRowKeys =
-    propSelectedRowKeys || customRowSelection?.selectedRowKeys || [];
+  const activeSelectedRowKeys = propSelectedRowKeys || customRowSelection?.selectedRowKeys || [];
 
   const rowSelection = batchOperations
     ? customRowSelection || {
         selectedRowKeys: activeSelectedRowKeys,
         onChange: onSelectChange,
-        selections: [
-          Table.SELECTION_ALL,
-          Table.SELECTION_INVERT,
-          Table.SELECTION_NONE,
-        ],
+        selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
         getCheckboxProps: (record: any) => ({
           disabled: record.disabled,
         }),
@@ -313,26 +294,21 @@ const DataTable: React.FC<DataTableProps> = ({
     : undefined;
 
   // Handle columns: check if "actions" column is defined in props.columns
-  const userActionColumnIndex = columns.findIndex(
-    (col) => col.key === "actions",
-  );
-  const userActionColumn =
-    userActionColumnIndex !== -1 ? columns[userActionColumnIndex] : null;
+  const userActionColumnIndex = columns.findIndex((col) => col.key === "actions");
+  const userActionColumn = userActionColumnIndex !== -1 ? columns[userActionColumnIndex] : null;
 
   // Dynamic Action Column Logic
-  const standardActionCount =
-    (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0);
+  const standardActionCount = (onView ? 1 : 0) + (onEdit ? 1 : 0) + (onDelete ? 1 : 0);
   // Base width per button (32px + 8px gap) + padding (16px)
   // If customActions exists, we add extra space or default to a safe width if not specified
-  const calculatedWidth =
-    actionsWidth || standardActionCount * 40 + (customActions ? 40 : 16);
+  const calculatedWidth = actionsWidth || Math.max(100, standardActionCount * 42 + (customActions ? 40 : 16));
 
   const mergedActionsColumn =
     showActions || userActionColumn
       ? {
           title: "Thao tác",
           key: "actions",
-          className: "data-table-actions-column", 
+          className: "data-table-actions-column",
           width: calculatedWidth,
           fixed: actionPosition,
           align: "center" as const,
@@ -347,56 +323,60 @@ const DataTable: React.FC<DataTableProps> = ({
             return (
               <Space size={4} className="action-buttons-container">
                 {onView && (
-                  <Tooltip title="Xem chi tiết">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      onClick={() => onView(record)}
-                      className="action-btn-standard"
-                      style={{ color: "var(--primary-color)" }}
-                    >
-                      <EyeOutlined />
-                    </Button>
-                  </Tooltip>
-                )}
-
-                {onEdit && (
-                  <Tooltip title="Chỉnh sửa">
-                    <Button
-                      variant="ghost"
-                      buttonSize="small"
-                      onClick={() => onEdit(record)}
-                      className="action-btn-standard action-btn-edit"
-                      style={{ color: "var(--primary-color)" }}
-                    >
-                      <EditOutlined />
-                    </Button>
-                  </Tooltip>
-                )}
-
-                {onDelete && (
-                  <Popconfirm
-                    title="Xác nhận xóa?"
-                    description="Bạn có chắc chắn muốn xóa mục này?"
-                    onConfirm={() => onDelete(record[rowKey])}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                    okButtonProps={{ danger: true }}
-                    icon={
-                      <ExclamationCircleOutlined style={{ color: "#EF4444" }} />
-                    }
-                  >
-                    <Tooltip title="Xóa">
+                  <PermissionGuard resource={permissionResource!} action="read" fallback={null}>
+                    <Tooltip title="Xem chi tiết">
                       <Button
                         variant="ghost"
                         buttonSize="small"
-                        className="action-btn-standard action-btn-delete"
-                        style={{ color: "#ff4d4f" }}
+                        onClick={() => onView(record)}
+                        className="action-btn-standard"
+                        style={{color: "var(--primary-color)"}}
                       >
-                        <DeleteOutlined />
+                        <EyeOutlined />
                       </Button>
                     </Tooltip>
-                  </Popconfirm>
+                  </PermissionGuard>
+                )}
+
+                {onEdit && (
+                  <PermissionGuard resource={permissionResource!} action="update" fallback={null}>
+                    <Tooltip title="Chỉnh sửa">
+                      <Button
+                        variant="ghost"
+                        buttonSize="small"
+                        onClick={() => onEdit(record)}
+                        className="action-btn-standard action-btn-edit"
+                        style={{color: "var(--primary-color)"}}
+                      >
+                        <EditOutlined />
+                      </Button>
+                    </Tooltip>
+                  </PermissionGuard>
+                )}
+
+                {onDelete && (
+                  <PermissionGuard resource={permissionResource!} action="delete" fallback={null}>
+                    <Popconfirm
+                      title={deleteConfirmTitle || "Xác nhận xóa?"}
+                      description={deleteConfirmDescription || "Bạn có chắc chắn muốn xóa mục này?"}
+                      onConfirm={() => onDelete(record[rowKey])}
+                      okText={deleteOkText || "Xóa"}
+                      cancelText={deleteCancelText || "Hủy"}
+                      okButtonProps={{danger: true}}
+                      icon={<ExclamationCircleOutlined style={{color: "#EF4444"}} />}
+                    >
+                      <Tooltip title={deleteTooltip || "Xóa"}>
+                        <Button
+                          variant="ghost"
+                          buttonSize="small"
+                          className="action-btn-standard action-btn-delete"
+                          style={{color: "#ff4d4f"}}
+                        >
+                          <DeleteOutlined />
+                        </Button>
+                      </Tooltip>
+                    </Popconfirm>
+                  </PermissionGuard>
                 )}
 
                 {customActions && customActions(record)}
@@ -407,19 +387,14 @@ const DataTable: React.FC<DataTableProps> = ({
       : null;
 
   const finalColumns = [
-    // If action position is left and no user defined action column (or user position was not specified, handled by splicing?)
-    // Actually, if user defined it in columns, let's keep its position!
-    ...(actionPosition === "left" && !userActionColumn
-      ? [mergedActionsColumn]
-      : []),
+    // If action position is left and no user defined action column
+    ...(actionPosition === "left" && !userActionColumn ? [mergedActionsColumn] : []),
 
-    ...columns.map((col) => {
+    ...tableColumns.map((col: any) => {
       // If this is the action column, return the merged one
       if (col.key === "actions") return mergedActionsColumn;
-      
+
       const colKey = col.key || col.dataIndex;
-      // Get controlled value from parent filterValues if available
-      // Check both exact key match or just dataIndex match
       const controlledVal = filterValues?.[colKey];
 
       const isSearchable = col.searchable;
@@ -427,26 +402,19 @@ const DataTable: React.FC<DataTableProps> = ({
         ...col,
         align: col.align || ("center" as const),
         sorter: sortable && col.sortable !== false,
-        // Make column controlled if filterValues are provided
         ...(controlledVal !== undefined
           ? {
-              filteredValue: Array.isArray(controlledVal)
-                ? controlledVal
-                : [controlledVal],
+              filteredValue: Array.isArray(controlledVal) ? controlledVal : [controlledVal],
             }
-          : { filteredValue: null }), // Explicitly null to clear if not in state
-          
-        ...(isSearchable
-          ? getColumnSearchProps(col.dataIndex, col.title as string)
-          : {}),
+          : {filteredValue: null}),
+
+        ...(isSearchable ? getColumnSearchProps(col.dataIndex, col.title as string) : {}),
       };
     }),
 
     // Append at end if right and not defined in columns
-    ...(actionPosition === "right" && !userActionColumn && mergedActionsColumn
-      ? [mergedActionsColumn]
-      : []),
-  ];
+    ...(actionPosition === "right" && !userActionColumn && mergedActionsColumn ? [mergedActionsColumn] : []),
+  ].filter(Boolean); // Filter out nulls
 
   const batchActionsMenu = (
     <Menu>
@@ -465,7 +433,7 @@ const DataTable: React.FC<DataTableProps> = ({
               content: `Bạn có chắc chắn muốn xóa ${activeSelectedRowKeys.length} mục đã chọn ? `,
               okText: "Xóa",
               cancelText: "Hủy",
-              okButtonProps: { danger: true },
+              okButtonProps: {danger: true},
               onOk: () => onBatchDelete(activeSelectedRowKeys),
             });
           }}
@@ -502,27 +470,19 @@ const DataTable: React.FC<DataTableProps> = ({
     input.click();
   };
 
-  const hasActiveFilters =
-    filters &&
-    filters.length > 0 &&
-    Object.keys(filterValues).some((key) => filterValues[key]);
+  const hasActiveFilters = filters && filters.length > 0 && Object.keys(filterValues).some((key) => filterValues[key]);
 
   return (
-    <div className={`data-table-wrapper${hideCard ? ' hide-card-mode' : ''}`}>
+    <div className={`data-table-wrapper${hideCard ? " hide-card-mode" : ""}`}>
       {/* Separate Title */}
-      {title && (
-        <div className="data-table-title">
-          {typeof title === "string" ? <h2>{title}</h2> : title}
-        </div>
-      )}
+      {title && <div className="data-table-title">{typeof title === "string" ? <h2>{title}</h2> : title}</div>}
 
       <Card
-        styles={{ body: { borderRadius: hideCard ? 0 : 12, padding: 0 } }}
+        styles={{body: {borderRadius: hideCard ? 0 : 12, padding: 0}}}
         hoverable={false}
         bordered={!hideCard}
-        style={hideCard ? { boxShadow: 'none', background: 'transparent' } : undefined}
+        style={hideCard ? {boxShadow: "none", background: "transparent"} : undefined}
       >
-
         {/* Header Content inside Card for seamless look */}
         {tableProps.headerContent && <div>{tableProps.headerContent}</div>}
 
@@ -531,9 +491,11 @@ const DataTable: React.FC<DataTableProps> = ({
           {/* Left Side: Primary Actions (Add, Import, Export, Batch) */}
           <Space wrap>
             {onAdd && (
-              <Button variant="primary" onClick={onAdd} buttonSize="small">
-                <PlusOutlined /> Thêm Mới
-              </Button>
+              <PermissionGuard resource={permissionResource!} action="create" fallback={null}>
+                <Button variant="primary" onClick={onAdd} buttonSize="small">
+                  <PlusOutlined /> Thêm Mới
+                </Button>
+              </PermissionGuard>
             )}
 
             {importable && onImport && (
@@ -544,30 +506,17 @@ const DataTable: React.FC<DataTableProps> = ({
                     disabled={tableProps.importLoading}
                     overlay={
                       <Menu>
-                        <Menu.Item
-                          key="upload"
-                          icon={<UploadOutlined />}
-                          onClick={handleImportClick}
-                        >
+                        <Menu.Item key="upload" icon={<UploadOutlined />} onClick={handleImportClick}>
                           Tải lên file dữ liệu
                         </Menu.Item>
-                        <Menu.Item
-                          key="template"
-                          icon={<FileExcelOutlined />}
-                          onClick={tableProps.onDownloadTemplate}
-                        >
+                        <Menu.Item key="template" icon={<FileExcelOutlined />} onClick={tableProps.onDownloadTemplate}>
                           Tải mẫu nhập liệu
                         </Menu.Item>
                       </Menu>
                     }
                   >
-                    <Button
-                      variant="outline"
-                      loading={tableProps.importLoading}
-                      buttonSize="small"
-                    >
-                      <UploadOutlined /> Import{" "}
-                      <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
+                    <Button variant="outline" loading={tableProps.importLoading} buttonSize="small">
+                      <UploadOutlined /> Import <span style={{fontSize: 10, marginLeft: 4}}>▼</span>
                     </Button>
                   </Dropdown>
                 ) : (
@@ -587,13 +536,13 @@ const DataTable: React.FC<DataTableProps> = ({
 
             {exportable && onExport && (
               <>
-                 <Tooltip title="Export dữ liệu">
+                <Tooltip title="Export dữ liệu">
                   <Button
                     variant="outline"
                     onClick={() => {
-                        // Open our new modal instead of calling direct
-                        // Note: We need a state for this
-                       setExportModalOpen(true);
+                      // Open our new modal instead of calling direct
+                      // Note: We need a state for this
+                      setExportModalOpen(true);
                     }}
                     loading={tableProps.exportLoading}
                     buttonSize="small"
@@ -605,10 +554,7 @@ const DataTable: React.FC<DataTableProps> = ({
             )}
 
             {batchOperations && activeSelectedRowKeys.length > 0 && (
-              <Badge
-                count={activeSelectedRowKeys.length}
-                className="batch-op-badge"
-              >
+              <Badge count={activeSelectedRowKeys.length} className="batch-op-badge">
                 {/* Logic: If only 1 action, show button directly. If > 1, show dropdown */}
                 {(onBatchDelete ? 1 : 0) + (batchActions?.length || 0) === 1 ? (
                   /* Single Action Case - Text Only Style */
@@ -617,13 +563,13 @@ const DataTable: React.FC<DataTableProps> = ({
                       variant="ghost"
                       danger
                       buttonSize="small"
-                      style={{ 
-                        border: "none", 
-                        boxShadow: "none", 
+                      style={{
+                        border: "none",
+                        boxShadow: "none",
                         background: "transparent",
                         color: "#ff4d4f",
                         fontWeight: 500,
-                        padding: "4px 8px"
+                        padding: "4px 8px",
                       }}
                       onClick={() => {
                         Modal.confirm({
@@ -631,7 +577,7 @@ const DataTable: React.FC<DataTableProps> = ({
                           content: `Bạn có chắc chắn muốn xóa ${activeSelectedRowKeys.length} mục đã chọn?`,
                           okText: "Xóa",
                           cancelText: "Hủy",
-                          okButtonProps: { danger: true },
+                          okButtonProps: {danger: true},
                           onOk: () => onBatchDelete(activeSelectedRowKeys),
                         });
                       }}
@@ -643,13 +589,13 @@ const DataTable: React.FC<DataTableProps> = ({
                       variant="ghost"
                       danger={batchActions![0].danger}
                       buttonSize="small"
-                      style={{ 
-                        border: "none", 
-                        boxShadow: "none", 
-                        background: "transparent", 
+                      style={{
+                        border: "none",
+                        boxShadow: "none",
+                        background: "transparent",
                         color: batchActions![0].danger ? "#ff4d4f" : "var(--primary-color)",
                         fontWeight: 500,
-                        padding: "4px 8px"
+                        padding: "4px 8px",
                       }}
                       onClick={() => batchActions![0].onClick(activeSelectedRowKeys)}
                       className="batch-action-btn"
@@ -660,11 +606,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 ) : (
                   /* Multiple Actions Case -> Dropdown */
                   <Dropdown overlay={batchActionsMenu} trigger={["click"]}>
-                    <Button
-                      variant="outline"
-                      buttonSize="small"
-                      className="batch-action-btn"
-                    >
+                    <Button variant="outline" buttonSize="small" className="batch-action-btn">
                       Thao tác hàng loạt <span style={{fontSize: 10, marginLeft: 4}}>▼</span>
                     </Button>
                   </Dropdown>
@@ -688,9 +630,9 @@ const DataTable: React.FC<DataTableProps> = ({
                   // Instant clear: if empty, force immediate search (bypass debounce)
                   if (!val && onSearch) onSearch("");
                 }}
-                style={{ width: 220, height: 32, marginBottom: 0 }}
+                style={{width: 220, height: 32, marginBottom: 0}}
                 allowClear
-                prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+                prefix={<SearchOutlined style={{color: "#bfbfbf"}} />}
                 size="middle"
               />
             )}
@@ -729,13 +671,7 @@ const DataTable: React.FC<DataTableProps> = ({
           </Space>
         </div>
         {showAlert && alertMessage && (
-          <Alert
-            message={alertMessage}
-            type={alertType}
-            showIcon
-            closable
-            className="data-table-alert"
-          />
+          <Alert message={alertMessage} type={alertType} showIcon closable className="data-table-alert" />
         )}
 
         <Table
@@ -757,7 +693,7 @@ const DataTable: React.FC<DataTableProps> = ({
             } as any
           }
           onChange={onPaginationChange}
-          scroll={scroll || { x: "max-content" }}
+          scroll={scroll || {x: "max-content"}}
           locale={{
             emptyText: emptyText,
           }}
@@ -771,10 +707,10 @@ const DataTable: React.FC<DataTableProps> = ({
           title="Bộ lọc tùy chỉnh"
           width={700}
           footer={null}
-          styles={{ body: { padding: 0 } }}
+          styles={{body: {padding: 0}}}
           className="custom-filter-modal"
         >
-          <FilterBuilder 
+          <FilterBuilder
             filters={availableFilters}
             activeFilters={activeFilters}
             filterValues={filterValues}
@@ -793,20 +729,20 @@ const DataTable: React.FC<DataTableProps> = ({
       </Card>
 
       {/* Advanced Export Modal */}
-      <ExportModal 
-          visible={exportModalOpen}
-          onCancel={() => setExportModalOpen(false)}
-          onOk={(options) => {
-              if (onExport) {
-                  onExport(options);
-                  setExportModalOpen(false);
-              }
-          }}
-          loading={tableProps.exportLoading}
-          totalRecords={pagination && typeof pagination !== 'boolean' ? pagination.total : 0}
-          currentPageSize={pagination && typeof pagination !== 'boolean' ? pagination.pageSize : 10}
-          filters={filters}
-          currentFilters={filterValues}
+      <ExportModal
+        visible={exportModalOpen}
+        onCancel={() => setExportModalOpen(false)}
+        onOk={(options) => {
+          if (onExport) {
+            onExport(options);
+            setExportModalOpen(false);
+          }
+        }}
+        loading={tableProps.exportLoading}
+        totalRecords={pagination && typeof pagination !== "boolean" ? pagination.total : 0}
+        currentPageSize={pagination && typeof pagination !== "boolean" ? pagination.pageSize : 10}
+        filters={filters}
+        currentFilters={filterValues}
       />
     </div>
   );

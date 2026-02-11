@@ -1,13 +1,8 @@
 import apiClient from "@/config/axios.config";
 import BaseService from "./base.service";
-import type { BaseApiResponse, QueryParams } from "@/types";
-import { logger } from "@/utils/logger.utils";
-import { 
-  Collection, 
-  CollectionDTO, 
-  ShareCollectionData, 
-  CollectionStats 
-} from "@/types/collection.types";
+import type {BaseApiResponse, QueryParams} from "@/types";
+import {logger} from "@/utils/logger.utils";
+import {Collection, CollectionDTO, ShareCollectionData, CollectionStats} from "@/types/collection.types";
 
 /**
  * Collection with items populated
@@ -17,14 +12,13 @@ export interface CollectionWithItems extends Collection {
   heritageSites?: any[];
 }
 
-
 /**
  * Collection Service
  * Handles all operations for Collections
  */
 class CollectionService extends BaseService<Collection, CollectionDTO, CollectionDTO> {
   constructor() {
-    super('/collections');
+    super("/collections");
   }
 
   /**
@@ -32,21 +26,21 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async addItem(
     collectionId: number | string,
-    item: { id: number | string; type: 'heritage' | 'artifact'; note?: string }
+    item: {id: number | string; type: "heritage" | "artifact" | "article" | "exhibition"; note?: string},
   ): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/items`,
-        item
+        item,
       );
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã thêm vào bộ sưu tập',
+        message: response.message ?? "Đã thêm vào bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] addItem error:', error);
+      logger.error("[Collection] addItem error:", error);
       throw error;
     }
   }
@@ -57,32 +51,28 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   async removeItem(
     collectionId: number | string,
     itemId: number | string,
-    type: 'heritage' | 'artifact'
+    type: "heritage" | "artifact" | "article" | "exhibition",
   ): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.delete<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/items/${itemId}?type=${type}`
+        `${this.endpoint}/${collectionId}/items/${itemId}?type=${type}`,
       );
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
+        message: response.message ?? "Đã xóa khỏi bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] removeItem error:', error);
+      logger.error("[Collection] removeItem error:", error);
       throw error;
     }
   }
 
-
   /**
    * Get collection artifacts with details
    */
-  async getArtifacts(
-    collectionId: number | string,
-    params: QueryParams = {}
-  ): Promise<BaseApiResponse<any[]>> {
+  async getArtifacts(collectionId: number | string, params: QueryParams = {}): Promise<BaseApiResponse<any[]>> {
     try {
       const queryString = this.buildQueryString(params);
       const url = queryString
@@ -98,7 +88,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message,
       };
     } catch (error) {
-      logger.error('[Collection] getArtifacts error:', error);
+      logger.error("[Collection] getArtifacts error:", error);
       throw error;
     }
   }
@@ -106,10 +96,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   /**
    * Get collection heritage sites with details
    */
-  async getHeritageSites(
-    collectionId: number | string,
-    params: QueryParams = {}
-  ): Promise<BaseApiResponse<any[]>> {
+  async getHeritageSites(collectionId: number | string, params: QueryParams = {}): Promise<BaseApiResponse<any[]>> {
     try {
       const queryString = this.buildQueryString(params);
       const url = queryString
@@ -125,7 +112,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message,
       };
     } catch (error) {
-      logger.error('[Collection] getHeritageSites error:', error);
+      logger.error("[Collection] getHeritageSites error:", error);
       throw error;
     }
   }
@@ -133,21 +120,19 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   /**
    * Toggle collection public status
    */
-  async togglePublic(
-    collectionId: number | string
-  ): Promise<BaseApiResponse<Collection>> {
+  async togglePublic(collectionId: number | string): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.patch<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/toggle-public`
+        `${this.endpoint}/${collectionId}/toggle-public`,
       );
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã cập nhật trạng thái',
+        message: response.message ?? "Đã cập nhật trạng thái",
       };
     } catch (error) {
-      logger.error('[Collection] togglePublic error:', error);
+      logger.error("[Collection] togglePublic error:", error);
       throw error;
     }
   }
@@ -156,35 +141,29 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    * Get public collections
    */
   async getPublic(params: QueryParams = {}): Promise<BaseApiResponse<Collection[]>> {
-    return this.getAll({ isPublic: true, ...params });
+    return this.getAll({isPublic: true, ...params});
   }
 
   /**
    * Get user's private collections
    */
   async getPrivate(params: QueryParams = {}): Promise<BaseApiResponse<Collection[]>> {
-    return this.getAll({ isPublic: false, ...params });
+    return this.getAll({isPublic: false, ...params});
   }
 
   /**
    * Share collection with other users
    */
-  async share(
-    collectionId: number | string,
-    data: ShareCollectionData
-  ): Promise<BaseApiResponse<void>> {
+  async share(collectionId: number | string, data: ShareCollectionData): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<void>>(
-        `${this.endpoint}/${collectionId}/share`,
-        data
-      );
+      const response = await apiClient.post<BaseApiResponse<void>>(`${this.endpoint}/${collectionId}/share`, data);
 
       return {
         success: response.success ?? true,
-        message: response.message ?? 'Đã chia sẻ bộ sưu tập',
+        message: response.message ?? "Đã chia sẻ bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] share error:', error);
+      logger.error("[Collection] share error:", error);
       throw error;
     }
   }
@@ -192,23 +171,19 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   /**
    * Duplicate collection
    */
-  async duplicate(
-    collectionId: number | string,
-    newName?: string
-  ): Promise<BaseApiResponse<Collection>> {
+  async duplicate(collectionId: number | string, newName?: string): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<Collection>>(
-        `${this.endpoint}/${collectionId}/duplicate`,
-        { name: newName }
-      );
+      const response = await apiClient.post<BaseApiResponse<Collection>>(`${this.endpoint}/${collectionId}/duplicate`, {
+        name: newName,
+      });
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã sao chép bộ sưu tập',
+        message: response.message ?? "Đã sao chép bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] duplicate error:', error);
+      logger.error("[Collection] duplicate error:", error);
       throw error;
     }
   }
@@ -216,23 +191,20 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
   /**
    * Merge collections
    */
-  async merge(
-    sourceIds: (number | string)[],
-    targetId: number | string
-  ): Promise<BaseApiResponse<Collection>> {
+  async merge(sourceIds: (number | string)[], targetId: number | string): Promise<BaseApiResponse<Collection>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<Collection>>(
-        `${this.endpoint}/merge`,
-        { sourceIds, targetId }
-      );
+      const response = await apiClient.post<BaseApiResponse<Collection>>(`${this.endpoint}/merge`, {
+        sourceIds,
+        targetId,
+      });
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã gộp bộ sưu tập',
+        message: response.message ?? "Đã gộp bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] merge error:', error);
+      logger.error("[Collection] merge error:", error);
       throw error;
     }
   }
@@ -242,9 +214,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async getStats(): Promise<BaseApiResponse<CollectionStats>> {
     try {
-      const response = await apiClient.get<BaseApiResponse<CollectionStats>>(
-        `${this.endpoint}/stats/summary`
-      );
+      const response = await apiClient.get<BaseApiResponse<CollectionStats>>(`${this.endpoint}/stats/summary`);
 
       return {
         success: response.success ?? true,
@@ -252,7 +222,7 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
         message: response.message,
       };
     } catch (error) {
-      logger.error('[Collection] getStats error:', error);
+      logger.error("[Collection] getStats error:", error);
       throw error;
     }
   }
@@ -262,17 +232,17 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async checkItem(
     collectionId: number | string,
-    type: 'artifact' | 'heritage_site',
-    itemId: number | string
+    type: "heritage" | "artifact" | "article" | "exhibition",
+    itemId: number | string,
   ): Promise<boolean> {
     try {
-      const response = await apiClient.get<{ exists: boolean }>(
-        `${this.endpoint}/${collectionId}/check/${type}/${itemId}`
+      const response = await apiClient.get<{exists: boolean}>(
+        `${this.endpoint}/${collectionId}/check/${type}/${itemId}`,
       );
 
       return response.exists ?? false;
     } catch (error) {
-      logger.error('[Collection] checkItem error:', error);
+      logger.error("[Collection] checkItem error:", error);
       return false;
     }
   }
@@ -282,21 +252,21 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async addMultipleArtifacts(
     collectionId: number | string,
-    artifactIds: (number | string)[]
+    artifactIds: (number | string)[],
   ): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/artifacts/bulk`,
-        { artifactIds }
+        {artifactIds},
       );
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã thêm vào bộ sưu tập',
+        message: response.message ?? "Đã thêm vào bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] addMultipleArtifacts error:', error);
+      logger.error("[Collection] addMultipleArtifacts error:", error);
       throw error;
     }
   }
@@ -306,21 +276,21 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async removeMultipleArtifacts(
     collectionId: number | string,
-    artifactIds: (number | string)[]
+    artifactIds: (number | string)[],
   ): Promise<BaseApiResponse<Collection>> {
     try {
       const response = await apiClient.post<BaseApiResponse<Collection>>(
         `${this.endpoint}/${collectionId}/artifacts/bulk/delete`,
-        { artifactIds }
+        {artifactIds},
       );
 
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
-        message: response.message ?? 'Đã xóa khỏi bộ sưu tập',
+        message: response.message ?? "Đã xóa khỏi bộ sưu tập",
       };
     } catch (error) {
-      logger.error('[Collection] removeMultipleArtifacts error:', error);
+      logger.error("[Collection] removeMultipleArtifacts error:", error);
       throw error;
     }
   }
@@ -330,14 +300,11 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async exportCollection(collectionId: number | string): Promise<Blob> {
     try {
-      const response = await apiClient.get(
-        `${this.endpoint}/${collectionId}/export`,
-        { responseType: 'blob' }
-      );
+      const response = await apiClient.get(`${this.endpoint}/${collectionId}/export`, {responseType: "blob"});
 
       return response as unknown as Blob;
     } catch (error) {
-      logger.error('[Collection] export error:', error);
+      logger.error("[Collection] export error:", error);
       throw error;
     }
   }
@@ -347,8 +314,8 @@ class CollectionService extends BaseService<Collection, CollectionDTO, Collectio
    */
   async getFeatured(limit: number = 10): Promise<BaseApiResponse<Collection[]>> {
     return this.getPublic({
-      _sort: 'totalItems',
-      _order: 'desc',
+      _sort: "totalItems",
+      _order: "desc",
       _limit: limit,
     });
   }

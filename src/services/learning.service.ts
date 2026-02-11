@@ -1,4 +1,4 @@
-import BaseService from './base.service';
+import ReviewableBaseService from './reviewable.service';
 
 // Learning Path
 export interface LearningPath {
@@ -63,7 +63,7 @@ export interface LearningProgress {
     completedAt?: string;
 }
 
-class LearningService extends BaseService {
+class LearningService extends ReviewableBaseService {
     constructor() {
         super('/learning');
     }

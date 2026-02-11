@@ -158,9 +158,14 @@ class GameService extends BaseService {
         return response.data;
     }
 
-    // ==================== Daily Reward ====================
     async claimDailyReward(): Promise<{ coins: number; petals: number }> {
         const response = await this.get('/daily-reward');
+        return response.data;
+    }
+
+    // ==================== Admin Leaderboard Actions ====================
+    async resetUserScore(userId: number): Promise<{ success: boolean; message: string }> {
+        const response = await this.post('/leaderboard/reset', { userId });
         return response.data;
     }
 

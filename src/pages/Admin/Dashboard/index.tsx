@@ -5,7 +5,8 @@ import {
   FileOutlined,
   MessageOutlined,
   ArrowUpOutlined,
-  GlobalOutlined
+  GlobalOutlined,
+  TrophyOutlined
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import {
@@ -16,6 +17,7 @@ import userService from "@services/user.service";
 import heritageService from "@services/heritage.service";
 import artifactService from "@services/artifact.service";
 import reviewService from "@services/review.service";
+import badgeService from "@services/badge.service";
 
 const { Title, Text } = Typography;
 
@@ -27,18 +29,20 @@ const Dashboard = () => {
     const fetchAllStats = async () => {
       try {
         setLoading(true);
-        const [u, h, a, r] = await Promise.all([
+        const [u, h, a, r, b] = await Promise.all([
           userService.getStats(),
           heritageService.getStats(),
           artifactService.getStats(),
-          reviewService.getStats()
+          reviewService.getStats(),
+          badgeService.getStats()
         ]);
 
         setStats({
           users: u.data,
           heritage: h.data,
           artifacts: a.data,
-          reviews: r.data
+          reviews: r.data,
+          badges: b.data
         });
       } catch (error) {
         console.error("Dashboard stats error:", error);
@@ -112,6 +116,17 @@ const Dashboard = () => {
                 suffix="/ 5.0"
               />
               <Text type="secondary">Tổng số: <Text strong>{stats?.reviews?.total || 0}</Text> lượt</Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card style={{ height: '100%', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <Statistic
+                title="Huy hiệu đã cấp"
+                value={stats?.badges?.awarded || 0}
+                prefix={<TrophyOutlined style={{ color: '#eb2f96' }} />}
+                valueStyle={{ color: '#eb2f96', fontWeight: 700 }}
+              />
+              <Text type="secondary">Tổng loại huy hiệu: <Text strong>{stats?.badges?.total || 0}</Text></Text>
             </Card>
           </Col>
         </Row>

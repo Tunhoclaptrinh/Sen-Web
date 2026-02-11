@@ -1,121 +1,120 @@
-import React, { useState } from 'react';
-import { Button } from 'antd';
+import React, {useState} from "react";
+import {Button} from "antd";
 import {
-    TrophyOutlined,
-    GiftOutlined,
-    MessageOutlined,
-    UserOutlined,
-    BookOutlined,
-    DollarOutlined
-} from '@ant-design/icons';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/store/slices/authSlice';
-import { RootState } from '@/store';
-import { setOverlayOpen } from '@/store/slices/aiSlice';
-import { fetchProgress } from '@/store/slices/gameSlice';
-import UnifiedLayout from '../UnifiedLayout';
-import './styles.less';
-import { customerMenu } from '@/config/menu.config';
-import NotificationPopover from '@/components/common/NotificationPopover';
-import DailyRewardModal from '@/components/common/DailyRewardModal';
+  TrophyOutlined,
+  GiftOutlined,
+  MessageOutlined,
+  UserOutlined,
+  BookOutlined,
+  DollarOutlined,
+} from "@ant-design/icons";
+import {Outlet, useNavigate, useLocation} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {logout} from "@/store/slices/authSlice";
+import {RootState} from "@/store";
+import {setOverlayOpen} from "@/store/slices/aiSlice";
+import {fetchProgress} from "@/store/slices/gameSlice";
+import UnifiedLayout from "../UnifiedLayout";
+import "./styles.less";
+import {customerMenu} from "@/config/menu.config";
+import NotificationPopover from "@/components/common/NotificationPopover";
+import DailyRewardModal from "@/components/common/DailyRewardModal";
 // AIChat removed, now handled globally in GlobalCharacterOverlay
 
 const CustomerLayout: React.FC = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { user } = useSelector((state: RootState) => state.auth);
-    const { progress } = useSelector((state: RootState) => state.game);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {user} = useSelector((state: RootState) => state.auth);
+  const {progress} = useSelector((state: RootState) => state.game);
 
-    const [dailyRewardVisible, setDailyRewardVisible] = useState(false);
+  const [dailyRewardVisible, setDailyRewardVisible] = useState(false);
 
-    // Initial Data Fetching (Persistent Game Data)
-    // Ensures stats (Coins, Petals) are available on direct navigation or refresh
-    const location = useLocation();
+  // Initial Data Fetching (Persistent Game Data)
+  // Ensures stats (Coins, Petals) are available on direct navigation or refresh
+  const location = useLocation();
 
-    // Initial Data Fetching (Persistent Game Data)
-    // Ensures stats (Coins, Petals) are available and FRESH on navigation
-    React.useEffect(() => {
-        dispatch(fetchProgress() as any);
-    }, [dispatch, location.pathname]);
+  // Initial Data Fetching (Persistent Game Data)
+  // Ensures stats (Coins, Petals) are available and FRESH on navigation
+  React.useEffect(() => {
+    dispatch(fetchProgress() as any);
+  }, [dispatch, location.pathname]);
 
+  const handleLogout = () => {
+    dispatch(logout() as any);
+    navigate("/login");
+  };
 
+  const userMenuExtraItems = [
+    {
+      key: "profile",
+      icon: <UserOutlined />,
+      label: "Hồ sơ",
+      onClick: () => navigate("/profile"),
+    },
+    {
+      key: "collections",
+      icon: <BookOutlined />,
+      label: "Bộ sưu tập",
+      onClick: () => navigate("/collections"),
+    },
+    {
+      type: "divider",
+    },
+  ];
 
-    const handleLogout = () => {
-        dispatch(logout() as any);
-        navigate('/login');
-    };
+  return (
+    <>
+      <UnifiedLayout
+        menu={{request: async () => customerMenu}}
+        user={user || undefined}
+        onLogout={handleLogout}
+        userMenuExtraItems={userMenuExtraItems}
+        navTheme="light"
+        actionsRender={() => [
+          <div
+            className="progress-stats"
+            key="stats"
+            style={{display: "flex", gap: 16, alignItems: "center", marginRight: 12, pointerEvents: "none"}}
+          >
+            <div className="stat-item" style={{display: "flex", gap: 4, alignItems: "center"}}>
+              <TrophyOutlined style={{color: "#ffd700"}} />
+              <span>{progress?.totalPoints || 0}</span>
+            </div>
+            <div className="stat-item" style={{display: "flex", gap: 4, alignItems: "center"}}>
+              <span style={{fontSize: 16}}>🌸</span>
+              <span>{progress?.totalSenPetals || 0}</span>
+            </div>
+            <div className="stat-item" style={{display: "flex", gap: 4, alignItems: "center"}}>
+              <DollarOutlined style={{fontSize: 16, color: "#ffd700"}} />
+              <span>{progress?.coins || 0}</span>
+            </div>
+          </div>,
+          <Button
+            key="gift"
+            type="text"
+            className="header-action-btn"
+            icon={<GiftOutlined />}
+            onClick={() => setDailyRewardVisible(true)}
+          />,
+          <Button
+            key="chat"
+            type="text"
+            className="header-action-btn"
+            icon={<MessageOutlined />}
+            onClick={() => dispatch(setOverlayOpen({open: true, mode: "fixed"}))}
+          />,
+          <NotificationPopover key="bell" />,
+        ]}
+      >
+        <Outlet />
+      </UnifiedLayout>
 
-    const userMenuExtraItems = [
-        {
-            key: 'profile',
-            icon: <UserOutlined />,
-            label: 'Hồ sơ',
-            onClick: () => navigate('/profile'),
-        },
-        {
-            key: 'collections',
-            icon: <BookOutlined />,
-            label: 'Bộ sưu tập',
-            onClick: () => navigate('/collections'),
-        },
-        {
-            type: 'divider',
-        },
-    ];
+      {/* Daily Reward Modal */}
+      <DailyRewardModal visible={dailyRewardVisible} onClose={() => setDailyRewardVisible(false)} />
 
-    return (
-        <>
-            <UnifiedLayout
-                menu={{ request: async () => customerMenu }}
-                user={user || undefined}
-                onLogout={handleLogout}
-                userMenuExtraItems={userMenuExtraItems}
-                navTheme="light"
-                actionsRender={() => [
-                    <div className="progress-stats" key="stats" style={{ display: 'flex', gap: 16, alignItems: 'center', marginRight: 12 }}>
-                        <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <TrophyOutlined style={{ color: '#ffd700' }} />
-                            <span>{progress?.totalPoints || 0}</span>
-                        </div>
-                        <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <span style={{ fontSize: 16 }}>🌸</span>
-                            <span>{progress?.totalSenPetals || 0}</span>
-                        </div>
-                        <div className="stat-item" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <DollarOutlined style={{ fontSize: 16, color: '#ffd700' }}/>
-                            <span>{progress?.coins || 0}</span>
-                        </div>
-                    </div>,
-                    <div key="actions" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Button
-                            type="text"
-                            className="header-action-btn"
-                            icon={<GiftOutlined />}
-                            onClick={() => setDailyRewardVisible(true)}
-                        />
-                        <Button
-                            type="text"
-                            className="header-action-btn"
-                            icon={<MessageOutlined />}
-                            onClick={() => dispatch(setOverlayOpen({ open: true, mode: 'fixed' }))}
-                        />
-                        <NotificationPopover />
-                    </div>
-                ]}
-            >
-                <Outlet />
-            </UnifiedLayout>
-
-            {/* Daily Reward Modal */}
-            <DailyRewardModal 
-                visible={dailyRewardVisible} 
-                onClose={() => setDailyRewardVisible(false)} 
-            />
-
-            {/* AI Chat Overlay (Global) - Now handled by GlobalCharacterOverlay in App.tsx */}
-        </>
-    );
+      {/* AI Chat Overlay (Global) - Now handled by GlobalCharacterOverlay in App.tsx */}
+    </>
+  );
 };
 
 export default CustomerLayout;

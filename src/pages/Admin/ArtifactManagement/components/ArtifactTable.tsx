@@ -1,7 +1,8 @@
 import React from "react";
-import { Tag, Space, Tooltip, Button, Popconfirm } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined, DisconnectOutlined } from "@ant-design/icons";
-import { Artifact } from "@/types";
+import {Tag, Space, Tooltip, Popconfirm} from "antd";
+import {EyeOutlined, EditOutlined, DeleteOutlined, DisconnectOutlined} from "@ant-design/icons";
+import {Button} from "@/components/common";
+import {Artifact} from "@/types";
 import DataTable from "@/components/common/DataTable";
 
 interface ArtifactTableProps {
@@ -16,11 +17,12 @@ interface ArtifactTableProps {
    * Mode "unlink" changes the delete button to an unlink button (broken link icon).
    * Default is "delete".
    */
-  deleteMode?: "delete" | "unlink"; 
+  deleteMode?: "delete" | "unlink";
   /**
    * If provided, allows customization of selected rows.
    */
   rowSelection?: any;
+  user?: any;
 }
 
 const ArtifactTable: React.FC<ArtifactTableProps> = ({
@@ -33,6 +35,7 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
   onDelete,
   deleteMode = "delete",
   rowSelection,
+  user,
 }) => {
   const columns = [
     {
@@ -63,17 +66,17 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
       width: 120,
       render: (cond: string) => {
         let color = "blue";
-        if (cond === 'excellent') color = "green";
-        if (cond === 'poor') color = "red";
+        if (cond === "excellent") color = "green";
+        if (cond === "poor") color = "red";
         return <Tag color={color}>{cond?.toUpperCase()}</Tag>;
-      }
+      },
     },
     {
       title: "Trưng bày",
       dataIndex: "is_on_display",
       key: "isOnDisplay",
       width: 100,
-      render: (onDisplay: boolean) => onDisplay ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>,
+      render: (onDisplay: boolean) => (onDisplay ? <Tag color="green">YES</Tag> : <Tag>NO</Tag>),
     },
     {
       title: "Thao tác",
@@ -86,18 +89,24 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
           {onView && (
             <Tooltip title="Xem chi tiết">
               <Button
-                type="text"
+                variant="ghost"
+                buttonSize="small"
                 icon={<EyeOutlined />}
                 onClick={() => onView(record)}
+                className="action-btn-standard"
+                style={{color: "var(--primary-color)"}}
               />
             </Tooltip>
           )}
           {onEdit && (
             <Tooltip title="Chỉnh sửa">
               <Button
-                type="text"
-                icon={<EditOutlined style={{ color: "orange" }} />}
+                variant="ghost"
+                buttonSize="small"
+                icon={<EditOutlined />}
                 onClick={() => onEdit(record)}
+                className="action-btn-standard"
+                style={{color: "orange"}}
               />
             </Tooltip>
           )}
@@ -107,25 +116,28 @@ const ArtifactTable: React.FC<ArtifactTableProps> = ({
               onConfirm={() => onDelete(record.id)}
               okText="Đồng ý"
               cancelText="Hủy"
-              okButtonProps={{ danger: true }}
+              okButtonProps={{danger: true}}
             >
               <Tooltip title={deleteMode === "unlink" ? "Gỡ bỏ" : "Xóa"}>
                 <Button
-                  type="text"
+                  variant="ghost"
+                  buttonSize="small"
                   danger
                   icon={deleteMode === "unlink" ? <DisconnectOutlined /> : <DeleteOutlined />}
+                  className="action-btn-standard"
                 />
               </Tooltip>
             </Popconfirm>
           )}
         </Space>
       ),
-    }
+    },
   ];
 
   return (
     <DataTable
       loading={loading}
+      user={user}
       columns={columns}
       dataSource={data}
       pagination={pagination}

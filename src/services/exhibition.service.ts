@@ -1,4 +1,4 @@
-import BaseService from './base.service';
+import ReviewableBaseService from './reviewable.service';
 
 // Exhibition
 export interface Exhibition {
@@ -20,53 +20,27 @@ export interface Exhibition {
         name: string;
         image: string;
     }>;
+    image?: string;
     images?: string[];
     isActive: boolean;
     isPermanent: boolean;
     visitorCount?: number;
     rating?: number;
+    status: 'draft' | 'pending' | 'published' | 'rejected';
+    createdBy?: number;
+    authorName?: string;
+    review_comment?: string;
 }
 
-class ExhibitionService extends BaseService {
+class ExhibitionService extends ReviewableBaseService<Exhibition> {
     constructor() {
         super('/exhibitions');
-    }
-
-    // Get all exhibitions (override for custom return type)
-    async getAllExhibitions(params?: {
-        page?: number;
-        limit?: number;
-        heritageSiteId?: number;
-        isActive?: boolean;
-        q?: string;
-    }) {
-        return await this.getAll(params);
     }
 
     // Get active exhibitions
     async getActive(): Promise<Exhibition[]> {
         const response = await this.get('/active');
         return response.data;
-    }
-
-    // Get exhibition detail
-    async getExhibitionById(id: number) {
-        return await this.getById(id);
-    }
-
-    // Create exhibition (uses base create)
-    async createExhibition(data: Partial<Exhibition>) {
-        return await this.create(data);
-    }
-
-    // Update exhibition (uses base update)
-    async updateExhibition(id: number, data: Partial<Exhibition>) {
-        return await this.update(id, data);
-    }
-
-    // Delete exhibition (Admin only)
-    async deleteExhibition(id: number) {
-        return await this.delete(id);
     }
 
     // Get exhibitions by heritage site

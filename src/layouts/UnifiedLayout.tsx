@@ -1,14 +1,15 @@
 import React from "react";
-import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
-import { Dropdown, Avatar, theme } from "antd";
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import {ProLayout, ProLayoutProps} from "@ant-design/pro-components";
+import {Dropdown, Avatar, theme, Tag} from "antd";
+import {UserOutlined, LogoutOutlined} from "@ant-design/icons";
+import {useLocation, useNavigate} from "react-router-dom";
 import logo from "@/assets/images/logo.png";
 
 export interface UnifiedLayoutProps extends ProLayoutProps {
   user?: {
     name?: string;
     avatar?: string;
+    role?: string;
   };
   onLogout?: () => void;
   userMenuExtraItems?: any[];
@@ -26,7 +27,7 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { token } = theme.useToken();
+  const {token} = theme.useToken();
 
   const defaultUserMenuItems = [
     {
@@ -52,25 +53,25 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
       location={{
         pathname: location.pathname,
       }}
-      onMenuHeaderClick={() => navigate('/')}
+      onMenuHeaderClick={() => navigate("/")}
       menuItemRender={(item, dom) => {
         if (item.disabled) {
-            return (
-                <div 
-                    style={{ 
-                        cursor: 'default', 
-                        color: 'rgba(80, 80, 80, 0.3)',
-                        fontWeight: 'bold', 
-                        textTransform: 'uppercase',
-                        fontSize: '12px',
-                        marginTop: '16px',
-                        marginBottom: '8px',
-                        pointerEvents: 'none', // Put this to make sure hover effects don't trigger if any
-                    }}
-                >
-                    {dom}
-                </div>
-            );
+          return (
+            <div
+              style={{
+                cursor: "default",
+                color: "rgba(80, 80, 80, 0.3)",
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                fontSize: "12px",
+                marginTop: "16px",
+                marginBottom: "8px",
+                pointerEvents: "none", // Put this to make sure hover effects don't trigger if any
+              }}
+            >
+              {dom}
+            </div>
+          );
         }
         if (item.isUrl || !item.path || (item as any).children) {
           return dom;
@@ -98,12 +99,24 @@ const UnifiedLayout: React.FC<UnifiedLayoutProps> = ({
                   padding: 4,
                 }}
               >
-                <Avatar
-                  size="small"
-                  src={user?.avatar}
-                  icon={<UserOutlined />}
-                />
-                <span style={{ color: token.colorText }}>{user?.name}</span>
+                <Avatar size="small" src={user?.avatar} icon={<UserOutlined />} />
+                <span style={{color: token.colorText, fontWeight: 500}}>{user?.name}</span>
+                {user?.role && user.role !== "customer" && (
+                  <Tag
+                    color={
+                      user.role === "admin"
+                        ? "red"
+                        : user.role === "researcher"
+                          ? "blue"
+                          : user.role === "curator"
+                            ? "purple"
+                            : "green"
+                    }
+                    bordered={false}
+                  >
+                    {user.role.toUpperCase()}
+                  </Tag>
+                )}
               </div>
             </Dropdown>
           );

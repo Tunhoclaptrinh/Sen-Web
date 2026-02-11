@@ -1,4 +1,4 @@
-import BaseService from './base.service';
+import ReviewableBaseService from './reviewable.service';
 import apiClient from '@/config/axios.config';
 import type {
   Artifact,
@@ -15,7 +15,7 @@ import { logger } from '@/utils/logger.utils';
  * Artifact Service
  * Handles all operations related to Artifacts
  */
-class ArtifactService extends BaseService<Artifact, ArtifactDTO, ArtifactDTO> {
+class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, ArtifactDTO> {
   constructor() {
     super('/artifacts');
   }

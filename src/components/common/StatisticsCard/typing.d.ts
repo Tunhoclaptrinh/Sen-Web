@@ -1,4 +1,4 @@
-import { Breakpoint } from 'antd';
+import { Breakpoint, ColProps } from 'antd';
 import { ColSize } from 'antd/es/col';
 import React, { JSX } from 'react';
 
@@ -97,7 +97,7 @@ export interface StatisticsCardProps {
 	 * @default { xs: 24, sm: 12, md: 8 }
 	 * @example { xs: 12, sm: 6, md: 4, lg: 3 }
 	 */
-	colSpan?: Partial<Record<Breakpoint, number | string | ColSize>>;
+	colSpan?: ColProps;
 
 	/** Hiển thị borderleft 4px (tùy chọn) */
 	borderleft?: boolean;

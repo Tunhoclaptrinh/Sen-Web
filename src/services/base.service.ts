@@ -1,14 +1,6 @@
 import apiClient from "@/config/axios.config";
-import type {
-  QueryParams,
-  BaseApiResponse,
-
-  ExportParams,
-
-  BatchResult,
-  ImportResult,
-} from "@/types";
-import { logger } from "@/utils/logger.utils";
+import type {QueryParams, BaseApiResponse, ExportParams, BatchResult, ImportResult} from "@/types";
+import {logger} from "@/utils/logger.utils";
 
 /**
  * Base Service Class
@@ -46,8 +38,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
     if (sort) queryParams.append("_sort", sort);
     if (order) {
       // Normalize order format
-      const normalizedOrder =
-        order === "ascend" ? "asc" : order === "descend" ? "desc" : order;
+      const normalizedOrder = order === "ascend" ? "asc" : order === "descend" ? "desc" : order;
       queryParams.append("_order", normalizedOrder);
     }
 
@@ -56,18 +47,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
     if (search) queryParams.append("q", search);
 
     // Filters - add all other params
-    const excludedKeys = [
-      "_page",
-      "_limit",
-      "_sort",
-      "_order",
-      "q",
-      "page",
-      "limit",
-      "sort",
-      "order",
-      "search",
-    ];
+    const excludedKeys = ["_page", "_limit", "_sort", "_order", "q", "page", "limit", "sort", "order", "search"];
 
     Object.entries(params).forEach(([key, value]) => {
       if (!excludedKeys.includes(key)) {
@@ -95,7 +75,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   protected async get<T = any>(path: string, params?: QueryParams): Promise<T> {
     try {
-      const queryString = params ? this.buildQueryString(params) : '';
+      const queryString = params ? this.buildQueryString(params) : "";
       const url = queryString ? `${this.endpoint}${path}?${queryString}` : `${this.endpoint}${path}`;
 
       const response = await apiClient.get<T>(url);
@@ -162,16 +142,13 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
     }
   }
 
-
   /**
    * GET all items with pagination and filtering
    */
   async getAll(params: QueryParams = {}): Promise<BaseApiResponse<T[]>> {
     try {
       const queryString = this.buildQueryString(params);
-      const url = queryString
-        ? `${this.endpoint}?${queryString}`
-        : this.endpoint;
+      const url = queryString ? `${this.endpoint}?${queryString}` : this.endpoint;
 
       const response = await apiClient.get<BaseApiResponse<T[]>>(url);
 
@@ -192,9 +169,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async getById(id: number | string): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.get<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}`,
-      );
+      const response = await apiClient.get<BaseApiResponse<T>>(`${this.endpoint}/${id}`);
 
       return {
         success: response.success ?? true,
@@ -211,10 +186,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async create(data: CreateDTO): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<T>>(
-        this.endpoint,
-        data,
-      );
+      const response = await apiClient.post<BaseApiResponse<T>>(this.endpoint, data);
 
       return {
         success: response.success ?? true,
@@ -230,15 +202,9 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * UPDATE existing item (full update)
    */
-  async update(
-    id: number | string,
-    data: UpdateDTO,
-  ): Promise<BaseApiResponse<T>> {
+  async update(id: number | string, data: UpdateDTO): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.put<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}`,
-        data,
-      );
+      const response = await apiClient.put<BaseApiResponse<T>>(`${this.endpoint}/${id}`, data);
 
       return {
         success: response.success ?? true,
@@ -254,15 +220,9 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * PATCH item (partial update)
    */
-  async patch(
-    id: number | string,
-    data: Partial<UpdateDTO>,
-  ): Promise<BaseApiResponse<T>> {
+  async patch(id: number | string, data: Partial<UpdateDTO>): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(
-        `${this.endpoint}/${id}`,
-        data,
-      );
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}`, data);
 
       return {
         success: response.success ?? true,
@@ -280,9 +240,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async delete(id: number | string): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.delete<BaseApiResponse<void>>(
-        `${this.endpoint}/${id}`,
-      );
+      const response = await apiClient.delete<BaseApiResponse<void>>(`${this.endpoint}/${id}`);
 
       return {
         success: response.success ?? true,
@@ -297,10 +255,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * SEARCH items
    */
-  async search(
-    query: string,
-    params: QueryParams = {},
-  ): Promise<BaseApiResponse<T[]>> {
+  async search(query: string, params: QueryParams = {}): Promise<BaseApiResponse<T[]>> {
     try {
       const searchParams: QueryParams = {
         q: query,
@@ -342,9 +297,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   async export(params: ExportParams = {}): Promise<Blob> {
     try {
       const queryString = this.buildQueryString(params);
-      const url = queryString
-        ? `${this.endpoint}/export?${queryString}`
-        : `${this.endpoint}/export`;
+      const url = queryString ? `${this.endpoint}/export?${queryString}` : `${this.endpoint}/export`;
 
       const response = await apiClient.get(url, {
         responseType: "blob",
@@ -365,15 +318,11 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await apiClient.post<BaseApiResponse<ImportResult>>(
-        `${this.endpoint}/import`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await apiClient.post<BaseApiResponse<ImportResult>>(`${this.endpoint}/import`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
 
       return response;
     } catch (error) {
@@ -390,13 +339,10 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
     items: ItemType[],
   ): Promise<BaseApiResponse<BatchResult>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<BatchResult>>(
-        `${this.endpoint}/batch`,
-        {
-          operation,
-          items,
-        },
-      );
+      const response = await apiClient.post<BaseApiResponse<BatchResult>>(`${this.endpoint}/batch`, {
+        operation,
+        items,
+      });
 
       return response;
     } catch (error) {
@@ -408,9 +354,12 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * GET statistics summary
    */
-  async getStats(): Promise<BaseApiResponse<any>> {
+  async getStats(params: QueryParams = {}): Promise<BaseApiResponse<any>> {
     try {
-      const response = await apiClient.get<BaseApiResponse<any>>(`${this.endpoint}/stats/summary`);
+      const queryString = this.buildQueryString(params);
+      const url = queryString ? `${this.endpoint}/stats/summary?${queryString}` : `${this.endpoint}/stats/summary`;
+
+      const response = await apiClient.get<BaseApiResponse<any>>(url);
       return {
         success: response.success ?? true,
         data: response.data ?? (response as any),
@@ -420,7 +369,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       return {
         success: false,
         data: null,
-        message: "Stats not supported"
+        message: "Stats not supported",
       };
     }
   }
@@ -443,15 +392,13 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * VALIDATE data before create/update
    */
-  async validate(
-    data: CreateDTO | UpdateDTO,
-  ): Promise<{ valid: boolean; errors?: any[] }> {
+  async validate(data: CreateDTO | UpdateDTO): Promise<{valid: boolean; errors?: any[]}> {
     try {
       const response = await apiClient.post(`${this.endpoint}/validate`, data);
-      return response.data ?? { valid: true };
+      return response.data ?? {valid: true};
     } catch (error) {
       logger.warn(`[${this.endpoint}] validate not supported`);
-      return { valid: true };
+      return {valid: true};
     }
   }
 
@@ -461,11 +408,9 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   async count(params: QueryParams = {}): Promise<number> {
     try {
       const queryString = this.buildQueryString(params);
-      const url = queryString
-        ? `${this.endpoint}/count?${queryString}`
-        : `${this.endpoint}/count`;
+      const url = queryString ? `${this.endpoint}/count?${queryString}` : `${this.endpoint}/count`;
 
-      const response = await apiClient.get<{ count: number }>(url);
+      const response = await apiClient.get<{count: number}>(url);
       return response.count ?? 0;
     } catch (error) {
       logger.warn(`[${this.endpoint}] count not supported`);
@@ -490,10 +435,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async bulkCreate(items: CreateDTO[]): Promise<BaseApiResponse<T[]>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<T[]>>(
-        `${this.endpoint}/bulk`,
-        { items },
-      );
+      const response = await apiClient.post<BaseApiResponse<T[]>>(`${this.endpoint}/bulk`, {items});
 
       return {
         success: response.success ?? true,
@@ -509,14 +451,9 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * BULK UPDATE multiple items
    */
-  async bulkUpdate(
-    updates: Array<{ id: number | string; data: UpdateDTO }>,
-  ): Promise<BaseApiResponse<T[]>> {
+  async bulkUpdate(updates: Array<{id: number | string; data: UpdateDTO}>): Promise<BaseApiResponse<T[]>> {
     try {
-      const response = await apiClient.put<BaseApiResponse<T[]>>(
-        `${this.endpoint}/bulk`,
-        { updates },
-      );
+      const response = await apiClient.put<BaseApiResponse<T[]>>(`${this.endpoint}/bulk`, {updates});
 
       return {
         success: response.success ?? true,
@@ -534,10 +471,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async bulkDelete(ids: (number | string)[]): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<void>>(
-        `${this.endpoint}/bulk/delete`,
-        { ids },
-      );
+      const response = await apiClient.post<BaseApiResponse<void>>(`${this.endpoint}/bulk/delete`, {ids});
 
       return {
         success: response.success ?? true,

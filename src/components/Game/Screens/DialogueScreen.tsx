@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 // import { Button } from "antd"; // Unused
-import { Stage } from "@pixi/react";
+import {Stage} from "@pixi/react";
 import SenChibi from "@/components/SenChibi";
-import type { DialogueScreen as DialogueScreenType } from "@/types/game.types";
+import type {DialogueScreen as DialogueScreenType} from "@/types/game.types";
 import "./styles.less";
 
 // const { Text, Paragraph } = Typography; // Unused
 
-import { getImageUrl } from "@/utils/image.helper";
+import {getImageUrl} from "@/utils/image.helper";
 
 interface Props {
   data: DialogueScreenType;
   onNext: () => void;
+  loading?: boolean;
 }
 
-const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
+const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -32,24 +33,26 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
     if (currentDialogue) {
       setDisplayedText("");
       setIsTyping(true);
-      
+
       // Audio Playback
       if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
       }
-      
+
       if (currentDialogue.audio) {
-          try {
-              const audioUrl = getImageUrl(currentDialogue.audio);
-              console.log("Playing dialogue audio:", audioUrl);
-              audioRef.current = new Audio(audioUrl);
-              audioRef.current.play().catch(e => {
-                  console.warn("Audio play failed (interaction required or invalid file):", e);
-              });
-          } catch (err) {
-              console.error("Invalid audio data", err);
-          }
+        try {
+          const audioUrl = getImageUrl(
+            currentDialogue.audio || (currentDialogue as any).audioUrl || (currentDialogue as any).url,
+          );
+          console.log("Playing dialogue audio:", audioUrl);
+          audioRef.current = new Audio(audioUrl);
+          audioRef.current.play().catch((e) => {
+            console.warn("Audio play failed (interaction required or invalid file):", e);
+          });
+        } catch (err) {
+          console.error("Invalid audio data", err);
+        }
       }
 
       let index = 0;
@@ -65,17 +68,17 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
       }, 30); // Speed: 30ms
 
       return () => {
-          clearInterval(timer);
-          if (audioRef.current) {
-              audioRef.current.pause();
-          }
+        clearInterval(timer);
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
       };
     }
   }, [currentIndex, currentDialogue]);
 
   // Auto-scroll to bottom whenever text updates
   React.useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }, [displayedText, currentIndex]);
 
   const handleNextDialogue = () => {
@@ -88,7 +91,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
 
     if (currentIndex < (data.content?.length || 0) - 1) {
       setCurrentIndex(currentIndex + 1);
-    } else {
+    } else if (!loading) {
       onNext();
     }
   };
@@ -111,13 +114,11 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
         <div className="story-interface">
           {/* SEN PORTRAIT (LEFT OF BOX or INSIDE) - Reference shows it on right of text, but let's put it next to it */}
           {/* IF SEN IS SPEAKING/ACTIVE */}
-          <div
-            className={`sen-portrait-container ${isSenSpeaking ? "active" : ""}`}
-          >
+          <div className={`sen-portrait-container ${isSenSpeaking ? "active" : ""}`}>
             <Stage
               width={280}
               height={400}
-              options={{ backgroundAlpha: 0 }}
+              options={{backgroundAlpha: 0}}
               style={{
                 position: "absolute",
                 bottom: -100,
@@ -149,11 +150,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
           >
             <div className="dialogue-header">
               <span className="character-name">
-                {isUserSpeaking
-                  ? "Bạn"
-                  : currentDialogue.speaker === "AI"
-                    ? "Trợ lý Sen"
-                    : currentDialogue.speaker}
+                {isUserSpeaking ? "Bạn" : currentDialogue.speaker === "AI" ? "Trợ lý Sen" : currentDialogue.speaker}
               </span>
             </div>
             <div className="dialogue-text">
@@ -161,9 +158,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext }) => {
               {isTyping && <span className="typing-cursor">|</span>}
             </div>
 
-            {!isTyping && (
-              <div className="next-indicator">Chạm để tiếp tục ▼</div>
-            )}
+            {!isTyping && <div className="next-indicator">Chạm để tiếp tục ▼</div>}
           </div>
         </div>
       </div>

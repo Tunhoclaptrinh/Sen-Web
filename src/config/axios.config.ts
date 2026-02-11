@@ -1,17 +1,10 @@
-import axios, {
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-  AxiosResponse,
-  AxiosError,
-  AxiosRequestConfig,
-} from "axios";
-import { message } from "antd";
-import { STORAGE_KEYS } from "./constants";
+import axios, {AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError, AxiosRequestConfig} from "axios";
+import {message} from "antd";
+import {STORAGE_KEYS} from "./constants";
 // KHÔNG import store ở đây để tránh Circular Dependency
 
 // CONFIGURATION
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -22,7 +15,7 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 // Override types to match response interceptor behavior (returns data directly)
-export interface CustomAxiosInstance extends Omit<AxiosInstance, 'get' | 'put' | 'post' | 'delete' | 'patch'> {
+export interface CustomAxiosInstance extends Omit<AxiosInstance, "get" | "put" | "post" | "delete" | "patch"> {
   get<T = any, R = T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
   delete<T = any, R = T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
   post<T = any, R = T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
@@ -43,10 +36,7 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (
-  error: AxiosError | null,
-  token: string | null = null,
-) => {
+const processQueue = (error: AxiosError | null, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -67,6 +57,16 @@ apiClient.interceptors.request.use(
     if (import.meta.env.DEV) {
       console.log(`[API ${config.method?.toUpperCase()}] ${config.url}`);
     }
+
+    // [RBAC] Context injection for Backend Isolation
+    // Tell backend we are in CMS context so it can enforce strict ownership for Researchers
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (path.startsWith("/admin") || path.startsWith("/researcher")) {
+        config.headers["x-context"] = "cms";
+      }
+    }
+
     return config;
   },
   (error: AxiosError) => Promise.reject(error),
@@ -79,7 +79,7 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
-    const { response } = error;
+    const {response} = error;
 
     // === XỬ LÝ NETWORK ERROR ===
     if (!response) {
@@ -87,22 +87,21 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const { status, data } = response;
+    const {status, data} = response;
 
     // === XỬ LÝ 401: REFRESH TOKEN ===
     if (status === 401 && !originalRequest._retry) {
       // Nếu là endpoint login/register, không refresh token
-      if (originalRequest.url?.includes('/auth/login') ||
-        originalRequest.url?.includes('/auth/register')) {
+      if (originalRequest.url?.includes("/auth/login") || originalRequest.url?.includes("/auth/register")) {
         // Hiển thị lỗi từ backend
-        const errorMessage = data?.message || 'Đăng nhập thất bại';
+        const errorMessage = data?.message || "Đăng nhập thất bại";
         message.error(errorMessage);
         return Promise.reject(error);
       }
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
+          failedQueue.push({resolve, reject});
         })
           .then((token) => {
             if (originalRequest.headers) {
@@ -122,7 +121,7 @@ apiClient.interceptors.response.use(
         const refreshResponse = await axios.post(
           `${API_BASE_URL}/auth/refresh`,
           {},
-          { headers: { Authorization: `Bearer ${currentToken}` } },
+          {headers: {Authorization: `Bearer ${currentToken}`}},
         );
 
         const newToken = refreshResponse.data?.data?.token;
@@ -153,7 +152,7 @@ apiClient.interceptors.response.use(
 
         // Logout nếu refresh thất bại
         if (store) {
-          store.dispatch({ type: "auth/forceLogout" });
+          store.dispatch({type: "auth/forceLogout"});
         }
         handleForceLogout();
 
@@ -176,9 +175,9 @@ apiClient.interceptors.response.use(
     } else if (status === 422) {
       // Validation errors
       if (data?.errors && Array.isArray(data.errors)) {
-        const errorMessages = data.errors.map((err: any) =>
-          err.field ? `${err.field}: ${err.message}` : err.message
-        ).join('\n');
+        const errorMessages = data.errors
+          .map((err: any) => (err.field ? `${err.field}: ${err.message}` : err.message))
+          .join("\n");
         message.error(errorMessages);
       } else {
         const errorMessage = data?.message || "Dữ liệu không hợp lệ.";
@@ -187,7 +186,7 @@ apiClient.interceptors.response.use(
     } else if (status === 500) {
       const errorMessage = data?.message || "Lỗi server. Vui lòng thử lại sau.";
       message.error(errorMessage);
-    } else if (status >= 400) {
+    } else if (status >= 400 && status !== 409) {
       // Generic error for other 4xx/5xx
       const errorMessage = data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
       message.error(errorMessage);
@@ -200,12 +199,12 @@ apiClient.interceptors.response.use(
 const handleForceLogout = () => {
   localStorage.removeItem(STORAGE_KEYS.TOKEN);
   localStorage.removeItem(STORAGE_KEYS.USER);
-  
+
   // Only redirect to login if on protected routes
-  const protectedPaths = ['/profile', '/game', '/admin', '/researcher', '/collections', '/notifications'];
+  const protectedPaths = ["/profile", "/game", "/admin", "/researcher", "/collections", "/notifications"];
   const currentPath = window.location.pathname;
-  const isProtectedRoute = protectedPaths.some(path => currentPath.startsWith(path));
-  
+  const isProtectedRoute = protectedPaths.some((path) => currentPath.startsWith(path));
+
   if (isProtectedRoute && currentPath !== "/login") {
     message.error("Phiên đăng nhập hết hạn.");
     window.location.href = "/login";

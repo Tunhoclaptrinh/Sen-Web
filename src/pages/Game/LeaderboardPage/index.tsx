@@ -1,30 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { fetchLeaderboard } from "@/store/slices/gameSlice";
-import { Card, Table, Avatar, Tag, Tabs, Spin, Typography } from "antd";
-import {
-  TrophyOutlined,
-  CrownOutlined,
-  StarOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { motion, AnimatePresence } from "framer-motion";
-import type { LeaderboardEntry } from "@/types";
-import { getImageUrl } from "@/utils/image.helper";
+import React, {useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector} from "@/hooks/useRedux";
+import {fetchLeaderboard} from "@/store/slices/gameSlice";
+import {Card, Table, Avatar, Tag, Tabs, Spin, Typography} from "antd";
+import {TrophyOutlined, CrownOutlined, UserOutlined} from "@ant-design/icons";
+import {motion, AnimatePresence} from "framer-motion";
+import type {LeaderboardEntry} from "@/types";
+import {getImageUrl} from "@/utils/image.helper";
 import "./styles.less";
 
-const { Title, Text, Paragraph } = Typography;
+const {Title, Text, Paragraph} = Typography;
 
-const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number }> = ({
-  entry,
-  rank,
-}) => {
+const PodiumItem: React.FC<{entry: LeaderboardEntry; rank: number}> = ({entry, rank}) => {
   return (
     <motion.div
       className={`podium-item rank-${rank}`}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: rank * 0.1 }}
+      initial={{opacity: 0, y: 50}}
+      animate={{opacity: 1, y: 0}}
+      transition={{duration: 0.5, delay: rank * 0.1}}
     >
       {rank === 1 && <CrownOutlined className="crown-icon" />}
       <div className="podium-card">
@@ -42,10 +34,8 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number }> = ({
         </div>
         <div className="stats-grid">
           <div className="stat-item">
-            <span className="stat-label">Điểm</span>
-            <span className="stat-value">
-              {(entry.totalPoints || 0).toLocaleString()}
-            </span>
+            <span className="stat-label">Cúp</span>
+            <span className="stat-value">🏆 {(entry.totalPoints || 0).toLocaleString()}</span>
           </div>
           <div className="stat-item">
             <span className="stat-label">Cánh Sen</span>
@@ -59,15 +49,11 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number }> = ({
 
 const LeaderboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { leaderboard, leaderboardLoading } = useAppSelector(
-    (state) => state.game,
-  );
-  const [activeTab, setActiveTab] = useState<"global" | "weekly" | "monthly">(
-    "global",
-  );
+  const {leaderboard, leaderboardLoading} = useAppSelector((state) => state.game);
+  const [activeTab, setActiveTab] = useState<"global" | "weekly" | "monthly">("global");
 
   useEffect(() => {
-    dispatch(fetchLeaderboard({ type: activeTab, limit: 50 }));
+    dispatch(fetchLeaderboard({type: activeTab, limit: 50}));
   }, [dispatch, activeTab]);
 
   const handleTabChange = (key: string) => {
@@ -81,9 +67,7 @@ const LeaderboardPage: React.FC = () => {
       key: "rank",
       width: 80,
       render: (rank: number) => (
-        <div
-          className={`rank-badge ${rank === 1 ? "gold" : rank === 2 ? "silver" : rank === 3 ? "bronze" : ""}`}
-        >
+        <div className={`rank-badge ${rank === 1 ? "gold" : rank === 2 ? "silver" : rank === 3 ? "bronze" : ""}`}>
           {rank}
         </div>
       ),
@@ -102,15 +86,11 @@ const LeaderboardPage: React.FC = () => {
       ),
     },
     {
-      title: "Điểm",
+      title: "Cúp",
       dataIndex: "totalPoints",
       key: "totalPoints",
       render: (points: number) => (
-        <Tag
-          color="blue"
-          icon={<StarOutlined />}
-          style={{ borderRadius: 12, padding: "2px 12px" }}
-        >
+        <Tag color="blue" icon={<TrophyOutlined />} style={{borderRadius: 12, padding: "2px 12px"}}>
           {(points || 0).toLocaleString()}
         </Tag>
       ),
@@ -121,7 +101,7 @@ const LeaderboardPage: React.FC = () => {
       key: "senPetals",
       align: "center" as const,
       render: (petals: number) => (
-        <Text strong style={{ color: "#ff85c0" }}>
+        <Text strong style={{color: "#ff85c0"}}>
           🌸 {petals}
         </Text>
       ),
@@ -132,32 +112,23 @@ const LeaderboardPage: React.FC = () => {
       key: "charactersCount",
       align: "center" as const,
       render: (count: number) => (
-        <Tag color="purple" style={{ borderRadius: 12 }}>
+        <Tag color="purple" style={{borderRadius: 12}}>
           {count} nhân vật
         </Tag>
       ),
     },
   ];
 
-  const top3 = leaderboard
-    .filter((item) => item.rank <= 3)
-    .sort((a, b) => a.rank - b.rank);
+  const top3 = leaderboard.filter((item) => item.rank <= 3).sort((a, b) => a.rank - b.rank);
   const restOfPlayers = leaderboard.filter((item) => item.rank > 3);
 
   return (
-    <motion.div
-      className="leaderboard-page"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <motion.div className="leaderboard-page" initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5}}>
       <div className="leaderboard-header">
         <Title level={1} className="main-title">
           <TrophyOutlined className="title-icon" /> Bảng xếp hạng
         </Title>
-        <Paragraph className="subtitle">
-          Vinh danh những nhà thám hiểm xuất sắc nhất trên hành trình di sản
-        </Paragraph>
+        <Paragraph className="subtitle">Vinh danh những nhà thám hiểm xuất sắc nhất trên hành trình di sản</Paragraph>
       </div>
 
       {leaderboardLoading ? (
@@ -170,10 +141,10 @@ const LeaderboardPage: React.FC = () => {
             <motion.div
               key={activeTab}
               className="podium-container"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
+              initial={{opacity: 0, scale: 0.9}}
+              animate={{opacity: 1, scale: 1}}
+              exit={{opacity: 0, scale: 0.9}}
+              transition={{duration: 0.3}}
             >
               {top3[1] && <PodiumItem entry={top3[1]} rank={2} />}
               {top3[0] && <PodiumItem entry={top3[0]} rank={1} />}
@@ -187,9 +158,9 @@ const LeaderboardPage: React.FC = () => {
               onChange={handleTabChange}
               centered
               items={[
-                { key: "global", label: "Toàn thời gian" },
-                { key: "weekly", label: "Tuần này" },
-                { key: "monthly", label: "Tháng này" },
+                {key: "global", label: "Toàn thời gian"},
+                {key: "weekly", label: "Tuần này"},
+                {key: "monthly", label: "Tháng này"},
               ]}
             />
           </div>

@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
-import { message } from "antd";
+import { message, Modal, Input } from "antd";
 import { Artifact } from "@/types";
 import artifactService from "@/services/artifact.service";
 import { useCRUD } from "@/hooks/useCRUD";
 
-export const useArtifactModel = () => {
+export const useArtifactModel = (initialFilters: any = {}) => {
     // Stats State
     const [stats, setStats] = useState<any>(null);
     const [statsLoading, setStatsLoading] = useState(false);
@@ -18,12 +18,13 @@ export const useArtifactModel = () => {
     const crudOptions = useMemo(() => ({
         pageSize: 10,
         autoFetch: true,
+        initialFilters,
         onError: (action: string, error: any) => {
             console.error(`Error ${action} artifact:`, error);
             message.error(`Thao tác thất bại: ${error.message}`);
         },
         initialSort: { field: 'id', order: 'desc' },
-    }), []);
+    }), [initialFilters]);
 
     const crud = useCRUD(artifactService, crudOptions);
 
@@ -143,6 +144,30 @@ export const useArtifactModel = () => {
         }
     };
 
+    const handleReject = async (record: Artifact) => {
+        Modal.confirm({
+            title: 'Từ chối phê duyệt',
+            content: (
+                <div style={{ marginTop: 16 }}>
+                    <p>Lý do từ chối:</p>
+                    <Input.TextArea 
+                        rows={4} 
+                        placeholder="Nhập lý do từ chối nội dung này..." 
+                        id="reject-comment"
+                    />
+                </div>
+            ),
+            onOk: async () => {
+                const comment = (document.getElementById('reject-comment') as HTMLTextAreaElement)?.value;
+                if (!comment) {
+                    message.error('Vui lòng nhập lý do từ chối');
+                    return Promise.reject();
+                }
+                return crud.rejectReview?.(record.id, comment);
+            }
+        });
+    };
+
     return {
         ...crud,
         stats,
@@ -157,6 +182,7 @@ export const useArtifactModel = () => {
         importData,
         downloadTemplate,
         handleSubmit,
+        handleReject,
         openCreate,
         openEdit,
         openDetail,

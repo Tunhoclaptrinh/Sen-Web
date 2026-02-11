@@ -44,3 +44,4 @@ export { default as SenCustomizationSettings } from "./SenCustomizationSettings"
 
 // Guards
 export { default as AuthGuard } from "./guards/AuthGuard";
+export { default as PermissionGuard } from "./guards/PermissionGuard";

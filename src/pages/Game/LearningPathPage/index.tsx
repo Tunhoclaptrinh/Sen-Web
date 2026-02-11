@@ -27,6 +27,7 @@ import {
   LockOutlined,
 } from "@ant-design/icons";
 import learningService, { LearningModule } from "@/services/learning.service";
+import { useAuth } from "@/hooks/useAuth";
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from "framer-motion";
 import defaultThumbnail from "@/assets/images/background/senhoacum.png";
@@ -37,6 +38,8 @@ const LearningDetail = lazy(() => import("./LearningDetail"));
 const { Title, Paragraph } = Typography;
 
 const LearningPathPage: React.FC = () => {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -176,7 +179,9 @@ const LearningPathPage: React.FC = () => {
               {learningPath.map((module, index) => {
                 // Logic: A module is locked if the previous module is not completed
                 // Exception: The first module (index 0) is always unlocked
-                const isLocked = index > 0 && !learningPath[index - 1].isCompleted;
+                // Exception: Admin is always unlocked
+                const isAdmin = user?.role === 'admin';
+                const isLocked = !isAdmin && index > 0 && !learningPath[index - 1].isCompleted;
 
                 return (
                 <Col xs={24} sm={12} lg={8} key={module.id}>

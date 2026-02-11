@@ -1,23 +1,9 @@
-import {
-  Input,
-  InputNumber,
-  Select,
-  Switch,
-  Row,
-  Col,
-  Form,
-  Button,
-  Tabs,
-  message,
-} from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import {
-  FormModal,
-  TinyEditor,
-  Button as StyledButton,
-  DebounceSelect,
-} from "@/components/common";
+import {Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs, message, DatePicker} from "antd";
+import {PlusOutlined, MinusCircleOutlined} from "@ant-design/icons";
+import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
+import {useAuth} from "@/hooks/useAuth";
+import dayjs from "dayjs";
 
 import {
   HeritageType,
@@ -35,7 +21,7 @@ import {
   Artifact,
   HistoryArticle,
 } from "@/types";
-import { useEffect, useState } from "react";
+import {useEffect, useState, useMemo} from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
@@ -63,6 +49,23 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   isEdit = false,
 }) => {
   const [form] = Form.useForm();
+  const {user} = useAuth();
+
+  const memoizedInitialValues = useMemo(() => {
+    if (!initialValues)
+      return {
+        isActive: true,
+        unescoListed: false,
+        yearEstablished: new Date().getFullYear(),
+        author: user?.name,
+        publishDate: dayjs(),
+      };
+
+    return {
+      ...initialValues,
+      publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
+    };
+  }, [initialValues, user]);
 
   useEffect(() => {
     const initData = async () => {
@@ -73,69 +76,60 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           const heritageId = initialValues.id as number;
           if (!heritageId) return;
 
-          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] =
-            await Promise.all([
-              heritageService.getTimeline(heritageId),
-              heritageService.getArtifacts(heritageId),
-              (initialValues.relatedArtifactIds?.length ?? 0) > 0
-                ? artifactService.getAll({
-                    ids: initialValues.relatedArtifactIds!.join(","),
-                  })
-                : Promise.resolve({ success: true, data: [] }),
-              (initialValues.relatedHistoryIds?.length ?? 0) > 0
-                ? historyService.getAll({
-                    ids: initialValues.relatedHistoryIds!.join(","),
-                  })
-                : Promise.resolve({ success: true, data: [] }),
-            ]);
+          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+            heritageService.getTimeline(heritageId),
+            heritageService.getArtifacts(heritageId),
+            (initialValues.relatedArtifactIds?.length ?? 0) > 0
+              ? artifactService.getAll({
+                  ids: initialValues.relatedArtifactIds!.join(","),
+                })
+              : Promise.resolve({success: true, data: []}),
+            (initialValues.relatedHistoryIds?.length ?? 0) > 0
+              ? historyService.getAll({
+                  ids: initialValues.relatedHistoryIds!.join(","),
+                })
+              : Promise.resolve({success: true, data: []}),
+          ]);
 
-          const timeline = timelineRes.success
-            ? timelineRes.data
-            : initialValues.timeline || [];
+          const timeline = timelineRes.success ? timelineRes.data : initialValues.timeline || [];
 
           // Map related artifacts to {label, value}
           const artifactMap = new Map();
           if (artifactsRes.success && artifactsRes.data) {
-            artifactsRes.data.forEach((art: Artifact) =>
-              artifactMap.set(art.id, art),
-            );
+            artifactsRes.data.forEach((art: Artifact) => artifactMap.set(art.id, art));
           }
           if (relArtifactsRes.success && relArtifactsRes.data) {
-            relArtifactsRes.data.forEach((art: Artifact) =>
-              artifactMap.set(art.id, art),
-            );
+            relArtifactsRes.data.forEach((art: Artifact) => artifactMap.set(art.id, art));
           }
 
-          const relatedArtifacts = (
-            initialValues.relatedArtifactIds || []
-          ).map((id: number | { label: string; value: number }) => {
-            const art = artifactMap.get(typeof id === "object" ? id.value : id);
-            return art
-              ? { label: art.name, value: art.id }
-              : typeof id === "object"
-                ? id
-                : { label: `ID: ${id}`, value: id };
-          });
+          const relatedArtifacts = (initialValues.relatedArtifactIds || []).map(
+            (id: number | {label: string; value: number}) => {
+              const art = artifactMap.get(typeof id === "object" ? id.value : id);
+              return art
+                ? {label: art.name, value: art.id}
+                : typeof id === "object"
+                  ? id
+                  : {label: `ID: ${id}`, value: id};
+            },
+          );
 
           // Map related history to {label, value}
           const relatedHistory = (initialValues.relatedHistoryIds || []).map(
-            (id: number | { label: string; value: number }) => {
+            (id: number | {label: string; value: number}) => {
               const hist = relHistoryRes.success
-                ? relHistoryRes.data?.find(
-                    (h: HistoryArticle) =>
-                      h.id === (typeof id === "object" ? id.value : id),
-                  )
+                ? relHistoryRes.data?.find((h: HistoryArticle) => h.id === (typeof id === "object" ? id.value : id))
                 : null;
               return hist
-                ? { label: hist.title, value: hist.id }
+                ? {label: hist.title, value: hist.id}
                 : typeof id === "object"
                   ? id
-                  : { label: `ID: ${id}`, value: id };
+                  : {label: `ID: ${id}`, value: id};
             },
           );
 
           const formattedValues: any = {
             ...initialValues,
+            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
             timeline: timeline,
             relatedArtifactIds: relatedArtifacts,
             relatedHistoryIds: relatedHistory,
@@ -147,9 +141,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             let regionLabel = initialValues.region;
             const regionKey = Object.keys(HeritageRegionLabels).find(
               (key) =>
-                key === initialValues.region ||
-                HeritageRegionLabels[key as HeritageRegion] ===
-                  initialValues.region,
+                key === initialValues.region || HeritageRegionLabels[key as HeritageRegion] === initialValues.region,
             ) as HeritageRegion;
             if (regionKey) {
               regionLabel = HeritageRegionLabels[regionKey];
@@ -158,10 +150,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
               // Ensure available provinces are set immediately
               const provinces = ProvincesByRegion[regionKey] || [];
               setAvailableProvinces(provinces);
-              
+
               // Validate current province exists in new list
               if (formattedValues.province && !provinces.includes(formattedValues.province as HeritageProvince)) {
-                  formattedValues.province = undefined;
+                formattedValues.province = undefined;
               }
             }
           }
@@ -172,6 +164,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           // Fallback to initialValues if fetch fails
           const fallbackValues = {
             ...initialValues,
+            publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
           };
 
           // Set available provinces based on region for fallback
@@ -180,9 +173,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             let regionLabel = initialValues.region;
             const regionKey = Object.keys(HeritageRegionLabels).find(
               (key) =>
-                key === initialValues.region ||
-                HeritageRegionLabels[key as HeritageRegion] ===
-                  initialValues.region,
+                key === initialValues.region || HeritageRegionLabels[key as HeritageRegion] === initialValues.region,
             ) as HeritageRegion;
             if (regionKey) {
               regionLabel = HeritageRegionLabels[regionKey];
@@ -194,35 +185,29 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
           form.setFieldsValue(fallbackValues);
         }
-      } 
+      }
       // 2. Chế độ Thêm mới (isEdit = false) -> Reset form
       else if (open && !isEdit) {
         // Aggressively clear all fields
         const currentFields = form.getFieldsValue(true);
         const resetValues = Object.keys(currentFields).reduce((acc: Record<string, any>, key) => {
-            acc[key] = undefined;
-            return acc;
+          acc[key] = undefined;
+          return acc;
         }, {});
         form.setFieldsValue(resetValues);
         form.resetFields();
 
         setSelectedRegion("");
         setAvailableProvinces([]);
-        form.setFieldsValue({
-          isActive: true,
-          unescoListed: false,
-          yearEstablished: new Date().getFullYear(),
-        });
+        form.setFieldsValue(memoizedInitialValues);
       }
     };
 
     initData();
-  }, [open, isEdit, initialValues, form]);
+  }, [open, isEdit, initialValues, form, memoizedInitialValues]);
 
   const [activeTab, setActiveTab] = useState("1");
-  const [availableProvinces, setAvailableProvinces] = useState<
-    HeritageProvince[]
-  >([]);
+  const [availableProvinces, setAvailableProvinces] = useState<HeritageProvince[]>([]);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
 
   useEffect(() => {
@@ -235,24 +220,24 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       const regionKey = Object.keys(HeritageRegionLabels).find(
         (key) => HeritageRegionLabels[key as HeritageRegion] === selectedRegion,
       ) as HeritageRegion;
-      
+
       if (regionKey && ProvincesByRegion[regionKey]) {
         const newProvinces = ProvincesByRegion[regionKey];
         setAvailableProvinces(newProvinces);
-        
+
         // Only clear province if it's not valid for the new region
         // And ensure we don't clear it immediately after init if it matches
         const currentProvince = form.getFieldValue("province");
         if (currentProvince && !newProvinces.includes(currentProvince)) {
-          form.setFieldsValue({ province: undefined });
+          form.setFieldsValue({province: undefined});
         }
       } else {
         setAvailableProvinces([]);
-        form.setFieldsValue({ province: undefined });
+        form.setFieldsValue({province: undefined});
       }
     } else {
       setAvailableProvinces([]);
-      form.setFieldsValue({ province: undefined });
+      form.setFieldsValue({province: undefined});
     }
   }, [selectedRegion, form]);
 
@@ -260,58 +245,54 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
     try {
       // Validate only visible fields first to show UI feedback
       await form.validateFields();
-      
+
       // Get ALL values including hidden tabs
       const values = form.getFieldsValue(true);
       await handleOk(values);
     } catch (error: any) {
       console.error("Validation failed:", error);
 
-      if (error && typeof error === 'object' && 'errorFields' in error) {
-        const errorFields = error.errorFields as Array<{ name: string[] }>;
+      if (error && typeof error === "object" && "errorFields" in error) {
+        const errorFields = error.errorFields as Array<{name: string[]}>;
         if (errorFields.length > 0) {
           const firstErrorField = errorFields[0].name[0];
 
-        // Map fields to tabs
-        const tab1Fields = [
-          "image",
-          "gallery",
-          "shortDescription",
-          "name",
-          "type",
-          "address",
-          "region",
-          "province",
-          "region",
-          "province",
-          "culturalPeriod",
-          "significance",
-          "visitHours",
-          "yearEstablished",
-          "entranceFee",
-          "unescoListed",
-          "isActive",
-        ];
-        const tab2Fields = ["description"];
-        const tab3Fields = [
-          "relatedArtifactIds",
-          "relatedHistoryIds",
-          "timeline",
-        ];
+          // Map fields to tabs
+          const tab1Fields = [
+            "image",
+            "gallery",
+            "shortDescription",
+            "name",
+            "type",
+            "address",
+            "region",
+            "province",
+            "region",
+            "province",
+            "culturalPeriod",
+            "significance",
+            "visitHours",
+            "yearEstablished",
+            "entranceFee",
+            "unescoListed",
+            "isActive",
+          ];
+          const tab2Fields = ["description"];
+          const tab3Fields = ["relatedArtifactIds", "relatedHistoryIds", "timeline"];
 
-        if (tab1Fields.includes(firstErrorField)) {
-          setActiveTab("1");
-        } else if (tab2Fields.includes(firstErrorField)) {
-          setActiveTab("2");
-        } else if (tab3Fields.includes(firstErrorField)) {
-          setActiveTab("3");
+          if (tab1Fields.includes(firstErrorField)) {
+            setActiveTab("1");
+          } else if (tab2Fields.includes(firstErrorField)) {
+            setActiveTab("2");
+          } else if (tab3Fields.includes(firstErrorField)) {
+            setActiveTab("3");
+          }
+
+          message.warning("Vui lòng kiểm tra lại thông tin trong các tab");
         }
-
-        message.warning("Vui lòng kiểm tra lại thông tin trong các tab");
       }
     }
-  }
-};
+  };
 
   const handleOk = async (values: HeritageSiteFormValues) => {
     // Transform values before submit
@@ -321,24 +302,26 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       // Convert region label back to enum value
       region:
         Object.keys(HeritageRegionLabels).find(
-          (key) =>
-            HeritageRegionLabels[key as HeritageRegion] === values.region,
+          (key) => HeritageRegionLabels[key as HeritageRegion] === values.region,
         ) || values.region,
       image: (() => {
         const raw = Array.isArray(values.image) ? values.image[0] : values.image;
         if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
         return raw || "";
       })(),
-      gallery: values.gallery?.map((item: string | { url?: string; response?: { url: string } }) => 
-        typeof item === "object" ? (item.url || item.response?.url || "") : item
-      ) || [],
+      gallery:
+        values.gallery?.map((item: string | {url?: string; response?: {url: string}}) =>
+          typeof item === "object" ? item.url || item.response?.url || "" : item,
+        ) || [],
       timeline: values.timeline || [],
-      relatedArtifactIds: values.relatedArtifactIds?.map((item: number | { value: number }) =>
-        typeof item === "object" ? item.value : item,
-      ) || [],
-      relatedHistoryIds: values.relatedHistoryIds?.map((item: number | { value: number }) =>
-        typeof item === "object" ? item.value : item,
-      ) || [],
+      relatedArtifactIds:
+        values.relatedArtifactIds?.map((item: number | {value: number}) =>
+          typeof item === "object" ? item.value : item,
+        ) || [],
+      relatedHistoryIds:
+        values.relatedHistoryIds?.map((item: number | {value: number}) =>
+          typeof item === "object" ? item.value : item,
+        ) || [],
       culturalPeriod: values.culturalPeriod,
       visitHours: values.visitHours,
       entranceFee: values.entranceFee,
@@ -352,7 +335,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   // Fetch function for Artifact Search
   const fetchArtifactList = async (search: string) => {
     try {
-      const response = await artifactService.getAll({ q: search, limit: 10 });
+      const response = await artifactService.getAll({q: search, limit: 10});
       if (response.success && response.data) {
         return response.data.map((item: Artifact) => ({
           label: item.name,
@@ -369,7 +352,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   // Fetch function for History Articles Search
   const fetchHistoryList = async (search: string) => {
     try {
-      const response = await historyService.getAll({ q: search, limit: 10 });
+      const response = await historyService.getAll({q: search, limit: 10});
       if (response.success && response.data) {
         return response.data.map((item: HistoryArticle) => ({
           label: item.title,
@@ -392,30 +375,21 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       width={1000}
       form={form}
       loading={loading}
+      initialValues={memoizedInitialValues}
       preserve={false}
-      initialValues={{
-        isActive: true,
-        unescoListed: false,
-        ...initialValues,
-      }}
       footer={
-        <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+        <div style={{display: "flex", justifyContent: "center", gap: "8px"}}>
           <StyledButton
             variant="outline"
             onClick={() => {
               form.resetFields();
               onCancel();
             }}
-            style={{ minWidth: "120px" }}
+            style={{minWidth: "120px"}}
           >
             Hủy
           </StyledButton>
-          <StyledButton
-            variant="primary"
-            loading={loading}
-            onClick={handleSubmitClick}
-            style={{ minWidth: "120px" }}
-          >
+          <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{minWidth: "120px"}}>
             Lưu lại
           </StyledButton>
         </div>
@@ -437,10 +411,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={16}>
-                    <Form.Item
-                      label="Thư viện ảnh (Tối đa 10 ảnh)"
-                      name="gallery"
-                    >
+                    <Form.Item label="Thư viện ảnh (Tối đa 10 ảnh)" name="gallery">
                       <ImageUpload maxCount={10} folder="gallery" />
                     </Form.Item>
                   </Col>
@@ -451,7 +422,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                       name="shortDescription"
                       label="Mô tả ngắn"
                       rules={[
-                        { required: true, message: "Vui lòng nhập mô tả ngắn" },
+                        {required: true, message: "Vui lòng nhập mô tả ngắn"},
+                        {min: 20, message: "Mô tả ngắn yêu cầu tối thiểu 20 ký tự"},
                       ]}
                     >
                       <Input.TextArea
@@ -467,7 +439,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                       name="name"
                       label="Tên Di sản"
                       rules={[
-                        { required: true, message: "Vui lòng nhập tên di sản" },
+                        {required: true, message: "Vui lòng nhập tên di sản"},
+                        {min: 5, message: "Tên di sản yêu cầu tối thiểu 5 ký tự"},
                       ]}
                     >
                       <Input placeholder="Nhập tên di sản (VD: Hoàng thành Thăng Long)" />
@@ -477,9 +450,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     <Form.Item
                       name="type"
                       label="Loại hình"
-                      rules={[
-                        { required: true, message: "Vui lòng chọn loại hình" },
-                      ]}
+                      rules={[{required: true, message: "Vui lòng chọn loại hình"}]}
                     >
                       <Select placeholder="Chọn loại hình">
                         {Object.values(HeritageType).map((type) => (
@@ -493,12 +464,32 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 </Row>
 
                 <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item name="author" label="Tác giả">
+                      <Input readOnly placeholder="Hệ thống tự động" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="publishDate" label="Ngày xuất bản">
+                      <DatePicker
+                        style={{width: "100%"}}
+                        disabled
+                        format="DD/MM/YYYY HH:mm"
+                        showTime
+                        placeholder="Tự động khi duyệt"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
                   <Col span={24}>
                     <Form.Item
                       name="address"
                       label="Địa chỉ"
                       rules={[
-                        { required: true, message: "Vui lòng nhập địa chỉ" },
+                        {required: true, message: "Vui lòng nhập địa chỉ"},
+                        {min: 10, message: "Địa chỉ yêu cầu tối thiểu 10 ký tự"},
                       ]}
                     >
                       <Input placeholder="Nhập địa chỉ cụ thể" />
@@ -508,20 +499,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item
-                      name="region"
-                      label="Khu vực"
-                      rules={[{ required: true }]}
-                    >
-                      <Select
-                        placeholder="Chọn khu vực"
-                        onChange={(value) => setSelectedRegion(value)}
-                      >
+                    <Form.Item name="region" label="Khu vực" rules={[{required: true}]}>
+                      <Select placeholder="Chọn khu vực" onChange={(value) => setSelectedRegion(value)}>
                         {Object.values(HeritageRegion).map((region) => (
-                          <Select.Option
-                            key={region}
-                            value={HeritageRegionLabels[region]}
-                          >
+                          <Select.Option key={region} value={HeritageRegionLabels[region]}>
                             {HeritageRegionLabels[region]}
                           </Select.Option>
                         ))}
@@ -530,10 +511,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                   </Col>
                   <Col span={8}>
                     <Form.Item name="province" label="Tỉnh/Thành phố">
-                      <Select
-                        placeholder="Chọn tỉnh/thành phố"
-                        disabled={!availableProvinces.length}
-                      >
+                      <Select placeholder="Chọn tỉnh/thành phố" disabled={!availableProvinces.length}>
                         {availableProvinces.map((province: HeritageProvince) => (
                           <Select.Option key={province} value={province}>
                             {HeritageProvinceLabels[province]}
@@ -571,16 +549,14 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 <Row gutter={16}>
                   <Col span={8}>
                     <Form.Item name="yearEstablished" label="Năm thành lập">
-                      <InputNumber style={{ width: "100%" }} controls={false} />
+                      <InputNumber style={{width: "100%"}} controls={false} />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
                     <Form.Item name="entranceFee" label="Giá vé">
                       <InputNumber
-                        style={{ width: "100%" }}
-                        formatter={(value) =>
-                          `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                        }
+                        style={{width: "100%"}}
+                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                         parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
                       />
                     </Form.Item>
@@ -588,27 +564,13 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                   <Col span={8}>
                     <Row gutter={16}>
                       <Col span={12}>
-                        <Form.Item
-                          name="unescoListed"
-                          label="UNESCO"
-                          valuePropName="checked"
-                        >
-                          <Switch
-                            checkedChildren="CÓ"
-                            unCheckedChildren="KHÔNG"
-                          />
+                        <Form.Item name="unescoListed" label="UNESCO" valuePropName="checked">
+                          <Switch checkedChildren="CÓ" unCheckedChildren="KHÔNG" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item
-                          name="isActive"
-                          label="Trạng thái"
-                          valuePropName="checked"
-                        >
-                          <Switch
-                            checkedChildren="Hiện"
-                            unCheckedChildren="Ẩn"
-                          />
+                        <Form.Item name="isActive" label="Trạng thái" valuePropName="checked">
+                          <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -625,7 +587,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                 <Form.Item
                   name="description"
                   label="Mô tả"
-                  rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+                  rules={[
+                    {required: true, message: "Vui lòng nhập mô tả"},
+                    {min: 10, message: "Mô tả chi tiết yêu cầu tối thiểu 10 ký tự"},
+                  ]}
                 >
                   <TinyEditor
                     key={isEdit ? `desc-edit-${initialValues?.id}` : "desc-create"}
@@ -635,10 +600,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     enableVideoEmbed={true}
                   />
                 </Form.Item>
-                <Form.Item
-                  name="references"
-                  label="Nguồn tham khảo"
-                >
+                <Form.Item name="references" label="Nguồn tham khảo">
                   <TinyEditor
                     key={isEdit ? `ref-edit-${initialValues?.id}` : "ref-create"}
                     height={250}
@@ -653,15 +615,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             label: "Dòng thời gian & Hiện vật",
             children: (
               <>
-                <Form.Item
-                  label="Hiện vật liên quan"
-                  name="relatedArtifactIds"
-                >
+                <Form.Item label="Hiện vật liên quan" name="relatedArtifactIds">
                   <DebounceSelect
                     mode="multiple"
                     placeholder="Tìm kiếm và chọn hiện vật..."
                     fetchOptions={fetchArtifactList}
-                    style={{ width: "100%" }}
+                    style={{width: "100%"}}
                   />
                 </Form.Item>
 
@@ -670,15 +629,15 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm và chọn bài viết lịch sử..."
                     fetchOptions={fetchHistoryList}
-                    style={{ width: "100%" }}
+                    style={{width: "100%"}}
                   />
                 </Form.Item>
 
-                <Form.Item label="Dòng thời gian" style={{ marginTop: 16 }}>
+                <Form.Item label="Dòng thời gian" style={{marginTop: 16}}>
                   <Form.List name="timeline">
-                    {(fields, { add, remove }) => (
+                    {(fields, {add, remove}) => (
                       <>
-                        {fields.map(({ key, name, ...restField }) => (
+                        {fields.map(({key, name, ...restField}) => (
                           <div
                             key={key}
                             style={{
@@ -691,35 +650,29 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                             <Form.Item
                               {...restField}
                               name={[name, "year"]}
-                              rules={[{ required: true, message: "Nhập năm" }]}
-                              style={{ margin: 0 }}
+                              rules={[{required: true, message: "Nhập năm"}]}
+                              style={{margin: 0}}
                             >
-                              <InputNumber
-                                placeholder="Năm"
-                                style={{ width: 80 }}
-                                controls={false}
-                              />
+                              <InputNumber placeholder="Năm" style={{width: 80}} controls={false} />
                             </Form.Item>
                             <Form.Item
                               {...restField}
                               name={[name, "title"]}
                               rules={[
-                                { required: true, message: "Nhập tiêu đề" },
+                                {required: true, message: "Nhập tiêu đề"},
+                                {min: 5, message: "Tiêu đề yêu cầu tối thiểu 5 ký tự"},
                               ]}
-                              style={{ margin: 0 }}
+                              style={{margin: 0}}
                             >
-                              <Input
-                                placeholder="Tiêu đề sự kiện"
-                                style={{ width: 200 }}
-                              />
+                              <Input placeholder="Tiêu đề sự kiện" style={{width: 200}} />
                             </Form.Item>
                             <Form.Item
                               {...restField}
                               name={[name, "category"]}
-                              rules={[{ required: true, message: "Chọn loại" }]}
-                              style={{ margin: 0 }}
+                              rules={[{required: true, message: "Chọn loại"}]}
+                              style={{margin: 0}}
                             >
-                              <Select placeholder="Loại" style={{ width: 150 }}>
+                              <Select placeholder="Loại" style={{width: 150}}>
                                 {Object.values(TimelineCategory).map((cat) => (
                                   <Select.Option key={cat} value={cat}>
                                     {TimelineCategoryLabels[cat]}
@@ -730,26 +683,16 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                             <Form.Item
                               {...restField}
                               name={[name, "description"]}
-                              style={{ flex: 1, margin: 0 }}
+                              rules={[{min: 10, message: "Mô tả yêu cầu tối thiểu 10 ký tự"}]}
+                              style={{flex: 1, margin: 0}}
                             >
-                              <Input
-                                placeholder="Mô tả sự kiện"
-                                style={{ width: "100%" }}
-                              />
+                              <Input placeholder="Mô tả sự kiện" style={{width: "100%"}} />
                             </Form.Item>
-                            <MinusCircleOutlined
-                              onClick={() => remove(name)}
-                              style={{ color: "red" }}
-                            />
+                            <MinusCircleOutlined onClick={() => remove(name)} style={{color: "red"}} />
                           </div>
                         ))}
                         <Form.Item>
-                          <Button
-                            type="dashed"
-                            onClick={() => add()}
-                            block
-                            icon={<PlusOutlined />}
-                          >
+                          <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                             Thêm sự kiện
                           </Button>
                         </Form.Item>

@@ -56,6 +56,7 @@ const HeritageBrowsePage: React.FC = () => {
                 page: pagination.current,
                 limit: pagination.pageSize,
                 isActive: true,
+                status: 'published',
                 ...filters,
             });
             

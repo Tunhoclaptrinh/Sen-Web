@@ -1,4 +1,4 @@
-import BaseService from './base.service';
+import ReviewableBaseService from './reviewable.service';
 import apiClient from '@/config/axios.config';
 import type {
   HistoryArticle,
@@ -11,7 +11,7 @@ import { logger } from '@/utils/logger.utils';
 /**
  * History Service - Handles Cultural Articles
  */
-class HistoryService extends BaseService<HistoryArticle, HistoryArticleDTO, HistoryArticleDTO> {
+class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticleDTO, HistoryArticleDTO> {
   constructor() {
     super('/history');
   }

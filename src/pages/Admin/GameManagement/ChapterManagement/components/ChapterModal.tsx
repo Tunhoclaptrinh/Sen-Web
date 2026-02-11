@@ -1,6 +1,6 @@
-import { Modal, Tabs } from "antd";
-import { useState, useEffect } from "react";
-import { Chapter } from "@/types";
+import {Modal, Tabs} from "antd";
+import {useState, useEffect} from "react";
+import {Chapter} from "@/types";
 import ChapterInfoTab from "./ChapterInfoTab";
 import LevelsTab from "./LevelsTab";
 
@@ -10,15 +10,10 @@ interface ChapterModalProps {
   onSuccess: () => void;
   data: Chapter | null;
   mode: "view" | "edit" | "create";
+  onSubmit?: (values: any) => Promise<boolean>;
 }
 
-const ChapterModal: React.FC<ChapterModalProps> = ({
-  open,
-  onCancel,
-  onSuccess,
-  data,
-  mode,
-}) => {
+const ChapterModal: React.FC<ChapterModalProps> = ({open, onCancel, onSuccess, data, mode, onSubmit}) => {
   const [activeTab, setActiveTab] = useState("1");
   const [chapterData, setChapterData] = useState<Chapter | null>(data);
 
@@ -57,6 +52,7 @@ const ChapterModal: React.FC<ChapterModalProps> = ({
           onUpdate={handleChapterUpdate}
           onSuccess={onSuccess}
           onCancel={onCancel}
+          onSubmit={onSubmit}
         />
       ),
     },
@@ -66,12 +62,7 @@ const ChapterModal: React.FC<ChapterModalProps> = ({
           {
             key: "2",
             label: "Danh sách Màn chơi",
-            children: (
-              <LevelsTab
-                chapterId={String(chapterData.id)}
-                chapterName={chapterData.name}
-              />
-            ),
+            children: <LevelsTab chapterId={String(chapterData.id)} chapterName={chapterData.name} />,
           },
         ]
       : []),
@@ -86,11 +77,7 @@ const ChapterModal: React.FC<ChapterModalProps> = ({
       width={mode === "view" ? 700 : 900}
       destroyOnClose
     >
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
-      />
+      <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
     </Modal>
   );
 };

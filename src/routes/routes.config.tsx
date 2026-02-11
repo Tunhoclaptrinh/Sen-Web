@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { RouteObject } from "react-router-dom";
+import { RouteObject, Navigate } from "react-router-dom";
 
 // Layouts
 import MainLayout from "@/layouts/MainLayout";
@@ -36,6 +36,12 @@ const ArtifactDetailPage = lazy(
 const HistoryDetailPage = lazy(
   () => import("@/pages/History/HistoryDetailPage"),
 );
+const ExhibitionBrowsePage = lazy(
+  () => import("@/pages/Exhibition/ExhibitionBrowsePage"),
+);
+const PublicExhibitionDetailPage = lazy(
+  () => import("@/pages/Exhibition/ExhibitionDetailPage"),
+);
 
 // Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
@@ -51,9 +57,6 @@ const Support = lazy(() => import("@/pages/Support"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
-const HeritageListPage = lazy(
-  () => import("@/pages/Heritage/HeritageListPage"),
-);
 const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
@@ -71,8 +74,20 @@ const LearningManagement = lazy(
 const ExhibitionManagement = lazy(
   () => import("@/pages/Admin/ExhibitionManagement"),
 );
+const LevelManagement = lazy(
+  () => import("@/pages/Admin/GameManagement/LevelManagement"),
+);
+const ResearcherHeritageManagement = lazy(
+  () => import("@/pages/Researcher/HeritageManagement"),
+);
+const ResearcherArtifactManagement = lazy(
+  () => import("@/pages/Researcher/ArtifactManagement"),
+);
 const BadgeManagement = lazy(
   () => import("@/pages/Admin/GameManagement/BadgeManagement"),
+);
+const LeaderboardPage = lazy(
+  () => import("@/pages/Admin/GameManagement/LeaderboardManagement"),
 );
 const ShopManagement = lazy(
   () => import("@/pages/Admin/GameManagement/ShopManagement"),
@@ -80,8 +95,23 @@ const ShopManagement = lazy(
 const ChapterManagement = lazy(
   () => import("@/pages/Admin/GameManagement/ChapterManagement"),
 );
-const LevelManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/LevelManagement"),
+const ResearcherExhibitionManagement = lazy(
+  () => import("@/pages/Researcher/ExhibitionManagement"),
+);
+const ExhibitionDetailPage = lazy(
+  () => import("@/pages/Admin/ExhibitionManagement/ExhibitionDetailPage"),
+);
+const ResearcherHistoryManagement = lazy(
+  () => import("@/pages/Researcher/HistoryManagement"),
+);
+const ResearcherChapterManagement = lazy(
+  () => import("@/pages/Researcher/ChapterManagement"),
+);
+const ResearcherLevelManagement = lazy(
+  () => import("@/pages/Researcher/LevelManagement"),
+);
+const ResearcherLearningManagement = lazy(
+  () => import("@/pages/Researcher/LearningManagement"),
 );
 
 // Game Pages
@@ -89,7 +119,7 @@ const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
 const LevelsPage = lazy(() => import("@/pages/Game/LevelsPage"));
 const GamePlayPage = lazy(() => import("@/pages/Game/GamePlayPage"));
 const MuseumPage = lazy(() => import("@/pages/Game/MuseumPage"));
-const LeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
+const PlayerLeaderboardPage = lazy(() => import("@/pages/Game/LeaderboardPage"));
 const QuestsPage = lazy(() => import("@/pages/Game/QuestsPage"));
 const ShopPage = lazy(() => import("@/pages/Game/ShopPage"));
 const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
@@ -174,6 +204,19 @@ const routes: RouteObject[] = [
         ],
       },
       {
+        path: "exhibitions",
+        children: [
+          {
+            index: true,
+            element: <ExhibitionBrowsePage />,
+          },
+          {
+            path: ":id",
+            element: <PublicExhibitionDetailPage />,
+          },
+        ],
+      },
+      {
         path: "support",
         element: <Support />,
       },
@@ -185,7 +228,7 @@ const routes: RouteObject[] = [
   {
     path: "/game",
     element: (
-      <RoleGuard allowedRoles={["customer"]} redirectTo="/">
+      <RoleGuard allowedRoles={["customer", "admin"]} redirectTo="/">
         <LazyLoadWrapper>
           <CustomerLayout />
         </LazyLoadWrapper>
@@ -219,7 +262,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "leaderboard",
-        element: <LeaderboardPage />,
+        element: <PlayerLeaderboardPage />,
       },
       {
          path: "shop",
@@ -260,52 +303,40 @@ const routes: RouteObject[] = [
     ),
     children: [
       {
-        path: "heritage/my-submissions",
-        element: <HeritageListPage />,
+        index: true,
+        element: <Navigate to="/researcher/heritage-sites" replace />,
       },
       {
-        path: "heritage/create",
-        element: <HeritageSiteManagement />,
+        path: "heritage-sites",
+        element: <ResearcherHeritageManagement />,
       },
       {
-        path: "artifacts/my-artifacts",
-        element: <ArtifactManagement />,
+        path: "artifacts",
+        element: <ResearcherArtifactManagement />,
       },
       {
-        path: "artifacts/create",
-        element: <ArtifactManagement />,
+        path: "exhibitions",
+        element: <ResearcherExhibitionManagement />,
       },
       {
-        path: "exhibitions/my-exhibitions",
-        element: <ExhibitionManagement />,
+        path: "exhibitions/:id",
+        element: <ExhibitionDetailPage />,
       },
       {
-        path: "exhibitions/create",
-        element: <ExhibitionManagement />,
-      },
-      {
-        path: "history/my-articles",
-        element: <HistoryManagement />,
-      },
-      {
-        path: "history/create",
-        element: <HistoryManagement />,
+        path: "history",
+        element: <ResearcherHistoryManagement />,
       },
       {
         path: "learning",
-        element: <LearningManagement />,
-      },
-      {
-        path: "learning/create",
-        element: <LearningManagement />,
+        element: <ResearcherLearningManagement />,
       },
       {
         path: "chapters",
-        element: <ChapterManagement />,
+        element: <ResearcherChapterManagement />,
       },
       {
         path: "levels",
-        element: <LevelManagement />,
+        element: <ResearcherLevelManagement />,
       },
     ],
   },
@@ -396,6 +427,10 @@ const routes: RouteObject[] = [
         element: <ExhibitionManagement />,
       },
       {
+        path: "exhibitions/:id",
+        element: <ExhibitionDetailPage />,
+      },
+      {
         path: "history",
         element: <HistoryManagement />,
       },
@@ -424,8 +459,11 @@ const routes: RouteObject[] = [
         element: <BadgeManagement />,
       },
       {
-        path: "shop",
         element: <ShopManagement />,
+      },
+      {
+        path: "leaderboard",
+        element: <LeaderboardPage />, 
       },
       {
         path: "learning",

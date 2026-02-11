@@ -6,161 +6,214 @@
 // @primary-color: var(--primary-color); // REMOVED: This breaks LESS color functions.
 
 @link-color: @primary-color;
-@success-color: #22C55E;
-@warning-color: #F97316;
+@success-color: #22c55e;
+@warning-color: #f97316;
 
 .ant-layout {
-    background: white;
+  background: white;
 }
 
 .ant-menu-light {
-    background: transparent;
+  background: transparent;
 }
 
 .ant-pro-layout .ant-pro-layout-content {
-    padding-block: 16px;
-    padding-inline: 24px;
+  padding-block: 16px;
+  padding-inline: 24px;
 }
 
 .ant-menu-item-selected::after {
-    border-right-color: var(--primary-color) !important;
+  border-right-color: var(--primary-color) !important;
 }
 
 .ant-menu-item:hover,
 .ant-menu-item-selected {
-    color: var(--primary-color) !important;
-    background-color: transparent !important;
+  color: var(--primary-color) !important;
+  background-color: transparent !important;
 }
 
 .ant-menu-item-selected {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .ant-btn-primary {
-    background-color: @primary-color;
-    border-color: @primary-color;
+  background-color: @primary-color;
+  border-color: @primary-color;
 
-    &:hover,
-    &:focus {
-        // background-color: darken(@primary-color, 10%); // Cannot use darken with css var
-        // border-color: darken(@primary-color, 10%);
-        filter: brightness(90%);
-    }
+  &:hover,
+  &:focus {
+    // background-color: darken(@primary-color, 10%); // Cannot use darken with css var
+    // border-color: darken(@primary-color, 10%);
+    filter: brightness(90%);
+  }
 }
 
 .ant-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
 
-    &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .ant-input,
 .ant-select-selector,
 .ant-picker {
-    border-radius: 4px !important;
+  border-radius: 4px !important;
 
-    &:hover {
-        border-color: @primary-color !important;
-    }
+  &:hover {
+    border-color: @primary-color !important;
+  }
 }
 
 .ant-input-focused,
 .ant-select-focused .ant-select-selector,
 .ant-picker-focused .ant-picker {
-    border-color: @primary-color !important;
-    box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
+  border-color: @primary-color !important;
+  box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
 }
 
 /* Global Select Option Overrides */
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-    background-color: fade(@primary-color, 10%) !important;
-    color: @primary-color !important;
-    font-weight: 600;
+  background-color: fade(@primary-color, 10%) !important;
+  color: @primary-color !important;
+  font-weight: 600;
 }
 
 .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
-    background-color: fade(@primary-color, 5%) !important;
+  background-color: fade(@primary-color, 5%) !important;
 }
 
 /* ==================== Layout Customizations ==================== */
 .ant-layout-header {
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .ant-layout-footer {
-    background: #fafafa;
-    border-top: 1px solid #e8e8e8;
+  background: #fafafa;
+  border-top: 1px solid #e8e8e8;
 }
 
 /* ==================== Table Customizations ==================== */
 .ant-table {
-    background: white;
+  background: white;
 }
 
-.ant-table-thead>tr>th {
-    background-color: #fafafa;
-    border-bottom-color: #e8e8e8;
+.ant-table-thead > tr > th {
+  background-color: #fafafa;
+  border-bottom-color: #e8e8e8;
 }
 
 /* ==================== Form Customizations ==================== */
 .ant-form-item-required::before {
-    color: @primary-color;
+  color: @primary-color;
 }
 
 .ant-checkbox-inner {
-    border-color: @primary-color;
+  border-color: @primary-color;
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: @primary-color;
-    border-color: @primary-color;
+  background-color: @primary-color;
+  border-color: @primary-color;
 }
 
 /* ==================== Utilities ==================== */
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .text-muted {
-    color: #8c8c8c;
+  color: #8c8c8c;
 }
 
 .mt-16 {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 .mt-24 {
-    margin-top: 24px;
+  margin-top: 24px;
 }
 
 .mb-16 {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .mb-24 {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 /* ==================== Responsive ==================== */
 @media (max-width: 768px) {
-    body {
-        font-size: 14px;
-    }
+  body {
+    font-size: 14px;
+  }
 
-    h1 {
-        font-size: 24px;
-    }
+  h1 {
+    font-size: 24px;
+  }
 
-    h2 {
-        font-size: 20px;
-    }
+  h2 {
+    font-size: 20px;
+  }
 
-    .ant-layout-header {
-        padding: 0 16px;
-    }
+  .ant-layout-header {
+    padding: 0 16px;
+  }
+}
+
+/* ==================== Header Action Buttons ==================== */
+.header-action-btn {
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 !important;
+  font-size: 18px;
+  color: #64748b;
+  transition: all 0.3s;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: @primary-color !important;
+  }
+
+  &.active {
+    background: transparent !important;
+    color: @primary-color !important;
+  }
+
+  .anticon {
+    font-size: 18px;
+    color: inherit !important;
+  }
+}
+
+// Aggressively remove hover background from all possible ProLayout header action containers
+.ant-pro-global-header-index-action,
+.ant-pro-header-actions-item,
+.ant-pro-global-header-right-content-item,
+.ant-pro-global-header-index-right-item,
+.ant-pro-global-header-item,
+.ant-pro-header-actions-item-active,
+.ant-pro-global-header-index-action-active {
+  &,
+  &:hover,
+  &-active,
+  &:active,
+  &:focus {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
 }
