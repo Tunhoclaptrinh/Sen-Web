@@ -1,5 +1,5 @@
-import React, { lazy, Suspense } from "react";
-import { RouteObject, Navigate } from "react-router-dom";
+import React, {lazy, Suspense} from "react";
+import {RouteObject, Navigate} from "react-router-dom";
 
 // Layouts
 import MainLayout from "@/layouts/MainLayout";
@@ -9,7 +9,7 @@ import ResearcherLayout from "@/layouts/ResearcherLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import Loading from "@/components/common/Loading";
 import AuthGuard from "@/components/common/guards/AuthGuard";
-import { RoleGuard } from "./RouteGuards";
+import {RoleGuard} from "./RouteGuards";
 import ArtifactManagement from "@/pages/Admin/ArtifactManagement";
 import HeritageSiteManagement from "@/pages/Admin/HeritageSiteManagement";
 
@@ -18,30 +18,16 @@ const Home = lazy(() => import("@/pages/Home"));
 const Login = lazy(() => import("@/pages/Auth"));
 
 // Public Browse Pages (User Friendly)
-const HeritageBrowsePage = lazy(
-  () => import("@/pages/Heritage/HeritageBrowsePage"),
-);
-const ArtifactBrowsePage = lazy(
-  () => import("@/pages/Artifact/ArtifactBrowsePage"),
-);
+const HeritageBrowsePage = lazy(() => import("@/pages/Heritage/HeritageBrowsePage"));
+const ArtifactBrowsePage = lazy(() => import("@/pages/Artifact/ArtifactBrowsePage"));
 const HistoryListPage = lazy(() => import("@/pages/History/HistoryListPage"));
 
 // Detail Pages
-const HeritageDetailPage = lazy(
-  () => import("@/pages/Heritage/HeritageDetailPage"),
-);
-const ArtifactDetailPage = lazy(
-  () => import("@/pages/Artifact/ArtifactDetailPage"),
-);
-const HistoryDetailPage = lazy(
-  () => import("@/pages/History/HistoryDetailPage"),
-);
-const ExhibitionBrowsePage = lazy(
-  () => import("@/pages/Exhibition/ExhibitionBrowsePage"),
-);
-const PublicExhibitionDetailPage = lazy(
-  () => import("@/pages/Exhibition/ExhibitionDetailPage"),
-);
+const HeritageDetailPage = lazy(() => import("@/pages/Heritage/HeritageDetailPage"));
+const ArtifactDetailPage = lazy(() => import("@/pages/Artifact/ArtifactDetailPage"));
+const HistoryDetailPage = lazy(() => import("@/pages/History/HistoryDetailPage"));
+const ExhibitionBrowsePage = lazy(() => import("@/pages/Exhibition/ExhibitionBrowsePage"));
+const PublicExhibitionDetailPage = lazy(() => import("@/pages/Exhibition/ExhibitionDetailPage"));
 
 // Profile Pages
 const Profile = lazy(() => import("@/pages/Profile/Profile"));
@@ -54,65 +40,30 @@ const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Support = lazy(() => import("@/pages/Support"));
 
-
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
 const HistoryManagement = lazy(() => import("@/pages/Admin/HistoryManagement"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const ReviewManagement = lazy(() => import("@/pages/Admin/ReviewManagement"));
-const CategoryManagement = lazy(
-  () => import("@/pages/Admin/CategoryManagement"),
-);
-const CharacterManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/CharacterManagement"),
-);
+const CategoryManagement = lazy(() => import("@/pages/Admin/CategoryManagement"));
+const CharacterManagement = lazy(() => import("@/pages/Admin/GameManagement/CharacterManagement"));
 const AssetManagement = lazy(() => import("@/pages/Admin/AssetManagement"));
 const QuestManagement = lazy(() => import("@/pages/Admin/QuestManagement"));
-const LearningManagement = lazy(
-  () => import("@/pages/Admin/LearningManagement"),
-);
-const ExhibitionManagement = lazy(
-  () => import("@/pages/Admin/ExhibitionManagement"),
-);
-const LevelManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/LevelManagement"),
-);
-const ResearcherHeritageManagement = lazy(
-  () => import("@/pages/Researcher/HeritageManagement"),
-);
-const ResearcherArtifactManagement = lazy(
-  () => import("@/pages/Researcher/ArtifactManagement"),
-);
-const BadgeManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/BadgeManagement"),
-);
-const LeaderboardPage = lazy(
-  () => import("@/pages/Admin/GameManagement/LeaderboardManagement"),
-);
-const ShopManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/ShopManagement"),
-);
-const ChapterManagement = lazy(
-  () => import("@/pages/Admin/GameManagement/ChapterManagement"),
-);
-const ResearcherExhibitionManagement = lazy(
-  () => import("@/pages/Researcher/ExhibitionManagement"),
-);
-const ExhibitionDetailPage = lazy(
-  () => import("@/pages/Admin/ExhibitionManagement/ExhibitionDetailPage"),
-);
-const ResearcherHistoryManagement = lazy(
-  () => import("@/pages/Researcher/HistoryManagement"),
-);
-const ResearcherChapterManagement = lazy(
-  () => import("@/pages/Researcher/ChapterManagement"),
-);
-const ResearcherLevelManagement = lazy(
-  () => import("@/pages/Researcher/LevelManagement"),
-);
-const ResearcherLearningManagement = lazy(
-  () => import("@/pages/Researcher/LearningManagement"),
-);
+const LearningManagement = lazy(() => import("@/pages/Admin/LearningManagement"));
+const ExhibitionManagement = lazy(() => import("@/pages/Admin/ExhibitionManagement"));
+const LevelManagement = lazy(() => import("@/pages/Admin/GameManagement/LevelManagement"));
+const ResearcherHeritageManagement = lazy(() => import("@/pages/Researcher/HeritageManagement"));
+const ResearcherArtifactManagement = lazy(() => import("@/pages/Researcher/ArtifactManagement"));
+const BadgeManagement = lazy(() => import("@/pages/Admin/GameManagement/BadgeManagement"));
+const LeaderboardPage = lazy(() => import("@/pages/Admin/GameManagement/LeaderboardManagement"));
+const ShopManagement = lazy(() => import("@/pages/Admin/GameManagement/ShopManagement"));
+const ChapterManagement = lazy(() => import("@/pages/Admin/GameManagement/ChapterManagement"));
+const ResearcherExhibitionManagement = lazy(() => import("@/pages/Researcher/ExhibitionManagement"));
+const ExhibitionDetailPage = lazy(() => import("@/pages/Admin/ExhibitionManagement/ExhibitionDetailPage"));
+const ResearcherHistoryManagement = lazy(() => import("@/pages/Researcher/HistoryManagement"));
+const ResearcherChapterManagement = lazy(() => import("@/pages/Researcher/ChapterManagement"));
+const ResearcherLevelManagement = lazy(() => import("@/pages/Researcher/LevelManagement"));
+const ResearcherLearningManagement = lazy(() => import("@/pages/Researcher/LearningManagement"));
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -124,11 +75,13 @@ const QuestsPage = lazy(() => import("@/pages/Game/QuestsPage"));
 const ShopPage = lazy(() => import("@/pages/Game/ShopPage"));
 const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
 const GameDashboard = lazy(() => import("@/pages/Game/DashboardPage"));
+const MapPage = lazy(() => import("@/pages/Map"));
+const ScanPage = lazy(() => import("@/pages/Game/ScanPage"));
 
 // Wrapper component for Suspense
-const LazyLoadWrapper: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => <Suspense fallback={<Loading fullScreen />}>{children}</Suspense>;
+const LazyLoadWrapper: React.FC<{children: React.ReactNode}> = ({children}) => (
+  <Suspense fallback={<Loading fullScreen />}>{children}</Suspense>
+);
 
 const routes: RouteObject[] = [
   // ============ AUTH ROUTES ============
@@ -220,7 +173,6 @@ const routes: RouteObject[] = [
         path: "support",
         element: <Support />,
       },
-
     ],
   },
 
@@ -240,13 +192,21 @@ const routes: RouteObject[] = [
         element: <GameDashboard />,
       },
       {
-        index: true, 
+        index: true,
         element: <GameDashboard />, // Keep index as dashboard for convenience, or redirect? User wants explicit path.
         // Let's keep both or just redirect. For now, rendering component at index is fine, but menu should point to /dashboard.
       },
       {
         path: "chapters",
         element: <ChaptersPage />,
+      },
+      {
+        path: "scan",
+        element: <ScanPage />,
+      },
+      {
+        path: "map",
+        element: <MapPage />,
       },
       {
         path: "chapters/:chapterId/levels",
@@ -265,8 +225,8 @@ const routes: RouteObject[] = [
         element: <PlayerLeaderboardPage />,
       },
       {
-         path: "shop",
-         element: <ShopPage />,
+        path: "shop",
+        element: <ShopPage />,
       },
       {
         path: "quests",
@@ -463,7 +423,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "leaderboard",
-        element: <LeaderboardPage />, 
+        element: <LeaderboardPage />,
       },
       {
         path: "learning",

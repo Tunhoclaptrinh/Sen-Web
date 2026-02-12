@@ -1,17 +1,16 @@
-import ReviewableBaseService from './reviewable.service';
-import apiClient from '@/config/axios.config';
+import ReviewableBaseService from "./reviewable.service";
+import apiClient from "@/config/axios.config";
 import type {
   HeritageSite,
   HeritageSiteDTO,
   HeritageType,
   HeritageSearchParams,
-
   HeritageWithDistance,
   TimelineEvent,
   BaseApiResponse,
   QueryParams,
-} from '@/types';
-import { logger } from '@/utils/logger.utils';
+} from "@/types";
+import {logger} from "@/utils/logger.utils";
 
 /**
  * Heritage Service
@@ -19,7 +18,7 @@ import { logger } from '@/utils/logger.utils';
  */
 class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDTO, HeritageSiteDTO> {
   constructor() {
-    super('/heritage-sites');
+    super("/heritage-sites");
   }
 
   /**
@@ -29,7 +28,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
     latitude: number,
     longitude: number,
     radius: number = 10,
-    params: QueryParams = {}
+    params: QueryParams = {},
   ): Promise<BaseApiResponse<HeritageWithDistance[]>> {
     try {
       const queryParams = {
@@ -50,7 +49,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
         message: response.message,
       };
     } catch (error) {
-      logger.error('[Heritage] getNearby error:', error);
+      logger.error("[Heritage] getNearby error:", error);
       throw error;
     }
   }
@@ -61,9 +60,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   async getArtifacts(id: number | string, params: QueryParams = {}): Promise<BaseApiResponse<any[]>> {
     try {
       const queryString = this.buildQueryString(params);
-      const url = queryString
-        ? `${this.endpoint}/${id}/artifacts?${queryString}`
-        : `${this.endpoint}/${id}/artifacts`;
+      const url = queryString ? `${this.endpoint}/${id}/artifacts?${queryString}` : `${this.endpoint}/${id}/artifacts`;
 
       const response = await apiClient.get<BaseApiResponse<any[]>>(url);
 
@@ -74,7 +71,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
         message: response.message,
       };
     } catch (error) {
-      logger.error('[Heritage] getArtifacts error:', error);
+      logger.error("[Heritage] getArtifacts error:", error);
       throw error;
     }
   }
@@ -84,9 +81,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
    */
   async getTimeline(id: number | string): Promise<BaseApiResponse<TimelineEvent[]>> {
     try {
-      const response = await apiClient.get<BaseApiResponse<TimelineEvent[]>>(
-        `${this.endpoint}/${id}/timeline`
-      );
+      const response = await apiClient.get<BaseApiResponse<TimelineEvent[]>>(`${this.endpoint}/${id}/timeline`);
 
       return {
         success: response.success ?? true,
@@ -94,7 +89,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
         message: response.message,
       };
     } catch (error) {
-      logger.error('[Heritage] getTimeline error:', error);
+      logger.error("[Heritage] getTimeline error:", error);
       throw error;
     }
   }
@@ -134,8 +129,8 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
    */
   async getFeatured(limit: number = 10): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.getAll({
-      _sort: 'rating',
-      _order: 'desc',
+      _sort: "rating",
+      _order: "desc",
       _limit: limit,
     });
   }
@@ -145,8 +140,8 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
    */
   async getPopular(limit: number = 10): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.getAll({
-      _sort: 'views',
-      _order: 'desc',
+      _sort: "views",
+      _order: "desc",
       _limit: limit,
     });
   }
@@ -154,10 +149,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   /**
    * Search heritage sites with advanced filters
    */
-  async searchWithFilters(
-    query: string,
-    filters: HeritageSearchParams = {}
-  ): Promise<BaseApiResponse<HeritageSite[]>> {
+  async searchWithFilters(query: string, filters: HeritageSearchParams = {}): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.search(query, filters);
   }
 
@@ -174,17 +166,12 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   /**
    * Get heritage sites with entrance fee filter
    */
-  async getByEntranceFee(
-    maxFee: number,
-    params: QueryParams = {}
-  ): Promise<BaseApiResponse<HeritageSite[]>> {
+  async getByEntranceFee(maxFee: number, params: QueryParams = {}): Promise<BaseApiResponse<HeritageSite[]>> {
     const allSites = await this.getAll(params);
 
     if (!allSites.data) return allSites;
 
-    const filtered = allSites.data.filter(
-      site => !site.entranceFee || site.entranceFee <= maxFee
-    );
+    const filtered = allSites.data.filter((site) => !site.entranceFee || site.entranceFee <= maxFee);
 
     return {
       ...allSites,
@@ -199,7 +186,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      logger.warn('[Heritage] incrementViewCount failed:', error);
+      logger.warn("[Heritage] incrementViewCount failed:", error);
     }
   }
 
@@ -209,7 +196,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   async getRelated(id: number | string, limit: number = 6): Promise<BaseApiResponse<HeritageSite[]>> {
     try {
       const response = await apiClient.get<BaseApiResponse<HeritageSite[]>>(
-        `${this.endpoint}/${id}/related?_limit=${limit}`
+        `${this.endpoint}/${id}/related?_limit=${limit}`,
       );
 
       return {
@@ -217,7 +204,7 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
         data: response.data ?? [],
       };
     } catch (error) {
-      logger.error('[Heritage] getRelated error:', error);
+      logger.error("[Heritage] getRelated error:", error);
       throw error;
     }
   }
@@ -228,11 +215,11 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   async getStats(): Promise<BaseApiResponse<any>> {
     try {
       const [total, unesco, north, center, south] = await Promise.all([
-        this.getAll({ limit: 1 }),
-        this.getUNESCO({ limit: 1 }),
-        this.getByRegion("Bắc", { limit: 1 }),
-        this.getByRegion("Trung", { limit: 1 }),
-        this.getByRegion("Nam", { limit: 1 }),
+        this.getAll({limit: 1}),
+        this.getUNESCO({limit: 1}),
+        this.getByRegion("Bắc", {limit: 1}),
+        this.getByRegion("Trung", {limit: 1}),
+        this.getByRegion("Nam", {limit: 1}),
       ]);
 
       return {
@@ -244,12 +231,27 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
             north: north.pagination?.total || 0,
             center: center.pagination?.total || 0,
             south: south.pagination?.total || 0,
-          }
-        }
+          },
+        },
       };
     } catch (error) {
-      logger.error('[Heritage] getStats error:', error);
-      return { success: false, message: "Failed to load stats", data: null };
+      return {success: false, message: "Failed to load stats", data: null};
+    }
+  }
+
+  /**
+   * Get heritage locations for map
+   */
+  async getLocations(): Promise<BaseApiResponse<any[]>> {
+    try {
+      const response = await apiClient.get<BaseApiResponse<any[]>>(`${this.endpoint}/locations`);
+      return {
+        success: response.success ?? true,
+        data: response.data ?? [],
+      };
+    } catch (error) {
+      logger.error("[Heritage] getLocations error:", error);
+      return {success: false, message: "Failed to load locations", data: []};
     }
   }
 }

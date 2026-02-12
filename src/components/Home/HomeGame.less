@@ -1,0 +1,170 @@
+@import "../../pages/Game/common.less";
+
+.home-game-card {
+  .game-card-style();
+  position: absolute; /* Keep absolute positioning as per original */
+  z-index: 100;
+  max-width: 280px;
+  overflow: hidden;
+  padding: 0;
+  /* Override specific styles if needed */
+  background-color: @paper-bg;
+  border-color: @gold-border;
+}
+
+.home-game-btn {
+  /* Inherit primary button styles */
+  .game-btn-primary();
+
+  /* Additional layout for icon + text */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px !important;
+  font-size: 14px !important;
+  height: 48px !important;
+
+  /* Specific overrides */
+  border-radius: 8px !important; /* Standard toggle */
+
+  &:hover {
+    color: #fff !important;
+    background: lighten(@seal-red, 5%) !important;
+  }
+}
+
+.home-game-title {
+  .game-title-style();
+  font-size: 24px !important; /* Smaller for Home sections */
+  margin: 0;
+  color: @seal-red;
+}
+
+.home-game-text {
+  font-family: @font-serif;
+  color: @text-color-primary;
+}
+
+.home-game-leaderboard-card {
+  .game-card-style();
+  overflow: hidden;
+  background: #fff;
+  border: 4px solid rgba(255, 215, 0, 0.3); /* Match specific leaderboard style */
+}
+
+/* New Section Styles */
+.home-game-section {
+  .game-page-background();
+  background-color: #f4efe4 !important; /* Force Cream background */
+  min-height: auto !important; /* Override 100vh */
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-game-section-title {
+  .game-title-style();
+  text-align: center;
+  font-size: 42px !important;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.home-game-section-subtitle {
+  .game-subtitle-style();
+  text-align: center;
+  display: block;
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 18px !important;
+  color: #666;
+}
+
+.home-game-sub-header {
+  font-family: @font-sans;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: @gold-border; /* Gold/Bronze accent */
+  display: block;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+// Responsive styles for stats card
+.home-map-stats-card {
+  @media (max-width: 1200px) {
+    max-width: 240px;
+
+    // Smaller header
+    > div:first-child {
+      font-size: 16px !important;
+      padding: 18px 0 !important;
+    }
+
+    // Smaller stat items
+    > div:last-child {
+      padding: 24px 24px 28px 24px !important;
+
+      > div {
+        padding: 20px 0 !important;
+        gap: 16px !important;
+
+        // Icon + label
+        > div:first-child {
+          gap: 10px !important;
+
+          span:first-child {
+            font-size: 22px !important;
+          }
+
+          span:last-child {
+            font-size: 12px !important;
+          }
+        }
+
+        // Number
+        > div:last-child {
+          font-size: 36px !important;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    max-width: 200px;
+    top: 60px !important;
+    left: 40px !important;
+
+    > div:first-child {
+      font-size: 14px !important;
+      padding: 14px 0 !important;
+    }
+
+    > div:last-child {
+      padding: 20px 20px 24px 20px !important;
+
+      > div {
+        padding: 16px 0 !important;
+        gap: 12px !important;
+
+        > div:first-child {
+          gap: 8px !important;
+
+          span:first-child {
+            font-size: 20px !important;
+          }
+
+          span:last-child {
+            font-size: 11px !important;
+          }
+        }
+
+        > div:last-child {
+          font-size: 30px !important;
+        }
+      }
+    }
+  }
+}

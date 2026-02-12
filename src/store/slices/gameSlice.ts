@@ -166,7 +166,7 @@ export const completeLevel = createAsyncThunk(
 // Fetch leaderboard
 export const fetchLeaderboard = createAsyncThunk(
   "game/fetchLeaderboard",
-  async (params: {type?: "global" | "weekly" | "monthly"; limit?: number} = {}, {rejectWithValue}) => {
+  async (params: {type?: "global" | "points" | "level" | "checkins"; limit?: number} = {}, {rejectWithValue}) => {
     try {
       const data = await gameService.getLeaderboard(params.type, params.limit);
       return data;

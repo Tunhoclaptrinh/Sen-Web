@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/hooks/useRedux";
 import {fetchLeaderboard} from "@/store/slices/gameSlice";
 import {Card, Table, Avatar, Tag, Tabs, Spin, Typography} from "antd";
-import {TrophyOutlined, CrownOutlined, UserOutlined} from "@ant-design/icons";
+import {TrophyOutlined, CrownOutlined, UserOutlined, EnvironmentOutlined} from "@ant-design/icons";
 import {motion, AnimatePresence} from "framer-motion";
 import type {LeaderboardEntry} from "@/types";
 import {getImageUrl} from "@/utils/image.helper";
@@ -10,7 +10,19 @@ import "./styles.less";
 
 const {Title, Text, Paragraph} = Typography;
 
-const PodiumItem: React.FC<{entry: LeaderboardEntry; rank: number}> = ({entry, rank}) => {
+const PodiumItem: React.FC<{entry: LeaderboardEntry; rank: number; activeTab: "points" | "checkins" | "level"}> = ({
+  entry,
+  rank,
+  activeTab,
+}) => {
+  const isCheckins = activeTab === "checkins";
+  const isLevel = activeTab === "level";
+
+  const mainStatValue = isCheckins ? entry.checkinCount || 0 : isLevel ? entry.level : entry.totalPoints;
+
+  const mainStatIcon = isCheckins ? "📍" : isLevel ? "⭐" : "🏆";
+  const mainStatLabel = isCheckins ? "Check-in" : isLevel ? "LeveL" : "Cúp";
+
   return (
     <motion.div
       className={`podium-item rank-${rank}`}
@@ -34,8 +46,10 @@ const PodiumItem: React.FC<{entry: LeaderboardEntry; rank: number}> = ({entry, r
         </div>
         <div className="stats-grid">
           <div className="stat-item">
-            <span className="stat-label">Cúp</span>
-            <span className="stat-value">🏆 {(entry.totalPoints || 0).toLocaleString()}</span>
+            <span className="stat-label">{mainStatLabel}</span>
+            <span className="stat-value">
+              {mainStatIcon} {mainStatValue.toLocaleString()}
+            </span>
           </div>
           <div className="stat-item">
             <span className="stat-label">Cánh Sen</span>
@@ -50,14 +64,14 @@ const PodiumItem: React.FC<{entry: LeaderboardEntry; rank: number}> = ({entry, r
 const LeaderboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const {leaderboard, leaderboardLoading} = useAppSelector((state) => state.game);
-  const [activeTab, setActiveTab] = useState<"global" | "weekly" | "monthly">("global");
+  const [activeTab, setActiveTab] = useState<"points" | "checkins" | "level">("points");
 
   useEffect(() => {
     dispatch(fetchLeaderboard({type: activeTab, limit: 50}));
   }, [dispatch, activeTab]);
 
   const handleTabChange = (key: string) => {
-    setActiveTab(key as "global" | "weekly" | "monthly");
+    setActiveTab(key as "points" | "checkins" | "level");
   };
 
   const columns = [
@@ -86,12 +100,24 @@ const LeaderboardPage: React.FC = () => {
       ),
     },
     {
-      title: "Cúp",
-      dataIndex: "totalPoints",
-      key: "totalPoints",
-      render: (points: number) => (
-        <Tag color="blue" icon={<TrophyOutlined />} style={{borderRadius: 12, padding: "2px 12px"}}>
-          {(points || 0).toLocaleString()}
+      title: activeTab === "checkins" ? "Địa điểm" : activeTab === "level" ? "Cấp độ" : "Cúp",
+      dataIndex: activeTab === "checkins" ? "checkinCount" : activeTab === "level" ? "level" : "totalPoints",
+      key: "score",
+      render: (value: number) => (
+        <Tag
+          color={activeTab === "checkins" ? "green" : activeTab === "level" ? "purple" : "blue"}
+          icon={
+            activeTab === "checkins" ? (
+              <EnvironmentOutlined />
+            ) : activeTab === "level" ? (
+              <CrownOutlined />
+            ) : (
+              <TrophyOutlined />
+            )
+          }
+          style={{borderRadius: 12, padding: "2px 12px"}}
+        >
+          {(value || 0).toLocaleString()} {activeTab === "checkins" ? "địa điểm" : ""}
         </Tag>
       ),
     },
@@ -146,9 +172,9 @@ const LeaderboardPage: React.FC = () => {
               exit={{opacity: 0, scale: 0.9}}
               transition={{duration: 0.3}}
             >
-              {top3[1] && <PodiumItem entry={top3[1]} rank={2} />}
-              {top3[0] && <PodiumItem entry={top3[0]} rank={1} />}
-              {top3[2] && <PodiumItem entry={top3[2]} rank={3} />}
+              {top3[1] && <PodiumItem entry={top3[1]} rank={2} activeTab={activeTab} />}
+              {top3[0] && <PodiumItem entry={top3[0]} rank={1} activeTab={activeTab} />}
+              {top3[2] && <PodiumItem entry={top3[2]} rank={3} activeTab={activeTab} />}
             </motion.div>
           </AnimatePresence>
 
@@ -158,9 +184,9 @@ const LeaderboardPage: React.FC = () => {
               onChange={handleTabChange}
               centered
               items={[
-                {key: "global", label: "Toàn thời gian"},
-                {key: "weekly", label: "Tuần này"},
-                {key: "monthly", label: "Tháng này"},
+                {key: "points", label: "Điểm số (Cúp)"},
+                {key: "checkins", label: "Nhà thám hiểm (Check-in)"},
+                {key: "level", label: "Cấp độ"},
               ]}
             />
           </div>

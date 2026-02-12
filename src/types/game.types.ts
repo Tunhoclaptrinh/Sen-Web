@@ -265,6 +265,7 @@ export interface LeaderboardEntry {
   level: number;
   senPetals: number;
   charactersCount: number;
+  checkinCount?: number;
 }
 
 // ==================== Museum ====================

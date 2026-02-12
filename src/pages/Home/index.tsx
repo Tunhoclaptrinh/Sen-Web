@@ -1,28 +1,24 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, Typography, Button } from "antd";
-import {
-  CalendarOutlined,
-  UserOutlined,
-  CommentOutlined,
-} from "@ant-design/icons";
-import { fetchHeritageSites } from "@store/slices/heritageSlice";
-import { fetchArtifacts } from "@store/slices/artifactSlice";
-import { RootState, AppDispatch } from "@/store";
+import React, {useEffect, useState, useRef} from "react";
+import {useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {Row, Col, Typography, Button} from "antd";
+import {CalendarOutlined, UserOutlined, CommentOutlined} from "@ant-design/icons";
+import {fetchHeritageSites} from "@store/slices/heritageSlice";
+import {fetchArtifacts} from "@store/slices/artifactSlice";
+import {RootState, AppDispatch} from "@/store";
 import FeatureCard from "@/components/common/cards/FeatureCard";
+import HomeMapSection from "@/components/Home/HomeMapSection";
+import HomeLeaderboardSection from "@/components/Home/HomeLeaderboardSection";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 
-const { Title, Paragraph } = Typography;
+const {Title, Paragraph} = Typography;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { items: sites } = useSelector((state: RootState) => state.heritage);
-  const { items: artifacts } = useSelector(
-    (state: RootState) => state.artifact,
-  );
+  const {items: sites} = useSelector((state: RootState) => state.heritage);
+  const {items: artifacts} = useSelector((state: RootState) => state.artifact);
 
   // State for background animation
   const [isShaking, setIsShaking] = useState(false);
@@ -48,8 +44,8 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchHeritageSites({ _limit: 4 }));
-    dispatch(fetchArtifacts({ _limit: 4 }));
+    dispatch(fetchHeritageSites({_limit: 4}));
+    dispatch(fetchArtifacts({_limit: 4}));
   }, [dispatch]);
 
   return (
@@ -60,13 +56,8 @@ const Home: React.FC = () => {
           <div className="brand-title">
             <img src={brandTitle} alt="" />
           </div>
-          <p className="hero-subtitle">
-            Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ
-          </p>
-          <Button
-            className="cta-button"
-            onClick={() => navigate("/game/chapters")}
-          >
+          <p className="hero-subtitle">Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ</p>
+          <Button className="cta-button" onClick={() => navigate("/game/chapters")}>
             Khám phá ngay
           </Button>
         </div>
@@ -75,17 +66,9 @@ const Home: React.FC = () => {
 
       {/* 2. Mission Section (Sứ mệnh của Sen) */}
       <section className="mission-section">
-        <img
-          src="/images/hoatiettrongdong.png"
-          alt="drum"
-          className="bg-drum"
-        />
+        <img src="/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
         <div className="mission-bg-container">
-          <img
-            src="/images/hoatiettrongdong.png"
-            alt=""
-            className={`mission-drum-img ${isShaking ? "shaking" : ""}`}
-          />
+          <img src="/images/hoatiettrongdong.png" alt="" className={`mission-drum-img ${isShaking ? "shaking" : ""}`} />
         </div>
         <div className="mission-container">
           <div className="mission-image-col">
@@ -101,45 +84,37 @@ const Home: React.FC = () => {
               Khám phá lịch sử - văn hóa
             </Title>
             <Paragraph className="mission-desc">
-              Qua lịch sử Việt Nam đầy hào hùng được người kể những câu chuyện
-              chưa quen tương tác, sinh động và dễ tiếp cận. Bằng việc kết hợp
-              kiến thức lịch sử chính thống với lối chơi hấp dẫn, website mong
-              muốn khơi dậy niềm hứng thú khám phá quá khứ.
+              Qua lịch sử Việt Nam đầy hào hùng được người kể những câu chuyện chưa quen tương tác, sinh động và dễ tiếp
+              cận. Bằng việc kết hợp kiến thức lịch sử chính thống với lối chơi hấp dẫn, website mong muốn khơi dậy niềm
+              hứng thú khám phá quá khứ.
               <br />
               <br />
-              Sen không chỉ gìn giữ bảo tồn và lan tỏa di sản dân tộc mà còn
-              nuôi dưỡng tinh thần yêu nước, ý thức gìn giữ bản sắc dân tộc
-              trong thời đại số.
+              Sen không chỉ gìn giữ bảo tồn và lan tỏa di sản dân tộc mà còn nuôi dưỡng tinh thần yêu nước, ý thức gìn
+              giữ bản sắc dân tộc trong thời đại số.
             </Paragraph>
             <div className="mission-actions">
-              <button
-                className="action-btn green-btn"
-                onClick={() => navigate("/game/chapters")}
-              >
+              <button className="action-btn green-btn" onClick={() => navigate("/game/chapters")}>
                 Khám phá
               </button>
-              <button
-                className="action-btn light-green-btn"
-                onClick={() => navigate("/heritage-sites")}
-              >
+              <button className="action-btn light-green-btn" onClick={() => navigate("/heritage-sites")}>
                 Di sản văn hóa
               </button>
-              <button
-                className="action-btn light-green-btn"
-                onClick={() => navigate("/artifacts/browse")}
-              >
+              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts/browse")}>
                 Hiện vật
               </button>
-              <button
-                className="action-btn light-green-btn"
-                onClick={() => navigate("/learn")}
-              >
+              <button className="action-btn light-green-btn" onClick={() => navigate("/learn")}>
                 Học tập
               </button>
             </div>
           </div>
         </div>
       </section>
+
+      {/* 2.5 Map Section */}
+      <HomeMapSection />
+
+      {/* 2.6 Leaderboard Section */}
+      <HomeLeaderboardSection />
 
       {/* 3. Featured Heritage Section */}
       <section className="featured-heritage-section">
@@ -162,23 +137,18 @@ const Home: React.FC = () => {
             Hiện vật tiêu biểu
           </Title>
           <Paragraph className="section-subtitle">
-            Tìm và khám phá những bộ sưu tập hiện vật lịch sử, mỹ thuật giá trị
-            của các bảo tàng trên thế giới
+            Tìm và khám phá những bộ sưu tập hiện vật lịch sử, mỹ thuật giá trị của các bảo tàng trên thế giới
           </Paragraph>
 
           <Row gutter={[24, 24]}>
             {artifacts?.slice(0, 4).map((artifact) => (
               <Col xs={24} sm={12} md={6} lg={6} xl={6} key={artifact.id}>
-                <FeatureCard
-                  data={artifact}
-                  variant="portrait"
-                  cardType="artifact"
-                />
+                <FeatureCard data={artifact} variant="portrait" cardType="artifact" />
               </Col>
             ))}
           </Row>
         </div>
-         <div className="artifacts-bg-container" >
+        <div className="artifacts-bg-container">
           <img
             src="/images/hoatiettrongdong.png"
             alt=""
@@ -209,26 +179,19 @@ const Home: React.FC = () => {
                 <CommentOutlined /> No comments
               </span>
             </div>
-            <h3 className="card-title">
-              Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi
-            </h3>
+            <h3 className="card-title">Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi</h3>
             <Paragraph className="card-desc">
-              Chào mừng người chơi bước vào một hành trình khám phá mới. Trong
-              trò chơi này, bạn sẽ hóa thân thành người lữ hành thời gian, lần
-              theo những dấu tích lịch sử và văn hóa để giải mã các câu chuyện,
-              nhân vật và sự kiện đã từng in dấu trong quá khứ.
+              Chào mừng người chơi bước vào một hành trình khám phá mới. Trong trò chơi này, bạn sẽ hóa thân thành người
+              lữ hành thời gian, lần theo những dấu tích lịch sử và văn hóa để giải mã các câu chuyện, nhân vật và sự
+              kiện đã từng in dấu trong quá khứ.
             </Paragraph>
             <Paragraph className="card-desc">
-              Bên cạnh đó việc tích hợp các bài tập và câu hỏi trắc nghiệm được
-              thiết kế phù hợp với nội dung, giúp người chơi củng cố kiến thức,
-              tăng khả năng ghi nhớ và hiểu sâu hơn những giá trị lịch sử - văn
-              hóa đã trải nghiệm.
+              Bên cạnh đó việc tích hợp các bài tập và câu hỏi trắc nghiệm được thiết kế phù hợp với nội dung, giúp
+              người chơi củng cố kiến thức, tăng khả năng ghi nhớ và hiểu sâu hơn những giá trị lịch sử - văn hóa đã
+              trải nghiệm.
             </Paragraph>
 
-            <button
-              className="experience-btn"
-              onClick={() => navigate("/game")}
-            >
+            <button className="experience-btn" onClick={() => navigate("/game")}>
               Trải nghiệm
             </button>
           </div>
@@ -237,35 +200,22 @@ const Home: React.FC = () => {
 
       {/* 5. Bottom CTA Layout */}
       <section className="bottom-cta-section">
-        <img
-          src="/images/hoatiettrongdong.png"
-          alt="drum"
-          className={`bg-drum-bottom ${isShaking ? "shaking" : ""}`}
-        />
+        <img src="/images/hoatiettrongdong.png" alt="drum" className={`bg-drum-bottom ${isShaking ? "shaking" : ""}`} />
         <div className="bg-circle-images">
           {/* Using dummy images or reusing specific heritage/artifact images for the circle collage */}
           {sites?.[0] && (
             <div className="circle-img-wrapper side">
-              <img
-                src={"/images/Ellipse_3.png"}
-                alt="Deco"
-              />
+              <img src={"/images/Ellipse_3.png"} alt="Deco" />
             </div>
           )}
           {sites?.[1] && (
             <div className="circle-img-wrapper center">
-              <img
-                src={"/images/Ellipse_4.png"}
-                alt="Deco Main"
-              />
+              <img src={"/images/Ellipse_4.png"} alt="Deco Main" />
             </div>
           )}
           {sites?.[2] && (
             <div className="circle-img-wrapper side">
-              <img
-                src={"/images/Ellipse_5.png"}
-                alt="Deco"
-              />
+              <img src={"/images/Ellipse_5.png"} alt="Deco" />
             </div>
           )}
         </div>
@@ -274,13 +224,8 @@ const Home: React.FC = () => {
           <Title level={2} className="header-title">
             Sẵn sàng khám phá?
           </Title>
-          <Paragraph>
-            Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay
-          </Paragraph>
-          <button
-            className="main-cta-btn"
-            onClick={() => navigate("/auth/register")}
-          >
+          <Paragraph>Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay</Paragraph>
+          <button className="main-cta-btn" onClick={() => navigate("/auth/register")}>
             Khám phá ngay
           </button>
         </div>
