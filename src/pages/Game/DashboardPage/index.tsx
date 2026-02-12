@@ -1,5 +1,19 @@
 import React, {useEffect, useState} from "react";
-import {Card, Row, Col, Typography, Button, Progress, Statistic, List, Avatar, message, Empty} from "antd";
+import {
+  Card,
+  Row,
+  Col,
+  Typography,
+  Button,
+  Progress,
+  Statistic,
+  List,
+  Avatar,
+  message,
+  Empty,
+  Badge,
+  Space,
+} from "antd";
 import {
   TrophyOutlined,
   FireOutlined,
@@ -8,6 +22,9 @@ import {
   BookOutlined,
   ShopOutlined,
   HistoryOutlined,
+  BellOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
 } from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import {useSelector, useDispatch} from "react-redux";
@@ -17,6 +34,9 @@ import {claimQuestRewards} from "@/store/slices/questSlice";
 import {Quest} from "@/types/quest.types";
 import "./styles.less";
 import {getImageUrl} from "@/utils/image.helper";
+import {notificationService} from "@/services/notification.service";
+import {Notification} from "@/types/notification.types";
+import {formatRelativeTime} from "@/utils/formatters";
 
 const {Title, Text} = Typography;
 
@@ -27,9 +47,12 @@ const DashboardPage: React.FC = () => {
   const {progress} = useSelector((state: RootState) => state.game);
   const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
   const [loadingQuests, setLoadingQuests] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
 
   useEffect(() => {
     fetchActiveQuests();
+    fetchNotifications();
   }, []);
 
   const fetchActiveQuests = async () => {
@@ -44,6 +67,27 @@ const DashboardPage: React.FC = () => {
       console.error("Failed to fetch quests:", error);
     } finally {
       setLoadingQuests(false);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      setLoadingNotifications(true);
+      const data = await notificationService.getNotifications(1, 5);
+      setNotifications(data.items);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await notificationService.markAsRead(id);
+      setNotifications((prev) => prev.map((n) => (n.id === id ? {...n, isRead: true} : n)));
+    } catch (error) {
+      message.error("Thao tác thất bại");
     }
   };
 
@@ -314,6 +358,88 @@ const DashboardPage: React.FC = () => {
                   </List.Item>
                 )}
               />
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Notifications & Recent Activity or similar */}
+        <Row gutter={[24, 24]} style={{marginTop: 24}}>
+          <Col xs={24} lg={12}>
+            <Card
+              title={
+                <span>
+                  <BellOutlined style={{color: "#f5222d", marginRight: 8}} />
+                  Thông báo mới
+                </span>
+              }
+              bordered={false}
+              className="content-card"
+              extra={
+                <Button type="link" size="small" onClick={() => navigate("/notifications")}>
+                  Tất cả
+                </Button>
+              }
+            >
+              <List
+                loading={loadingNotifications}
+                dataSource={notifications}
+                locale={{
+                  emptyText: <Empty description="Không có thông báo mới" image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+                }}
+                renderItem={(item) => (
+                  <List.Item
+                    actions={[
+                      !item.isRead && (
+                        <Button
+                          type="text"
+                          icon={<CheckCircleOutlined style={{color: "#52c41a"}} />}
+                          onClick={() => handleMarkAsRead(item.id)}
+                        />
+                      ),
+                    ]}
+                  >
+                    <List.Item.Meta
+                      avatar={
+                        <Badge dot={!item.isRead} offset={[-2, 32]}>
+                          <Avatar
+                            icon={<BellOutlined />}
+                            style={{
+                              backgroundColor: item.isRead ? "#f5f5f5" : "#e6f7ff",
+                              color: item.isRead ? "#bfbfbf" : "#1890ff",
+                            }}
+                          />
+                        </Badge>
+                      }
+                      title={<Text strong={!item.isRead}>{item.title}</Text>}
+                      description={
+                        <Space direction="vertical" size={0}>
+                          <Text type="secondary" style={{fontSize: 12}}>
+                            {item.message}
+                          </Text>
+                          <Text type="secondary" style={{fontSize: 11, opacity: 0.7}}>
+                            <ClockCircleOutlined style={{marginRight: 4}} />
+                            {formatRelativeTime(item.createdAt)}
+                          </Text>
+                        </Space>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card
+              title={
+                <span>
+                  <HistoryOutlined style={{color: "#722ed1", marginRight: 8}} />
+                  Lịch sử hoạt động
+                </span>
+              }
+              bordered={false}
+              className="content-card"
+            >
+              <Empty description="Tính năng đang cập nhật" image={Empty.PRESENTED_IMAGE_SIMPLE} />
             </Card>
           </Col>
         </Row>

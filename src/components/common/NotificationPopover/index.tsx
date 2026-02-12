@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag} from "antd";
+import {Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag, Badge} from "antd";
 import {
   BellOutlined,
   CheckCircleOutlined,
@@ -8,6 +8,10 @@ import {
   InfoCircleOutlined,
   MessageOutlined,
   RocketOutlined,
+  BookOutlined,
+  HistoryOutlined,
+  GoldOutlined,
+  EnvironmentOutlined,
 } from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import {notificationService} from "@/services/notification.service";
@@ -62,7 +66,7 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
     };
 
     pollUnread();
-    const interval = setInterval(pollUnread, 60000);
+    const interval = setInterval(pollUnread, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -107,6 +111,16 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
         return <MessageOutlined style={{...style, color: "#52c41a"}} />;
       case "quest":
         return <RocketOutlined style={{...style, color: "#13c2c2"}} />;
+      case "learning":
+        return <BookOutlined style={{...style, color: "#eb2f96"}} />;
+      case "history":
+        return <HistoryOutlined style={{...style, color: "#722ed1"}} />;
+      case "artifact":
+        return <GoldOutlined style={{...style, color: "#fa8c16"}} />;
+      case "heritage":
+        return <EnvironmentOutlined style={{...style, color: "#1890ff"}} />;
+      case "review":
+        return <CheckCircleOutlined style={{...style, color: "#52c41a"}} />;
       case "system":
       default:
         return <InfoCircleOutlined style={{...style, color: "#1890ff"}} />;
@@ -123,6 +137,16 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
         return "#f6ffed";
       case "quest":
         return "#e6fffb";
+      case "learning":
+        return "#fff0f6";
+      case "history":
+        return "#f9f0ff";
+      case "artifact":
+        return "#fff7e6";
+      case "heritage":
+        return "#e6f7ff";
+      case "review":
+        return "#f6ffed";
       default:
         return "#e6f7ff";
     }
@@ -337,11 +361,13 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
       placement="bottomRight"
       arrow={false}
     >
-      <Button
-        type="text"
-        icon={<BellOutlined style={{fontSize: 20}} />}
-        className={`header-action-btn ${visible ? "active" : ""}`}
-      />
+      <Badge count={unreadCount} offset={[-2, 2]} size="small">
+        <Button
+          type="text"
+          icon={<BellOutlined style={{fontSize: 20}} />}
+          className={`header-action-btn ${visible ? "active" : ""}`}
+        />
+      </Badge>
     </Popover>
   );
 };
