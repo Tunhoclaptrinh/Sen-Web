@@ -1,4 +1,4 @@
-import {Input, Switch, Row, Col, Form, Tabs, message, DatePicker} from "antd";
+import {Input, Switch, Row, Col, Form, Tabs, message, DatePicker, Select} from "antd";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {useEffect, useState, useMemo} from "react";
@@ -6,6 +6,7 @@ import {useAuth} from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
+import categoryService, {Category} from "@/services/category.service";
 
 interface HistoryFormProps {
   open: boolean;
@@ -49,6 +50,18 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : dayjs(),
     };
   }, [initialValues, user]);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await categoryService.getAll({limit: 100});
+      if (res.success && Array.isArray(res.data)) {
+        setCategories(res.data);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const initData = async () => {
@@ -155,7 +168,16 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         const firstErrorField = error.errorFields[0].name[0];
 
         // Map fields to tabs
-        const tab1Fields = ["image", "gallery", "title", "shortDescription", "author", "publishDate", "isActive"];
+        const tab1Fields = [
+          "image",
+          "gallery",
+          "title",
+          "shortDescription",
+          "author",
+          "publishDate",
+          "isActive",
+          "categoryId",
+        ];
         const tab2Fields = ["content"];
         const tab3Fields = ["relatedHeritageIds", "relatedArtifactIds", "relatedLevelIds"];
 
@@ -240,6 +262,24 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                   <Col span={16}>
                     <Form.Item label="Thư viện ảnh" name="gallery">
                       <ImageUpload maxCount={10} folder="history/gallery" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="categoryId"
+                      label="Danh mục Văn hóa"
+                      rules={[{required: true, message: "Vui lòng chọn danh mục"}]}
+                    >
+                      <Select placeholder="Chọn danh mục" allowClear>
+                        {categories.map((cat) => (
+                          <Select.Option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
                     </Form.Item>
                   </Col>
                 </Row>

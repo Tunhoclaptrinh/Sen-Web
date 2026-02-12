@@ -1,16 +1,18 @@
-import BaseService from './base.service';
+import BaseService from "./base.service";
 
 export interface Category {
-    id: number;
-    name: string;
-    description: string;
-    icon?: string;
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  icon?: string;
+  parentId?: number;
 }
 
 class CategoryService extends BaseService<Category> {
-    constructor() {
-        super('/categories');
-    }
+  constructor() {
+    super("/categories");
+  }
 }
 
 export default new CategoryService();

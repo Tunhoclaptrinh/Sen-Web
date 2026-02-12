@@ -25,6 +25,7 @@ import {useEffect, useState, useMemo} from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
+import categoryService, {Category} from "@/services/category.service";
 
 interface HeritageSiteFormValues extends Partial<HeritageSite> {
   [key: string]: any; // Still need any for flexible form internal structure
@@ -50,6 +51,17 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const {user} = useAuth();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await categoryService.getAll({limit: 100});
+      if (res.success && Array.isArray(res.data)) {
+        setCategories(res.data);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const memoizedInitialValues = useMemo(() => {
     if (!initialValues)
@@ -456,6 +468,24 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                         {Object.values(HeritageType).map((type) => (
                           <Select.Option key={type} value={type}>
                             {HeritageTypeLabels[type]}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="categoryId"
+                      label="Danh mục Văn hóa"
+                      rules={[{required: true, message: "Vui lòng chọn danh mục"}]}
+                    >
+                      <Select placeholder="Chọn danh mục" allowClear>
+                        {categories.map((cat) => (
+                          <Select.Option key={cat.id} value={cat.id}>
+                            {cat.name}
                           </Select.Option>
                         ))}
                       </Select>

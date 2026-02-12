@@ -2,8 +2,10 @@ import {useMemo, useState} from "react";
 import {message, Modal, Input} from "antd";
 import {useCRUD} from "@/hooks/useCRUD";
 import learningService from "@/services/learning.service";
+import {useCategories} from "@/hooks/useCategories";
 
 export const useLearningModel = () => {
+  const {categories, loading: categoriesLoading} = useCategories();
   // UI State
   const [currentRecord, setCurrentRecord] = useState<any | null>(null);
   const [formVisible, setFormVisible] = useState(false);
@@ -139,5 +141,7 @@ export const useLearningModel = () => {
     handleSubmit,
     handleReject,
     detailVisible,
+    categories,
+    categoriesLoading,
   };
 };

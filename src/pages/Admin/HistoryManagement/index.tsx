@@ -57,6 +57,7 @@ const HistoryManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
     approveReview: _approveReview,
     revertReview: _revertReview,
     handleReject: _handleReject,
+    categories,
   } = useHistoryModel(initialFilters);
 
   const columns = [
@@ -141,6 +142,16 @@ const HistoryManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
       key: "artifactCount",
       width: 100,
       render: (_: any, record: any) => <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>,
+    },
+    {
+      title: "Danh mục",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      width: 150,
+      render: (categoryId: number) => {
+        const cat = categories.find((c: any) => c.id === categoryId);
+        return cat ? cat.name : "-";
+      },
     },
     {
       title: "Trạng thái",
@@ -273,12 +284,12 @@ const HistoryManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
             defaultOperator: "eq",
           },
           {
-            key: "category",
+            key: "categoryId",
             placeholder: "Danh mục",
-            // Assuming categories are fetched or static? For now simplified.
-            type: "input",
-            operators: ["like"],
-            defaultOperator: "like",
+            options: categories.map((cat: any) => ({
+              label: cat.name,
+              value: cat.id,
+            })),
           },
         ]}
         filterValues={filters}

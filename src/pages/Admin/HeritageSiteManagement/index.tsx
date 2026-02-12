@@ -58,6 +58,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
     approveReview: _approveReview,
     handleReject: _handleReject,
     revertReview: _revertReview,
+    categories,
   } = useHeritageModel(initialFilters);
 
   const {user} = useAuth();
@@ -142,6 +143,16 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
       dataIndex: "province",
       key: "province",
       width: 120,
+    },
+    {
+      title: "Danh mục",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      width: 150,
+      render: (categoryId: number) => {
+        const cat = categories.find((c: any) => c.id === categoryId);
+        return cat ? cat.name : "-";
+      },
     },
     {
       title: "UNESCO",
@@ -289,6 +300,14 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
             options: Object.values(HeritageType).map((type) => ({
               label: HeritageTypeLabels[type],
               value: type,
+            })),
+          },
+          {
+            key: "categoryId",
+            placeholder: "Danh mục Văn hóa",
+            options: categories.map((cat: any) => ({
+              label: cat.name,
+              value: cat.id,
             })),
           },
           {

@@ -57,6 +57,7 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
     approveReview: _approveReview,
     revertReview: _revertReview,
     handleReject: _handleReject,
+    categories,
   } = useArtifactModel(initialFilters);
 
   const {user} = useAuth();
@@ -157,6 +158,16 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
       key: "isOnDisplay",
       width: 100,
       render: (onDisplay: boolean) => (onDisplay ? <Tag color="green">CÓ</Tag> : <Tag color="red">KHÔNG</Tag>),
+    },
+    {
+      title: "Danh mục",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      width: 150,
+      render: (categoryId: number) => {
+        const cat = categories.find((c: any) => c.id === categoryId);
+        return cat ? cat.name : "-";
+      },
     },
     {
       title: "Di sản",
@@ -282,6 +293,14 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
             options: Object.values(ArtifactType).map((type) => ({
               label: ArtifactTypeLabels[type],
               value: type,
+            })),
+          },
+          {
+            key: "categoryId",
+            placeholder: "Danh mục Văn hóa",
+            options: categories.map((cat: any) => ({
+              label: cat.name,
+              value: cat.id,
             })),
           },
           {

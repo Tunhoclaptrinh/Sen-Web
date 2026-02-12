@@ -109,6 +109,16 @@ const LearningManagement: React.FC = () => {
       render: (val: number) => `${val} phút`,
     },
     {
+      title: "Danh mục",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      width: 150,
+      render: (categoryId: number) => {
+        const cat = model.categories.find((c: any) => c.id === categoryId);
+        return cat ? cat.name : "-";
+      },
+    },
+    {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
@@ -205,6 +215,19 @@ const LearningManagement: React.FC = () => {
         onDownloadTemplate={model.downloadTemplate}
         exportable={true}
         onExport={model.exportData}
+        filters={[
+          {
+            key: "categoryId",
+            placeholder: "Danh mục",
+            options: model.categories.map((cat: any) => ({
+              label: cat.name,
+              value: cat.id,
+            })),
+          },
+        ]}
+        filterValues={model.filters}
+        onFilterChange={(key, value) => model.updateFilters({[key]: value})}
+        onClearFilters={() => model.refresh()}
         customActions={(record) => {
           const isOwner = record.createdBy === user?.id;
 

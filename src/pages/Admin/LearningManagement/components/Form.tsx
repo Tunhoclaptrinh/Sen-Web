@@ -6,6 +6,7 @@ import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {FormModal, Button as StyledButton} from "@/components/common";
 import {useAuth} from "@/hooks/useAuth";
 import dayjs from "dayjs";
+import categoryService, {Category} from "@/services/category.service";
 
 interface LearningFormProps {
   visible: boolean;
@@ -41,6 +42,17 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
   const [currentStep, setCurrentStep] = React.useState(0);
   const [form] = Form.useForm();
   const {user} = useAuth();
+  const [categories, setCategories] = React.useState<Category[]>([]);
+
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await categoryService.getAll({limit: 100});
+      if (res.success && Array.isArray(res.data)) {
+        setCategories(res.data);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const memoizedInitialValues = React.useMemo(() => {
     if (!initialValues)
@@ -91,6 +103,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
           "contentType",
           "contentUrl",
           "description",
+          "categoryId",
         ]);
       }
       setCurrentStep(currentStep + 1);
@@ -164,6 +177,24 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                 <Input prefix={<ReadOutlined />} placeholder="Ví dụ: Lịch sử nhà Đinh" />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                name="categoryId"
+                label="Danh mục Văn hóa"
+                rules={[{required: true, message: "Vui lòng chọn danh mục"}]}
+              >
+                <Select placeholder="Chọn danh mục" allowClear>
+                  {categories.map((cat) => (
+                    <Select.Option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="thumbnail" label="Hình ảnh (Upload hoặc URL)">
                 <ThumbnailInput />

@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Space, Modal, Form, Input} from "antd";
+import {Button, Space, Modal, Form, Input, Select} from "antd";
 import {useCategoryModel} from "./model";
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
@@ -14,6 +14,20 @@ const CategoryManagement: React.FC = () => {
       dataIndex: "name",
       key: "name",
       searchable: true, // Enable search on this column
+    },
+    {
+      title: "Slug",
+      dataIndex: "slug",
+      key: "slug",
+    },
+    {
+      title: "Danh mục cha",
+      dataIndex: "parentId",
+      key: "parentId",
+      render: (parentId: number) => {
+        const parent = model.data.find((c: any) => c.id === parentId);
+        return parent ? parent.name : "-";
+      },
     },
     {
       title: "Mô tả",
@@ -78,6 +92,20 @@ const CategoryManagement: React.FC = () => {
           </Form.Item>
           <Form.Item name="icon" label="Icon (Emoji hoặc Class)">
             <Input placeholder="Ví dụ: 🏯, 🎨" />
+          </Form.Item>
+          <Form.Item name="slug" label="Slug (Để trống để tự động tạo)">
+            <Input placeholder="Ví dụ: kien-truc-co" />
+          </Form.Item>
+          <Form.Item name="parentId" label="Danh mục cha">
+            <Select placeholder="Chọn danh mục cha" allowClear>
+              {model.data
+                .filter((cat: any) => cat.id !== model.currentRecord?.id)
+                .map((cat: any) => (
+                  <Select.Option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </Select.Option>
+                ))}
+            </Select>
           </Form.Item>
           <Form.Item style={{marginBottom: 0, textAlign: "right"}}>
             <Space>

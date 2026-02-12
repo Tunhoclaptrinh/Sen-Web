@@ -91,7 +91,20 @@ const DataTable: React.FC<DataTableProps> = ({
 
   // Dynamic filters state - start EMPTY, user adds as needed
   const [activeFilters, setActiveFilters] = useState<FilterConfig[]>([]);
-  const [availableFilters] = useState(filters); // Keep all available filters
+  const [availableFilters, setAvailableFilters] = useState(filters); // Keep all available filters
+
+  // Sync available and active filters when props change (crucial for async data like categories)
+  React.useEffect(() => {
+    setAvailableFilters(filters);
+
+    // Also sync active filters to update their options if they were already added
+    setActiveFilters((prev) =>
+      prev.map((active) => {
+        const fresh = filters.find((f) => f.key === active.key);
+        return fresh ? {...fresh} : active;
+      }),
+    );
+  }, [filters]);
 
   const [enabledFilters, setEnabledFilters] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};

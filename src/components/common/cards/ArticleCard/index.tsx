@@ -1,25 +1,25 @@
 import React from "react";
+import {useNavigate} from "react-router-dom";
 import {Typography} from "antd";
 import {
   CalendarOutlined,
+  EnvironmentOutlined,
+  AppstoreOutlined,
   UserOutlined,
   CommentOutlined,
-  EnvironmentOutlined,
   ArrowRightOutlined,
-  AppstoreOutlined,
 } from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
 import dayjs from "dayjs";
-import {getImageUrl, resolveImage} from "@/utils/image.helper";
+import {resolveImage, getImageUrl} from "@/utils/image.helper";
 import {normalizeVietnamese} from "@/utils/helpers";
 import "./styles.less";
 
 const {Paragraph} = Typography;
 
-interface ArticleCardProps {
-  data: any; // Using any for shared convenience
+export interface ArticleCardProps {
+  data: any;
   type: "artifact" | "heritage" | "history" | "article" | "collection" | "exhibition";
-  variant?: "default" | "portrait"; // Added variant support
+  variant?: "default" | "horizontal";
   actions?: React.ReactNode;
   secondaryAction?: React.ReactNode;
   showReadMore?: boolean;
@@ -47,7 +47,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
   };
 
   const rawImage =
-    resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images) || data.thumbnail; // Added thumbnail for collection
+    resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images) || data.thumbnail;
   const imageUrl = getImageUrl(
     rawImage,
     type === "collection" ? "/images/collection-placeholder.jpg" : "https://via.placeholder.com/800x600",
