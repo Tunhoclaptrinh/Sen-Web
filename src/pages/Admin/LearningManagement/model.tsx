@@ -1,10 +1,12 @@
-import {useMemo, useState} from "react";
+import {useMemo, useState, useEffect} from "react";
 import {message, Modal, Input} from "antd";
+import {useSearchParams} from "react-router-dom";
 import {useCRUD} from "@/hooks/useCRUD";
 import learningService from "@/services/learning.service";
 import {useCategories} from "@/hooks/useCategories";
 
 export const useLearningModel = () => {
+  const [searchParams] = useSearchParams();
   const {categories, loading: categoriesLoading} = useCategories();
   // UI State
   const [currentRecord, setCurrentRecord] = useState<any | null>(null);
@@ -25,6 +27,28 @@ export const useLearningModel = () => {
   );
 
   const crud = useCRUD(learningService, crudOptions);
+
+  // Deep linking to edit via URL
+  useEffect(() => {
+    const editId = searchParams.get("editId");
+    if (editId) {
+      const id = parseInt(editId);
+      if (!isNaN(id)) {
+        // Find existing or fetch
+        const existing = crud.data.find((item: any) => item.id === id);
+        if (existing) {
+          openEdit(existing);
+        } else {
+          // Fetch from service if not in current page
+          learningService.getById(id).then((res: any) => {
+            if (res.success && res.data) {
+              openEdit(res.data);
+            }
+          });
+        }
+      }
+    }
+  }, [searchParams, crud.data.length]);
 
   // UI Handlers
   const openCreate = () => {

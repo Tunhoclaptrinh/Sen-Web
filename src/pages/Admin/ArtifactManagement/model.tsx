@@ -1,11 +1,13 @@
 import {useState, useMemo, useEffect} from "react";
 import {message, Modal, Input} from "antd";
+import {useSearchParams} from "react-router-dom";
 import {Artifact} from "@/types";
 import artifactService from "@/services/artifact.service";
 import {useCRUD} from "@/hooks/useCRUD";
 import {useCategories} from "@/hooks/useCategories";
 
 export const useArtifactModel = (initialFilters: any = {}) => {
+  const [searchParams] = useSearchParams();
   const {categories, loading: categoriesLoading} = useCategories();
   // Stats State
   const [stats, setStats] = useState<any>(null);
@@ -51,6 +53,28 @@ export const useArtifactModel = (initialFilters: any = {}) => {
   useEffect(() => {
     fetchStats();
   }, []);
+
+  // Deep linking to edit via URL
+  useEffect(() => {
+    const editId = searchParams.get("editId");
+    if (editId) {
+      const id = parseInt(editId);
+      if (!isNaN(id)) {
+        // Find existing or fetch
+        const existing = crud.data.find((item: any) => item.id === id);
+        if (existing) {
+          openEdit(existing);
+        } else {
+          // Fetch from service if not in current page
+          artifactService.getById(id).then((res: any) => {
+            if (res.success && res.data) {
+              openEdit(res.data);
+            }
+          });
+        }
+      }
+    }
+  }, [searchParams, crud.data.length]);
 
   // Loading States for Import/Export
   const [importLoading, setImportLoading] = useState(false);

@@ -1,19 +1,14 @@
-import ReviewableBaseService from './reviewable.service';
-import apiClient from '@/config/axios.config';
-import type {
-  HistoryArticle,
-  HistoryArticleDTO,
-  BaseApiResponse,
-  QueryParams,
-} from '@/types';
-import { logger } from '@/utils/logger.utils';
+import ReviewableBaseService from "./reviewable.service";
+import apiClient from "@/config/axios.config";
+import type {HistoryArticle, HistoryArticleDTO, BaseApiResponse, QueryParams} from "@/types";
+import {logger} from "@/utils/logger.utils";
 
 /**
  * History Service - Handles Cultural Articles
  */
 class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticleDTO, HistoryArticleDTO> {
   constructor() {
-    super('/history');
+    super("/history");
   }
 
   /**
@@ -22,14 +17,14 @@ class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticl
   async getRelated(id: number | string, limit: number = 5): Promise<BaseApiResponse<HistoryArticle[]>> {
     try {
       const response = await apiClient.get<BaseApiResponse<HistoryArticle[]>>(
-        `${this.endpoint}/${id}/related?_limit=${limit}`
+        `${this.endpoint}/${id}/related?_limit=${limit}`,
       );
       return {
         success: response.success ?? true,
         data: response.data ?? [],
       };
     } catch (error) {
-      logger.error('[History] getRelated error:', error);
+      logger.error("[History] getRelated error:", error);
       throw error;
     }
   }
@@ -37,10 +32,7 @@ class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticl
   /**
    * Get articles by category
    */
-  async getByCategory(
-    category: string,
-    params: QueryParams = {}
-  ): Promise<BaseApiResponse<HistoryArticle[]>> {
+  async getByCategory(category: string, params: QueryParams = {}): Promise<BaseApiResponse<HistoryArticle[]>> {
     return this.getAll({
       category,
       ...params,
@@ -54,8 +46,8 @@ class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticl
     return this.getAll({
       isFeatured: true,
       _limit: limit,
-      _sort: 'views',
-      _order: 'desc'
+      _sort: "views",
+      _order: "desc",
     });
   }
 
@@ -66,8 +58,15 @@ class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticl
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      logger.warn('[History] incrementViewCount failed:', error);
+      logger.warn("[History] incrementViewCount failed:", error);
     }
+  }
+
+  /**
+   * Get statistics
+   */
+  async getStats(): Promise<any> {
+    return this.get("/stats/summary");
   }
 }
 
