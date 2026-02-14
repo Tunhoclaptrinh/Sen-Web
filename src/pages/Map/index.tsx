@@ -102,7 +102,7 @@ const MapPage: React.FC = () => {
         }}
       >
         <div style={{display: "flex", alignItems: "center", gap: 8, marginRight: "auto"}}>
-          <EnvironmentOutlined style={{fontSize: 24, color: "#1890ff"}} />
+          <EnvironmentOutlined style={{fontSize: 24, color: "var(--primary-color)"}} />
           <div>
             <Title level={4} style={{margin: 0}}>
               Bản đồ Di sản số

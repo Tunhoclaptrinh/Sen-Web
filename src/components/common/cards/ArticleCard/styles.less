@@ -1,179 +1,180 @@
 @import "../../../../styles/variables.less";
 
 .article-card {
-    background: #fff;
-    border-radius: 16px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: none;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+
+    .card-image-wrapper .card-image {
+      transform: scale(1.08);
+    }
+  }
+
+  .card-image-wrapper {
+    height: 220px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    transition: all 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border: none;
     position: relative;
 
-    &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-
-        .card-image-wrapper .card-image {
-            transform: scale(1.08);
-        }
+    .card-image {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .card-image-wrapper {
-        height: 220px;
-        overflow: hidden;
-        position: relative;
+    .location-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-color-primary);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 4px;
 
-        .card-image {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .location-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #1a1a1a;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-
-            .anticon {
-                 color: #F43F5E;
-            }
-        }
+      .anticon {
+        color: #f43f5e;
+      }
     }
+  }
 
-    .card-content {
-        padding: 20px;
+  .card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .card-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-color-secondary);
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+
+      .meta-item {
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+
+        .anticon {
+          color: #6abe45; // Sen Green
+        }
+      }
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color-primary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+      height: 52px; // Fixed height for 2 lines (18 * 1.4 * 2 ~= 50.4)
+
+      // Truncate to 2 lines
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-desc {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: var(--text-color-primary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      // fixed height for alignment
+      height: 68px; // ~3 lines (14*1.6*3 = 67.2)
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      // Antd typography ellipsis handles truncation, but we ensure style here
+      div {
+        color: var(--text-color-secondary) !important;
+      }
+    }
+
+    .card-footer {
+      margin-top: auto;
+      border: none;
+      padding: 0;
+      display: flex;
+      justify-content: space-between; // Align left and right components
+      align-items: center;
+
+      .footer-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .footer-right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
         flex: 1;
 
-        .card-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+        .read-more-btn {
+          background: transparent;
+          color: #6abe45;
+          padding: 6px 0;
+          border-radius: 0;
+          font-size: 14px;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s;
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: none;
 
-            .meta-item {
-                display: flex;
-                align-items: center;
-                gap: 5px;
+          &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6abe45;
+            transition: width 0.3s ease;
+          }
 
-                .anticon {
-                    color: #6ABE45; // Sen Green
-                }
+          &:hover {
+            color: #5aa63a;
+            transform: translateX(4px); // Slight move right
+            background: transparent;
+            box-shadow: none;
+
+            &::after {
+              width: 100%;
             }
+          }
         }
-
-        .card-title {
-            font-family: "Aleo", serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 12px;
-            line-height: 1.4;
-            height: 52px; // Fixed height for 2 lines (18 * 1.4 * 2 ~= 50.4)
-
-            // Truncate to 2 lines
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-desc {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            // fixed height for alignment
-            height: 68px; // ~3 lines (14*1.6*3 = 67.2)
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-
-            // Antd typography ellipsis handles truncation, but we ensure style here
-            div {
-                 color: #666 !important;
-            }
-        }
-
-        .card-footer {
-            margin-top: auto;
-            border: none;
-            padding: 0;
-            display: flex;
-            justify-content: space-between; // Align left and right components
-            align-items: center;
-
-            .footer-left {
-                display: flex;
-                align-items: center;
-            }
-
-            .footer-right {
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                flex: 1;
-
-                .read-more-btn {
-                    background: transparent;
-                    color: #6ABE45;
-                    padding: 6px 0;
-                    border-radius: 0;
-                    font-size: 14px;
-                    font-weight: 600;
-                    border: none;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    position: relative;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    box-shadow: none;
-    
-                    &::after {
-                        content: '';
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        width: 0;
-                        height: 2px;
-                        background: #6ABE45;
-                        transition: width 0.3s ease;
-                    }
-    
-                    &:hover {
-                        color: #5aa63a;
-                        transform: translateX(4px); // Slight move right
-                        background: transparent;
-                        box-shadow: none;
-                        
-                        &::after {
-                            width: 100%;
-                        }
-                    }
-                }
-            }
-        }
+      }
     }
+  }
 }

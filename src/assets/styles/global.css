@@ -12,12 +12,30 @@ body,
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f5f5f5;
-  color: #262626;
+  color: var(--text-color);
+}
+
+/* Public Layout Typography & Colors */
+.public-layout {
+  color: var(--text-color-primary);
+}
+
+.public-layout h1,
+.public-layout h2,
+.public-layout h3,
+.public-layout h4,
+.public-layout h5,
+.public-layout h6 {
+  font-family: var(--font-serif);
+  color: var(--text-color-primary); /* Ensure headings use the theme color */
+}
+
+.public-layout .text-secondary {
+  color: var(--text-color-secondary);
 }
 
 a {
@@ -38,6 +56,16 @@ h5,
 h6 {
   color: #262626;
   margin-bottom: 0.5em;
+}
+
+/* Public Layout Typography Override */
+.public-layout h1,
+.public-layout h2,
+.public-layout h3,
+.public-layout h4,
+.public-layout h5,
+.public-layout h6 {
+  font-family: var(--font-serif);
 }
 
 p {

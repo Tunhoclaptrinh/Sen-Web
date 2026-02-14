@@ -49,7 +49,7 @@
 
     .card-title {
       font-size: 20px;
-      color: #1a1a1a;
+      color: var(--text-color-primary);
       width: 100%;
       text-align: center; // Explicit center
     }
@@ -104,13 +104,14 @@
   left: 16px;
   z-index: 5;
 
-    .unesco-tag {
+  .unesco-tag {
     border: 1px solid var(--primary-color);
     background: rgba(255, 255, 255, 0.1); // Transparent/Glassy
     color: var(--primary-color);
     font-weight: 700;
     box-shadow: none;
     backdrop-filter: blur(4px);
+    font-family: var(--font-serif);
   }
 }
 
@@ -139,6 +140,7 @@
     text-transform: lowercase;
     backdrop-filter: blur(12px) saturate(180%); // Stronger blur + saturation for "liquid" look
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    font-family: var(--font-serif);
   }
 
   // Rating inside overlay needs to be light
@@ -171,9 +173,9 @@
   text-align: left;
 
   .card-title {
-    font-family: "Aleo", serif;
+    font-family: var(--font-serif);
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--text-color-primary);
     margin-bottom: 4px;
     line-height: 1.3;
 
@@ -190,13 +192,15 @@
     align-items: center;
     gap: 6px;
     font-size: 14px;
-    color: #666;
+    color: var(--text-color-secondary);
     margin-bottom: 0; // Removed bottom margin as footer is gone
     font-weight: 500;
+    font-family: var(--font-serif);
   }
 
   .card-description {
     display: none;
+    font-family: var(--font-serif);
   }
 
   // Footer removed, handling legacy if present

@@ -158,7 +158,7 @@ const HomeMapSection: React.FC = () => {
       backgroundColor: "transparent",
       height: isFullscreen ? window.innerHeight : 800, // Use actual viewport height in fullscreen
       style: {
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "var(--font-sans)",
       },
     },
     title: {
@@ -199,11 +199,11 @@ const HomeMapSection: React.FC = () => {
         return `
         <div style="width: 280px; padding: 16px;">
             ${imgHtml}
-            <div style="font-family: 'Inter', sans-serif;">
-                <b style="font-size: 16px; color: #5d4037; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; line-height: 1.4;">${p.name}</b>
-                <span style="font-size: 13px; color: #888; display: block; margin-bottom: 4px;">${p.province || p.siteName || ""}</span>
+            <div style="font-family: var(--font-sans);">
+                <b style="font-size: 16px; color: var(--text-color-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; line-height: 1.4;">${p.name}</b>
+                <span style="font-size: 13px; color: var(--text-color-secondary); display: block; margin-bottom: 4px;">${p.province || p.siteName || ""}</span>
                 <br/>
-                <i style="font-size: 12px; color: #d9363e;">${p.series.name}</i>
+                <i style="font-size: 12px; color: var(--seal-red);">${p.series.name}</i>
             </div>
         </div>
         `;
@@ -432,11 +432,26 @@ const HomeMapSection: React.FC = () => {
       {/* Full width container for "To hẳn ra" effect */}
       <div style={{padding: "0 40px"}}>
         <div style={{marginBottom: 40}}>
-          <span className="home-game-sub-header">Bản đồ Văn hóa</span>
-          <Title level={2} className="home-game-section-title">
-            Khám phá Di sản & Hiện vật
+          <span
+            className="home-game-sub-header"
+            style={{color: "#c5a065", fontFamily: "var(--font-serif)", fontWeight: 700}}
+          >
+            Bản đồ Văn hóa
+          </span>
+          <Title
+            level={2}
+            className="home-game-section-title"
+            style={{
+              color: "var(--primary-color)" /* White text on Red bg */,
+              fontFamily: "var(--font-serif)",
+              textTransform: "uppercase",
+              fontSize: 56,
+            }}
+          >
+            Khám phá <span style={{color: "var(--primary-color)"}}>Di sản</span> &{" "}
+            <span style={{color: "var(--primary-color)"}}>Hiện vật</span>
           </Title>
-          <Paragraph className="home-game-section-subtitle">
+          <Paragraph className="home-game-section-subtitle" style={{color: "var(--text-color-primary)"}}>
             Hành trình trực quan dọc theo chiều dài đất nước. Tìm kiếm các địa danh lịch sử và bảo vật quốc gia ngay
             trên bản đồ.
           </Paragraph>
@@ -596,8 +611,8 @@ const HomeMapSection: React.FC = () => {
           >
             <div
               style={{
-                fontFamily: "'Playfair Display', serif",
-                color: "#8c3b3b",
+                fontFamily: "var(--font-serif)",
+                color: "var(--text-color-secondary)",
                 fontSize: 18,
                 fontWeight: 600,
                 fontStyle: "italic",
@@ -629,7 +644,7 @@ const HomeMapSection: React.FC = () => {
                   <span
                     style={{
                       fontSize: 14,
-                      color: "#8c3b3b",
+                      color: "var(--text-color-secondary)",
                       textTransform: "uppercase",
                       letterSpacing: 1.2,
                       fontWeight: 600,
@@ -640,10 +655,10 @@ const HomeMapSection: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    fontFamily: "'Playfair Display', serif",
+                    fontFamily: "var(--font-serif)",
                     fontSize: 42,
                     fontWeight: 700,
-                    color: "#5d4037",
+                    color: "var(--text-color-primary)",
                     lineHeight: 1,
                   }}
                 >
@@ -668,7 +683,7 @@ const HomeMapSection: React.FC = () => {
                   <span
                     style={{
                       fontSize: 14,
-                      color: "#8c3b3b",
+                      color: "var(--text-color-secondary)",
                       textTransform: "uppercase",
                       letterSpacing: 1.2,
                       fontWeight: 600,
@@ -679,10 +694,10 @@ const HomeMapSection: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    fontFamily: "'Playfair Display', serif",
+                    fontFamily: "var(--font-serif)",
                     fontSize: 42,
                     fontWeight: 700,
-                    color: "#5d4037",
+                    color: "var(--text-color-primary)",
                     lineHeight: 1,
                   }}
                 >
@@ -706,7 +721,7 @@ const HomeMapSection: React.FC = () => {
                   <span
                     style={{
                       fontSize: 14,
-                      color: "#8c3b3b",
+                      color: "var(--text-color-secondary)",
                       textTransform: "uppercase",
                       letterSpacing: 1.2,
                       fontWeight: 600,
@@ -717,10 +732,10 @@ const HomeMapSection: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    fontFamily: "'Playfair Display', serif",
+                    fontFamily: "var(--font-serif)",
                     fontSize: 42,
                     fontWeight: 700,
-                    color: "#5d4037",
+                    color: "var(--text-color-primary)",
                     lineHeight: 1,
                   }}
                 >

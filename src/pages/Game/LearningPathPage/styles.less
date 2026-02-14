@@ -1,311 +1,314 @@
 @import "../common.less";
 
 .learning-path-page {
-    padding: 24px;
-    .game-page-background();
+  padding: 24px;
+  .game-page-background();
 
-    .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+
+    .loading-content {
+      text-align: center;
+      p {
+        margin-top: 16px;
+        font-weight: 500;
+        color: @text-color-secondary;
+        font-family: @font-serif;
+      }
+    }
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+
+    .main-title {
+      .game-title-style();
+      font-size: 3rem; // Override specific size for this page if needed, or stick to mixin default (3.5rem)
+
+      .title-icon {
+        margin-right: 12px;
+        color: @gold-border;
+      }
     }
 
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
+    .subtitle {
+      .game-subtitle-style();
+    }
+  }
+
+  .stats-container {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+
+    // Force override StatisticsCard styles
+    .ant-card {
+      .transparent-card-override();
+    }
+
+    .statistics-item {
+      .game-card-style();
+      border-radius: 8px !important; // Match local preference
+
+      // Override text colors
+      .text {
+        color: @text-color-primary !important;
+        font-family: @font-serif;
+        font-weight: 700;
+
+        .anticon {
+          color: @seal-red !important; // Force icon to red
+          margin-right: 8px;
+          font-size: 1.2rem;
+        }
+      }
+
+      .num {
+        color: @seal-red !important; // Force number to red
+        font-family: @font-serif;
+        text-shadow: none !important;
+      }
+
+      .hover-lift-shadow();
+    }
+  }
+
+  .learning-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    .ant-card-body {
+      padding: 0;
+    }
+
+    .learning-grid {
+      .learning-card {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid @gold-border;
+        background: @paper-bg;
+        box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         height: 100%;
-        background: rgba(255,255,255,0.8);
-        backdrop-filter: blur(5px);
         display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        
-        .loading-content {
-            text-align: center;
-            p {
-                margin-top: 16px;
-                font-weight: 500;
-                color: @text-color-secondary;
-                font-family: @font-serif;
+        flex-direction: column;
+        position: relative;
+
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 12px 12px 0 rgba(139, 29, 29, 0.2);
+          border-color: @seal-red;
+        }
+
+        &.locked {
+          border-color: var(--border-color-base);
+          background: var(--background-color-disabled);
+          box-shadow: none;
+          opacity: 0.8;
+
+          &:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #ccc;
+          }
+
+          .learning-cover img {
+            filter: grayscale(1);
+          }
+        }
+
+        &.completed {
+          border-color: #52c41a;
+          .learning-cover img {
+            // filter: brightness(0.9);
+          }
+        }
+
+        .learning-cover {
+          height: 180px;
+          position: relative;
+          overflow: hidden;
+          border-bottom: 2px solid @gold-border;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+          }
+
+          &:hover img {
+            transform: scale(1.1);
+          }
+
+          .completed-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: @paper-bg;
+            color: #52c41a;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #52c41a;
+            font-family: @font-serif;
+          }
+
+          .locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+            color: @text-color-primary;
+
+            .anticon {
+              padding: 20px;
+              background: @paper-bg;
+              border-radius: 50%;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              border: 2px solid @gold-border;
             }
-        }
-    }
-
-    .page-header {
-        text-align: center;
-        margin-bottom: 40px;
-
-        .main-title {
-            .game-title-style();
-            font-size: 3rem; // Override specific size for this page if needed, or stick to mixin default (3.5rem)
-
-            .title-icon {
-                margin-right: 12px;
-                color: @gold-border;
-            }
+          }
         }
 
-        .subtitle {
-            .game-subtitle-style();
+        &.locked {
+          filter: grayscale(0.8);
+          opacity: 0.8;
+          pointer-events: none;
         }
-    }
-
-    .stats-container {
-        max-width: 1200px;
-        margin: 0 auto 32px;
-
-        // Force override StatisticsCard styles
-        .ant-card {
-           .transparent-card-override();
-        }
-
-        .statistics-item {
-            .game-card-style();
-            border-radius: 8px !important; // Match local preference
-            
-            // Override text colors
-            .text {
-                color: @text-color-primary !important;
-                font-family: @font-serif;
-                font-weight: 700;
-                
-                .anticon {
-                    color: @seal-red !important; // Force icon to red
-                    margin-right: 8px;
-                    font-size: 1.2rem;
-                }
-            }
-            
-            .num {
-                color: @seal-red !important; // Force number to red
-                font-family: @font-serif;
-                text-shadow: none !important;
-            }
-
-            .hover-lift-shadow();
-        }
-    }
-
-    .learning-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        background: transparent;
-        border: none;
-        box-shadow: none;
 
         .ant-card-body {
-            padding: 0;
+          padding: 20px;
         }
 
-        .learning-grid {
-            .learning-card {
-                border-radius: 8px;
-                overflow: hidden;
-                border: 2px solid @gold-border;
-                background: @paper-bg;
-                box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
-                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                position: relative;
+        .module-meta {
+          .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
 
-                &:hover {
-                    transform: translateY(-8px);
-                    box-shadow: 12px 12px 0 rgba(139, 29, 29, 0.2);
-                    border-color: @seal-red;
-                }
-                
-                &.locked {
-                     border-color: #ccc;
-                     background: #f0f0f0;
-                     box-shadow: none;
-                     opacity: 0.8;
-                     
-                     &:hover {
-                         transform: none;
-                         box-shadow: none;
-                         border-color: #ccc;
-                     }
-                     
-                     .learning-cover img {
-                         filter: grayscale(1);
-                     }
-                }
-
-                &.completed {
-                    border-color: #52c41a;
-                    .learning-cover img {
-                        // filter: brightness(0.9);
-                    }
-                }
-
-                .learning-cover {
-                    height: 180px;
-                    position: relative;
-                    overflow: hidden;
-                    border-bottom: 2px solid @gold-border;
-
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        transition: transform 0.6s ease;
-                    }
-
-                    &:hover img {
-                        transform: scale(1.1);
-                    }
-
-                    .completed-badge {
-                        position: absolute;
-                        top: 12px;
-                        right: 12px;
-                        background: @paper-bg;
-                        color: #52c41a;
-                        padding: 6px 16px;
-                        border-radius: 100px;
-                        font-weight: 700;
-                        font-size: 0.8rem;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        border: 1px solid #52c41a;
-                        font-family: @font-serif;
-                    }
-
-                    .locked-overlay {
-                         position: absolute;
-                         top: 0;
-                         left: 0;
-                         width: 100%;
-                         height: 100%;
-                         display: flex;
-                         flex-direction: column;
-                         justify-content: center;
-                         align-items: center;
-                         background: rgba(255,255,255,0.5);
-                         color: @text-color-primary;
-                         
-                         .anticon {
-                             padding: 20px;
-                             background: @paper-bg;
-                             border-radius: 50%;
-                             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                             border: 2px solid @gold-border;
-                         }
-                    }
-                }
-                
-                &.locked {
-                    filter: grayscale(0.8);
-                    opacity: 0.8;
-                    pointer-events: none;
-                }
-
-                .ant-card-body {
-                    padding: 20px;
-                }
-
-                .module-meta {
-                    .tags {
-                        display: flex;
-                        gap: 8px;
-                        flex-wrap: wrap;
-                        margin-bottom: 16px;
-
-                        .ant-tag {
-                            border-radius: 4px;
-                            font-weight: 600;
-                            margin: 0;
-                            padding: 2px 10px;
-                            border: 1px solid fade(@gold-border, 50%);
-                            background: fade(@gold-border, 10%);
-                            color: @text-color-primary;
-                            font-family: @font-serif;
-                        }
-                    }
-
-                    .score-display {
-                        margin-top: 16px;
-                        display: flex;
-                        align-items: baseline;
-                        gap: 8px;
-                        justify-content: flex-end;
-
-                        .score-label {
-                            font-size: 0.85rem;
-                            color: @text-color-primary;
-                            text-transform: uppercase;
-                            letter-spacing: 0.5px;
-                            font-weight: 700;
-                            font-family: @font-serif;
-                        }
-
-                        .score-value {
-                            font-size: 2rem;
-                            font-weight: 800;
-                            line-height: 1;
-                            font-family: @font-serif;
-
-                            &.high { color: #52c41a; }
-                            &.normal { color: @seal-red; }
-                        }
-                    }
-                }
-
-
-                .ant-btn {
-                    .game-btn-primary();
-                    width: 100%;
-                    margin-top: 16px;
-                    font-size: 1rem;
-                    
-                    // Primary / Default state (Learn Now) - handled by mixin mostly, but specific overrides here
-                    &.ant-btn-primary {
-                        background: #a31d1d; // Deep red
-                        box-shadow: 0 6px 0 #5a1212; // Deep dark shadow for 3D effect
-                        text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
-                        font-weight: 800;
-                        transition: all 0.1s; // Fast transition for click feel
-
-                        &:hover {
-                            transform: translateY(2px) !important;
-                            box-shadow: 0 4px 0 #5a1212 !important;
-                            background: lighten(#a31d1d, 5%) !important;
-                        }
-                        
-                        &:active {
-                            transform: translateY(6px) !important;
-                            box-shadow: 0 0 0 #5a1212 !important;
-                        }
-                    }
-
-                    // Completed state (Default button type)
-                    &.ant-btn-default {
-                        background: transparent;
-                        border: 2px solid fade(@gold-border, 50%);
-                        color: @text-color-primary;
-                        box-shadow: none;
-
-                        &:hover {
-                            color: @seal-red;
-                            border-color: @seal-red;
-                        }
-                    }
-                    
-                    &:disabled {
-                        // Mixin handles this, effectively
-                    }
-                }
+            .ant-tag {
+              border-radius: 4px;
+              font-weight: 600;
+              margin: 0;
+              padding: 2px 10px;
+              border: 1px solid rgba(212, 165, 116, 0.5);
+              background: rgba(212, 165, 116, 0.1);
+              color: @text-color-primary;
+              font-family: @font-serif;
             }
+          }
+
+          .score-display {
+            margin-top: 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            justify-content: flex-end;
+
+            .score-label {
+              font-size: 0.85rem;
+              color: @text-color-primary;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              font-weight: 700;
+              font-family: @font-serif;
+            }
+
+            .score-value {
+              font-size: 2rem;
+              font-weight: 800;
+              line-height: 1;
+              font-family: @font-serif;
+
+              &.high {
+                color: #52c41a;
+              }
+              &.normal {
+                color: @seal-red;
+              }
+            }
+          }
         }
+
+        .ant-btn {
+          .game-btn-primary();
+          width: 100%;
+          margin-top: 16px;
+          font-size: 1rem;
+
+          // Primary / Default state (Learn Now) - handled by mixin mostly, but specific overrides here
+          &.ant-btn-primary {
+            background: @seal-red; // Deep red
+            box-shadow: 0 6px 0 #5a1212; // Deep dark shadow for 3D effect
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+            font-weight: 800;
+            transition: all 0.1s; // Fast transition for click feel
+
+            &:hover {
+              transform: translateY(2px) !important;
+              box-shadow: 0 4px 0 #5a1212 !important;
+              background: @seal-red-light !important;
+            }
+
+            &:active {
+              transform: translateY(6px) !important;
+              box-shadow: 0 0 0 #5a1212 !important;
+            }
+          }
+
+          // Completed state (Default button type)
+          &.ant-btn-default {
+            background: transparent;
+            border: 2px solid rgba(212, 165, 116, 0.5);
+            color: @text-color-primary;
+            box-shadow: none;
+
+            &:hover {
+              color: @seal-red;
+              border-color: @seal-red;
+            }
+          }
+
+          &:disabled {
+            // Mixin handles this, effectively
+          }
+        }
+      }
     }
+  }
 }
 
 // Transparent Popover overrides
@@ -320,107 +323,109 @@
 
 // LEARNING DETAIL PAGE STYLES
 .learning-detail-page {
-    background-color: @paper-bg !important;
-    .game-page-background();
-    background-image: 
-        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important; // Override if mixin has specific priorities
+  background-color: @paper-bg !important;
+  .game-page-background();
+  background-image:
+    radial-gradient(#c5a065 0.5px, transparent 0.5px), radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important; // Override if mixin has specific priorities
 
-    // Override Card Styles
-    .ant-card {
-        background: @paper-bg !important;
-        border: 2px solid @gold-border !important;
-        box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15) !important;
-        border-radius: 8px !important;
-        
-        // Remove glass effects if present
-        backdrop-filter: none !important; 
-    }
-    
-    // Video wrapper might need exclusion from card style overrides if it's special
-    .video-wrapper {
-         border: none !important;
-         box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
-         border-radius: 16px !important;
-         background: black !important;
+  // Override Card Styles
+  .ant-card {
+    background: @paper-bg !important;
+    border: 2px solid @gold-border !important;
+    box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15) !important;
+    border-radius: 8px !important;
+
+    // Remove glass effects if present
+    backdrop-filter: none !important;
+  }
+
+  // Video wrapper might need exclusion from card style overrides if it's special
+  .video-wrapper {
+    border: none !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    border-radius: 16px !important;
+    background: black !important;
+  }
+
+  // Quiz/Content Title
+  h1.ant-typography,
+  h2.ant-typography {
+    font-family: @font-serif !important;
+    color: @seal-red !important;
+  }
+
+  h1.ant-typography {
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+    padding-bottom: 16px;
+    margin-bottom: 24px !important;
+  }
+
+  // Submit Button / Next Button
+  .ant-btn-primary {
+    .game-btn-primary();
+    height: 48px !important;
+
+    &:hover {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 @seal-border !important;
     }
 
-    // Quiz/Content Title
-    h1.ant-typography, h2.ant-typography {
-        font-family: @font-serif !important;
-        color: @seal-red !important;
+    &:active {
+      transform: translateY(4px);
+      box-shadow: none !important;
     }
-    
-    h1.ant-typography {
-        text-transform: uppercase;
-        border-bottom: 2px solid fade(@gold-border, 30%);
-        padding-bottom: 16px;
-        margin-bottom: 24px !important;
-    }
+  }
 
-    // Submit Button / Next Button
-    .ant-btn-primary {
-         .game-btn-primary();
-         height: 48px !important;
-         
-         &:hover {
-             transform: translateY(2px);
-             box-shadow: 0 2px 0 @seal-border !important;
-         }
-         
-         &:active {
-             transform: translateY(4px);
-             box-shadow: none !important;
-         }
+  // Back Button
+  .ant-btn-text {
+    font-family: @font-serif;
+    font-weight: 700;
+    color: @seal-red !important;
+
+    &:hover {
+      background: rgba(139, 29, 29, 0.1) !important;
     }
-    
-    // Back Button
-    .ant-btn-text {
+  }
+
+  // Tags
+  .ant-tag {
+    font-family: @font-serif;
+    border: 1px solid rgba(212, 165, 116, 0.5) !important;
+  }
+
+  // Radio Quiz
+  .custom-radio {
+    .ant-radio-wrapper {
+      span {
         font-family: @font-serif;
-        font-weight: 700;
-        color: @seal-red !important;
-        
-        &:hover {
-            background: fade(@seal-red, 10%) !important;
-        }
+      }
     }
-    
-    // Tags
-    .ant-tag {
-        font-family: @font-serif;
-        border: 1px solid fade(@gold-border, 50%) !important;
-    }
-
-    // Radio Quiz
-    .custom-radio {
-        .ant-radio-wrapper {
-            span { font-family: @font-serif; }
-        }
-    }
+  }
 }
 
 // Completion Modal
 .completion-modal {
-    .ant-modal-content {
-        background: @paper-bg !important;
-        border: 2px solid @gold-border;
-        border-radius: 8px !important;
-        box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
-        padding: 0;
-        overflow: hidden;
-    }
-    
-    .ant-modal-body {
-        padding: 24px;
-    }
+  .ant-modal-content {
+    background: @paper-bg !important;
+    border: 2px solid @gold-border;
+    border-radius: 8px !important;
+    box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
+    padding: 0;
+    overflow: hidden;
+  }
 
-    .ant-btn-primary {
-         .game-btn-primary();
-         height: 44px !important;
-         
-         &:hover {
-             transform: translateY(2px);
-             box-shadow: 0 2px 0 @seal-border !important;
-         }
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-btn-primary {
+    .game-btn-primary();
+    height: 44px !important;
+
+    &:hover {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 @seal-border !important;
     }
+  }
 }

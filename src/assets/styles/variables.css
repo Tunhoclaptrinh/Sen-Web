@@ -2,9 +2,19 @@
   /* Colors */
   --primary-color: #8b1d1d;
   --secondary-color: #c92121;
-  --text-color: #333;
+  --text-color: #333; /* Default for Admin/Researcher */
   --bg-color: #f5f5f5;
   --border-color: #e0e0e0;
+
+  /* Cultural Theme Colors */
+  --text-color-primary: #5d4037; /* Nâu đất - Earth Brown */
+  --text-color-secondary: #886a64; /* Nâu nhạt - Muted Earth */
+  --gold-border: #c5a065;
+  --seal-red: #8b1d1d;
+  --seal-red-light: #a62323; /* Lighter shade for hover */
+  --gold-color: #ffd700;
+  --silver-color: #c0c0c0;
+  --bronze-color: #cd7f32;
 
   /* Spacing */
   --spacing-sm: 8px;
@@ -22,6 +32,10 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  /* Fonts */
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
 
   /* Transitions */
   --transition: all 0.3s ease;

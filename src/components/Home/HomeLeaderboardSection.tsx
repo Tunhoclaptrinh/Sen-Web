@@ -44,7 +44,7 @@ const HomeLeaderboardSection: React.FC = () => {
   };
 
   return (
-    <section className="home-game-section" style={{padding: "60px 0"}}>
+    <section className="home-game-section">
       <style>
         {`
           @keyframes spin-slow {
@@ -54,35 +54,36 @@ const HomeLeaderboardSection: React.FC = () => {
         `}
       </style>
 
+      {/* Background pattern directly on section */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/images/hoatiettrongdong.png')",
+          backgroundSize: "600px",
+          backgroundRepeat: "repeat",
+          opacity: 0.08,
+          pointerEvents: "none",
+          mixBlendMode: "overlay",
+          zIndex: 0,
+        }}
+      />
+
       <div
         className="container"
         style={{
           maxWidth: 1300,
           margin: "0 auto",
-          padding: "66px 24px",
+          padding: "60px",
           position: "relative",
           zIndex: 1,
           minHeight: "auto",
         }}
       >
-        {/* Re-introduced Red Card Container for "Dignified" Look */}
-
-        {/* Background pattern */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('/images/hoatiettrongdong.png')",
-            backgroundSize: "600px",
-            backgroundRepeat: "repeat",
-            opacity: 0.08,
-            pointerEvents: "none",
-            mixBlendMode: "overlay",
-          }}
-        />
+        {/* Removed Inner Red Card Div - Content sits directly on Section now */}
 
         <Row gutter={[80, 48]} align="middle" style={{width: "100%", position: "relative", zIndex: 2}}>
           {/* Left Column: Text & CTA */}
@@ -92,12 +93,12 @@ const HomeLeaderboardSection: React.FC = () => {
                 <CrownFilled style={{color: "#ffd700", fontSize: 16}} />
                 <span
                   style={{
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "var(--font-serif)",
                     fontWeight: 700,
-                    fontSize: 13,
+                    fontSize: 14,
                     textTransform: "uppercase",
                     letterSpacing: 2,
-                    color: "#ffd700", // Gold on Red
+                    color: "var(--gold-color)",
                     opacity: 1,
                   }}
                 >
@@ -107,7 +108,7 @@ const HomeLeaderboardSection: React.FC = () => {
 
               <h2
                 style={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: "var(--font-serif)",
                   textAlign: "left",
                   color: "#ffffff" /* White on Red */,
                   fontSize: 56,
@@ -120,7 +121,10 @@ const HomeLeaderboardSection: React.FC = () => {
               >
                 Vinh danh <br />
                 những <br />
-                <span style={{color: "#ffd700", textShadow: "0 2px 10px rgba(0,0,0,0.2)"}}>Nhà thám hiểm</span> <br />
+                <span style={{color: "var(--gold-color)", textShadow: "0 2px 10px rgba(0,0,0,0.2)"}}>
+                  Nhà thám hiểm
+                </span>{" "}
+                <br />
                 xuất sắc
               </h2>
 
@@ -149,7 +153,7 @@ const HomeLeaderboardSection: React.FC = () => {
                   padding: "0 36px",
                   fontWeight: 700,
                   background: "#5a1a1f" /* Dark Burgundy Button */,
-                  color: "#ffd700" /* Gold text */,
+                  color: "var(--gold-color)" /* Gold text */,
                   border: "1px solid rgba(255, 215, 0, 0.3)",
                   fontSize: 14,
                   textTransform: "uppercase",
@@ -185,7 +189,7 @@ const HomeLeaderboardSection: React.FC = () => {
                   borderBottom: "1px solid rgba(0,0,0,0.05)",
                 }}
               >
-                <Title level={4} style={{margin: 0, color: "#8b1d1d", fontFamily: "'Playfair Display', serif"}}>
+                <Title level={4} style={{margin: 0, color: "var(--seal-red)", fontFamily: "var(--font-serif)"}}>
                   Top 5 Nhà Thám Hiểm
                 </Title>
                 <Tag
@@ -253,7 +257,10 @@ const HomeLeaderboardSection: React.FC = () => {
 
                       <div style={{flex: 1, marginLeft: 16}}>
                         <div style={{display: "flex", alignItems: "center", gap: 8}}>
-                          <Text strong style={{fontSize: 16, color: "#333", fontFamily: "'Inter', sans-serif"}}>
+                          <Text
+                            strong
+                            style={{fontSize: 16, color: "var(--text-color-primary)", fontFamily: "var(--font-sans)"}}
+                          >
                             {player.userName}
                           </Text>
                           {index === 0 && <CrownFilled style={{color: "#FFD700", fontSize: 14}} />}
@@ -266,7 +273,7 @@ const HomeLeaderboardSection: React.FC = () => {
                               margin: 0,
                               background: "rgba(0,0,0,0.04)",
                               border: "none",
-                              color: "#888",
+                              color: "var(--text-color-secondary)",
                               fontWeight: 600,
                             }}
                           >
@@ -278,7 +285,13 @@ const HomeLeaderboardSection: React.FC = () => {
                       <div style={{textAlign: "right"}}>
                         <Text
                           strong
-                          style={{fontSize: 18, color: "#b72e38", display: "block", lineHeight: 1, fontWeight: 700}}
+                          style={{
+                            fontSize: 18,
+                            color: "var(--seal-red)",
+                            display: "block",
+                            lineHeight: 1,
+                            fontWeight: 700,
+                          }}
                         >
                           {player.totalPoints.toLocaleString()}
                         </Text>

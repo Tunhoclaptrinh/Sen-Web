@@ -1,6 +1,6 @@
 @import "../common.less";
 
-@color-active: #fffcf5; 
+@color-active: #fffcf5;
 @shadow-active: #c5bba8;
 @color-locked: #e5e5e5;
 @shadow-locked: #afafaf;
@@ -185,7 +185,7 @@
   .icon-completed,
   .icon-locked {
     font-size: 32px;
-    color: #5d4037; // Dark brown for icons
+    color: var(--text-color-primary); // Dark brown for icons
     filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5));
   }
 
@@ -232,7 +232,7 @@
   &.current {
     z-index: 3;
     .level-circle {
-        border-color: @seal-red; // Highlight current node with red border
+      border-color: @seal-red; // Highlight current node with red border
     }
   }
 
@@ -379,7 +379,7 @@
       height: 100%;
       border-radius: 4px;
       overflow: hidden;
-      border: 1px solid fade(@gold-border, 50%);
+      border: 1px solid rgba(212, 165, 116, 0.5);
       background: rgba(0, 0, 0, 0.05);
       display: flex;
       align-items: center;
@@ -393,7 +393,7 @@
         overflow: hidden;
 
         .level-thumbnail-backdrop {
-           display: none; // Remove backdrop for cleaner look
+          display: none; // Remove backdrop for cleaner look
         }
 
         .level-thumbnail-main {
@@ -424,16 +424,16 @@
       right: -15px;
       width: 56px;
       height: 56px;
-      
+
       // Inherit seal button styles logic
-      background-color: @seal-red; 
+      background-color: @seal-red;
       border: 2px solid @seal-border;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 0 @seal-border; 
+      box-shadow: 0 4px 0 @seal-border;
       z-index: 10;
-      border-radius: 8px; 
+      border-radius: 8px;
 
       .anticon {
         font-size: 24px;
@@ -441,14 +441,14 @@
       }
 
       &:hover {
-        background-color: lighten(@seal-red, 5%);
+        background-color: @seal-red-light;
         transform: translateY(2px); // Mechanical press
         box-shadow: 0 2px 0 @seal-border;
       }
-      
+
       &:active {
-          transform: translateY(4px);
-          box-shadow: none;
+        transform: translateY(4px);
+        box-shadow: none;
       }
     }
   }
@@ -463,6 +463,6 @@
     padding: 0 !important;
   }
   .ant-popover-arrow {
-       display: none !important; // Hide default arrow as we use custom one
+    display: none !important; // Hide default arrow as we use custom one
   }
 }

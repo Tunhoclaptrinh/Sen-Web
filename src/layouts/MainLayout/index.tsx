@@ -1,15 +1,15 @@
 import React from "react";
 import "./styles.less";
-import { Layout } from "antd";
-import { Outlet } from "react-router-dom";
+import {Layout} from "antd";
+import {Outlet} from "react-router-dom";
 import CustomFooter from "@/components/Footer";
 import Header from "@/components/Header";
 
-const { Content } = Layout;
+const {Content} = Layout;
 
 const MainLayout: React.FC = () => {
   return (
-    <Layout style={{ minHeight: "100vh", background: "#fff" }}>
+    <Layout className="public-layout" style={{minHeight: "100vh", background: "#fff"}}>
       <Header />
 
       {/* CONTENT */}

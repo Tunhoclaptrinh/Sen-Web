@@ -1,247 +1,247 @@
-@import '../common.less';
+@import "../common.less";
 
 .museum-page {
-    .game-page-background();
-    padding: 24px;
-    min-height: 100vh;
+  .game-page-background();
+  padding: 24px;
+  min-height: 100vh;
 
-    .page-header {
-        text-align: center;
-        margin-bottom: 40px;
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
 
-        .main-title {
-            .game-title-style();
-            
-            .title-icon {
-                margin-right: 12px;
-                color: @gold-border;
-            }
-        }
-        
-        .subtitle {
-             .game-subtitle-style();
-        }
+    .main-title {
+      .game-title-style();
+
+      .title-icon {
+        margin-right: 12px;
+        color: @gold-border;
+      }
     }
 
-    .stats-container {
-        max-width: 1200px;
-        margin: 0 auto 32px;
+    .subtitle {
+      .game-subtitle-style();
+    }
+  }
 
-         .ant-card {
-            .transparent-card-override();
-        }
+  .stats-container {
+    max-width: 1200px;
+    margin: 0 auto 32px;
 
-        .statistics-item {
-            .game-card-style();
-
-             .text {
-                color: @text-color-primary !important;
-                font-family: @font-serif;
-                font-weight: 700;
-                
-                .anticon {
-                    color: @seal-red !important;
-                    margin-right: 8px;
-                    font-size: 1.2rem;
-                }
-            }
-            
-            .num {
-                color: @seal-red !important;
-                font-family: @font-serif;
-                text-shadow: none !important;
-            }
-
-            .hover-lift-shadow();
-        }
+    .ant-card {
+      .transparent-card-override();
     }
 
+    .statistics-item {
+      .game-card-style();
 
+      .text {
+        color: @text-color-primary !important;
+        font-family: @font-serif;
+        font-weight: 700;
 
-    .tabs-container {
-        max-width: 800px;
-        margin: 0 auto 32px;
-        padding: 8px;
+        .anticon {
+          color: @seal-red !important;
+          margin-right: 8px;
+          font-size: 1.2rem;
+        }
+      }
+
+      .num {
+        color: @seal-red !important;
+        font-family: @font-serif;
+        text-shadow: none !important;
+      }
+
+      .hover-lift-shadow();
+    }
+  }
+
+  .tabs-container {
+    max-width: 800px;
+    margin: 0 auto 32px;
+    padding: 8px;
+    border: 2px solid @gold-border;
+    border-radius: 8px;
+    background: rgba(255, 252, 245, 0.95);
+
+    .ant-tabs-nav {
+      margin-bottom: 0;
+      border-bottom: none;
+
+      &::before {
+        border-bottom: none;
+      }
+    }
+
+    .ant-tabs-tab {
+      padding: 12px 24px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      font-family: @font-serif;
+      color: @text-color-primary;
+
+      &-active {
+        .ant-tabs-tab-btn {
+          color: @seal-red;
+          text-shadow: 0 0 1px @seal-red;
+        }
+      }
+
+      &:hover {
+        color: @seal-red;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background: @seal-red;
+      height: 3px;
+    }
+  }
+
+  .museum-content {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .museum-card {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid @gold-border;
+      background: @paper-bg;
+      box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+      transition: all 0.3s ease;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2);
+        border-color: @seal-red;
+      }
+
+      .card-cover {
+        position: relative;
+        height: 120px;
+        overflow: hidden;
+        border-bottom: 2px solid @gold-border;
+        background: var(--background-color-light);
+
+        .blur-background {
+          position: absolute;
+          inset: -10px;
+          background-size: cover;
+          background-position: center;
+          filter: blur(15px);
+          opacity: 0.5;
+          z-index: 0;
+        }
+
+        .item-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          transition: transform 0.5s ease;
+          position: relative;
+          z-index: 1;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .item-type-tag,
+        .item-quantity-tag {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          z-index: 2;
+        }
+
+        .item-quantity-tag {
+          background: @seal-red;
+          color: white;
+          font-weight: bold;
+          font-size: 0.8rem;
+          padding: 2px 8px;
+          border-radius: 12px; // Pill shape
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        &:hover .item-image {
+          transform: scale(1.05);
+        }
+      }
+
+      .ant-card-body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        .item-name {
+          font-family: @font-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: @seal-red;
+          margin-bottom: 8px;
+          text-align: center;
+          border-bottom: 1px solid rgba(212, 165, 116, 0.5);
+          padding-bottom: 8px;
+        }
+
+        .item-desc {
+          font-family: @font-serif;
+          color: @text-color-primary;
+          font-size: 0.9rem;
+          line-height: 1.5;
+          text-align: center;
+          margin-bottom: 16px;
+          flex: 1;
+        }
+      }
+
+      .action-btn-wrapper {
+        margin-top: auto;
+      }
+
+      .action-btn {
+        .game-btn-primary();
+        background: @gold-color;
         border: 2px solid @gold-border;
-        border-radius: 8px;
-        background: rgba(255, 252, 245, 0.95);
+        color: @text-color-primary;
+        box-shadow: 0 4px 0 #a68654;
+        text-shadow: none;
+        width: 100%;
+        border-radius: 6px;
+        font-weight: 700;
 
-        .ant-tabs-nav {
-            margin-bottom: 0;
-            border-bottom: none;
-
-            &::before {
-                border-bottom: none;
-            }
+        &:hover,
+        &:focus {
+          color: @seal-red !important;
+          border-color: @seal-red;
+          background: #fff9e6;
+          transform: translateY(2px);
+          box-shadow: 0 2px 0 @seal-border;
         }
 
-        .ant-tabs-tab {
-            padding: 12px 24px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-family: @font-serif;
-            color: @text-color-primary;
+        &:active {
+          transform: translateY(4px);
+          box-shadow: none;
+        }
 
-            &-active {
-                .ant-tabs-tab-btn {
-                    color: @seal-red;
-                    text-shadow: 0 0 1px @seal-red;
-                }
-            }
-            
-            &:hover {
-                color: @seal-red;
-            }
+        &:disabled {
+          background: #e0e0e0;
+          border-color: #d9d9d9;
+          color: rgba(0, 0, 0, 0.25);
+          box-shadow: none;
+          cursor: not-allowed;
+          transform: none;
         }
-        
-        .ant-tabs-ink-bar {
-            background: @seal-red;
-            height: 3px;
-        }
+      }
     }
-
-    .museum-content {
-        max-width: 1200px;
-        margin: 0 auto;
-
-        .museum-card {
-            border-radius: 8px; 
-            overflow: hidden;
-            border: 2px solid @gold-border; 
-            background: @paper-bg;
-            box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15); 
-            transition: all 0.3s ease;
-            height: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-
-            &:hover {
-                transform: translateY(-4px);
-                box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2);
-                border-color: @seal-red;
-            }
-
-            .card-cover {
-                position: relative;
-                height: 120px;
-                overflow: hidden;
-                border-bottom: 2px solid @gold-border;
-                background: #f9f9f9;
-
-                .blur-background {
-                    position: absolute;
-                    inset: -10px; 
-                    background-size: cover;
-                    background-position: center;
-                    filter: blur(15px);
-                    opacity: 0.5;
-                    z-index: 0;
-                }
-
-                .item-image {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                    transition: transform 0.5s ease;
-                    position: relative;
-                    z-index: 1;
-                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-                }
-
-                .item-type-tag, .item-quantity-tag {
-                    position: absolute;
-                    top: 8px;
-                    right: 8px;
-                    z-index: 2;
-                }
-
-                .item-quantity-tag {
-                    background: @seal-red;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 0.8rem;
-                    padding: 2px 8px;
-                    border-radius: 12px; // Pill shape
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                }
-
-                &:hover .item-image {
-                    transform: scale(1.05);
-                }
-            }
-
-            .ant-card-body {
-                padding: 16px;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .item-info {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                
-                .item-name {
-                    font-family: @font-serif;
-                    font-size: 1.1rem;
-                    font-weight: 700;
-                    color: @seal-red;
-                    margin-bottom: 8px;
-                    text-align: center;
-                    border-bottom: 1px solid fade(@gold-border, 50%);
-                    padding-bottom: 8px;
-                }
-
-                .item-desc {
-                    font-family: @font-serif;
-                    color: @text-color-primary;
-                    font-size: 0.9rem;
-                    line-height: 1.5;
-                    text-align: center;
-                    margin-bottom: 16px;
-                    flex: 1;
-                }
-            }
-
-            .action-btn-wrapper {
-                 margin-top: auto;
-            }
-
-            .action-btn {
-                .game-btn-primary();
-                background: @gold-color; 
-                border: 2px solid @gold-border;
-                color: @text-color-primary;
-                box-shadow: 0 4px 0 darken(@gold-border, 15%);
-                text-shadow: none;
-                width: 100%;
-                border-radius: 6px;
-                font-weight: 700;
-
-                &:hover, &:focus {
-                    color: @seal-red !important;
-                    border-color: @seal-red;
-                    background: #fff9e6;
-                    transform: translateY(2px);
-                    box-shadow: 0 2px 0 @seal-border;
-                }
-                
-                &:active {
-                     transform: translateY(4px);
-                     box-shadow: none;
-                }
-
-                &:disabled {
-                    background: #e0e0e0;
-                    border-color: #d9d9d9;
-                    color: rgba(0, 0, 0, 0.25);
-                    box-shadow: none;
-                    cursor: not-allowed;
-                    transform: none;
-                }
-            }
-        }
-    }
+  }
 }

@@ -1,329 +1,355 @@
-@import '../common.less';
+@import "../common.less";
 
 .game-dashboard {
-    .game-page-background();
-    padding-bottom: 24px;
+  .game-page-background();
+  padding-bottom: 24px;
 
-    .dashboard-hero {
-        background-color: @seal-red; // Fallback
-        background-image: url('../../../assets/images/background/background-red.png'), linear-gradient(135deg, @seal-red 0%, darken(@seal-red, 15%) 100%);
-        background-blend-mode: overlay;
+  .dashboard-hero {
+    background-color: @seal-red; // Fallback
+    background-image:
+      url("../../../assets/images/background/background-red.png"), linear-gradient(135deg, @seal-red 0%, #6a1616 100%);
+    background-blend-mode: overlay;
+    background-size: cover;
+    padding: 40px 24px 80px;
+    border-radius: 0 0 24px 24px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid @gold-border;
+    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+
+    // Animations
+    @keyframes rotateInfinite {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translateX(0) translateY(0);
+        opacity: 0.1;
+      }
+      50% {
+        transform: translateX(10px) translateY(-5px);
+        opacity: 0.2;
+      }
+      100% {
+        transform: translateX(0) translateY(0);
+        opacity: 0.1;
+      }
+    }
+
+    @keyframes smokeFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    // Texture Overlay (Họa tiết chìm)
+    .hero-bg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+
+      .bronze-drum-container {
+        position: absolute;
+        top: 50%;
+        left: 55%;
+        transform: translate(-50%, -50%);
+        width: 650px;
+        height: 650px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bronze-drum-bg {
+        width: 100%;
+        height: 100%;
+        background-image: url("../../../assets/images/background/bronze-drum.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        opacity: 0.35; // Increased visibility as requested
+        animation: rotateInfinite 120s linear infinite;
+      }
+
+      .lotus-bg {
+        position: absolute;
+        background-size: contain;
+        background-repeat: no-repeat;
+        z-index: 1;
+
+        // Main large lotus - Bottom Left - Stable Anchor
+        &.lotus-1 {
+          background-image: url("../../../assets/images/background/lotus-1.png");
+          bottom: -10px;
+          left: 0px;
+          width: 250px;
+          height: 200px;
+          opacity: 0.4;
+          background-size: cover;
+          animation: float 6s ease-in-out infinite;
+        }
+
+        // Lotus bud - Top Right Corner - Balancing element
+        &.lotus-2 {
+          background-image: url("../../../assets/images/background/lotus-2.png");
+          left: 50%;
+          width: 280px; // Much larger
+          height: 280px;
+          opacity: 0.15; // Slightly lower opacity as it's huge now
+          transform: rotate(160deg);
+          animation: float 8s ease-in-out infinite 1s;
+        }
+
+        // Small drifting flower - Bottom Center - Faint filler
+        &.lotus-3 {
+          background-image: url("../../../assets/images/background/lotus-3.png");
+          bottom: 10px;
+          left: 40%;
+          width: 220px; // Much larger
+          height: 180px;
+          opacity: 0.15;
+          animation: float 10s ease-in-out infinite 2s;
+          filter: blur(0px); // Remove blur so it looks crisp large
+        }
+      }
+
+      .lac-bird {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("../../../assets/images/background/bird.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        animation: drift 12s ease-in-out infinite;
+      }
+
+      // Extra cloud layer for density
+      &::before {
+        content: "";
+        position: absolute;
+        top: -20px;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("../../../assets/images/background/smoke-left.png");
         background-size: cover;
-        padding: 40px 24px 80px;
-        border-radius: 0 0 24px 24px;
-        position: relative;
-        overflow: hidden;
-        border-bottom: 4px solid @gold-border;
-        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
-
-        // Animations
-        @keyframes rotateInfinite {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        @keyframes drift {
-            0% { transform: translateX(0) translateY(0); opacity: 0.1; }
-            50% { transform: translateX(10px) translateY(-5px); opacity: 0.2; }
-            100% { transform: translateX(0) translateY(0); opacity: 0.1; }
-        }
-
-        @keyframes smokeFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        // Texture Overlay (Họa tiết chìm)
-        .hero-bg-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
-            
-
-            .bronze-drum-container {
-                position: absolute;
-                top: 50%;
-                left: 55%; 
-                transform: translate(-50%, -50%);
-                width: 650px;
-                height: 650px;
-                pointer-events: none;
-                z-index: 0;
-            }
-
-            .bronze-drum-bg {
-                width: 100%;
-                height: 100%;
-                background-image: url('../../../assets/images/background/bronze-drum.png');
-                background-size: contain;
-                background-repeat: no-repeat;
-                opacity: 0.35; // Increased visibility as requested
-                animation: rotateInfinite 120s linear infinite; 
-            }
-
-            .lotus-bg {
-                 position: absolute;
-                 background-size: contain;
-                 background-repeat: no-repeat;
-                 z-index: 1;
-
-                 // Main large lotus - Bottom Left - Stable Anchor
-                 &.lotus-1 {
-                     background-image: url('../../../assets/images/background/lotus-1.png');
-                     bottom: -10px;
-                     left: 0px; 
-                     width: 250px;
-                     height: 200px;
-                     opacity: 0.4;
-                     background-size: cover;
-                     animation: float 6s ease-in-out infinite;
-                 }
-
-                 // Lotus bud - Top Right Corner - Balancing element
-                 &.lotus-2 {
-                     background-image: url('../../../assets/images/background/lotus-2.png');
-                     left: 50%;
-                     width: 280px; // Much larger
-                     height: 280px;
-                     opacity: 0.15; // Slightly lower opacity as it's huge now
-                     transform: rotate(160deg);
-                     animation: float 8s ease-in-out infinite 1s;
-                 }
-
-                 // Small drifting flower - Bottom Center - Faint filler
-                 &.lotus-3 {
-                     background-image: url('../../../assets/images/background/lotus-3.png');
-                     bottom: 10px;
-                     left: 40%;
-                     width: 220px; // Much larger
-                     height: 180px;
-                     opacity: 0.15;
-                     animation: float 10s ease-in-out infinite 2s;
-                     filter: blur(0px); // Remove blur so it looks crisp large
-                 }
-            }
-            
-            .lac-bird {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: url('../../../assets/images/background/bird.png');
-                background-size: contain;
-                background-repeat: no-repeat;
-                animation: drift 12s ease-in-out infinite;
-            }
-             
-             // Extra cloud layer for density
-            &::before {
-                content: '';
-                position: absolute;
-                top: -20px;
-                right: 0;
-                width: 100%;
-                height: 100%;
-                background-image: url('../../../assets/images/background/smoke-left.png');
-                background-size: cover;
-                opacity: 0.2;
-                mix-blend-mode: overlay;
-            }
-        }
-
-        .hero-content {
-            h2.ant-typography {
-                .game-title-style();
-                color: #fff9e6; // Vàng nhạt for contrast on red bg
-                font-size: 2.5rem;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-                margin-bottom: 16px;
-                
-                @media (max-width: 768px) {
-                    font-size: 1.8rem;
-                }
-            }
-            
-            span.ant-typography {
-                .game-subtitle-style();
-                color: rgba(255, 255, 255, 0.9);
-                font-family: @font-sans;
-            }
-        }
-
-        .hero-btn {
-            // Uses primary button style but overrides for specific context if needed, 
-            // but effectively we can use the mixin on the button class itself or wrap it
-            // For Ant buttons, we often need deep overrides.
-            
-            &.ant-btn-primary {
-                .game-btn-primary();
-                height: 48px;
-                border: 2px solid @gold-border;
-                background: @gold-color;
-                color: @text-color-primary;
-                text-shadow: none;
-                
-                &:hover {
-                    color: @seal-red !important;
-                    border-color: @seal-red;
-                    background: #fff9e6;
-                }
-            }
-        }
-
-        .hero-btn-ghost {
-            height: 48px;
-            padding: 0 24px;
-            border-radius: 8px;
-            font-weight: 700;
-            color: #fff9e6;
-            border: 2px solid rgba(255, 249, 230, 0.5);
-            font-family: @font-serif;
-            text-transform: uppercase;
-            
-            &:hover {
-                border-color: @gold-color;
-                color: @gold-color;
-                background: rgba(0, 0, 0, 0.2);
-            }
-        }
+        opacity: 0.2;
+        mix-blend-mode: overlay;
+      }
     }
 
-    .stat-card {
-        .game-card-style();
-        margin-top: 0; // Reset
-        text-align: center;
-        
-        // Remove !important from mixin locally if needed to override, but mixin has !important.
-        // The mixin sets bg color, border, radius, shadow.
-        
+    .hero-content {
+      h2.ant-typography {
+        .game-title-style();
+        color: #fff9e6; // Vàng nhạt for contrast on red bg
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin-bottom: 16px;
+
+        @media (max-width: 768px) {
+          font-size: 1.8rem;
+        }
+      }
+
+      span.ant-typography {
+        .game-subtitle-style();
+        color: rgba(255, 255, 255, 0.9);
+        font-family: @font-sans;
+      }
+    }
+
+    .hero-btn {
+      // Uses primary button style but overrides for specific context if needed,
+      // but effectively we can use the mixin on the button class itself or wrap it
+      // For Ant buttons, we often need deep overrides.
+
+      &.ant-btn-primary {
+        .game-btn-primary();
+        height: 48px;
+        border: 2px solid @gold-border;
+        background: @gold-color;
+        color: @text-color-primary;
+        text-shadow: none;
+
         &:hover {
-           transform: translateY(-4px);
+          color: @seal-red !important;
+          border-color: @seal-red;
+          background: #fff9e6;
         }
-        
-        .ant-statistic-title {
-            font-family: @font-serif;
-            font-weight: 700;
-            color: @text-color-primary;
-            font-size: 16px;
-        }
-        
-        .ant-statistic-content-value {
-             font-family: @font-serif;
-             color: @seal-red;
-        }
+      }
     }
 
-    .rank-card {
-        // Needs to look distinct or same? Let's use game card style but maybe transparent bg if inside hero?
-        // In the layout, it's inside hero column but visually overlaps or is separate?
-        // Current JSX places it in the hero row. Let's make it stand out.
-        
-        .game-card-style();
-        background: rgba(255, 252, 245, 0.95) !important;
-        border-color: @gold-color !important;
-        
-        h4.ant-typography {
-            font-family: @font-serif;
-            color: @seal-red;
-            font-weight: bold;
-        }
+    .hero-btn-ghost {
+      height: 48px;
+      padding: 0 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      color: #fff9e6;
+      border: 2px solid rgba(255, 249, 230, 0.5);
+      font-family: @font-serif;
+      text-transform: uppercase;
+
+      &:hover {
+        border-color: @gold-color;
+        color: @gold-color;
+        background: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  .stat-card {
+    .game-card-style();
+    margin-top: 0; // Reset
+    text-align: center;
+
+    // Remove !important from mixin locally if needed to override, but mixin has !important.
+    // The mixin sets bg color, border, radius, shadow.
+
+    &:hover {
+      transform: translateY(-4px);
     }
 
-    .content-card {
-        .game-card-style();
-
-        .ant-card-head {
-            border-bottom: 1px solid fade(@text-color-primary, 10%);
-            
-            .ant-card-head-title {
-                font-family: @font-serif;
-                color: @text-color-primary;
-                font-weight: 700;
-                font-size: 1.1rem;
-                text-transform: uppercase;
-            }
-        }
-        
-        .ant-list-item-meta-title {
-             font-family: @font-sans;
-             font-weight: 600;
-             color: @text-color-primary;
-        }
+    .ant-statistic-title {
+      font-family: @font-serif;
+      font-weight: 700;
+      color: @text-color-primary;
+      font-size: 16px;
     }
 
-    .shortcut-card {
-        .game-card-style();
-        text-align: center;
-        padding: 16px;
-        cursor: pointer;
-        height: 180px; // Enforce equal height
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        
-        .hover-lift-shadow();
-
-        .shortcut-title {
-            margin-top: 12px;
-            font-family: @font-serif;
-            font-weight: 700;
-            color: @seal-red;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
+    .ant-statistic-content-value {
+      font-family: @font-serif;
+      color: @seal-red;
     }
-    .promo-card {
-        .game-card-style();
-        height: 180px; // Enforce equal height
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        // margin-top: 24px; // Removed as layout handles spacing now
-        background: radial-gradient(circle at center, lighten(@seal-red, 10%), @seal-red) !important;
-        border: 2px solid @gold-border !important;
-        
-        .ant-statistic-title, .ant-typography {
-            color: @gold-color !important;
-            font-family: @font-serif;
-        }
+  }
 
-        h4.ant-typography {
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
-            margin-bottom: 8px !important;
-        }
+  .rank-card {
+    // Needs to look distinct or same? Let's use game card style but maybe transparent bg if inside hero?
+    // In the layout, it's inside hero column but visually overlaps or is separate?
+    // Current JSX places it in the hero row. Let's make it stand out.
 
-        .promo-btn {
-            margin-top: 16px;
-            background: @gold-color;
-            color: @seal-red;
-            border: 1px solid #fff;
-            font-weight: 700;
-            font-family: @font-serif;
-            height: 40px;
-            
-            &:hover {
-                background: #fff;
-                color: @seal-red;
-                border-color: @gold-color;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            }
-        }
+    .game-card-style();
+    background: rgba(255, 252, 245, 0.95) !important;
+    border-color: @gold-color !important;
+
+    h4.ant-typography {
+      font-family: @font-serif;
+      color: @seal-red;
+      font-weight: bold;
     }
+  }
+
+  .content-card {
+    .game-card-style();
+
+    .ant-card-head {
+      border-bottom: 1px solid rgba(93, 64, 55, 0.1);
+
+      .ant-card-head-title {
+        font-family: @font-serif;
+        color: @text-color-primary;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+      }
+    }
+
+    .ant-list-item-meta-title {
+      font-family: @font-sans;
+      font-weight: 600;
+      color: @text-color-primary;
+    }
+  }
+
+  .shortcut-card {
+    .game-card-style();
+    text-align: center;
+    padding: 16px;
+    cursor: pointer;
+    height: 180px; // Enforce equal height
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .hover-lift-shadow();
+
+    .shortcut-title {
+      margin-top: 12px;
+      font-family: @font-serif;
+      font-weight: 700;
+      color: @seal-red;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+  }
+  .promo-card {
+    .game-card-style();
+    height: 180px; // Enforce equal height
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // margin-top: 24px; // Removed as layout handles spacing now
+    background: radial-gradient(circle at center, @seal-red-light, @seal-red) !important;
+    border: 2px solid @gold-border !important;
+
+    .ant-statistic-title,
+    .ant-typography {
+      color: @gold-color !important;
+      font-family: @font-serif;
+    }
+
+    h4.ant-typography {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+      margin-bottom: 8px !important;
+    }
+
+    .promo-btn {
+      margin-top: 16px;
+      background: @gold-color;
+      color: @seal-red;
+      border: 1px solid #fff;
+      font-weight: 700;
+      font-family: @font-serif;
+      height: 40px;
+
+      &:hover {
+        background: #fff;
+        color: @seal-red;
+        border-color: @gold-color;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
 }

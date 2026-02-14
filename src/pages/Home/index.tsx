@@ -224,7 +224,7 @@ const Home: React.FC = () => {
           <Title level={2} className="header-title">
             Sẵn sàng khám phá?
           </Title>
-          <Paragraph>Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay</Paragraph>
+          <Paragraph className="cta-desc">Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay</Paragraph>
           <button className="main-cta-btn" onClick={() => navigate("/auth/register")}>
             Khám phá ngay
           </button>

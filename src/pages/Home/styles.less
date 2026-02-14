@@ -2,11 +2,7 @@
 
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(
-    357.93deg,
-    #fff4ec 1.72%,
-    #f6f5f3
-  ); // Light beige background for the whole page
+  background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3); // Light beige background for the whole page
   overflow-x: hidden;
 
   // General Typography
@@ -16,8 +12,7 @@
   h4,
   h5,
   h6 {
-    font-family:
-      "Aleo", serif; // Use a serif font for headings if available, or fallback
+    font-family: var(--font-serif); // Use a serif font for headings if available, or fallback
   }
 
   // Section specific
@@ -30,7 +25,6 @@
     color: var(--primary-color) !important;
   }
 
-  
   // Hero Section
   .hero-section {
     position: relative;
@@ -55,7 +49,7 @@
       bottom: -36px;
       left: 0;
       width: 100%;
-      height: 36px; 
+      height: 36px;
       background: linear-gradient(to bottom, #e232325e, rgba(255, 250, 226, 0));
       z-index: 10;
     }
@@ -168,11 +162,12 @@
           letter-spacing: 2px;
           margin-bottom: 16px;
           display: block;
+          font-family: var(--font-serif);
         }
 
         h2 {
           font-size: 42px;
-          color: #333;
+          color: var(--text-color-primary);
           margin-bottom: 24px;
           font-weight: 700;
 
@@ -184,8 +179,9 @@
         .mission-desc {
           font-size: 16px;
           line-height: 1.8;
-          color: #666;
+          color: var(--text-color-secondary);
           margin-bottom: 32px;
+          font-family: var(--font-serif);
         }
 
         .mission-actions {
@@ -275,8 +271,6 @@
     position: relative;
     z-index: 5;
 
-    
-
     h2 {
       font-size: 36px;
       margin-bottom: 48px;
@@ -321,7 +315,7 @@
       .heritage-name {
         font-size: 18px;
         font-weight: 700;
-        color: #333;
+        color: var(--text-color-primary);
         margin-top: 12px;
       }
     }
@@ -332,7 +326,6 @@
     padding: 100px 0;
     position: relative;
     z-index: 1;
-
 
     .artifacts-bg-container {
       position: absolute;
@@ -350,7 +343,7 @@
       top: -250px; // Strong overlap to previous section
       right: -100px; // Position on right
       left: auto;
-      width: 800px; 
+      width: 800px;
       opacity: 0.5; // Increased visibility
       transition: transform 1s ease-out;
       transform-origin: center center;
@@ -375,8 +368,9 @@
       .section-subtitle {
         max-width: 600px;
         margin: 0 auto 60px;
-        color: #666;
+        color: var(--text-color-secondary);
         font-size: 16px;
+        font-family: var(--font-serif);
       }
 
       .artifact-card {
@@ -411,88 +405,91 @@
     text-align: center;
 
     .header-title {
-        margin-bottom: 40px;
+      margin-bottom: 40px;
     }
 
     .game-container {
-        position: relative;
-        text-align: left;
+      position: relative;
+      text-align: left;
     }
 
     .game-image-wrapper {
-        position: relative;
-        width: 100%;
-        border-radius: 20px 20px 0 0; // Top corners only
-        overflow: hidden;
-        // box-shadow: 0 10px 30px rgba(0,0,0,0.1); // Shadow handled by valid container if needed, or remove
-        
-        img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
+      position: relative;
+      width: 100%;
+      border-radius: 20px 20px 0 0; // Top corners only
+      overflow: hidden;
+      // box-shadow: 0 10px 30px rgba(0,0,0,0.1); // Shadow handled by valid container if needed, or remove
 
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
     }
 
     .game-info-card {
-        background: #fff;
-        padding: 40px 50px;
-        border-radius: 0 0 20px 20px; // Bottom corners only
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        margin: 0; // Full width aligned with image
-        position: relative;
-        z-index: 2;
-        border: 1px solid #f0f0f0;
-        border-top: none; // Seamless connection
+      background: #fff;
+      padding: 40px 50px;
+      border-radius: 0 0 20px 20px; // Bottom corners only
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      margin: 0; // Full width aligned with image
+      position: relative;
+      z-index: 2;
+      border: 1px solid #f0f0f0;
+      border-top: none; // Seamless connection
 
-        .card-meta {
-            display: flex;
-            gap: 20px;
-            color: #999;
-            font-size: 13px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 12px;
+      .card-meta {
+        display: flex;
+        gap: 20px;
+        color: var(--text-color-secondary);
+        font-size: 13px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 12px;
+        font-family: var(--font-serif);
+        font-weight: 600;
 
-            .meta-item {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
         }
+      }
 
-        .card-title {
-            font-size: 26px;
-            font-weight: 800;
-            color: #2c3e50;
-            margin-bottom: 16px;
+      .card-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--text-color-primary);
+        margin-bottom: 16px;
+        font-family: var(--font-serif);
+      }
+
+      .card-desc {
+        color: var(--text-color-secondary);
+        margin-bottom: 16px;
+        line-height: 1.6;
+        font-size: 15px;
+        font-family: var(--font-serif);
+      }
+
+      .experience-btn {
+        background: #6abe45; // Green
+        color: #fff;
+        border: none;
+        padding: 10px 32px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 10px;
+
+        &:hover {
+          background: #5aa63a;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(90, 166, 58, 0.4);
         }
-
-        .card-desc {
-            color: #666;
-            margin-bottom: 16px;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-
-        .experience-btn {
-            background: #6ABE45; // Green
-            color: #fff;
-            border: none;
-            padding: 10px 32px;
-            font-size: 15px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-
-            &:hover {
-                background: #5aa63a;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(90, 166, 58, 0.4);
-            }
-        }
+      }
     }
   }
 
@@ -573,10 +570,11 @@
         position: relative;
       }
 
-      p {
+      .cta-desc {
         font-size: 18px;
-        color: #555;
+        color: var(--text-color-secondary);
         margin-bottom: 32px;
+        font-family: var(--font-serif);
       }
 
       .main-cta-btn {
@@ -605,7 +603,7 @@
       position: absolute;
       bottom: -160px;
       left: 50%;
-      margin-left: -500px; 
+      margin-left: -500px;
       width: 1000px;
       opacity: 0.3;
       z-index: 0;

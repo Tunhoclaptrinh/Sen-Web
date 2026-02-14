@@ -1,284 +1,286 @@
 @import "../common.less";
 
 .chapters-page {
-    padding: 24px;
-    .game-page-background();
-    
-    .chapters-header {
-        text-align: center;
-        margin-bottom: 40px;
+  padding: 24px;
+  .game-page-background();
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  .chapters-header {
+    text-align: center;
+    margin-bottom: 40px;
 
-        .main-title {
-            .game-title-style();
-
-            .title-icon {
-                margin-right: 12px;
-                color: @gold-border;
-            }
-        }
-
-        .subtitle {
-            .game-subtitle-style();
-        }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .stats-container {
-        max-width: 1200px;
-        margin: 0 auto 32px;
-        
-         // Force override StatisticsCard styles
-        .ant-card {
-            .transparent-card-override();
-        }
+    .main-title {
+      .game-title-style();
 
-        .statistics-item {
-            .game-card-style();
-            
-            // Override text colors
-            .text {
-                color: @text-color-primary !important;
-                font-family: @font-serif;
-                font-weight: 700;
-                
-                .anticon {
-                    color: @seal-red !important;
-                    margin-right: 8px;
-                    font-size: 1.2rem;
-                }
-            }
-            
-            .num {
-                color: @seal-red !important;
-                font-family: @font-serif;
-                text-shadow: none !important;
-            }
-
-            .hover-lift-shadow();
-        }
+      .title-icon {
+        margin-right: 12px;
+        color: @gold-border;
+      }
     }
 
-    .chapters-content {
-        max-width: 1200px;
-        margin: 0 auto;
+    .subtitle {
+      .game-subtitle-style();
+    }
+  }
+
+  .stats-container {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+
+    // Force override StatisticsCard styles
+    .ant-card {
+      .transparent-card-override();
     }
 
-    .chapters-grid {
-        .chapter-card {
-            // Base card styles similar to game-card-style but customized for chapters
-            border-radius: 8px; 
-            overflow: hidden;
-            border: 2px solid @gold-border; 
-            background: @paper-bg;
-            box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15); 
-            transition: all 0.3s ease;
-            height: 100%;
+    .statistics-item {
+      .game-card-style();
+
+      // Override text colors
+      .text {
+        color: @text-color-primary !important;
+        font-family: @font-serif;
+        font-weight: 700;
+
+        .anticon {
+          color: @seal-red !important;
+          margin-right: 8px;
+          font-size: 1.2rem;
+        }
+      }
+
+      .num {
+        color: @seal-red !important;
+        font-family: @font-serif;
+        text-shadow: none !important;
+      }
+
+      .hover-lift-shadow();
+    }
+  }
+
+  .chapters-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .chapters-grid {
+    .chapter-card {
+      // Base card styles similar to game-card-style but customized for chapters
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid @gold-border;
+      background: @paper-bg;
+      box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+      transition: all 0.3s ease;
+      height: 100%;
+      position: relative;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2); // Bóng đỏ khi hover
+        border-color: @seal-red;
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: 20px;
+          box-shadow: inset 0 0 20px rgba(139, 29, 29, 0.1); // Adjusted to use seal-red for theme consistency
+          pointer-events: none;
+        }
+      }
+
+      &.locked {
+        border-color: var(--border-color-base);
+        background: var(--background-color-disabled);
+
+        .chapter-cover img {
+          filter: grayscale(1) sepia(0.5); // Sepia cho cái bị khóa
+        }
+
+        .locked-overlay {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
+      .chapter-cover {
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 2px solid @gold-border;
+
+        .chapter-image-wrapper {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          overflow: hidden;
+
+          .chapter-img-backdrop {
+            display: none; // Bỏ backdrop mờ, tập trung hình chính
+          }
+
+          .chapter-img-main {
             position: relative;
-
-            &:hover {
-                transform: translateY(-4px);
-                box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2); // Bóng đỏ khi hover
-                border-color: @seal-red;
-                
-                 &::after {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    border-radius: 20px;
-                    box-shadow: inset 0 0 20px fade(@seal-red, 10%); // Adjusted to use seal-red for theme consistency
-                    pointer-events: none;
-                }
-            }
-
-            &.locked {
-                border-color: #a8a29e;
-                background: #e5e5e5;
-                
-                .chapter-cover img {
-                    filter: grayscale(1) sepia(0.5); // Sepia cho cái bị khóa
-                }
-
-                .locked-overlay {
-                    opacity: 1;
-                    visibility: visible;
-                }
-            }
-
-            .chapter-cover {
-                height: 200px;
-                position: relative;
-                overflow: hidden;
-                border-bottom: 2px solid @gold-border;
-
-                .chapter-image-wrapper {
-                    width: 100%;
-                    height: 100%;
-                    position: relative;
-                    overflow: hidden;
-
-                    .chapter-img-backdrop {
-                        display: none; // Bỏ backdrop mờ, tập trung hình chính
-                    }
-
-                    .chapter-img-main {
-                        position: relative;
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover; // Fill đầy khung
-                        transition: transform 0.5s ease;
-                    }
-                }
-                
-                &:hover .chapter-img-main {
-                    transform: scale(1.05); // Zoom nhẹ
-                }
-
-                .chapter-theme-tag {
-                    position: absolute;
-                    top: 12px;
-                    right: 12px;
-                    z-index: 2;
-                    
-                    .ant-tag {
-                        border-radius: 4px;
-                        font-family: @font-serif;
-                        font-weight: 700;
-                        margin: 0;
-                        padding: 4px 12px;
-                        border: 1px solid rgba(255,255,255,0.5);
-                        box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                    }
-                }
-            }
-
-            .chapter-body {
-                padding: 20px;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-
-                .chapter-header-info {
-                    margin-bottom: 12px;
-                    text-align: center; // Căn giữa tiêu đề
-
-                    h4.ant-typography {
-                        font-family: @font-serif;
-                        font-size: 1.4rem;
-                        font-weight: 800;
-                        color: @seal-red; // Tiêu đề đỏ
-                        text-transform: uppercase;
-                        margin-bottom: 0 !important;
-                        border-bottom: 1px solid fade(@gold-border, 50%);
-                        padding-bottom: 8px;
-                        display: inline-block;
-                    }
-                }
-
-                .chapter-description-wrapper {
-                    margin-bottom: 16px;
-                    min-height: 80px; 
-                    display: flex;
-                    flex-direction: column;
-                    
-                    .ant-typography {
-                        font-family: @font-serif; 
-                        color: @text-color-primary;
-                        font-size: 0.95rem;
-                        line-height: 1.6;
-                        margin-bottom: 0 !important;
-                        text-align: justify; // Căn đều cho giống sách
-                    }
-                }
-
-                .chapter-stats {
-                    margin-top: auto; 
-                    background: fade(@gold-border, 10%); // Nền nhẹ cho phần stats
-                    padding: 12px;
-                    border-radius: 6px;
-
-                    .stat {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 6px;
-                        &:last-child { margin-bottom: 0; }
-                        
-                        .ant-typography {
-                            font-family: sans-serif; // Số giữ sans-serif cho dễ đọc
-                            font-size: 0.8rem;
-                            font-weight: 600;
-                            color: @text-color-primary;
-                        }
-                        
-                        .ant-progress-bg {
-                            background: @seal-red !important; // Thanh loading màu đỏ
-                        }
-                    }
-                }
-            }
-
-            .ant-card-actions {
-                background: transparent;
-                border-top: none;
-                padding: 16px 20px 20px; // Padding lớn hơn
-                
-                li {
-                    margin: 0;
-                    padding: 0;
-                    width: 100% !important;
-                }
-
-                .ant-btn {
-                   .game-btn-primary();
-                   margin-top: 0;
-                }
-            }
-
-            .locked-overlay {
-                position: absolute;
-                inset: 0;
-                background: fade(#0f172a, 80%);
-                backdrop-filter: blur(4px);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 24px;
-                text-align: center;
-                z-index: 10;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-
-                .anticon {
-                    font-size: 3rem;
-                    color: #fbbf24;
-                    margin-bottom: 16px;
-                }
-
-                .ant-typography {
-                    color: white !important;
-                    font-weight: 700;
-                }
-
-                .ant-btn {
-                    margin-top: 20px;
-                    height: 44px;
-                    padding: 0 32px;
-                    border-radius: 10px;
-                    font-weight: 800;
-                }
-            }
+            width: 100%;
+            height: 100%;
+            object-fit: cover; // Fill đầy khung
+            transition: transform 0.5s ease;
+          }
         }
+
+        &:hover .chapter-img-main {
+          transform: scale(1.05); // Zoom nhẹ
+        }
+
+        .chapter-theme-tag {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          z-index: 2;
+
+          .ant-tag {
+            border-radius: 4px;
+            font-family: @font-serif;
+            font-weight: 700;
+            margin: 0;
+            padding: 4px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
+
+      .chapter-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .chapter-header-info {
+          margin-bottom: 12px;
+          text-align: center; // Căn giữa tiêu đề
+
+          h4.ant-typography {
+            font-family: @font-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: @seal-red; // Tiêu đề đỏ
+            text-transform: uppercase;
+            margin-bottom: 0 !important;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.5);
+            padding-bottom: 8px;
+            display: inline-block;
+          }
+        }
+
+        .chapter-description-wrapper {
+          margin-bottom: 16px;
+          min-height: 80px;
+          display: flex;
+          flex-direction: column;
+
+          .ant-typography {
+            font-family: @font-serif;
+            color: @text-color-primary;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0 !important;
+            text-align: justify; // Căn đều cho giống sách
+          }
+        }
+
+        .chapter-stats {
+          margin-top: auto;
+          background: rgba(212, 165, 116, 0.1); // Nền nhẹ cho phần stats
+          padding: 12px;
+          border-radius: 6px;
+
+          .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .ant-typography {
+              font-family: sans-serif; // Số giữ sans-serif cho dễ đọc
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: @text-color-primary;
+            }
+
+            .ant-progress-bg {
+              background: @seal-red !important; // Thanh loading màu đỏ
+            }
+          }
+        }
+      }
+
+      .ant-card-actions {
+        background: transparent;
+        border-top: none;
+        padding: 16px 20px 20px; // Padding lớn hơn
+
+        li {
+          margin: 0;
+          padding: 0;
+          width: 100% !important;
+        }
+
+        .ant-btn {
+          .game-btn-primary();
+          margin-top: 0;
+        }
+      }
+
+      .locked-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        z-index: 10;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+
+        .anticon {
+          font-size: 3rem;
+          color: @gold-color;
+          margin-bottom: 16px;
+        }
+
+        .ant-typography {
+          color: white !important;
+          font-weight: 700;
+        }
+
+        .ant-btn {
+          margin-top: 20px;
+          height: 44px;
+          padding: 0 32px;
+          border-radius: 10px;
+          font-weight: 800;
+        }
+      }
     }
+  }
 }
 
 @media (max-width: 768px) {
-    .chapters-page {
-        padding: 16px;
-    }
+  .chapters-page {
+    padding: 16px;
+  }
 }

@@ -2,108 +2,113 @@
 
 // CULTURAL THEME VARIABLES
 @paper-bg: #fffcf5; // Màu giấy gió/giấy điệp
-@gold-border: #c5a065; // Màu vàng đồng
-@text-color-primary: #5d4037; // Nâu đất
-@seal-red: #8b1d1d; // Đỏ son
+@gold-border: var(--gold-border); // Màu vàng đồng
+@text-color-primary: var(--text-color-primary); // Nâu đất
+@text-color-secondary: var(--text-color-secondary); // Nâu nhạt
+@seal-red: var(--seal-red); // Đỏ son
+@seal-red-light: var(--seal-red-light); // Đỏ son sáng (hover)
 @seal-border: #5a1212;
-@gold-color: #ffd700;
-@silver-color: #c0c0c0;
-@bronze-color: #cd7f32;
+@gold-color: var(--gold-color);
+@silver-color: var(--silver-color);
+@bronze-color: var(--bronze-color);
 
 // FONTS
-@font-serif: "Merriweather", "Playfair Display", "Times New Roman", serif;
+@font-serif: "Playfair Display", serif;
 @font-sans: "Inter", sans-serif;
 
 // MIXINS
 
 .game-page-background() {
-    background-color: #f4efe4; // Nền tổng thể màu kem ấm
-    background-image: 
-        radial-gradient(#c5a065 0.5px, transparent 0.5px), 
-        radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
-    background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
-    min-height: 100vh;
+  background-color: #f4efe4; // Nền tổng thể màu kem ấm
+  background-image: radial-gradient(#c5a065 0.5px, transparent 0.5px), radial-gradient(#c5a065 0.5px, #f4efe4 0.5px);
+  background-size: 20px 20px;
+  background-position:
+    0 0,
+    10px 10px;
+  min-height: 100vh;
 }
 
 .game-card-style() {
-    background-color: @paper-bg !important;
-    border: 2px solid @gold-border !important;
-    border-radius: 8px !important;
-    box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
-    transition: all 0.3s ease;
+  background-color: @paper-bg !important;
+  border: 2px solid @gold-border !important;
+  border-radius: 8px !important;
+  box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.15) !important;
+  transition: all 0.3s ease;
 }
 
 .game-title-style() {
-    font-family: @font-serif;
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: @seal-red;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+  font-family: @font-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: @seal-red;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
 
-    @media (max-width: 768px) {
-        font-size: 2rem;
-    }
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 }
 
 .game-subtitle-style() {
-    font-family: @font-serif;
-    font-size: 1.2rem;
-    font-style: italic;
-    color: @text-color-primary;
+  font-family: @font-serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: @text-color-primary;
 }
 
 .game-btn-primary() {
-    height: 48px;
-    border-radius: 8px;
-    font-family: @font-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    
-    // Style nút kiểu "Con Triện"
-    background: @seal-red;
-    border: 2px solid @seal-border;
-    color: #fff9e6; // Vàng nhạt
-    box-shadow: 0 4px 0 @seal-border; 
-    
-    &:hover, &:focus {
-        background: lighten(@seal-red, 5%);
-        transform: translateY(2px); // Nhấn xuống hiệu ứng cơ học
-        box-shadow: 0 2px 0 @seal-border;
-        color: white !important;
-        border-color: @seal-border; // Maintain border color
-    }
-    
-    &:active {
-         transform: translateY(4px);
-         box-shadow: none;
-    }
+  height: 48px;
+  border-radius: 8px;
+  font-family: @font-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 
-    &[disabled] {
-         background: #ccc !important;
-         border-color: #999 !important;
-         box-shadow: none !important;
-         color: #666 !important;
-         transform: none !important;
-    }
+  // Style nút kiểu "Con Triện"
+  background: @seal-red;
+  border: 2px solid @seal-border;
+  color: #fff9e6; // Vàng nhạt
+  box-shadow: 0 4px 0 @seal-border;
+
+  &:hover,
+  &:focus {
+    background: @seal-red-light;
+    transform: translateY(2px); // Nhấn xuống hiệu ứng cơ học
+    box-shadow: 0 2px 0 @seal-border;
+    color: white !important;
+    border-color: @seal-border; // Maintain border color
+  }
+
+  &:active {
+    transform: translateY(4px);
+    box-shadow: none;
+  }
+
+  &[disabled] {
+    background: #ccc !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+    color: #666 !important;
+    transform: none !important;
+  }
 }
 
 .hover-lift-shadow() {
-    &:hover {
-        transform: translateY(-4px);
-        box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
-        border-color: @seal-red !important;
-        cursor: pointer;
-    }
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.2) !important;
+    border-color: @seal-red !important;
+    cursor: pointer;
+  }
 }
 
 .transparent-card-override() {
-    background: transparent !important;
-    box-shadow: none !important;
-    .ant-card-body { padding: 0 !important; }
+  background: transparent !important;
+  box-shadow: none !important;
+  .ant-card-body {
+    padding: 0 !important;
+  }
 }

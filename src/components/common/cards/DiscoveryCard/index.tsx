@@ -96,7 +96,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
                 )}
                 {data.rating && (
                   <span className="meta-item">
-                    <StarFilled style={{color: "#faad14"}} /> {data.rating.toFixed(1)}
+                    <StarFilled style={{color: "var(--gold-color)"}} /> {data.rating.toFixed(1)}
                   </span>
                 )}
               </>

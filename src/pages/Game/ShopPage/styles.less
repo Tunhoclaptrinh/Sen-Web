@@ -1,280 +1,281 @@
 @import "../common.less";
 
 .shop-page {
-    padding: 24px;
-    padding-bottom: 80px;
-    .game-page-background();
-    
+  padding: 24px;
+  padding-bottom: 80px;
+  .game-page-background();
+
+  .ant-tabs-nav {
+    margin-bottom: 24px;
+  }
+
+  .shop-header {
+    text-align: center;
+    margin-bottom: 40px;
+
+    .main-title {
+      .game-title-style();
+
+      .title-icon {
+        margin-right: 12px;
+        color: @gold-border;
+      }
+    }
+
+    .shop-subtitle {
+      .game-subtitle-style();
+    }
+  }
+
+  .stats-container {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+
+    // We will center the inner grid via React props (justify="center")
+    // but can enforce text-align here if needed.
+
+    // Force override StatisticsCard styles to match Quest Page
+    .ant-card {
+      .transparent-card-override();
+    }
+
+    .statistics-item {
+      .game-card-style();
+
+      .text {
+        color: @text-color-primary !important;
+        font-family: @font-serif;
+        font-weight: 700;
+
+        .anticon {
+          color: @seal-red !important;
+          margin-right: 8px;
+          font-size: 1.2rem;
+        }
+      }
+
+      .num {
+        color: @seal-red !important;
+        font-family: @font-serif;
+        text-shadow: none !important;
+      }
+
+      .hover-lift-shadow();
+    }
+  }
+
+  .tabs-container {
+    max-width: 800px;
+    margin: 0 auto 32px;
+    padding: 8px;
+    border: 2px solid @gold-border;
+    border-radius: 8px;
+    background: rgba(255, 252, 245, 0.95);
+
     .ant-tabs-nav {
-        margin-bottom: 24px;
+      margin-bottom: 0;
+      border-bottom: none;
+
+      &::before {
+        border-bottom: none;
+      }
     }
 
-    .shop-header {
-        text-align: center;
-        margin-bottom: 40px;
+    .ant-tabs-tab {
+      padding: 12px 24px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      font-family: @font-serif;
+      color: @text-color-primary;
 
-        .main-title {
-            .game-title-style();
-            
-            .title-icon {
-                margin-right: 12px;
-                color: @gold-border;
-            }
+      &-active {
+        .ant-tabs-tab-btn {
+          color: @seal-red;
+          text-shadow: 0 0 1px @seal-red;
         }
-        
-        .shop-subtitle {
-             .game-subtitle-style();
-        }
+      }
+
+      &:hover {
+        color: @seal-red;
+      }
     }
 
-    .stats-container {
-        max-width: 1200px;
-        margin: 0 auto 32px;
-        
-        // We will center the inner grid via React props (justify="center") 
-        // but can enforce text-align here if needed.
-
-        // Force override StatisticsCard styles to match Quest Page
-         .ant-card {
-            .transparent-card-override();
-        }
-
-        .statistics-item {
-            .game-card-style();
-
-             .text {
-                color: @text-color-primary !important;
-                font-family: @font-serif;
-                font-weight: 700;
-                
-                .anticon {
-                    color: @seal-red !important;
-                    margin-right: 8px;
-                    font-size: 1.2rem;
-                }
-            }
-            
-            .num {
-                color: @seal-red !important;
-                font-family: @font-serif;
-                text-shadow: none !important;
-            }
-
-            .hover-lift-shadow();
-        }
+    .ant-tabs-ink-bar {
+      background: @seal-red;
+      height: 3px;
     }
+  }
 
-    .tabs-container {
-        max-width: 800px;
-        margin: 0 auto 32px;
-        padding: 8px;
+  .shop-items-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .shop-card {
+      // Updated to match ChaptersPage card aesthetics
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid @gold-border;
+      background: @paper-bg;
+      box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
+      transition: all 0.3s ease;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2);
+        border-color: @seal-red;
+      }
+
+      // Cover Image Area
+      .card-cover {
+        position: relative;
+        height: 120px; // Constraint as requested
+        overflow: hidden;
+        border-bottom: 2px solid @gold-border;
+        background: var(--background-color-light); // Light texturized background fallback
+
+        .blur-background {
+          position: absolute;
+          inset: -10px; // Negative inset to avoid white edges from blur
+          background-size: cover;
+          background-position: center;
+          filter: blur(15px);
+          opacity: 0.5;
+          z-index: 0;
+        }
+
+        .item-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain; // Changed to contain as requested
+          transition: transform 0.5s ease;
+          position: relative;
+          z-index: 1;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); // Slight shadow for pop
+        }
+
+        .item-type-tag {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          z-index: 2;
+        }
+
+        &:hover .item-image {
+          transform: scale(1.05);
+        }
+      }
+
+      // Body Area
+      .ant-card-body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; // Ensure spacing
+      }
+
+      .item-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        .item-name {
+          font-family: @font-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: @seal-red;
+          margin-bottom: 8px;
+          text-align: center;
+          border-bottom: 1px solid rgba(212, 165, 116, 0.5);
+          padding-bottom: 8px;
+        }
+
+        .item-desc {
+          font-family: @font-serif;
+          color: @text-color-primary;
+          font-size: 0.9rem;
+          line-height: 1.5;
+          text-align: justify;
+          margin-bottom: 16px;
+        }
+      }
+
+      .price-section {
+        margin-top: auto;
+        background: rgba(212, 165, 116, 0.1);
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px; // Increased spacing as requested
+
+        span {
+          font-weight: 600;
+          color: @text-color-primary;
+        }
+
+        .price-value {
+          color: @seal-red;
+          font-size: 1.1rem;
+        }
+      }
+
+      // Button "Into the card" style
+      .buy-btn-wrapper {
+        margin-top: 0;
+      }
+
+      .buy-btn {
+        .game-btn-primary();
+        // Override to match Dashboard Hero Button "Continue Playing" style
+        background: @gold-color; // Bright Gold #ffd700
         border: 2px solid @gold-border;
-        border-radius: 8px;
-        background: rgba(255, 252, 245, 0.95);
+        color: @text-color-primary; // Dark Brown text
+        box-shadow: 0 4px 0 #a68654;
+        text-shadow: none;
 
-        .ant-tabs-nav {
-            margin-bottom: 0;
-            border-bottom: none;
+        width: 100%;
+        border-radius: 6px;
+        height: 44px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
 
-            &::before {
-                border-bottom: none;
-            }
+        &:hover,
+        &:focus {
+          color: @seal-red !important;
+          border-color: @seal-red;
+          background: #fff9e6; // Light cream on hover
+          transform: translateY(2px);
+          box-shadow: 0 2px 0 @seal-border;
         }
 
-        .ant-tabs-tab {
-            padding: 12px 24px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-family: @font-serif;
-            color: @text-color-primary;
+        &:active {
+          transform: translateY(4px);
+          box-shadow: none;
+        }
 
-            &-active {
-                .ant-tabs-tab-btn {
-                    color: @seal-red;
-                    text-shadow: 0 0 1px @seal-red;
-                }
-            }
-            
-            &:hover {
-                color: @seal-red;
-            }
+        &.owned {
+          background: #52c41a !important;
+          border-color: #52c41a !important;
+          color: white !important;
+          box-shadow: 0 4px 0 #237804 !important;
+
+          &:hover {
+            background: #73d13d !important;
+            border-color: #73d13d !important;
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #237804 !important;
+          }
         }
-        
-        .ant-tabs-ink-bar {
-            background: @seal-red;
-            height: 3px;
-        }
+      }
     }
-
-    .shop-items-grid {
-        max-width: 1200px;
-        margin: 0 auto;
-
-        .shop-card {
-            // Updated to match ChaptersPage card aesthetics
-            border-radius: 8px; 
-            overflow: hidden;
-            border: 2px solid @gold-border; 
-            background: @paper-bg;
-            box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15); 
-            transition: all 0.3s ease;
-            height: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-
-            &:hover {
-                transform: translateY(-4px);
-                box-shadow: 8px 8px 0 rgba(139, 29, 29, 0.2);
-                border-color: @seal-red;
-            }
-
-            // Cover Image Area
-            .card-cover {
-                position: relative;
-                height: 120px; // Constraint as requested
-                overflow: hidden;
-                border-bottom: 2px solid @gold-border;
-                background: #f9f9f9; // Light texturized background fallback
-
-                .blur-background {
-                    position: absolute;
-                    inset: -10px; // Negative inset to avoid white edges from blur
-                    background-size: cover;
-                    background-position: center;
-                    filter: blur(15px);
-                    opacity: 0.5;
-                    z-index: 0;
-                }
-
-                .item-image {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain; // Changed to contain as requested
-                    transition: transform 0.5s ease;
-                    position: relative;
-                    z-index: 1;
-                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); // Slight shadow for pop
-                }
-
-                .item-type-tag {
-                    position: absolute;
-                    top: 8px;
-                    right: 8px;
-                    z-index: 2;
-                }
-
-                &:hover .item-image {
-                    transform: scale(1.05);
-                }
-            }
-
-            // Body Area
-            .ant-card-body {
-                padding: 16px;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between; // Ensure spacing
-            }
-
-            .item-info {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                
-                .item-name {
-                    font-family: @font-serif;
-                    font-size: 1.1rem;
-                    font-weight: 700;
-                    color: @seal-red;
-                    margin-bottom: 8px;
-                    text-align: center;
-                    border-bottom: 1px solid fade(@gold-border, 50%);
-                    padding-bottom: 8px;
-                }
-
-                .item-desc {
-                    font-family: @font-serif;
-                    color: @text-color-primary;
-                    font-size: 0.9rem;
-                    line-height: 1.5;
-                    text-align: justify;
-                    margin-bottom: 16px;
-                }
-            }
-
-            .price-section {
-                 margin-top: auto; 
-                 background: fade(@gold-border, 10%);
-                 padding: 8px 12px;
-                 border-radius: 6px;
-                 display: flex;
-                 justify-content: space-between;
-                 align-items: center;
-                 margin-bottom: 20px; // Increased spacing as requested
-
-                 span {
-                    font-weight: 600;
-                    color: @text-color-primary;
-                 }
-
-                 .price-value {
-                    color: @seal-red;
-                    font-size: 1.1rem;
-                 }
-            }
-
-            // Button "Into the card" style
-            .buy-btn-wrapper {
-                margin-top: 0;
-            }
-
-            .buy-btn {
-                .game-btn-primary();
-                // Override to match Dashboard Hero Button "Continue Playing" style
-                background: @gold-color; // Bright Gold #ffd700
-                border: 2px solid @gold-border;
-                color: @text-color-primary; // Dark Brown text
-                box-shadow: 0 4px 0 darken(@gold-border, 15%);
-                text-shadow: none;
-                
-                width: 100%;
-                border-radius: 6px;
-                height: 44px; 
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-
-                &:hover, &:focus {
-                    color: @seal-red !important;
-                    border-color: @seal-red;
-                    background: #fff9e6; // Light cream on hover
-                    transform: translateY(2px);
-                    box-shadow: 0 2px 0 @seal-border;
-                }
-                
-                &:active {
-                     transform: translateY(4px);
-                     box-shadow: none;
-                }
-
-                &.owned {
-                     background: #52c41a !important;
-                     border-color: #52c41a !important; 
-                     color: white !important;
-                     box-shadow: 0 4px 0 #237804 !important;
-                     
-                     &:hover {
-                        background: #73d13d !important;
-                        border-color: #73d13d !important;
-                        transform: translateY(2px);
-                        box-shadow: 0 2px 0 #237804 !important;
-                     }
-                }
-            }
-        }
-    }
+  }
 }

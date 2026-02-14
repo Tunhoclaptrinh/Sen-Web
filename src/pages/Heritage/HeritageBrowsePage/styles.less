@@ -5,16 +5,19 @@
   background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3);
   overflow-x: hidden;
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: "Aleo", serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
   }
 
   section {
     position: relative;
     width: 100%;
   }
-
-
 
   /* Hero Section */
   .hero-section {
@@ -52,7 +55,7 @@
         font-size: 48px;
         color: #fff;
         margin-bottom: 24px;
-        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
 
       .hero-subtitle {
@@ -60,7 +63,8 @@
         font-weight: 500;
         margin-bottom: 48px;
         color: #e1ac66;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        font-family: var(--font-serif);
       }
     }
   }
@@ -81,7 +85,7 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(24px);
       padding: 8px;
-      border-radius: 100px; 
+      border-radius: 100px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); // Premium shadow
       border: 1px solid rgba(255, 255, 255, 0.8);
 
@@ -103,7 +107,7 @@
 
         /* Special sizing for search to make it bigger */
         &.search-item {
-            flex: 1.8; 
+          flex: 1.8;
         }
 
         /* Icon styling */
@@ -122,12 +126,15 @@
           box-shadow: none !important;
           padding: 0 !important;
           height: auto !important;
-          
+
           input {
             font-size: 16px;
             font-weight: 500;
-            color: #333;
-            &::placeholder { color: #999; font-weight: 400; }
+            color: var(--text-color-primary);
+            &::placeholder {
+              color: var(--text-color-secondary);
+              font-weight: 400;
+            }
           }
 
           .ant-select-selection-item {
@@ -137,10 +144,10 @@
           }
           .ant-select-selection-placeholder {
             font-size: 16px;
-            color: #999;
+            color: var(--text-color-secondary);
           }
         }
-        
+
         /* Remove default clear/arrow icons if needed or style them */
       }
 
@@ -157,7 +164,7 @@
 
       .filter-action {
         padding-left: 8px;
-        
+
         @media (max-width: 992px) {
           padding-left: 0;
           margin-top: 8px;
@@ -167,7 +174,7 @@
       .delete-filter-btn {
         height: 56px;
         border-radius: 100px; /* Circle/Pill */
-        background: var(--primary-color); 
+        background: var(--primary-color);
         border: none;
         color: #fff;
         font-weight: 600;
@@ -185,14 +192,13 @@
           transform: translateY(-2px);
           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
-        
+
         &:active {
-            transform: scale(0.98);
+          transform: scale(0.98);
         }
       }
     }
   }
-
 
   /* Discovered Section (Featured) */
   .discovered-section {
@@ -210,7 +216,7 @@
     .featured-container {
       display: flex;
       flex-direction: column;
-      
+
       .image-wrapper {
         width: 100%;
         border-radius: 20px 20px 0 0;
@@ -228,14 +234,14 @@
         background: #fff;
         padding: 40px 50px;
         border-radius: 0 0 20px 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         border: 1px solid #f0f0f0;
         border-top: none;
-        
+
         .card-meta {
           display: flex;
           gap: 20px;
-          color: #999;
+          color: var(--text-color-secondary);
           font-size: 13px;
           margin-bottom: 12px;
           border-bottom: 1px solid #eee;
@@ -245,19 +251,19 @@
         .card-title {
           font-size: 26px;
           font-weight: 800;
-          color: #2c3e50;
+          color: var(--text-color-primary);
           margin-bottom: 16px;
         }
 
         .card-desc {
-          color: #666;
+          color: var(--text-color-secondary);
           margin-bottom: 16px;
           line-height: 1.6;
           font-size: 15px;
         }
 
         .action-btn {
-          background: #6ABE45; // Green
+          background: #6abe45; // Green
           color: #fff;
           border: none;
           padding: 10px 32px;
@@ -265,7 +271,7 @@
           font-weight: 700;
           cursor: pointer;
           transition: all 0.3s;
-          
+
           &:hover {
             background: #5aa63a;
             transform: translateY(-2px);
@@ -319,7 +325,11 @@
   }
 
   @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
