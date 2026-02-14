@@ -1,19 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  Spin,
-  message,
-  Row,
-  Col,
-  Typography,
-  Empty,
-  Button,
-  Divider,
-  Tag,
-  Tabs,
-  Timeline,
-} from "antd";
+import React, {useEffect, useState} from "react";
+import {useParams, useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline} from "antd";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -34,34 +22,32 @@ import {
   ReadOutlined,
   HistoryOutlined,
   FolderAddOutlined,
+  CrownFilled,
+  ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { Image } from "antd";
+import {Image} from "antd";
 import dayjs from "dayjs";
-import { fetchHeritageSiteById } from "@store/slices/heritageSlice";
+import {fetchHeritageSiteById} from "@store/slices/heritageSlice";
 import favoriteService from "@/services/favorite.service";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
-import { RootState, AppDispatch } from "@/store";
+import {RootState, AppDispatch} from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
-import type { HeritageSite, TimelineEvent, Artifact, HistoryArticle } from "@/types";
-import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import type {HeritageSite, TimelineEvent, Artifact, HistoryArticle} from "@/types";
+import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
-import { useViewTracker } from "@/hooks/useViewTracker";
+import {useViewTracker} from "@/hooks/useViewTracker";
 import "./styles.less";
 
-const { Title } = Typography;
+const {Title} = Typography;
 
 const HeritageDetailPage = () => {
-  const { id } = useParams();
+  const {id} = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    currentItem: site,
-    loading,
-    error,
-  } = useSelector((state: RootState) => state.heritage);
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth); // Get auth state
+  const {currentItem: site, loading, error} = useSelector((state: RootState) => state.heritage);
+  const {isAuthenticated} = useSelector((state: RootState) => state.auth); // Get auth state
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
   const [siteArtifacts, setSiteArtifacts] = useState<Artifact[]>([]);
@@ -71,7 +57,7 @@ const HeritageDetailPage = () => {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   // Track view
-  useViewTracker('heritage', id);
+  useViewTracker("heritage", id);
 
   useEffect(() => {
     if (id) {
@@ -105,11 +91,9 @@ const HeritageDetailPage = () => {
       const currentId = currentItem.id.toString();
 
       // 1. Fetch nearby/related sites
-      const resRelated = await heritageService.getAll({ limit: 4 });
+      const resRelated = await heritageService.getAll({limit: 4});
       if (resRelated.data) {
-        setRelatedSites(
-          resRelated.data.filter((s) => s.id !== Number(currentId)).slice(0, 3),
-        );
+        setRelatedSites(resRelated.data.filter((s) => s.id !== Number(currentId)).slice(0, 3));
       }
 
       // 2. Fetch artifacts (from backlink AND relatedArtifactIds)
@@ -141,8 +125,7 @@ const HeritageDetailPage = () => {
 
       // 4. Fetch Timeline
       const resTimeline = await heritageService.getTimeline(currentId);
-      if (resTimeline.success && resTimeline.data)
-        setTimelineEvents(resTimeline.data);
+      if (resTimeline.success && resTimeline.data) setTimelineEvents(resTimeline.data);
     } catch (e) {
       console.error("Failed to fetch related data", e);
     }
@@ -157,8 +140,8 @@ const HeritageDetailPage = () => {
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-        message.warning("Vui lòng đăng nhập để sử dụng tính năng này");
-        return;
+      message.warning("Vui lòng đăng nhập để sử dụng tính năng này");
+      return;
     }
     if (!id) return;
     try {
@@ -178,11 +161,14 @@ const HeritageDetailPage = () => {
 
   const handleShare = () => {
     const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
         message.success("Đã sao chép liên kết vào bộ nhớ tạm!");
-    }).catch(() => {
+      })
+      .catch(() => {
         message.error("Không thể sao chép liên kết");
-    });
+      });
   };
 
   if (loading)
@@ -193,41 +179,34 @@ const HeritageDetailPage = () => {
     );
   if (!site) return <Empty description="Không tìm thấy di sản" />;
 
-
-  const relatedHistory =
-    relatedHistoryArr.length > 0
-      ? relatedHistoryArr
-      : site.relatedHistory || [];
-
-
+  const relatedHistory = relatedHistoryArr.length > 0 ? relatedHistoryArr : site.relatedHistory || [];
 
   // Use helper to resolve main image
-  const rawImage =
-    resolveImage(site.mainImage) ||
-    resolveImage(site.image) ||
-    resolveImage(site.images);
-  const mainImage = getImageUrl(
-    rawImage,
-    "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200",
-  );
-  const publishDate =
-    site.publishDate || site.createdAt || new Date().toISOString();
+  const rawImage = resolveImage(site.mainImage) || resolveImage(site.image) || resolveImage(site.images);
+  const mainImage = getImageUrl(rawImage, "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200");
+  const publishDate = site.publishDate || site.createdAt || new Date().toISOString();
   const authorName = site.authorName || site.author || "Hệ thống";
 
   return (
     <div className="heritage-blog-page">
+      {/* 0. Nav Back */}
+      <div className="nav-back-wrapper">
+        <Button
+          type="default"
+          shape="circle"
+          icon={<ArrowLeftOutlined />}
+          size="large"
+          onClick={() => navigate("/heritage-sites")}
+          className="nav-back-btn"
+        />
+      </div>
+
       {/* 1. RESTORED HERO SECTION */}
       <section className="detail-hero">
-        <div
-          className="hero-bg"
-          style={{ backgroundImage: `url('${mainImage}')` }}
-        />
+        <div className="hero-bg" style={{backgroundImage: `url('${mainImage}')`}} />
         <div className="hero-overlay">
           <div className="hero-content">
-            <Tag
-              color="var(--primary-color)"
-              style={{ border: "none", marginBottom: 16 }}
-            >
+            <Tag color="var(--primary-color)" style={{border: "none", marginBottom: 16}}>
               {site.type?.toUpperCase().replace("_", " ") || "HERITAGE"}
             </Tag>
             <h1>{site.name}</h1>
@@ -237,8 +216,7 @@ const HeritageDetailPage = () => {
               </span>
               {site.unescoListed && (
                 <span className="unesco-badge">
-                  <StarFilled style={{ color: "#FFD700" }} /> UNESCO World
-                  Heritage
+                  <StarFilled style={{color: "#FFD700"}} /> UNESCO World Heritage
                 </span>
               )}
               <span>
@@ -248,7 +226,7 @@ const HeritageDetailPage = () => {
           </div>
 
           {/* Gallery Button */}
-          <div style={{ position: "absolute", bottom: 32, right: 32 }}>
+          <div style={{position: "absolute", bottom: 32, right: 32}}>
             <Button
               icon={<CameraOutlined />}
               size="large"
@@ -260,7 +238,7 @@ const HeritageDetailPage = () => {
           </div>
 
           {/* Hidden Preview Group */}
-          <div style={{ display: "none" }}>
+          <div style={{display: "none"}}>
             <Image.PreviewGroup
               preview={{
                 visible: previewVisible,
@@ -297,79 +275,56 @@ const HeritageDetailPage = () => {
               children: (
                 <div className="article-main-wrapper">
                   {/* Article Header Meta */}
-                  <div className="article-meta-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                      <SpaceItem
-                        icon={<CalendarOutlined />}
-                        text={dayjs(publishDate).format("MMM D, YYYY")}
-                      />
+                  <div
+                    className="article-meta-header"
+                    style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}
+                  >
+                    <div style={{display: "flex", alignItems: "center", gap: 24}}>
+                      <SpaceItem icon={<CalendarOutlined />} text={dayjs(publishDate).format("MMM D, YYYY")} />
                       <SpaceItem icon={<UserOutlined />} text={authorName} />
-                      <SpaceItem
-                        icon={<CommentOutlined />}
-                        text={`${site.commentCount || 0} comments`}
-                      />
-                      <SpaceItem
-                        icon={<HistoryOutlined />}
-                        text={`${site.views || 0} views`}
-                      />
+                      <SpaceItem icon={<CommentOutlined />} text={`${site.commentCount || 0} comments`} />
+                      <SpaceItem icon={<HistoryOutlined />} text={`${site.views || 0} views`} />
                     </div>
-                    <div className="action-row" style={{ display: 'flex', gap: 8 }}>
-                       <Button
+                    <div className="action-row" style={{display: "flex", gap: 8}}>
+                      <Button
                         type="text"
-                        icon={
-                          isFavorite ? (
-                            <HeartFilled style={{ color: "#ff4d4f" }} />
-                          ) : (
-                            <HeartOutlined />
-                          )
-                        }
+                        icon={isFavorite ? <HeartFilled style={{color: "#ff4d4f"}} /> : <HeartOutlined />}
                         onClick={handleToggleFavorite}
                       >
                         {isFavorite ? "Đã thích" : "Yêu thích"}
                       </Button>
-                      <Button
-                        type="text"
-                        icon={<ShareAltOutlined />}
-                        onClick={handleShare}
-                      >
+                      <Button type="text" icon={<ShareAltOutlined />} onClick={handleShare}>
                         Chia sẻ
                       </Button>
-                      <Button
-                        type="text"
-                        icon={<FolderAddOutlined />}
-                        onClick={() => setShowCollectionModal(true)}
-                      >
+                      <Button type="text" icon={<FolderAddOutlined />} onClick={() => setShowCollectionModal(true)}>
                         Lưu vào BST
                       </Button>
                     </div>
 
                     <AddToCollectionModal
-                        visible={showCollectionModal}
-                        onCancel={() => setShowCollectionModal(false)}
-                        item={{
-                            id: site.id,
-                            type: 'heritage',
-                            name: site.name
-                        }}
+                      visible={showCollectionModal}
+                      onCancel={() => setShowCollectionModal(false)}
+                      item={{
+                        id: site.id,
+                        type: "heritage",
+                        name: site.name,
+                      }}
                     />
                   </div>
 
                   {/* Main Title */}
                   <h2 className="article-main-title">{site.name}</h2>
-                  <div
-                    className="article-body-content"
-                    dangerouslySetInnerHTML={{ __html: site.description || "" }}
-                  />
+                  <div className="article-body-content" dangerouslySetInnerHTML={{__html: site.description || ""}} />
 
                   {site.references && (
                     <div className="references-section">
-                        <h3>Nguồn tham khảo</h3>
-                        <div className="references-content" dangerouslySetInnerHTML={{ __html: site.references }} />
+                      <h3>Nguồn tham khảo</h3>
+                      <div className="references-content" dangerouslySetInnerHTML={{__html: site.references}} />
                     </div>
                   )}
 
                   {/* Footer Stats/Divider only - Actions removed */}
-                   <div className="article-footer-info">
+                  <div className="article-footer-info">
                     <Divider />
                   </div>
                 </div>
@@ -380,16 +335,11 @@ const HeritageDetailPage = () => {
               label: "Thông tin",
               children: (
                 <div className="article-main-wrapper">
-                  <div
-                    className="info-tab-content"
-                    style={{ maxWidth: 900, margin: "0 auto" }}
-                  >
+                  <div className="info-tab-content" style={{maxWidth: 900, margin: "0 auto"}}>
                     <div className="info-card-widget large-format">
                       <Row gutter={[48, 24]}>
                         <Col xs={24} md={12}>
-                          <h3 className="info-section-title">
-                            Chi tiết Tham quan
-                          </h3>
+                          <h3 className="info-section-title">Chi tiết Tham quan</h3>
                           <ul className="info-grid-list">
                             <li>
                               <div className="icon-wrapper">
@@ -397,9 +347,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Giờ mở cửa</span>
-                                <span className="value">
-                                  {site.visitHours || "8:00 - 17:00"}
-                                </span>
+                                <span className="value">{site.visitHours || "8:00 - 17:00"}</span>
                               </div>
                             </li>
                             <li>
@@ -409,9 +357,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Giá vé tham quan</span>
                                 <span className="value highlight">
-                                  {site.entranceFee
-                                    ? `${site.entranceFee.toLocaleString()} VNĐ`
-                                    : "Miễn phí"}
+                                  {site.entranceFee ? `${site.entranceFee.toLocaleString()} VNĐ` : "Miễn phí"}
                                 </span>
                               </div>
                             </li>
@@ -421,9 +367,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Năm thành lập</span>
-                                <span className="value">
-                                  {site.yearEstablished || "Không rõ"}
-                                </span>
+                                <span className="value">{site.yearEstablished || "Không rõ"}</span>
                               </div>
                             </li>
                             <li>
@@ -431,20 +375,14 @@ const HeritageDetailPage = () => {
                                 <BankOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">
-                                  Niên đại / Thời kỳ
-                                </span>
-                                <span className="value">
-                                  {site.culturalPeriod || "Đang cập nhật"}
-                                </span>
+                                <span className="label">Niên đại / Thời kỳ</span>
+                                <span className="value">{site.culturalPeriod || "Đang cập nhật"}</span>
                               </div>
                             </li>
                           </ul>
                         </Col>
                         <Col xs={24} md={12}>
-                          <h3 className="info-section-title">
-                            Địa Điểm & Xếp Hạng
-                          </h3>
+                          <h3 className="info-section-title">Địa Điểm & Xếp Hạng</h3>
                           <ul className="info-grid-list">
                             <li>
                               <div className="icon-wrapper">
@@ -452,9 +390,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Địa chỉ</span>
-                                <span className="value">
-                                  {site.address || site.region}
-                                </span>
+                                <span className="value">{site.address || site.region}</span>
                               </div>
                             </li>
                             <li>
@@ -464,10 +400,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Đánh giá du khách</span>
                                 <span className="value">
-                                  {site.rating || 0}/5{" "}
-                                  <span className="sub">
-                                    ({site.totalReviews || 0} đánh giá)
-                                  </span>
+                                  {site.rating || 0}/5 <span className="sub">({site.totalReviews || 0} đánh giá)</span>
                                 </span>
                               </div>
                             </li>
@@ -487,9 +420,7 @@ const HeritageDetailPage = () => {
                                 </div>
                                 <div className="info-text">
                                   <span className="label">Danh hiệu</span>
-                                  <span className="value highlight-unesco">
-                                    Di sản văn hóa UNESCO
-                                  </span>
+                                  <span className="value highlight-unesco">Di sản văn hóa UNESCO</span>
                                 </div>
                               </li>
                             )}
@@ -501,27 +432,14 @@ const HeritageDetailPage = () => {
 
                       <div className="info-footer-actions">
                         <div className="booking-note">
-                          <span>
-                            * Vé có thể được mua trực tiếp tại quầy hoặc đặt
-                            trước online để tránh xếp hàng.
-                          </span>
-                          <span className="promo-text">
-                            Đặt vé với SEN để nhận ưu đãi đặc biệt!
-                          </span>
+                          <span>* Vé có thể được mua trực tiếp tại quầy hoặc đặt trước online để tránh xếp hàng.</span>
+                          <span className="promo-text">Đặt vé với SEN để nhận ưu đãi đặc biệt!</span>
                         </div>
                         <div className="action-buttons">
-                          <Button
-                            size="large"
-                            className="direction-btn"
-                            icon={<EnvironmentOutlined />}
-                          >
+                          <Button size="large" className="direction-btn" icon={<EnvironmentOutlined />}>
                             Chỉ đường
                           </Button>
-                          <Button
-                            type="primary"
-                            size="large"
-                            className="booking-btn-large"
-                          >
+                          <Button type="primary" size="large" className="booking-btn-large">
                             Đặt vé ngay
                           </Button>
                         </div>
@@ -537,93 +455,43 @@ const HeritageDetailPage = () => {
               children: (
                 <div className="article-main-wrapper">
                   {/* 1. Related Games / Interactive (Mock UI) */}
-                  <div className="discovery-block" style={{ marginBottom: 48 }}>
+                  <div className="discovery-block">
                     <Title level={3}>
                       <RocketOutlined /> Trải nghiệm Di sản
                     </Title>
-                    <p style={{ marginBottom: 24 }}>
-                      Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản
-                      này.
-                    </p>
-                    <Row gutter={[16, 16]}>
+                    <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.</p>
+                    <Row gutter={[24, 24]}>
                       <Col xs={24} md={12}>
-                        <div
-                          className="game-card-mini"
-                          style={{
-                            border: "1px solid #eee",
-                            borderRadius: 12,
-                            padding: 16,
-                            display: "flex",
-                            gap: 16,
-                            alignItems: "center",
-                          }}
-                        >
+                        <div className="game-card-mini">
                           <div
                             className="game-thumb"
                             style={{
-                              width: 80,
-                              height: 80,
-                              borderRadius: 8,
-                              background: "#eee",
                               backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`,
-                              backgroundSize: "cover",
                             }}
                           />
-                          <div className="game-info" style={{ flex: 1 }}>
-                            <h4 style={{ margin: 0, fontSize: 16 }}>
-                              Khám phá Hoàng Thành
-                            </h4>
-                            <div style={{ color: "#888", fontSize: 13 }}>
-                              Giải mã các bí mật khảo cổ dưới lòng đất Thăng
-                              Long.
-                            </div>
+                          <div className="game-info">
+                            <h4>Khám phá Hoàng Thành</h4>
+                            <div className="desc">Giải mã các bí mật khảo cổ dưới lòng đất Thăng Long.</div>
                           </div>
-                          <Button
-                            type="primary"
-                            shape="round"
-                            icon={<RocketOutlined />}
-                          >
-                            Chơi ngay
+                          <Button type="primary" shape="round" icon={<RocketOutlined />}>
+                            Chơi
                           </Button>
                         </div>
                       </Col>
                       <Col xs={24} md={12}>
-                        <div
-                          className="game-card-mini"
-                          style={{
-                            border: "1px solid #eee",
-                            borderRadius: 12,
-                            padding: 16,
-                            display: "flex",
-                            gap: 16,
-                            alignItems: "center",
-                          }}
-                        >
+                        <div className="game-card-mini">
                           <div
                             className="game-thumb"
                             style={{
-                              width: 80,
-                              height: 80,
-                              borderRadius: 8,
-                              background: "#eee",
                               backgroundImage: `url(https://images.unsplash.com/photo-1555921015-5532091f6026?w=200)`,
-                              backgroundSize: "cover",
                             }}
                           />
-                          <div className="game-info" style={{ flex: 1 }}>
-                            <h4 style={{ margin: 0, fontSize: 16 }}>
-                              Bảo vệ Thăng Long
-                            </h4>
-                            <div style={{ color: "#888", fontSize: 13 }}>
-                              Tham gia chiến dịch bảo vệ kinh thành.
-                            </div>
+                          <div className="game-info">
+                            <h4>Bảo vệ Thăng Long</h4>
+                            <div className="desc">Tham gia chiến dịch bảo vệ kinh thành.</div>
                           </div>
-                          <Button
-                            type="primary"
-                            shape="round"
-                            icon={<RocketOutlined />}
-                          >
-                            Chơi ngay
+                          <Button type="primary" shape="round" icon={<RocketOutlined />}>
+                            Chơi
                           </Button>
                         </div>
                       </Col>
@@ -633,17 +501,12 @@ const HeritageDetailPage = () => {
 
                   {/* 2. Related Artifacts (Distinct Section) */}
                   {siteArtifacts.length > 0 && (
-                    <div
-                      className="discovery-block"
-                      style={{ marginBottom: 48 }}
-                    >
+                    <div className="discovery-block">
                       <Title level={3}>
                         <ReadOutlined /> Hiện vật Tiêu biểu
                       </Title>
-                      <p style={{ marginBottom: 24 }}>
-                        Những bảo vật quý giá gắn liền với di tích này.
-                      </p>
-                      <Row gutter={[16, 16]}>
+                      <p>Những bảo vật quý giá gắn liền với di tích này.</p>
+                      <Row gutter={[24, 24]}>
                         {siteArtifacts.map((artifact: Artifact) => (
                           <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
                             <ArticleCard data={artifact} type="artifact" />
@@ -656,17 +519,12 @@ const HeritageDetailPage = () => {
 
                   {/* 3. Related History (Distinct Section) */}
                   {relatedHistory.length > 0 && (
-                    <div
-                      className="discovery-block"
-                      style={{ marginBottom: 48 }}
-                    >
+                    <div className="discovery-block">
                       <Title level={3}>
                         <HistoryOutlined /> Câu chuyện Lịch sử
                       </Title>
-                      <p style={{ marginBottom: 24 }}>
-                        Các sự kiện và câu chuyện lịch sử liên quan.
-                      </p>
-                      <Row gutter={[16, 16]}>
+                      <p>Các sự kiện và câu chuyện lịch sử liên quan.</p>
+                      <Row gutter={[24, 24]}>
                         {relatedHistory.map((item: HistoryArticle) => (
                           <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
                             <ArticleCard data={item} type="history" />
@@ -678,170 +536,62 @@ const HeritageDetailPage = () => {
                   )}
 
                   {/* 4. Related Products (Mock UI) */}
-                  <div className="discovery-block">
+                  <div className="discovery-block" style={{marginBottom: 0}}>
                     <Title level={3}>
                       <ShopOutlined /> Sản phẩm Văn hóa
                     </Title>
-                    <Row gutter={[16, 16]}>
+                    <p>Quà lưu niệm và các tác phẩm văn hóa đặc sắc.</p>
+                    <Row gutter={[24, 24]} style={{display: "flex"}}>
                       <Col xs={24} sm={12} md={6}>
-                        <div
-                          className="product-card"
-                          style={{ textAlign: "center" }}
-                        >
-                          <div
-                            className="prod-img"
-                            style={{
-                              height: 200,
-                              marginBottom: 16,
-                              borderRadius: 8,
-                              overflow: "hidden",
-                            }}
-                          >
+                        <div className="product-card">
+                          <div className="prod-img">
                             <img
                               src="https://images.unsplash.com/photo-1599525281489-0824b223c285?w=400"
                               alt="Mô hình"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
                             />
                           </div>
-                          <h4 style={{ marginBottom: 8 }}>
-                            Mô hình Hoàng Thành
-                          </h4>
-                          <div
-                            style={{
-                              color: "#d4380d",
-                              fontWeight: "bold",
-                              marginBottom: 12,
-                            }}
-                          >
-                            450,000 đ
-                          </div>
-                          <Button block>Xem chi tiết</Button>
+                          <h4>Mô hình Hoàng Thành Thăng Long cao cấp</h4>
+                          <div className="price">450,000 đ</div>
+                          <Button>Xem chi tiết</Button>
                         </div>
                       </Col>
                       <Col xs={24} sm={12} md={6}>
-                        <div
-                          className="product-card"
-                          style={{ textAlign: "center" }}
-                        >
-                          <div
-                            className="prod-img"
-                            style={{
-                              height: 200,
-                              marginBottom: 16,
-                              borderRadius: 8,
-                              overflow: "hidden",
-                            }}
-                          >
-                            <img
-                              src="https://salt.tikicdn.com/cache/w1200/ts/product/23/67/68/73919242d992953284346028887e3871.jpg"
-                              alt="Sách"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
-                            />
+                        <div className="product-card">
+                          <div className="prod-img">
+                            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400" alt="Sách" />
                           </div>
-                          <h4 style={{ marginBottom: 8 }}>
-                            Sách: Lịch sử Thăng Long
-                          </h4>
-                          <div
-                            style={{
-                              color: "#d4380d",
-                              fontWeight: "bold",
-                              marginBottom: 12,
-                            }}
-                          >
-                            220,000 đ
-                          </div>
-                          <Button block>Xem chi tiết</Button>
+                          <h4>Sách: Lịch sử Thăng Long - Hà Nội ngàn năm</h4>
+                          <div className="price">220,000 đ</div>
+                          <Button>Xem chi tiết</Button>
                         </div>
                       </Col>
                       <Col xs={24} sm={12} md={6}>
-                        <div
-                          className="product-card"
-                          style={{ textAlign: "center" }}
-                        >
-                          <div
-                            className="prod-img"
-                            style={{
-                              height: 200,
-                              marginBottom: 16,
-                              borderRadius: 8,
-                              overflow: "hidden",
-                            }}
-                          >
-                            <img
-                              src="https://images.unsplash.com/photo-1555921015-5532091f6026?w=400"
-                              alt="Tranh"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
-                            />
+                        <div className="product-card">
+                          <div className="prod-img">
+                            <img src="https://images.unsplash.com/photo-1512418490979-92798ccc13b0?w=400" alt="Tranh" />
                           </div>
-                          <h4 style={{ marginBottom: 8 }}>
-                            Tranh in Điện Kính Thiên
-                          </h4>
-                          <div
-                            style={{
-                              color: "#d4380d",
-                              fontWeight: "bold",
-                              marginBottom: 12,
-                            }}
-                          >
-                            180,000 đ
-                          </div>
-                          <Button block>Xem chi tiết</Button>
+                          <h4>Tranh in Điện Kính Thiên thời Lê sơ</h4>
+                          <div className="price">180,000 đ</div>
+                          <Button>Xem chi tiết</Button>
                         </div>
                       </Col>
                       <Col xs={24} sm={12} md={6}>
-                        <div
-                          className="product-card"
-                          style={{ textAlign: "center" }}
-                        >
-                          <div
-                            className="prod-img"
-                            style={{
-                              height: 200,
-                              marginBottom: 16,
-                              borderRadius: 8,
-                              overflow: "hidden",
-                            }}
-                          >
+                        <div className="product-card">
+                          <div className="prod-img">
                             <img
-                              src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400"
+                              src="https://images.unsplash.com/photo-1618354691373-d851c5c3a991?w=400"
                               alt="Móc khóa"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
                             />
                           </div>
-                          <h4 style={{ marginBottom: 8 }}>Móc khóa Rồng đá</h4>
-                          <div
-                            style={{
-                              color: "#d4380d",
-                              fontWeight: "bold",
-                              marginBottom: 12,
-                            }}
-                          >
-                            45,000 đ
-                          </div>
-                          <Button block>Xem chi tiết</Button>
+                          <h4>Móc khóa Rồng đá Hoàng Thành tinh xảo</h4>
+                          <div className="price">45,000 đ</div>
+                          <Button>Xem chi tiết</Button>
                         </div>
                       </Col>
                     </Row>
                   </div>
 
                   {/* Empty State */}
-
                 </div>
               ),
             },
@@ -850,20 +600,37 @@ const HeritageDetailPage = () => {
               label: "Dòng thời gian",
               children: (
                 <div className="article-main-wrapper">
-                  <Title
-                    level={3}
-                    style={{ fontFamily: "Aleo, serif", marginBottom: 24 }}
-                  >
-                    Sự Kiện Lịch Sử
-                  </Title>
+                  <div className="cultural-header-wrapper">
+                    <div className="heritage-corner top-left">
+                      <div className="inner-line-h" />
+                      <div className="inner-line-v" />
+                    </div>
+                    <div className="heritage-corner top-right">
+                      <div className="inner-line-h" />
+                      <div className="inner-line-v" />
+                    </div>
+                    <div className="heritage-corner bottom-left">
+                      <div className="inner-line-h" />
+                      <div className="inner-line-v" />
+                    </div>
+                    <div className="heritage-corner bottom-right">
+                      <div className="inner-line-h" />
+                      <div className="inner-line-v" />
+                    </div>
+
+                    <div className="cultural-sub-title">
+                      <CrownFilled style={{fontSize: 18, color: "var(--gold-color)"}} />
+                      Di sản trường tồn
+                    </div>
+
+                    <h3 className="cultural-main-title">Sự Kiện Lịch Sử</h3>
+                  </div>
                   {timelineEvents.length > 0 ? (
                     <Timeline mode="alternate">
                       {timelineEvents.map((event) => (
                         <Timeline.Item key={event.id} label={event.year}>
-                          <strong style={{ fontSize: 16 }}>
-                            {event.title}
-                          </strong>
-                          <p style={{ color: "#666" }}>{event.description}</p>
+                          <strong>{event.title}</strong>
+                          <p>{event.description}</p>
                         </Timeline.Item>
                       ))}
                     </Timeline>
@@ -898,9 +665,9 @@ const HeritageDetailPage = () => {
 };
 
 // Helper Components
-const SpaceItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
+const SpaceItem = ({icon, text}: {icon: React.ReactNode; text: string}) => (
   <span className="meta-space-item">
-    {icon} <span style={{ marginLeft: 6 }}>{text}</span>
+    {icon} <span style={{marginLeft: 6}}>{text}</span>
   </span>
 );
 

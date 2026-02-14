@@ -1,9 +1,14 @@
 @import "../../../styles/variables.less";
+@import "../../Game/common.less";
 
 .history-detail-page {
-  background: #f8f9fa; // Softer gray bg
-  min-height: 100vh;
+  .game-page-background();
   padding-bottom: 80px;
+  position: relative;
+
+  .nav-back-wrapper {
+    .nav-back-wrapper-style();
+  }
 
   /* REUSED HERO STYLES (Matched Heritage) */
   .detail-hero {
@@ -119,7 +124,7 @@
           }
         }
         .ant-tabs-ink-bar {
-          background: @primary-color;
+          background: @seal-red;
           height: 3px;
           border-radius: 3px;
           display: block;
@@ -130,10 +135,9 @@
 
   /* ARTICLE BODY & WRAPPER */
   .article-main-wrapper {
-    background: #fff;
+    .game-card-style();
     padding: 60px 80px; // More whitespace like editorial
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    border-radius: 8px !important;
     min-height: 500px;
     position: relative;
 
@@ -151,12 +155,15 @@
     }
 
     .content-section-title {
-      font-family: var(--font-serif);
-      font-size: 26px;
-      margin-top: 32px;
+      font-family: @font-serif;
+      font-size: 28px;
+      margin-top: 48px;
       margin-bottom: 24px;
-      color: #d4380d;
-      font-weight: 700;
+      color: @seal-red;
+      font-weight: 800;
+      border-bottom: 2px solid @gold-border;
+      padding-bottom: 8px;
+      display: inline-block;
     }
 
     .article-body-content {
@@ -171,19 +178,19 @@
 
       img {
         max-width: 100%;
-        border-radius: 12px;
+        border-radius: 8px;
         margin: 40px 0;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         display: block;
       }
 
       h3 {
-        font-family: var(--font-serif);
+        font-family: @font-serif;
         font-size: 26px;
         margin-top: 48px;
         margin-bottom: 20px;
-        color: #d4380d;
-        font-weight: 700;
+        color: @seal-red;
+        font-weight: 800;
       }
 
       ul,
@@ -243,16 +250,16 @@
     }
 
     .references-section {
-      margin-top: 40px;
+      margin-top: 48px;
       padding-top: 24px;
-      border-top: 1px solid #eee;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
 
       h3 {
-        font-family: var(--font-serif);
+        font-family: @font-serif;
         font-size: 26px;
-        margin-bottom: 16px;
-        color: #d4380d;
-        font-weight: 700;
+        margin-bottom: 24px;
+        color: @seal-red;
+        font-weight: 800;
       }
 
       .references-content {
@@ -272,33 +279,79 @@
         justify-content: flex-end;
       }
     }
+
+    // --- DISCOVERY SECTION ---
+    .discovery-block {
+      .discovery-block-style();
+
+      .virtual-tour-card {
+        background: linear-gradient(135deg, @seal-red, darken(@seal-red, 10%));
+        border: 2px solid @gold-border;
+        border-radius: 12px;
+        padding: 48px 32px;
+        color: #fff9e6;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 12px 32px rgba(139, 29, 29, 0.2);
+
+        &::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image: url("@/assets/images/hoatiettrongdong.png");
+          background-size: 600px;
+          opacity: 0.05;
+          pointer-events: none;
+        }
+
+        h2 {
+          color: #fff9e6 !important;
+          font-family: @font-serif !important;
+          font-size: 32px !important;
+          margin: 0 0 12px !important;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        p {
+          color: rgba(255, 249, 230, 0.8) !important;
+          font-size: 17px !important;
+          max-width: 600px;
+          margin: 0 auto 24px !important;
+        }
+
+        .ant-btn {
+          .game-btn-primary();
+          background: #fff9e6 !important;
+          color: @seal-red !important;
+          border-color: @gold-border !important;
+          box-shadow: 0 4px 0 #d4b581 !important;
+          height: 52px;
+          padding: 0 40px;
+          font-size: 16px;
+
+          &:hover {
+            background: #fff !important;
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #d4b581 !important;
+          }
+        }
+      }
+    }
+
+    .game-card-mini {
+      .game-card-mini-style();
+    }
+
+    .product-card {
+      .product-card-style();
+    }
   }
 
   // Timeline specific styles override if needed
   .ant-timeline-item-label {
     font-family: var(--font-serif);
     font-size: 16px;
-  }
-
-  // Discovery Block
-  .discovery-block {
-    h3 {
-      font-family: var(--font-serif);
-      margin-bottom: 24px;
-      color: var(--text-color-primary);
-    }
-  }
-
-  // Game Card Mini
-  .game-card-mini {
-    background: #fff;
-    transition: all 0.3s;
-
-    &:hover {
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-      transform: translateY(-2px);
-      border-color: transparent !important;
-    }
   }
 
   // Related Bottom
@@ -316,9 +369,9 @@
       &::after {
         content: "";
         display: block;
-        width: 60px;
+        width: 80px;
         height: 3px;
-        background: #d4380d;
+        background: @seal-red;
         margin: 16px auto 0;
       }
     }

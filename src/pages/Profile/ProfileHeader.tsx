@@ -112,17 +112,22 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChan
                       style={{
                         marginLeft: "auto",
                         cursor: "pointer",
-                        color: "#666",
+                        color: "#fff9e6",
                         display: "flex",
                         alignItems: "center",
-                        gap: 4,
-                        fontSize: 14,
-                        background: "#f5f5f5",
-                        padding: "4px 12px",
-                        borderRadius: 20,
+                        gap: 8,
+                        fontSize: 13,
+                        background: "#8b1d1d",
+                        padding: "6px 16px",
+                        borderRadius: 4,
+                        border: "1px solid #c5a065",
+                        boxShadow: "0 2px 0 #5a1212",
+                        fontWeight: 700,
+                        fontFamily: "'Playfair Display', serif",
+                        transition: "all 0.2s",
                       }}
                     >
-                      <EditOutlined /> <span>Chỉnh sửa</span>
+                      <EditOutlined /> <span>CHỈNH SỬA</span>
                     </div>
                   )}
                 </div>

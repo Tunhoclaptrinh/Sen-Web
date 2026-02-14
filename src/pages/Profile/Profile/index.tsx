@@ -254,13 +254,13 @@ const Profile = () => {
               title: "Bộ sưu tập",
               value: collections.length || 0,
               icon: <AppstoreOutlined />,
-              valueColor: "#1890ff",
+              valueColor: "#c5a065", // Gold
             },
             {
               title: "Đã yêu thích",
               value: favoriteStats?.total || 0,
               icon: <HeartOutlined />,
-              valueColor: "#ff4d4f",
+              valueColor: "#8b1d1d", // Seal Red
             },
           ]}
         />
@@ -441,86 +441,54 @@ const Profile = () => {
   );
 
   const renderBadgeTab = () => {
-    const userBadges = userProgress?.badges || []; // Array of { id, earnedAt }
+    const userBadges = userProgress?.badges || [];
 
-    // Filter valid badges (objects with id) once to use for both counting and mapping
-    const validEarnedBadges = userBadges.filter((b: any) => b && typeof b === "object" && b.id);
+    // Normalize earned badges: handle both objects {id, earnedAt} and raw IDs
+    const normalizedEarned = userBadges
+      .map((b: any) => {
+        if (typeof b === "object" && b !== null) return b;
+        return {id: b};
+      })
+      .filter((b: any) => b.id !== undefined && b.id !== null);
 
     // Map earned status to all badges
-    const displayedBadges = allBadges.map((badge) => {
-      const earned = validEarnedBadges.find((b: any) => b.id === badge.id);
+    const displayedBadges = allBadges.map((badge: any) => {
+      const earned = normalizedEarned.find((b: any) => String(b.id) === String(badge.id));
       return {...badge, earned: !!earned, earnedAt: earned?.earnedAt};
     });
+
+    const validEarnedBadges = displayedBadges.filter((b) => b.earned);
 
     return (
       <div className="profile-card">
         <div className="card-title">
           <TrophyOutlined /> Huy hiệu & Thành tích
         </div>
-        <div
-          style={{
-            marginBottom: 24,
-            padding: 16,
-            background: "#f6ffed",
-            border: "1px solid #b7eb8f",
-            borderRadius: 8,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <div style={{fontWeight: 600, color: "#389e0d"}}>Tiến độ sưu tập</div>
-            <div>
+        <div className="badge-progress-box">
+          <div className="progress-info">
+            <div className="progress-label">Tiến độ sưu tập</div>
+            <div className="progress-sub">
               Bạn đã mở khóa {validEarnedBadges.length}/{allBadges.length} huy hiệu
             </div>
           </div>
-          <div style={{fontSize: 24, fontWeight: 800, color: "#389e0d"}}>
+          <div className="progress-percentage">
             {Math.round((validEarnedBadges.length / (allBadges.length || 1)) * 100)}%
           </div>
         </div>
 
         {badgesLoading ? (
-          <div style={{textAlign: "center", padding: 40}}>
+          <div className="loading-container">
             <Spin />
           </div>
         ) : (
-          <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 24}}>
+          <div className="badges-grid">
             {displayedBadges.map((badge) => (
-              <div
-                key={badge.id}
-                style={{
-                  textAlign: "center",
-                  padding: 16,
-                  borderRadius: 12,
-                  border: badge.earned ? "2px solid #faad14" : "1px dashed #d9d9d9",
-                  background: badge.earned ? "#fffbe6" : "#fafafa",
-                  filter: badge.earned ? "none" : "grayscale(100%)",
-                  opacity: badge.earned ? 1 : 0.6,
-                  transition: "all 0.3s",
-                  boxShadow: badge.earned ? "0 0 15px rgba(250, 173, 20, 0.4)" : "none",
-                  transform: badge.earned ? "scale(1.05)" : "scale(1)",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 48,
-                    marginBottom: 8,
-                    filter: badge.earned ? "drop-shadow(0 0 8px rgba(250, 173, 20, 0.6))" : "none",
-                  }}
-                >
-                  {badge.icon}
-                </div>
-                <div
-                  style={{fontWeight: 700, marginBottom: 4, color: badge.earned ? "#d46b08" : "#2c3e50", minHeight: 44}}
-                >
-                  {badge.name}
-                </div>
-                <div style={{fontSize: 12, color: badge.earned ? "#874d00" : "#666", lineHeight: 1.4}}>
-                  {badge.description}
-                </div>
+              <div key={badge.id} className={`badge-item ${badge.earned ? "earned" : "locked"}`}>
+                <div className="badge-icon">{badge.icon}</div>
+                <div className="badge-name">{badge.name}</div>
+                <div className="badge-description">{badge.description}</div>
                 {badge.earned && (
-                  <Tag color="gold" style={{marginTop: 8, border: "none"}}>
+                  <Tag color="gold" className="badge-tag">
                     Đã đạt: {new Date(badge.earnedAt).toLocaleDateString("vi-VN")}
                   </Tag>
                 )}

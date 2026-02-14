@@ -3,7 +3,7 @@
 
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(357.93deg, #fff4ec 1.72%, #f6f5f3); // Light beige background for the whole page
+  .game-page-background();
   overflow-x: hidden;
 
   // General Typography
@@ -69,11 +69,12 @@
       }
 
       .hero-subtitle {
+        font-family: var(--font-serif);
         font-size: 24px;
         font-weight: 600;
         margin-bottom: 48px;
         color: #e1ac66;
-        text-shadow: 0 2px 4px rgba(245, 243, 243, 0.3);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
       }
 
       .cta-button {
@@ -82,7 +83,7 @@
         color: #2d5a27;
         border-color: #2d5a27;
         box-shadow: 0 4px 0 #2d5a27;
-        width: 220px;
+        width: 240px;
         margin-top: 20px;
 
         &:hover {
@@ -110,7 +111,7 @@
 
   // Mission Section (Sứ mệnh của Sen)
   .mission-section {
-    padding: 160px 0;
+    padding: 120px 0; // Slightly tighter padding for better flow
     background: transparent;
     z-index: 10;
 
@@ -130,94 +131,115 @@
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
-      gap: 60px;
+      gap: 80px;
+      align-items: center;
 
       @media (max-width: 992px) {
         flex-direction: column;
+        align-items: flex-start;
       }
 
       .mission-image-col {
-        flex: 1;
+        flex: 1.1;
         position: relative;
+        padding-bottom: 24px;
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: @seal-red;
+        }
 
         .mission-main-img {
           width: 100%;
-          border-radius: 20px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-          border: 2px solid #fff;
+          border-radius: 8px;
+          border: 1.5px solid @gold-border;
+          box-shadow: 8px 8px 0 rgba(141, 110, 99, 0.05);
         }
       }
 
       .mission-text-col {
-        flex: 1;
+        flex: 0.9;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
 
         .sub-header {
-          color: #2d5a27;
+          color: fade(@text-color-primary, 50%);
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 16px;
+          letter-spacing: 3px;
+          margin-bottom: 12px;
           display: block;
-          font-family: var(--font-serif);
+          font-family: @font-serif;
+          font-size: 13px;
         }
 
         h2 {
           .game-title-style();
-          font-size: 48px !important;
+          font-size: 56px !important;
           text-align: left;
-          margin-bottom: 24px;
+          margin-bottom: 32px;
+          line-height: 1.1;
 
           @media (max-width: 768px) {
-            font-size: 32px !important;
+            font-size: 36px !important;
           }
         }
 
         .mission-desc {
           font-size: 16px;
           line-height: 1.8;
-          color: var(--text-color-secondary);
-          margin-bottom: 32px;
-          font-family: var(--font-serif);
+          color: fade(@text-color-primary, 80%);
+          margin-bottom: 24px; // Spacing between split paragraphs
+          font-family: @font-serif;
+          max-width: 520px;
+
+          &:last-of-type {
+            margin-bottom: 40px; // Spacing before the buttons
+          }
         }
 
         .mission-actions {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 12px;
+          gap: 16px;
+          max-width: 480px;
 
           .action-btn {
             .game-btn-primary();
-            padding: 0 24px;
-            font-size: 14px;
-            height: 42px;
+            padding: 0 20px;
+            font-size: 13px;
+            height: 48px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
 
             &.green-btn {
-              background: #2d5a27; // Sen Dark Green
-              border-color: #1a3617;
-              box-shadow: 0 4px 0 #1a3617;
+              background: #2d5a27;
+              border-color: darken(#2d5a27, 10%);
+              box-shadow: 0 4px 0 darken(#2d5a27, 10%);
               color: #fff;
 
               &:hover {
-                background: #3e7a36;
-                box-shadow: 0 2px 0 #1a3617;
+                background: lighten(#2d5a27, 5%);
                 color: #fff !important;
               }
             }
 
             &.light-green-btn {
-              background: #fff;
+              background: #c4efa1;
               color: #2d5a27;
               border-color: #2d5a27;
               box-shadow: 0 4px 0 #2d5a27;
 
               &:hover {
-                background: #f0f9ed;
-                color: #3e7a36 !important;
-                border-color: #3e7a36;
-                box-shadow: 0 2px 0 #3e7a36;
+                background: #d4f5ba;
+                color: #2d5a27 !important;
               }
             }
           }
@@ -304,6 +326,7 @@
       .ant-card-cover {
         border-radius: 16px;
         overflow: hidden;
+        border: 2px solid @gold-border;
         img {
           height: 300px;
           object-fit: cover;
@@ -390,10 +413,11 @@
         border: none;
 
         .artifact-img-wrapper {
-          border-radius: 12px;
+          border-radius: 8px;
           overflow: hidden;
           margin-bottom: 16px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          border: 2px solid @gold-border;
+          box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
           aspect-ratio: 1;
 
           img {
@@ -411,99 +435,105 @@
   // Game Integration Section
   // ==========================================
   .game-section {
-    padding: 60px 20px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
+    padding: 100px 20px;
+    background: transparent; // Synchronized with global page background
+    position: relative;
 
     .header-title {
       .game-title-style();
-      font-size: 48px !important;
+      font-size: 56px !important;
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
+      line-height: 1.25;
     }
 
     .game-container {
       position: relative;
-      text-align: left;
     }
 
     .game-image-wrapper {
       position: relative;
       width: 100%;
-      border-radius: 20px 20px 0 0; // Top corners only
+      height: 100%;
+      border-radius: 8px;
       overflow: hidden;
-      // box-shadow: 0 10px 30px rgba(0,0,0,0.1); // Shadow handled by valid container if needed, or remove
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(197, 160, 101, 0.3);
 
       img {
         width: 100%;
-        height: auto;
+        height: 100%;
+        object-fit: cover;
         display: block;
+        transition: transform 0.6s ease;
+      }
+
+      .image-overlay-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(139, 29, 29, 0.1), transparent);
+        pointer-events: none;
+      }
+
+      &:hover img {
+        transform: scale(1.05);
       }
     }
 
     .game-info-card {
-      background: #fff;
-      padding: 40px 50px;
-      border-radius: 0 0 20px 20px; // Bottom corners only
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      margin: 0; // Full width aligned with image
-      position: relative;
-      z-index: 2;
-      border: 1px solid #f0f0f0;
-      border-top: none; // Seamless connection
-
-      .card-meta {
-        display: flex;
-        gap: 20px;
-        color: var(--text-color-secondary);
-        font-size: 13px;
-        margin-bottom: 12px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 12px;
-        font-family: var(--font-serif);
-        font-weight: 600;
-
-        .meta-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-      }
+      .game-card-style();
+      padding: 60px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-radius: 8px !important;
+      background: @paper-bg !important;
+      border: 2px solid @gold-border !important;
+      box-shadow: 15px 15px 0 rgba(197, 160, 101, 0.1) !important;
 
       .card-title {
-        font-size: 26px;
+        font-size: 32px;
         font-weight: 800;
-        color: var(--text-color-primary);
-        margin-bottom: 16px;
-        font-family: var(--font-serif);
+        color: @text-color-primary;
+        margin-bottom: 32px;
+        font-family: @font-serif;
+        line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .card-description-box {
+        margin-bottom: 40px;
       }
 
       .card-desc {
-        color: var(--text-color-secondary);
-        margin-bottom: 16px;
-        line-height: 1.6;
-        font-size: 15px;
-        font-family: var(--font-serif);
+        color: @text-color-secondary;
+        margin-bottom: 20px;
+        line-height: 1.8;
+        font-size: 16px;
+        font-family: @font-serif;
+        text-align: justify;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
 
       .experience-btn {
         .game-btn-primary();
-        background: #6abe45;
-        color: #fff;
-        border-color: #5aa63a;
-        box-shadow: 0 4px 0 #5aa63a;
-        padding: 0 24px;
-        font-size: 14px;
-        height: 42px;
-        margin-top: 10px;
-
-        &:hover {
-          background: #5aa63a;
-          color: #fff !important;
-          border-color: #5aa63a;
-          box-shadow: 0 2px 0 #5aa63a;
-        }
+        padding: 0 40px;
+        font-size: 15px;
+        height: 54px;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-radius: 4px;
+        letter-spacing: 1.5px;
       }
     }
   }
@@ -603,7 +633,7 @@
         width: 240px;
 
         &:hover {
-          background: #b0e08a;
+          background: #d4f5ba;
           color: #2d5a27 !important;
           border-color: #2d5a27;
           box-shadow: 0 2px 0 #2d5a27;

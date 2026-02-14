@@ -255,43 +255,24 @@ const HistoryDetailPage = () => {
               children: (
                 <div className="article-main-wrapper">
                   {/* 0. 3D Virtual Tour (Mock) */}
-                  <div className="discovery-block" style={{marginBottom: 48}}>
+                  <div className="discovery-block">
                     <Title level={3}>
                       <GlobalOutlined /> Tham quan Không gian 3D
                     </Title>
-                    <div
-                      style={{
-                        background: "linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d)",
-                        borderRadius: 12,
-                        padding: 32,
-                        color: "white",
-                        textAlign: "center",
-                        position: "relative",
-                        overflow: "hidden",
-                      }}
-                    >
+                    <div className="virtual-tour-card">
                       <div style={{position: "relative", zIndex: 1}}>
-                        <h2 style={{color: "white", margin: 0, fontSize: 28}}>Triển lãm Thực tế ảo</h2>
-                        <p style={{fontSize: 16, marginTop: 8, opacity: 0.9}}>
-                          Khám phá không gian di tích được tái hiện chân thực trong môi trường 3D.
-                        </p>
+                        <h2>Triển lãm Thực tế ảo</h2>
+                        <p>Khám phá không gian di tích được tái hiện chân thực trong môi trường 3D.</p>
                         <Button
                           size="large"
-                          shape="round"
-                          style={{
-                            marginTop: 16,
-                            background: "rgba(255,255,255,0.2)",
-                            border: "1px solid rgba(255,255,255,0.4)",
-                            color: "white",
-                            fontWeight: "bold",
-                            backdropFilter: "blur(4px)",
-                          }}
                           onClick={() => message.info("Tính năng Tham quan 3D đang được phát triển!")}
                         >
-                          Trải nghiệm ngay <RocketOutlined />
+                          Trải nghiệm ngay <RocketOutlined style={{marginLeft: 8}} />
                         </Button>
-                        <div style={{marginTop: 12}}>
-                          <Tag color="orange">Sắp ra mắt</Tag>
+                        <div style={{marginTop: 16}}>
+                          <Tag color="gold" style={{borderRadius: 4, fontWeight: 600}}>
+                            SẮP RA MẮT
+                          </Tag>
                         </div>
                       </div>
                     </div>
@@ -300,42 +281,22 @@ const HistoryDetailPage = () => {
 
                   {/* 1. Related Games */}
                   {relatedLevels.length > 0 && (
-                    <div className="discovery-block" style={{marginBottom: 48}}>
+                    <div className="discovery-block">
                       <Title level={3}>
                         <RocketOutlined /> Trải nghiệm Lịch sử
                       </Title>
                       <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về sự kiện này.</p>
-                      <Row gutter={[16, 16]}>
+                      <Row gutter={[24, 24]}>
                         {relatedLevels.map((level: any) => (
                           <Col xs={24} md={12} key={level.id}>
-                            <div
-                              className="game-card-mini"
-                              style={{
-                                border: "1px solid #eee",
-                                borderRadius: 12,
-                                padding: 16,
-                                display: "flex",
-                                gap: 16,
-                                alignItems: "center",
-                              }}
-                            >
-                              <div
-                                className="game-thumb"
-                                style={{
-                                  width: 80,
-                                  height: 80,
-                                  borderRadius: 8,
-                                  background: "#eee",
-                                  backgroundImage: `url(${level.backgroundImage})`,
-                                  backgroundSize: "cover",
-                                }}
-                              />
-                              <div className="game-info" style={{flex: 1}}>
-                                <h4 style={{margin: 0, fontSize: 16}}>{level.name}</h4>
-                                <div style={{color: "#888", fontSize: 13}}>{level.description}</div>
+                            <div className="game-card-mini">
+                              <div className="game-thumb" style={{backgroundImage: `url(${level.backgroundImage})`}} />
+                              <div className="game-info">
+                                <h4>{level.name}</h4>
+                                <div className="desc">{level.description}</div>
                               </div>
                               <Button type="primary" shape="round" icon={<RocketOutlined />}>
-                                Chơi ngay
+                                Chơi
                               </Button>
                             </div>
                           </Col>
@@ -347,11 +308,11 @@ const HistoryDetailPage = () => {
 
                   {/* 2. Related Heritage & Artifacts */}
                   {(relatedHeritage.length > 0 || relatedArtifacts.length > 0) && (
-                    <div className="discovery-block" style={{marginBottom: 48}}>
+                    <div className="discovery-block">
                       <Title level={3}>
                         <EnvironmentOutlined /> Di sản & Hiện vật liên quan
                       </Title>
-                      <Row gutter={[16, 16]}>
+                      <Row gutter={[24, 24]}>
                         {relatedHeritage.map((h: any) => (
                           <Col xs={24} sm={12} md={8} key={`h-${h.id}`}>
                             <ArticleCard data={h} type="heritage" />
@@ -369,29 +330,21 @@ const HistoryDetailPage = () => {
 
                   {/* 3. Related Products */}
                   {relatedProducts.length > 0 && (
-                    <div className="discovery-block">
+                    <div className="discovery-block" style={{marginBottom: 0}}>
                       <Title level={3}>
                         <ShopOutlined /> Sản phẩm Văn hóa
                       </Title>
-                      <Row gutter={[16, 16]}>
+                      <p>Quà lưu niệm và các tác phẩm văn hóa đặc sắc từ sự kiện này.</p>
+                      <Row gutter={[24, 24]}>
                         {relatedProducts.map((p: any) => (
                           <Col xs={24} sm={12} md={6} key={p.id}>
-                            <div className="product-card" style={{textAlign: "center"}}>
-                              <div
-                                className="prod-img"
-                                style={{height: 200, marginBottom: 16, borderRadius: 8, overflow: "hidden"}}
-                              >
-                                <img
-                                  src={p.image}
-                                  alt={p.name}
-                                  style={{width: "100%", height: "100%", objectFit: "cover"}}
-                                />
+                            <div className="product-card">
+                              <div className="prod-img">
+                                <img src={p.image} alt={p.name} />
                               </div>
-                              <h4 style={{marginBottom: 8}}>{p.name}</h4>
-                              <div style={{color: "#d4380d", fontWeight: "bold", marginBottom: 12}}>
-                                {p.price?.toLocaleString()} đ
-                              </div>
-                              <Button block>Xem chi tiết</Button>
+                              <h4>{normalizeVietnamese(p.name)}</h4>
+                              <div className="price">{p.price?.toLocaleString()} đ</div>
+                              <Button>Xem chi tiết</Button>
                             </div>
                           </Col>
                         ))}

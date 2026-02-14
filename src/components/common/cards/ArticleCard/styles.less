@@ -2,20 +2,21 @@
 @import "../../../../pages/Game/common.less";
 
 .article-card {
-  background: #fff;
-  border-radius: 16px;
+  background: @paper-bg !important;
+  border: 2px solid @gold-border !important;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.1);
   transition: all 0.4s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: none;
   position: relative;
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.15);
+    border-color: @seal-red !important;
 
     .card-image-wrapper .card-image {
       transform: scale(1.08);
@@ -41,7 +42,7 @@
       right: 12px;
       background: rgba(255, 255, 255, 0.9);
       padding: 4px 10px;
-      border-radius: 20px;
+      border-radius: 4px;
       font-size: 11px;
       font-weight: 700;
       color: var(--text-color-primary);

@@ -49,26 +49,116 @@
 .home-game-leaderboard-card {
   .game-card-style();
   overflow: hidden;
-  background: #fff;
-  border: 4px solid rgba(255, 215, 0, 0.3); /* Match specific leaderboard style */
+  background: @paper-bg !important;
+  border: 4px solid rgba(197, 160, 101, 0.4) !important;
 }
 
 /* New Section Styles */
-.home-game-section {
-  .game-page-background();
-  background-color: #f4efe4 !important; /* Force Cream background */
-  min-height: auto !important; /* Override 100vh */
-  padding: 80px 0;
+.heritage-space-block {
+  background-color: @seal-red !important;
   position: relative;
   overflow: hidden;
+  padding: 120px 0 180px; // Further expanded wrapper padding for scrim room
+
+  // TOP SCRIM TRANSITION (Mission to Heritage Block)
+  // Uses a multi-stop "easing" gradient to avoid harsh lines
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 320px;
+    background: linear-gradient(
+      to bottom,
+      #f4efe4 0%,
+      rgba(244, 239, 228, 0.98) 12%,
+      rgba(244, 239, 228, 0.92) 25%,
+      rgba(244, 239, 228, 0.82) 38%,
+      rgba(244, 239, 228, 0.65) 52%,
+      rgba(244, 239, 228, 0.42) 67%,
+      rgba(244, 239, 228, 0.2) 83%,
+      transparent 100%
+    );
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  // BOTTOM SCRIM TRANSITION (Heritage Block to Featured sections)
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 450px;
+    background: linear-gradient(
+      to top,
+      #f4efe4 0%,
+      rgba(244, 239, 228, 0.98) 12%,
+      rgba(244, 239, 228, 0.92) 25%,
+      rgba(244, 239, 228, 0.82) 38%,
+      rgba(244, 239, 228, 0.65) 52%,
+      rgba(244, 239, 228, 0.42) 67%,
+      rgba(244, 239, 228, 0.2) 83%,
+      transparent 100%
+    );
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  // Pattern overlay with matching scrim mask
+  .heritage-pattern-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/images/hoatiettrongdong.png");
+    background-size: 800px;
+    background-repeat: repeat;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+
+    // Synchronized scrim masking
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.2) 8%,
+      rgba(0, 0, 0, 0.6) 20%,
+      black 35%,
+      black 65%,
+      rgba(0, 0, 0, 0.6) 80%,
+      rgba(0, 0, 0, 0.2) 92%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.2) 8%,
+      rgba(0, 0, 0, 0.6) 20%,
+      black 35%,
+      black 65%,
+      rgba(0, 0, 0, 0.6) 80%,
+      rgba(0, 0, 0, 0.2) 92%,
+      transparent 100%
+    );
+  }
+
+  .home-game-section {
+    background-color: transparent !important;
+    padding: 80px 0; // Increased padding to clear scrim zones
+    position: relative;
+    z-index: 10;
+  }
 }
 
-.home-game-section-title {
-  .game-title-style();
-  text-align: center;
-  font-size: 42px !important;
-  line-height: 1.2;
-  margin-bottom: 24px;
+.home-game-section {
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
 }
 
 .home-game-section-subtitle {

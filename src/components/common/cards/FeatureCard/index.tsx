@@ -1,7 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Tag, Tooltip} from "antd";
-import {StarFilled, EnvironmentOutlined} from "@ant-design/icons";
+import {StarFilled} from "@ant-design/icons";
 import {resolveImage, getImageUrl} from "@/utils/image.helper";
 import {HERITAGE_TYPE_LABELS, ARTIFACT_TYPE_LABELS} from "@/config/constants";
 import {FeatureCardProps} from "./types";
@@ -12,7 +12,6 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = "heritage", v
 
   const rawImage = resolveImage(data.image) || resolveImage(data.mainImage) || resolveImage(data.images);
   const imageUrl = getImageUrl(rawImage, "https://via.placeholder.com/300x400?text=No+Image");
-  const subtitle = cardType === "heritage" ? data.region : data.dynasty;
 
   return (
     <Link to={linkPath} style={{display: "block", height: "100%"}}>
@@ -59,21 +58,49 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = "heritage", v
 
         {/* Content Area */}
         <div className="card-content">
-          {/* Title */}
-          <Tooltip title={data.name} placement="top">
-            <h3 className="card-title">{data.name}</h3>
-          </Tooltip>
+          <div className="content-main">
+            <Tooltip title={data.name} placement="top">
+              <h3 className="card-title">{data.name}</h3>
+            </Tooltip>
 
-          {/* Subtitle: Region or Dynasty */}
-          {subtitle && (
-            <div className="card-location">
-              {cardType === "heritage" && <EnvironmentOutlined style={{color: "var(--primary-color)"}} />}
-              <span>{subtitle}</span>
-            </div>
-          )}
+            {data.description && variant !== "portrait" && (
+              <p className="card-desc-excerpt">
+                {data.description.length > 80 ? `${data.description.slice(0, 80)}...` : data.description}
+              </p>
+            )}
+          </div>
 
-          {/* Description (Hidden relative to CSS but kept in DOM if needed later) */}
-          <p className="card-description">{data.description}</p>
+          {/* Structured Metadata List */}
+          <div className="metadata-list">
+            {cardType === "heritage" ? (
+              data.region && (
+                <div className="meta-item">
+                  <span className="meta-label">Vùng miền:</span>
+                  <span className="meta-value">{data.region}</span>
+                </div>
+              )
+            ) : (
+              <>
+                {(data.locationInSite || data.currentLocation) && (
+                  <div className="meta-item">
+                    <span className="meta-label">Nơi lưu giữ:</span>
+                    <span className="meta-value">{data.locationInSite || data.currentLocation}</span>
+                  </div>
+                )}
+                {(data.dynasty || data.yearCreated) && (
+                  <div className="meta-item">
+                    <span className="meta-label">Niên đại:</span>
+                    <span className="meta-value">{data.dynasty || data.yearCreated}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="card-action-hint">
+            <span>Chi tiết</span>
+            <span className="hint-arrow">→</span>
+          </div>
         </div>
       </div>
     </Link>

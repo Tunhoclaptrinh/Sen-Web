@@ -99,6 +99,18 @@ const ExhibitionDetailPage: React.FC = () => {
 
   return (
     <div className="exhibition-detail-page">
+      {/* 0. Nav Back */}
+      <div className="nav-back-wrapper">
+        <Button
+          type="default"
+          shape="circle"
+          icon={<ArrowLeftOutlined />}
+          size="large"
+          onClick={() => navigate("/exhibitions")}
+          className="nav-back-btn"
+        />
+      </div>
+
       {/* HERO SECTION */}
       <section className="detail-hero">
         <div className="hero-bg" style={{backgroundImage: `url('${heroImage}')`}} />
@@ -151,20 +163,14 @@ const ExhibitionDetailPage: React.FC = () => {
                       />
 
                       {/* Gallery Preview Block (Mock) */}
-                      <div
-                        style={{
-                          marginTop: 40,
-                          padding: 24,
-                          background: "#f9f9f9",
-                          borderRadius: 12,
-                          textAlign: "center",
-                        }}
-                      >
-                        <Title level={4}>Trải nghiệm không gian 3D</Title>
-                        <p>Khám phá triển lãm trong không gian thực tế ảo sống động.</p>
-                        <Button type="primary" size="large" icon={<RocketOutlined />} disabled>
-                          Vào tham quan 3D (Sắp ra mắt)
-                        </Button>
+                      <div className="discovery-block" style={{marginTop: 40, marginBottom: 0}}>
+                        <div className="virtual-tour-card">
+                          <h2>Trải nghiệm không gian 3D</h2>
+                          <p>Khám phá triển lãm trong không gian thực tế ảo sống động.</p>
+                          <Button size="large" icon={<RocketOutlined />} disabled>
+                            Vào tham quan 3D (Sắp ra mắt)
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ),

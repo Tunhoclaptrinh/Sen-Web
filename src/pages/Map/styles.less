@@ -1,0 +1,109 @@
+@import "../../styles/variables.less";
+@import "../Game/common.less";
+
+.map-page-container {
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+
+  .map-header-bar {
+    padding: 16px 24px;
+    background: @paper-bg;
+    border-bottom: 2px solid @gold-border;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-right: auto;
+
+      .map-icon {
+        font-size: 28px;
+        color: @seal-red;
+      }
+
+      .title-group {
+        h4 {
+          margin: 0;
+          font-family: var(--font-serif);
+          font-weight: 700;
+          color: @text-color-primary;
+        }
+
+        .map-subtitle {
+          color: @text-color-secondary;
+          font-size: 13px;
+        }
+      }
+    }
+
+    .filter-input {
+      width: 250px;
+    }
+
+    .filter-select-province {
+      width: 200px;
+    }
+
+    .filter-select-type {
+      width: 180px;
+    }
+  }
+
+  .map-wrapper {
+    flex: 1;
+    position: relative;
+
+    .loading-overlay {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      background: @paper-bg;
+    }
+  }
+
+  // Popup Styling
+  .map-popup-content {
+    width: 220px;
+    font-family: var(--font-serif);
+
+    .popup-image {
+      width: 100%;
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid @gold-border;
+    }
+
+    h5 {
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: @text-color-primary;
+    }
+
+    .popup-tags {
+      margin-bottom: 12px;
+    }
+
+    .popup-action-btn {
+      .game-btn-primary();
+      height: 32px;
+      font-size: 12px;
+      padding: 0 12px;
+      width: 100%;
+
+      // Override game-btn-primary defaults for small size
+      text-transform: none;
+      letter-spacing: normal;
+    }
+  }
+}

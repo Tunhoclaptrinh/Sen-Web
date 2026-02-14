@@ -430,11 +430,11 @@ const HomeMapSection: React.FC = () => {
       `}</style>
 
       {/* Full width container for "To hẳn ra" effect */}
-      <div style={{padding: "0 40px"}}>
-        <div style={{marginBottom: 40}}>
+      <div style={{maxWidth: 1400, margin: "0 auto", padding: "100px 80px 80px"}}>
+        <div style={{marginBottom: 80, textAlign: "center"}}>
           <span
             className="home-game-sub-header"
-            style={{color: "#c5a065", fontFamily: "var(--font-serif)", fontWeight: 700}}
+            style={{color: "var(--gold-color)", fontFamily: "var(--font-serif)", fontWeight: 700, marginBottom: 20}}
           >
             Bản đồ Văn hóa
           </span>
@@ -442,16 +442,21 @@ const HomeMapSection: React.FC = () => {
             level={2}
             className="home-game-section-title"
             style={{
-              color: "var(--primary-color)" /* White text on Red bg */,
+              color: "#ffffff",
               fontFamily: "var(--font-serif)",
               textTransform: "uppercase",
               fontSize: 56,
+              marginBottom: 24,
+              lineHeight: 1.25,
             }}
           >
-            Khám phá <span style={{color: "var(--primary-color)"}}>Di sản</span> &{" "}
-            <span style={{color: "var(--primary-color)"}}>Hiện vật</span>
+            Khám phá <span style={{color: "var(--gold-color)"}}>Di sản</span> &{" "}
+            <span style={{color: "var(--gold-color)"}}>Hiện vật</span>
           </Title>
-          <Paragraph className="home-game-section-subtitle" style={{color: "var(--text-color-primary)"}}>
+          <Paragraph
+            className="home-game-section-subtitle"
+            style={{color: "rgba(255, 255, 255, 0.7)", margin: "0 auto", maxWidth: 740, lineHeight: 1.8, fontSize: 17}}
+          >
             Hành trình trực quan dọc theo chiều dài đất nước. Tìm kiếm các địa danh lịch sử và bảo vật quốc gia ngay
             trên bản đồ.
           </Paragraph>
@@ -485,8 +490,8 @@ const HomeMapSection: React.FC = () => {
               left: 20,
               width: 40,
               height: 40,
-              borderTop: "4px solid #d9363e",
-              borderLeft: "4px solid #d9363e",
+              borderTop: "2px solid var(--gold-color)",
+              borderLeft: "2px solid var(--gold-color)",
               borderTopLeftRadius: 8,
               zIndex: 10,
             }}
@@ -498,8 +503,8 @@ const HomeMapSection: React.FC = () => {
               right: 20,
               width: 40,
               height: 40,
-              borderTop: "4px solid #d9363e",
-              borderRight: "4px solid #d9363e",
+              borderTop: "2px solid var(--gold-color)",
+              borderRight: "2px solid var(--gold-color)",
               borderTopRightRadius: 8,
               zIndex: 10,
             }}
@@ -511,8 +516,8 @@ const HomeMapSection: React.FC = () => {
               left: 20,
               width: 40,
               height: 40,
-              borderBottom: "4px solid #d9363e",
-              borderLeft: "4px solid #d9363e",
+              borderBottom: "2px solid var(--gold-color)",
+              borderLeft: "2px solid var(--gold-color)",
               borderBottomLeftRadius: 8,
               zIndex: 10,
             }}
@@ -524,8 +529,8 @@ const HomeMapSection: React.FC = () => {
               right: 20,
               width: 40,
               height: 40,
-              borderBottom: "4px solid #d9363e",
-              borderRight: "4px solid #d9363e",
+              borderBottom: "2px solid var(--gold-color)",
+              borderRight: "2px solid var(--gold-color)",
               borderBottomRightRadius: 8,
               zIndex: 10,
             }}

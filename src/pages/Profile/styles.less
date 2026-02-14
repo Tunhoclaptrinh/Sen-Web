@@ -1,193 +1,194 @@
+@import "../Game/common.less";
+
 .favorites-page {
-    max-width: 1400px;
-    margin: 0 auto;
+  max-width: 1400px;
+  margin: 0 auto;
 
-    .page-header {
+  .page-header {
+    .page-description {
+      color: #8c8c8c;
+      font-size: 16px;
+    }
+  }
 
-        .page-description {
-            color: #8c8c8c;
-            font-size: 16px;
+  .favorites-stats {
+    margin-bottom: 32px;
+
+    .stat-card {
+      text-align: center;
+      border-radius: 8px;
+      border: 2px solid @gold-border;
+      background: @paper-bg;
+      box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.1);
+      transition: all 0.3s ease;
+      color: @text-color-primary;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 6px 6px 0 rgba(139, 29, 29, 0.15);
+      }
+
+      .ant-statistic-title {
+        color: @text-color-secondary;
+        font-size: 14px;
+        font-family: @font-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .ant-statistic-content {
+        font-size: 32px;
+        font-weight: 800;
+        color: @seal-red;
+        font-family: @font-serif;
+      }
+    }
+  }
+
+  .favorites-content {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    .ant-tabs {
+      .ant-tabs-nav {
+        margin-bottom: 24px;
+        &:before {
+          display: none;
         }
+      }
+
+      .ant-tabs-tab {
+        padding: 10px 20px;
+        font-weight: 700;
+        font-size: 16px;
+        font-family: @font-serif;
+        color: @text-color-primary;
+        transition: all 0.3s;
+        border-radius: 8px 8px 0 0;
+        background: rgba(0, 0, 0, 0.02);
+
+        &:hover {
+          color: @seal-red;
+          background: #fff;
+        }
+
+        &.ant-tabs-tab-active {
+          background: #fff !important;
+          border: 1px solid @gold-border !important;
+          border-bottom: 2px solid #fff !important;
+          margin-bottom: -1px;
+
+          .ant-tabs-tab-btn {
+            color: @seal-red !important;
+          }
+        }
+      }
+
+      .ant-tabs-ink-bar {
+        display: none;
+      }
     }
 
-    .favorites-stats {
-        margin-bottom: 32px;
+    .ant-empty {
+      padding: 48px 24px;
 
-        .stat-card {
-            text-align: center;
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            color: white;
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 16px;
+      }
 
-            &:hover {
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-                transform: translateY(-4px);
-            }
-
-            &.gradient-1 {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
-            &.gradient-2 {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            }
-
-            &.gradient-3 {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            }
-
-            &.gradient-4 {
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            }
-
-            .ant-statistic-title {
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 14px;
-            }
-
-            .ant-statistic-content {
-                font-size: 32px;
-                font-weight: 700;
-                color: white;
-            }
-        }
+      p {
+        color: #8c8c8c;
+        margin-bottom: 24px;
+      }
     }
 
-    .favorites-content {
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    .favorites-grid {
+      margin-top: 24px;
 
-        .ant-tabs {
-            .ant-tabs-tab {
-                font-weight: 500;
-                font-size: 16px;
+      .favorite-card {
+        .game-card-style();
+        .hover-lift-shadow();
+        overflow: hidden;
 
-                &.ant-tabs-tab-active {
-                    .ant-tabs-tab-btn {
-                        color: #f5576c;
-                        font-weight: 600;
-                    }
-                }
-            }
+        .favorite-cover {
+          height: 180px;
+          position: relative;
+          overflow: hidden;
+          border-bottom: 1px solid rgba(197, 160, 101, 0.2);
 
-            .ant-tabs-ink-bar {
-                background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-            }
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+          }
+
+          .favorite-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(139, 29, 29, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(2px);
+          }
         }
 
-        .ant-empty {
-            padding: 48px 24px;
-
-            h3 {
-                font-size: 18px;
-                font-weight: 600;
-                margin-top: 16px;
-            }
-
-            p {
-                color: #8c8c8c;
-                margin-bottom: 24px;
-            }
+        .favorite-title {
+          font-size: 17px;
+          font-weight: 700;
+          color: @text-color-primary;
+          font-family: @font-serif;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin-bottom: 8px;
         }
 
-        .favorites-grid {
-            margin-top: 24px;
+        .favorite-description {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 8px;
 
-            .favorite-card {
-                border-radius: 16px;
-                overflow: hidden;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-                &:hover {
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-                    transform: translateY(-4px);
-
-                    .favorite-overlay {
-                        opacity: 1;
-                    }
-                }
-
-                .favorite-cover {
-                    height: 200px;
-                    position: relative;
-                    overflow: hidden;
-
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        transition: transform 0.3s ease;
-                    }
-
-                    &:hover img {
-                        transform: scale(1.1);
-                    }
-
-                    .favorite-overlay {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: rgba(0, 0, 0, 0.5);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        opacity: 0;
-                        transition: opacity 0.3s ease;
-                    }
-                }
-
-                .favorite-title {
-                    font-size: 16px;
-                    font-weight: 600;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                }
-
-                .favorite-description {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-top: 8px;
-
-                    .rating {
-                        font-weight: 600;
-                        color: #faad14;
-                    }
-                }
-
-                .ant-card-actions {
-                    background: #fafafa;
-                    border-top: 1px solid #f0f0f0;
-                }
-            }
+          .rating {
+            font-weight: 600;
+            color: #faad14;
+          }
         }
+
+        .ant-card-actions {
+          background: #fafafa;
+          border-top: 1px solid #f0f0f0;
+        }
+      }
     }
+  }
 }
 
 @media (max-width: 768px) {
-    .favorites-page {
-        .page-header {
-            .page-title {
-                font-size: 24px;
-            }
-        }
-
-        .favorites-stats {
-            .ant-col {
-                margin-bottom: 8px;
-            }
-
-            .stat-card {
-                .ant-statistic-content {
-                    font-size: 24px;
-                }
-            }
-        }
+  .favorites-page {
+    .page-header {
+      .page-title {
+        font-size: 24px;
+      }
     }
+
+    .favorites-stats {
+      .ant-col {
+        margin-bottom: 8px;
+      }
+
+      .stat-card {
+        .ant-statistic-content {
+          font-size: 24px;
+        }
+      }
+    }
+  }
 }

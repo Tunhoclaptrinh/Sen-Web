@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from "react";
 import {MapContainer, TileLayer, Marker, Popup} from "react-leaflet";
-import {Spin, Typography, Select, Input, Tag, Space, Button} from "antd";
+import {Spin, Typography, Select, Input, Tag, Space} from "antd";
 import {EnvironmentOutlined, SearchOutlined} from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
 import {useNavigate} from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import "./styles.less";
 
 // Fix Leaflet icon issue
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -20,7 +21,6 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const {Title, Text} = Typography;
 const {Option} = Select;
 
 interface Location {
@@ -87,39 +87,34 @@ const MapPage: React.FC = () => {
   const types = Array.from(new Set(locations.map((l) => l.type).filter(Boolean))).sort();
 
   return (
-    <div style={{height: "calc(100vh - 64px)", display: "flex", flexDirection: "column"}}>
+    <div className="map-page-container">
       {/* Header / Filter Bar */}
-      <div
-        style={{
-          padding: "16px 24px",
-          background: "#fff",
-          borderBottom: "1px solid #f0f0f0",
-          display: "flex",
-          gap: 16,
-          alignItems: "center",
-          flexWrap: "wrap",
-          zIndex: 1000,
-        }}
-      >
-        <div style={{display: "flex", alignItems: "center", gap: 8, marginRight: "auto"}}>
-          <EnvironmentOutlined style={{fontSize: 24, color: "var(--primary-color)"}} />
-          <div>
-            <Title level={4} style={{margin: 0}}>
-              Bản đồ Di sản số
-            </Title>
-            <Text type="secondary">Khám phá {filteredLocations.length} địa điểm trên khắp Việt Nam</Text>
+      <div className="map-header-bar">
+        <div className="header-left">
+          <EnvironmentOutlined className="map-icon" />
+          <div className="title-group">
+            <Typography.Title level={4}>Bản đồ Di sản số</Typography.Title>
+            <Typography.Text className="map-subtitle">
+              Khám phá {filteredLocations.length} địa điểm trên khắp Việt Nam
+            </Typography.Text>
           </div>
         </div>
 
         <Input
           placeholder="Tìm kiếm địa điểm..."
           prefix={<SearchOutlined />}
-          style={{width: 250}}
+          className="filter-input"
           onChange={(e) => setSearchText(e.target.value)}
           allowClear
         />
 
-        <Select placeholder="Tỉnh/Thành phố" style={{width: 200}} allowClear onChange={setProvinceFilter} showSearch>
+        <Select
+          placeholder="Tỉnh/Thành phố"
+          className="filter-select-province"
+          allowClear
+          onChange={setProvinceFilter}
+          showSearch
+        >
           {provinces.map((p) => (
             <Option key={p} value={p}>
               {p}
@@ -127,7 +122,7 @@ const MapPage: React.FC = () => {
           ))}
         </Select>
 
-        <Select placeholder="Loại hình" style={{width: 180}} allowClear onChange={setTypeFilter}>
+        <Select placeholder="Loại hình" className="filter-select-type" allowClear onChange={setTypeFilter}>
           {types.map((t) => (
             <Option key={t} value={t}>
               {t}
@@ -137,9 +132,9 @@ const MapPage: React.FC = () => {
       </div>
 
       {/* Map Container */}
-      <div style={{flex: 1, position: "relative"}}>
+      <div className="map-wrapper">
         {loading ? (
-          <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "100%"}}>
+          <div className="loading-overlay">
             <Spin size="large" tip="Đang tải bản đồ..." />
           </div>
         ) : (
@@ -157,36 +152,18 @@ const MapPage: React.FC = () => {
             {filteredLocations.map((loc) => (
               <Marker key={loc.id} position={[loc.lat, loc.lng]}>
                 <Popup>
-                  <div style={{width: 200}}>
+                  <div className="map-popup-content">
                     {loc.thumbnail && (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: 120,
-                          backgroundImage: `url(${loc.thumbnail})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          borderRadius: 8,
-                          marginBottom: 8,
-                        }}
-                      />
+                      <div className="popup-image" style={{backgroundImage: `url(${loc.thumbnail})`}} />
                     )}
-                    <Title level={5} style={{marginBottom: 4}}>
-                      {loc.name}
-                    </Title>
-                    <Space size={[0, 8]} wrap>
+                    <Typography.Title level={5}>{loc.name}</Typography.Title>
+                    <Space size={[0, 8]} wrap className="popup-tags">
                       <Tag color="blue">{loc.type}</Tag>
                       {loc.province && <Tag color="green">{loc.province}</Tag>}
                     </Space>
-                    <Button
-                      type="primary"
-                      size="small"
-                      block
-                      style={{marginTop: 12}}
-                      onClick={() => navigate(`/heritage/${loc.id}`)}
-                    >
+                    <button className="popup-action-btn" onClick={() => navigate(`/heritage/${loc.id}`)}>
                       Xem chi tiết
-                    </Button>
+                    </button>
                   </div>
                 </Popup>
               </Marker>

@@ -7,18 +7,19 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  background: #fff;
-  border-radius: 24px;
+  background: @paper-bg !important;
+  border: 2px solid @gold-border !important;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08); // Deep, premium shadow
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.08); // Deeper shadow for large card
   transition:
     transform 0.4s ease,
     box-shadow 0.4s ease;
-  border: 1px solid rgba(0, 0, 0, 0.02);
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+    box-shadow: 10px 10px 20px rgba(93, 64, 55, 0.12);
+    border-color: @seal-red !important;
   }
 
   // DESKTOP LAYOUT (Horizontal)
@@ -60,7 +61,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between; // Push button to bottom
-      background: #fff;
+      background: transparent;
 
       .card-content-top {
         width: 100%;
@@ -83,7 +84,7 @@
 
   .info-card {
     padding: 24px;
-    background: #fff;
+    background: transparent;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -226,7 +227,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      background: #fff;
+      background: transparent;
 
       .card-content-top {
         width: 100%;
