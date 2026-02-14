@@ -8,13 +8,14 @@ import {fetchLeaderboard} from "@/store/slices/gameSlice";
 import {getImageUrl} from "@/utils/image.helper";
 import StatisticsCard from "@/components/common/StatisticsCard";
 import dayjs from "dayjs";
-import {gameService} from "@/services/game.service";
+import {gameService} from "@/services";
 import {useAuth} from "@/hooks/useAuth";
+import type {LeaderboardEntry} from "@/types/game.types";
 
 const LeaderboardManagement: React.FC = () => {
   const dispatch = useAppDispatch();
   const {leaderboard, leaderboardLoading} = useAppSelector((state) => state.game);
-  const [timeRange, setTimeRange] = useState<"global" | "weekly" | "monthly">("global");
+  const [timeRange, setTimeRange] = useState<"global" | "points" | "level" | "checkins">("global");
   const {user} = useAuth();
 
   // Fetch data on mount and filter change
@@ -55,7 +56,7 @@ const LeaderboardManagement: React.FC = () => {
   }, [leaderboard]);
 
   // Reset user score action
-  const handleReset = async (id: any) => {
+  const handleReset = async (id: number) => {
     const record = leaderboard.find((item) => item.userId === id);
     const name = record ? record.userName : "người chơi này";
 
@@ -91,7 +92,7 @@ const LeaderboardManagement: React.FC = () => {
       title: "Người chơi",
       key: "user",
       width: 250,
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: LeaderboardEntry) => (
         <Space>
           <Avatar src={getImageUrl(record.userAvatar)} icon={<UserOutlined />} />
           <div style={{display: "flex", flexDirection: "column"}}>
@@ -106,7 +107,7 @@ const LeaderboardManagement: React.FC = () => {
       dataIndex: "totalPoints",
       key: "totalPoints",
       width: 150,
-      sorter: (a: any, b: any) => a.totalPoints - b.totalPoints,
+      sorter: (a: LeaderboardEntry, b: LeaderboardEntry) => a.totalPoints - b.totalPoints,
       render: (points: number) => (
         <span style={{fontWeight: "bold", color: "#1890ff"}}>{points?.toLocaleString()}</span>
       ),
@@ -135,8 +136,8 @@ const LeaderboardManagement: React.FC = () => {
 
   const tabItems = [
     {key: "global", label: "Toàn thời gian"},
-    {key: "weekly", label: "Tuần này"},
-    {key: "monthly", label: "Tháng này"},
+    {key: "points", label: "Điểm số"},
+    {key: "level", label: "Cấp độ"},
   ];
 
   return (
@@ -155,7 +156,7 @@ const LeaderboardManagement: React.FC = () => {
             <Tabs
               activeKey={timeRange}
               items={tabItems}
-              onChange={(key) => setTimeRange(key as any)}
+              onChange={(key) => setTimeRange(key as "global" | "points" | "level" | "checkins")}
               style={{marginBottom: 0}}
             />
           </div>

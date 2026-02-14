@@ -158,7 +158,6 @@ class GameService extends BaseService {
   }
 
   // ==================== Leaderboard ====================
-  // ==================== Leaderboard ====================
   async getLeaderboard(
     type: "global" | "points" | "level" | "checkins" = "points",
     limit: number = 20,

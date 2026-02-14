@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {Card, Modal, Button, Typography, Result, Spin, message} from "antd";
+import {Card, Button, Typography, Result, Spin, message} from "antd";
 import {QrcodeOutlined, EnvironmentOutlined, GiftOutlined} from "@ant-design/icons";
 import QRScanner from "@/components/Game/QRScanner";
-import gameService from "@/services/game.service";
+import {gameService} from "@/services";
 
 const {Text} = Typography;
 

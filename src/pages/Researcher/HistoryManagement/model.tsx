@@ -1,14 +1,15 @@
 import {useState, useMemo, useEffect} from "react";
 import {message} from "antd";
-import historyService from "@/services/history.service";
+import {historyService} from "@/services";
 import {useCRUD} from "@/hooks/useCRUD";
 import {useAuth} from "@/hooks/useAuth";
+import type {HistoryArticle, HistoryArticleDTO} from "@/types/history.types";
 
 export const useHistoryModel = () => {
   const {user} = useAuth();
 
   // Stats State
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
 
   // Filter Logic
@@ -20,7 +21,7 @@ export const useHistoryModel = () => {
   );
 
   // UI State
-  const [currentRecord, setCurrentRecord] = useState<any | null>(null);
+  const [currentRecord, setCurrentRecord] = useState<HistoryArticle | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
   const [unpublishModalVisible, setUnpublishModalVisible] = useState(false);
@@ -31,7 +32,7 @@ export const useHistoryModel = () => {
       pageSize: 10,
       autoFetch: true,
       initialFilters,
-      onError: (action: string, error: any) => {
+      onError: (action: string, error: Error) => {
         console.error(`Error ${action} history:`, error);
         message.error(`Thao tác thất bại: ${error.message}`);
       },
@@ -46,8 +47,8 @@ export const useHistoryModel = () => {
   const fetchStats = async () => {
     setStatsLoading(true);
     try {
-      // Fetch stats filtered by user
-      const response = await historyService.getStats({createdBy: user?.id});
+      // Fetch stats
+      const response = await historyService.getStats();
       if (response.success && response.data) {
         setStats(response.data);
       }
@@ -107,12 +108,12 @@ export const useHistoryModel = () => {
     setFormVisible(true);
   };
 
-  const openEdit = (record: any) => {
+  const openEdit = (record: HistoryArticle) => {
     setCurrentRecord(record);
     setFormVisible(true);
   };
 
-  const openDetail = (record: any) => {
+  const openDetail = (record: HistoryArticle) => {
     setCurrentRecord(record);
     setDetailVisible(true);
   };
@@ -127,7 +128,21 @@ export const useHistoryModel = () => {
     setCurrentRecord(null);
   };
 
-  const handleSubmit = async (values: any) => {
+  /**
+   * Toggle isActive status for unpublish pending items
+   * Only sends isActive field (backend restriction for unpublish_pending status)
+   */
+  const toggleActive = async (record: HistoryArticle, newActiveStatus: boolean): Promise<boolean> => {
+    setCurrentRecord(record);
+    // Create payload with only required title field and isActive
+    const payload: HistoryArticleDTO = {
+      title: record.title,
+      isActive: newActiveStatus,
+    };
+    return handleSubmit(payload);
+  };
+
+  const handleSubmit = async (values: HistoryArticleDTO) => {
     let success = false;
 
     // Auto-set author and status for researcher
@@ -187,6 +202,7 @@ export const useHistoryModel = () => {
     openDetail,
     closeForm,
     closeDetail,
+    toggleActive,
     setCurrentRecord,
     // Unpublish
     unpublishModalVisible,

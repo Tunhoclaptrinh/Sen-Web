@@ -53,6 +53,7 @@ const HistoryManagement = () => {
     openDetail,
     closeForm,
     closeDetail,
+    toggleActive,
     setCurrentRecord,
     // Unpublish
     unpublishModalVisible,
@@ -306,7 +307,9 @@ const HistoryManagement = () => {
                         record.isActive === false
                           ? "Nội dung sẽ hiển thị lại trong thời gian chờ gỡ."
                           : "Nội dung sẽ tạm ẩn trong thời gian chờ gỡ.",
-                      onOk: () => handleSubmit({id: record.id, isActive: record.isActive === false}),
+                      onOk: () => {
+                        toggleActive(record, record.isActive === false);
+                      },
                     });
                   }}
                   style={{color: "var(--primary-color)"}}
