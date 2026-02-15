@@ -4,6 +4,7 @@ import {SearchOutlined, FilterOutlined} from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
+import {ITEM_TYPES} from "@/config/constants";
 import {useCategories} from "@/hooks/useCategories";
 import {HeritageSite} from "@/types/heritage.types";
 import "./styles.less";
@@ -194,7 +195,7 @@ const HeritageBrowsePage: React.FC = () => {
               <Title level={2} className="header-title">
                 Nổi bật
               </Title>
-              <DiscoveryCard data={randomFeatured} type="heritage" />
+              <DiscoveryCard data={randomFeatured} type={ITEM_TYPES.HERITAGE} />
             </section>
           )}
 
@@ -214,7 +215,7 @@ const HeritageBrowsePage: React.FC = () => {
                 <Row gutter={[24, 24]}>
                   {sites.map((site) => (
                     <Col xs={24} sm={12} lg={8} key={site.id}>
-                      <ArticleCard data={site} type="heritage" />
+                      <ArticleCard data={site} type={ITEM_TYPES.HERITAGE} />
                     </Col>
                   ))}
                 </Row>

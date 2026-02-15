@@ -4,6 +4,7 @@ import {QrcodeOutlined} from "@ant-design/icons";
 import {useAssetModel} from "./model";
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
+import {ITEM_TYPES} from "@/config/constants";
 
 const AssetManagement: React.FC = () => {
   const model = useAssetModel();
@@ -76,7 +77,9 @@ const AssetManagement: React.FC = () => {
       >
         <Form
           layout="vertical"
-          initialValues={model.currentRecord || {type: "artifact", isActive: true, rewardCoins: 100, rewardPetals: 1}}
+          initialValues={
+            model.currentRecord || {type: ITEM_TYPES.ARTIFACT, isActive: true, rewardCoins: 100, rewardPetals: 1}
+          }
           onFinish={model.handleSubmit}
         >
           <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px"}}>
@@ -102,8 +105,8 @@ const AssetManagement: React.FC = () => {
           <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px"}}>
             <Form.Item name="type" label="Loại đối tượng">
               <Select>
-                <Select.Option value="artifact">Artifact (Hiện vật)</Select.Option>
-                <Select.Option value="heritage_site">Heritage Site (Di sản)</Select.Option>
+                <Select.Option value={ITEM_TYPES.ARTIFACT}>Artifact (Hiện vật)</Select.Option>
+                <Select.Option value={ITEM_TYPES.HERITAGE_SITE}>Heritage Site (Di sản)</Select.Option>
                 <Select.Option value="other">Other (Khác)</Select.Option>
               </Select>
             </Form.Item>

@@ -4,6 +4,7 @@ import {SearchOutlined, FilterOutlined, CalendarOutlined, UserOutlined} from "@a
 import artifactService from "@/services/artifact.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
+import {ITEM_TYPES} from "@/config/constants";
 import {useCategories} from "@/hooks/useCategories";
 import {Artifact} from "@/types/artifact.types";
 import "./styles.less";
@@ -185,7 +186,7 @@ const ArtifactBrowsePage: React.FC = () => {
               <Title level={2} className="header-title">
                 Nổi bật
               </Title>
-              <DiscoveryCard data={randomFeatured} type="artifact" />
+              <DiscoveryCard data={randomFeatured} type={ITEM_TYPES.ARTIFACT} />
             </section>
           )}
 
@@ -205,7 +206,7 @@ const ArtifactBrowsePage: React.FC = () => {
                 <Row gutter={[24, 24]}>
                   {artifacts.map((artifact) => (
                     <Col xs={24} sm={12} lg={8} key={artifact.id}>
-                      <ArticleCard data={artifact} type="artifact" />
+                      <ArticleCard data={artifact} type={ITEM_TYPES.ARTIFACT} />
                     </Col>
                   ))}
                 </Row>

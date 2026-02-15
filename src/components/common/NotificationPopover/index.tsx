@@ -17,6 +17,7 @@ import {useNavigate} from "react-router-dom";
 import {notificationService} from "@/services/notification.service";
 import type {Notification} from "@/types/notification.types";
 import {formatRelativeTime} from "@/utils/formatters";
+import {ITEM_TYPES} from "@/config/constants";
 
 const {Text, Title, Paragraph} = Typography;
 
@@ -115,9 +116,9 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
         return <BookOutlined style={{...style, color: "#eb2f96"}} />;
       case "history":
         return <HistoryOutlined style={{...style, color: "#722ed1"}} />;
-      case "artifact":
+      case ITEM_TYPES.ARTIFACT:
         return <GoldOutlined style={{...style, color: "#fa8c16"}} />;
-      case "heritage":
+      case ITEM_TYPES.HERITAGE:
         return <EnvironmentOutlined style={{...style, color: "#1890ff"}} />;
       case "review":
         return <CheckCircleOutlined style={{...style, color: "#52c41a"}} />;
@@ -141,9 +142,9 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
         return "#fff0f6";
       case "history":
         return "#f9f0ff";
-      case "artifact":
+      case ITEM_TYPES.ARTIFACT:
         return "#fff7e6";
-      case "heritage":
+      case ITEM_TYPES.HERITAGE:
         return "#e6f7ff";
       case "review":
         return "#f6ffed";

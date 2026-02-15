@@ -19,6 +19,7 @@ import {useAuth} from "@/hooks/useAuth";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import dayjs from "dayjs";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -187,7 +188,7 @@ const ExhibitionDetailPage: React.FC = () => {
                         <Row gutter={[24, 24]}>
                           {artifacts.map((art) => (
                             <Col xs={24} sm={12} key={art.id}>
-                              <ArticleCard data={art} type="artifact" />
+                              <ArticleCard data={art} type={ITEM_TYPES.ARTIFACT} />
                             </Col>
                           ))}
                         </Row>

@@ -9,6 +9,7 @@ import {RootState, AppDispatch} from "@/store";
 import FeatureCard from "@/components/common/cards/FeatureCard";
 import HomeMapSection from "@/components/Home/HomeMapSection";
 import HomeLeaderboardSection from "@/components/Home/HomeLeaderboardSection";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 import headerLogo from "../../assets/images/logo.png";
@@ -126,7 +127,7 @@ const Home: React.FC = () => {
         <Row gutter={[24, 24]} justify="center">
           {sites?.slice(0, 4).map((site) => (
             <Col xs={24} sm={12} md={6} key={site.id}>
-              <FeatureCard data={site} variant="portrait" cardType="heritage" />
+              <FeatureCard data={site} variant="portrait" cardType={ITEM_TYPES.HERITAGE} />
             </Col>
           ))}
         </Row>
@@ -145,7 +146,7 @@ const Home: React.FC = () => {
           <Row gutter={[24, 24]}>
             {artifacts?.slice(0, 4).map((artifact) => (
               <Col xs={24} sm={12} md={6} lg={6} xl={6} key={artifact.id}>
-                <FeatureCard data={artifact} variant="portrait" cardType="artifact" />
+                <FeatureCard data={artifact} variant="portrait" cardType={ITEM_TYPES.ARTIFACT} />
               </Col>
             ))}
           </Row>

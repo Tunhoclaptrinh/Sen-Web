@@ -7,6 +7,7 @@ import ArticleCard from "@/components/common/cards/ArticleCard";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import type {Artifact} from "@/types/artifact.types";
 import type {HistoryArticle} from "@/types/history.types";
+import {ITEM_TYPES} from "@/config/constants";
 
 interface DetailModalProps {
   open: boolean;
@@ -221,7 +222,7 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
             }}
             renderItem={(item) => (
               <List.Item>
-                <ArticleCard data={item} type="artifact" />
+                <ArticleCard data={item} type={ITEM_TYPES.ARTIFACT} />
               </List.Item>
             )}
             loading={loading}

@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {GoogleMap, useJsApiLoader, Marker, InfoWindow} from "@react-google-maps/api";
-import {Spin, Typography, Select, Input, Tag, Space, Dropdown, Button} from "antd";
+import {Spin, Typography, Select, Input, Tag, Space, Dropdown, Button, Radio} from "antd";
 import {EnvironmentOutlined, SearchOutlined, CheckOutlined, AppstoreOutlined} from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
 import {artifactService} from "@/services";
+import SimpleMap from "@/components/Map/SimpleMap";
 import {useNavigate} from "react-router-dom";
+import {ITEM_TYPES, MAP_CENTER, MAP_VIEW_MODES, ItemType, MapViewMode} from "@/config/constants";
 import "./styles.less";
 
 const {Option} = Select;
@@ -17,7 +19,7 @@ interface Location {
   type: string;
   province: string;
   thumbnail: string;
-  itemType?: "heritage" | "artifact";
+  itemType?: ItemType;
 }
 
 interface HeritageLocation {
@@ -51,10 +53,7 @@ const containerStyle = {
   height: "100%",
 };
 
-const center = {
-  lat: 16.047079,
-  lng: 108.20623,
-};
+const center = MAP_CENTER;
 
 const MapPage: React.FC = () => {
   const navigate = useNavigate();
@@ -63,10 +62,13 @@ const MapPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [provinceFilter, setProvinceFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  const [itemTypeFilter, setItemTypeFilter] = useState<"all" | "heritage" | "artifact">("all");
+  const [itemTypeFilter, setItemTypeFilter] = useState<ItemType | "all">("all");
   const [searchText, setSearchText] = useState("");
   const [selectedMarker, setSelectedMarker] = useState<Location | null>(null);
   const [_map, setMap] = useState<google.maps.Map | null>(null);
+  const [viewMode, setViewMode] = useState<MapViewMode>(MAP_VIEW_MODES.GOOGLE);
+  const [mapData, setMapData] = useState<any>(null);
+  const [worldData, setWorldData] = useState<any>(null);
 
   // Map layers state
   const [trafficLayer, setTrafficLayer] = useState<google.maps.TrafficLayer | null>(null);
@@ -107,6 +109,36 @@ const MapPage: React.FC = () => {
 
   useEffect(() => {
     fetchLocations();
+  }, []);
+
+  // Fetch Highcharts Map Data
+  useEffect(() => {
+    const fetchHighchartsData = async () => {
+      try {
+        const [mapRes, worldRes] = await Promise.all([
+          fetch("https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json"),
+          fetch("https://code.highcharts.com/mapdata/custom/world.geo.json"),
+        ]);
+        const mapJson = await mapRes.json();
+        const worldJson = await worldRes.json();
+
+        // Filter for SEA neighbors (consistent with HomeMapSection)
+        const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
+        const filteredFeatures = worldJson.features.filter(
+          (f: any) =>
+            neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
+        );
+
+        setMapData(mapJson);
+        setWorldData({
+          ...worldJson,
+          features: filteredFeatures,
+        });
+      } catch (e) {
+        console.warn("Failed to load Highcharts map data", e);
+      }
+    };
+    fetchHighchartsData();
   }, []);
 
   useEffect(() => {
@@ -166,8 +198,8 @@ const MapPage: React.FC = () => {
             lng: Number(h.longitude || h.lng),
             type: h.type || "Di sản",
             province: h.province,
-            thumbnail: h.image || h.mainImage || "",
-            itemType: "heritage" as const,
+            thumbnail: h.mainImage || h.image || "/images/placeholder-heritage.jpg",
+            itemType: ITEM_TYPES.HERITAGE,
           });
         });
       }
@@ -177,9 +209,6 @@ const MapPage: React.FC = () => {
         let currentPage = 1;
         let hasMore = true;
         let totalArtifacts = 0;
-        let artifactWithHeritageSite = 0;
-        let artifactWithCoordinates = 0;
-        let artifactSkipped = 0;
 
         while (hasMore) {
           const artifactRes = await artifactService.getAll({limit: 100, page: currentPage});
@@ -187,15 +216,9 @@ const MapPage: React.FC = () => {
           if (artifactRes.success && artifactRes.data && artifactRes.data.length > 0) {
             totalArtifacts += artifactRes.data.length;
 
-            if (currentPage === 1) {
-              console.log("[Map] Sample artifact:", artifactRes.data[0]);
-            }
-
             artifactRes.data.forEach((a: ArtifactLocation) => {
-              // Check all possible field names for heritage site ID
               const heritageId = a.heritageSiteId || (a as any).heritage_site_id || (a as any).heritageSite;
 
-              // If artifact has heritageSiteId, use heritage site's location with offset
               if (heritageId && heritageMap.has(heritageId)) {
                 const heritage = heritageMap.get(heritageId)!;
                 const offset = getArtifactOffset(a.id);
@@ -206,13 +229,10 @@ const MapPage: React.FC = () => {
                   lng: Number(heritage.longitude || heritage.lng) + offset.lngOffset,
                   type: a.artifactType || "Hiện vật",
                   province: a.province || heritage.province || "Chưa xác định",
-                  thumbnail: a.image || a.mainImage || "",
-                  itemType: "artifact" as const,
+                  thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
+                  itemType: ITEM_TYPES.ARTIFACT,
                 });
-                artifactWithHeritageSite++;
-              }
-              // If artifact has direct lat/lng coordinates
-              else if (a.latitude && a.longitude) {
+              } else if (a.latitude && a.longitude) {
                 allLocations.push({
                   id: a.id,
                   name: a.name,
@@ -220,16 +240,12 @@ const MapPage: React.FC = () => {
                   lng: Number(a.longitude),
                   type: a.artifactType || "Hiện vật",
                   province: a.province || "Chưa xác định",
-                  thumbnail: a.image || a.mainImage || "",
-                  itemType: "artifact" as const,
+                  thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
+                  itemType: ITEM_TYPES.ARTIFACT,
                 });
-                artifactWithCoordinates++;
-              } else {
-                artifactSkipped++;
               }
             });
 
-            // Check if there are more pages
             if (artifactRes.data.length < 100) {
               hasMore = false;
             } else {
@@ -239,18 +255,10 @@ const MapPage: React.FC = () => {
             hasMore = false;
           }
         }
-
-        console.log(`[Map] Loaded ${totalArtifacts} artifacts from ${currentPage} page(s)`);
-        console.log(`[Map] Artifacts with heritage site: ${artifactWithHeritageSite}`);
-        console.log(`[Map] Artifacts with coordinates: ${artifactWithCoordinates}`);
-        console.log(`[Map] Artifacts skipped (no location): ${artifactSkipped}`);
       } catch (error) {
         console.warn("Failed to load artifact locations:", error);
       }
 
-      console.log(
-        `[Map] Total locations: ${allLocations.length} (Heritage: ${allLocations.filter((l) => l.itemType === "heritage").length}, Artifacts: ${allLocations.filter((l) => l.itemType === "artifact").length})`,
-      );
       setLocations(allLocations);
     } catch (error) {
       console.error("Failed to load map data", error);
@@ -263,7 +271,7 @@ const MapPage: React.FC = () => {
     let result = locations;
 
     if (itemTypeFilter !== "all") {
-      result = result.filter((l) => l.itemType === itemTypeFilter);
+      result = result.filter((loc) => loc.itemType === itemTypeFilter);
     }
 
     if (provinceFilter) {
@@ -284,8 +292,8 @@ const MapPage: React.FC = () => {
 
   const provinces = Array.from(new Set(locations.map((l) => l.province).filter(Boolean))).sort();
   const types = Array.from(new Set(locations.map((l) => l.type).filter(Boolean))).sort();
-  const heritageCount = locations.filter((l) => l.itemType === "heritage").length;
-  const artifactCount = locations.filter((l) => l.itemType === "artifact").length;
+  const heritageCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.HERITAGE).length;
+  const artifactCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.ARTIFACT).length;
 
   return (
     <div className="map-page-container">
@@ -293,55 +301,70 @@ const MapPage: React.FC = () => {
       <div className="map-header-bar">
         <div className="header-left">
           <EnvironmentOutlined className="map-icon" />
-          <div className="title-group">
-            <Typography.Title level={4}>Bản đồ Di sản và Hiện Vật</Typography.Title>
-            <Typography.Text className="map-subtitle">
-              Khám phá {filteredLocations.length} địa điểm trên khắp Việt Nam (Di sản: {heritageCount}, Hiện vật:{" "}
-              {artifactCount})
-            </Typography.Text>
-          </div>
+          <Typography.Title level={4}>Bản đồ Di sản & Hiện vật</Typography.Title>
+          <Typography.Text className="map-subtitle">Đang hiển thị {filteredLocations.length} địa điểm</Typography.Text>
         </div>
 
-        <Input
-          placeholder="Tìm kiếm địa điểm..."
-          prefix={<SearchOutlined />}
-          className="filter-input"
-          onChange={(e) => setSearchText(e.target.value)}
-          allowClear
-        />
+        <div className="filter-section">
+          <Input
+            placeholder="Tìm kiếm..."
+            prefix={<SearchOutlined />}
+            className="filter-input"
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+          />
 
-        <Select
-          placeholder="Loại nội dung"
-          className="filter-select-type"
-          value={itemTypeFilter}
-          onChange={setItemTypeFilter}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="heritage">Di sản</Option>
-          <Option value="artifact">Hiện vật</Option>
-        </Select>
-
-        <Select
-          placeholder="Tỉnh/Thành phố"
-          className="filter-select-province"
-          allowClear
-          onChange={setProvinceFilter}
-          showSearch
-        >
-          {provinces.map((p) => (
-            <Option key={p} value={p}>
-              {p}
+          <Select
+            placeholder="Loại nội dung"
+            className="filter-select-item-type"
+            value={itemTypeFilter}
+            onChange={(v) => setItemTypeFilter(v as any)}
+          >
+            <Option value="all">Tất cả ({locations.length})</Option>
+            <Option value={ITEM_TYPES.HERITAGE}>
+              Di sản ({locations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE).length})
             </Option>
-          ))}
-        </Select>
-
-        <Select placeholder="Loại hình" className="filter-select-type" allowClear onChange={setTypeFilter}>
-          {types.map((t) => (
-            <Option key={t} value={t}>
-              {t}
+            <Option value={ITEM_TYPES.ARTIFACT}>
+              Hiện vật ({locations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT).length})
             </Option>
-          ))}
-        </Select>
+          </Select>
+
+          <Select
+            placeholder="Tỉnh/Thành phố"
+            className="filter-select-province"
+            allowClear
+            onChange={setProvinceFilter}
+            showSearch
+          >
+            {provinces.map((p) => (
+              <Option key={p} value={p}>
+                {p}
+              </Option>
+            ))}
+          </Select>
+
+          <Select placeholder="Loại hình" className="filter-select-type" allowClear onChange={setTypeFilter}>
+            {types.map((t) => (
+              <Option key={t} value={t}>
+                {t}
+              </Option>
+            ))}
+          </Select>
+
+          <div className="view-mode-toggle">
+            <Radio.Group
+              value={viewMode}
+              onChange={(e) => setViewMode(e.target.value)}
+              optionType="button"
+              buttonStyle="solid"
+              size="middle"
+              options={[
+                {label: "Google Maps", value: MAP_VIEW_MODES.GOOGLE},
+                {label: "Simple Map", value: MAP_VIEW_MODES.SIMPLE},
+              ]}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Map Container */}
@@ -354,6 +377,17 @@ const MapPage: React.FC = () => {
           <div className="loading-overlay">
             <Spin size="large" tip="Đang tải bản đồ..." />
           </div>
+        ) : viewMode === MAP_VIEW_MODES.SIMPLE && mapData ? (
+          <div className="simple-map-container" style={{height: "100%", background: "#fff"}}>
+            <SimpleMap
+              mapData={mapData}
+              worldData={worldData}
+              locations={filteredLocations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE)}
+              artifacts={filteredLocations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT)}
+              allowZoom={true}
+              height="100%"
+            />
+          </div>
         ) : (
           <GoogleMap
             mapContainerStyle={containerStyle}
@@ -362,51 +396,39 @@ const MapPage: React.FC = () => {
             onLoad={onLoad}
             onUnmount={onUnmount}
             options={{
-              // Default map type - Hiển thị bản đồ đường mặc định
               mapTypeId: google.maps.MapTypeId.ROADMAP,
-              // Map Type Control - Chuyển đổi kiểu bản đồ
               mapTypeControl: true,
               mapTypeControlOptions: {
                 style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
                 position: google.maps.ControlPosition.TOP_RIGHT,
                 mapTypeIds: [
-                  google.maps.MapTypeId.ROADMAP, // Bản đồ đường
-                  google.maps.MapTypeId.SATELLITE, // Vệ tinh
-                  google.maps.MapTypeId.HYBRID, // Vệ tinh + Tên đường
-                  google.maps.MapTypeId.TERRAIN, // Địa hình
+                  google.maps.MapTypeId.ROADMAP,
+                  google.maps.MapTypeId.SATELLITE,
+                  google.maps.MapTypeId.HYBRID,
+                  google.maps.MapTypeId.TERRAIN,
                 ],
               },
-              // Street View Control
               streetViewControl: true,
               streetViewControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_TOP,
               },
-              // Fullscreen Control
               fullscreenControl: true,
               fullscreenControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_TOP,
               },
-              // Zoom Control
               zoomControl: true,
               zoomControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_CENTER,
               },
-              // Scale Control - Hiển thị tỷ lệ
               scaleControl: true,
-              // Rotate Control - Xoay bản đồ
               rotateControl: true,
               rotateControlOptions: {
                 position: google.maps.ControlPosition.TOP_RIGHT,
               },
-              // Disable default UI if you want full custom control
               disableDefaultUI: false,
-              // Gestures
               gestureHandling: "greedy",
-              // Map styles (optional - can uncomment for custom styling)
-              // styles: [],
             }}
           >
-            {/* Location Markers */}
             {filteredLocations.map((loc) => (
               <Marker
                 key={`${loc.itemType}-${loc.id}`}
@@ -415,9 +437,9 @@ const MapPage: React.FC = () => {
                 title={`${loc.name} - ${loc.type}`}
                 icon={{
                   url:
-                    loc.itemType === "artifact"
-                      ? "http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
-                      : "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                    loc.itemType === ITEM_TYPES.ARTIFACT
+                      ? "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+                      : "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
                   scaledSize: new google.maps.Size(40, 40),
                   labelOrigin: new google.maps.Point(20, 45),
                 }}
@@ -425,7 +447,7 @@ const MapPage: React.FC = () => {
                   filteredLocations.length < 50
                     ? {
                         text: loc.name.length > 15 ? loc.name.substring(0, 15) + "..." : loc.name,
-                        color: loc.itemType === "artifact" ? "#ff6b35" : "#1890ff",
+                        color: loc.itemType === ITEM_TYPES.ARTIFACT ? "#faad14" : "#d9363e",
                         fontSize: "11px",
                         fontWeight: "bold",
                         className: "marker-label",
@@ -435,7 +457,6 @@ const MapPage: React.FC = () => {
               />
             ))}
 
-            {/* Info Window */}
             {selectedMarker && (
               <InfoWindow
                 position={{lat: selectedMarker.lat, lng: selectedMarker.lng}}
@@ -459,8 +480,8 @@ const MapPage: React.FC = () => {
                     {selectedMarker.name}
                   </Typography.Title>
                   <Space size={[0, 8]} wrap className="popup-tags">
-                    <Tag color={selectedMarker.itemType === "artifact" ? "orange" : "blue"}>
-                      {selectedMarker.itemType === "artifact" ? "Hiện vật" : selectedMarker.type}
+                    <Tag color={selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "warning" : "error"}>
+                      {selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "Hiện vật" : selectedMarker.type}
                     </Tag>
                     {selectedMarker.province && <Tag color="green">{selectedMarker.province}</Tag>}
                   </Space>
@@ -492,7 +513,6 @@ const MapPage: React.FC = () => {
           </GoogleMap>
         )}
 
-        {/* Layers Control Button (Google Maps style) */}
         {!loading && !loadError && (
           <div className="layers-control-wrapper">
             <Dropdown
@@ -561,7 +581,6 @@ const MapPage: React.FC = () => {
           </div>
         )}
 
-        {/* Map Legend */}
         {!loading && !loadError && (
           <div className="map-legend">
             <div className="legend-title">

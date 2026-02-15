@@ -3,12 +3,12 @@ import {Link} from "react-router-dom";
 import {Tag, Tooltip} from "antd";
 import {StarFilled} from "@ant-design/icons";
 import {resolveImage, getImageUrl} from "@/utils/image.helper";
-import {HERITAGE_TYPE_LABELS, ARTIFACT_TYPE_LABELS} from "@/config/constants";
+import {HERITAGE_TYPE_LABELS, ARTIFACT_TYPE_LABELS, ITEM_TYPES} from "@/config/constants";
 import {FeatureCardProps} from "./types";
 import "./styles.less";
 
-const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = "heritage", variant = "landscape"}) => {
-  const linkPath = cardType === "heritage" ? `/heritage-sites/${data.id}` : `/artifacts/${data.id}`;
+const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = ITEM_TYPES.HERITAGE, variant = "landscape"}) => {
+  const linkPath = cardType === ITEM_TYPES.HERITAGE ? `/heritage-sites/${data.id}` : `/artifacts/${data.id}`;
 
   const rawImage = resolveImage(data.image) || resolveImage(data.mainImage) || resolveImage(data.images);
   const imageUrl = getImageUrl(rawImage, "https://via.placeholder.com/300x400?text=No+Image");
@@ -37,12 +37,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = "heritage", v
           {/* Bottom Overlay: Type & Rating */}
           <div className="card-info-overlay">
             <Tag className="type-tag">
-              {cardType === "heritage"
+              {cardType === ITEM_TYPES.HERITAGE
                 ? HERITAGE_TYPE_LABELS[data.type as keyof typeof HERITAGE_TYPE_LABELS] ||
-                  (data.type === "heritage" ? "Di sản" : data.type) ||
+                  (data.type === ITEM_TYPES.HERITAGE ? "Di sản" : data.type) ||
                   "Di sản"
                 : ARTIFACT_TYPE_LABELS[data.type as keyof typeof ARTIFACT_TYPE_LABELS] ||
-                  (data.type === "artifact" ? "Hiện vật" : data.type) ||
+                  (data.type === ITEM_TYPES.ARTIFACT ? "Hiện vật" : data.type) ||
                   "Hiện vật"}
             </Tag>
 
@@ -72,7 +72,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = "heritage", v
 
           {/* Structured Metadata List */}
           <div className="metadata-list">
-            {cardType === "heritage" ? (
+            {cardType === ITEM_TYPES.HERITAGE ? (
               data.region && (
                 <div className="meta-item">
                   <span className="meta-label">Vùng miền:</span>

@@ -12,13 +12,14 @@ import {
 import dayjs from "dayjs";
 import {resolveImage, getImageUrl} from "@/utils/image.helper";
 import {normalizeVietnamese} from "@/utils/helpers";
+import {ITEM_TYPES, ItemType} from "@/config/constants";
 import "./styles.less";
 
 const {Paragraph} = Typography;
 
 export interface ArticleCardProps {
   data: any;
-  type: "artifact" | "heritage" | "history" | "article" | "collection" | "exhibition";
+  type: ItemType | "history" | "article" | "collection" | "exhibition";
   variant?: "default" | "horizontal";
   actions?: React.ReactNode;
   secondaryAction?: React.ReactNode;
@@ -37,8 +38,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
 
   const handleNavigate = () => {
     let path = "";
-    if (type === "artifact") path = `/artifacts/${data.id}`;
-    else if (type === "heritage") path = `/heritage-sites/${data.id}`;
+    if (type === ITEM_TYPES.ARTIFACT) path = `/artifacts/${data.id}`;
+    else if (type === ITEM_TYPES.HERITAGE) path = `/heritage-sites/${data.id}`;
     else if (type === "history" || type === "article") path = `/history/${data.id}`;
     else if (type === "collection") path = `/profile/collections/${data.id}`;
     else if (type === "exhibition") path = `/exhibitions/${data.id}`;
@@ -65,7 +66,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
         <div className="card-image-wrapper">
           <div className="card-image" style={{backgroundImage: `url('${imageUrl}')`}} />
           {/* Optional: Add Region/Location badge if Heritage */}
-          {type === "heritage" && data.region && (
+          {type === ITEM_TYPES.HERITAGE && data.region && (
             <div className="location-badge">
               <EnvironmentOutlined /> {data.region}
             </div>

@@ -10,6 +10,7 @@ import {
   ArrowRightOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
 const {Paragraph} = Typography;
@@ -26,8 +27,8 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
 
   const handleNavigate = () => {
     let path = "";
-    if (type === "artifact") path = `/artifacts/${data.id}`;
-    else if (type === "heritage") path = `/heritage-sites/${data.id}`;
+    if (type === ITEM_TYPES.ARTIFACT) path = `/artifacts/${data.id}`;
+    else if (type === ITEM_TYPES.HERITAGE) path = `/heritage-sites/${data.id}`;
     else if (type === "history") path = `/history/${data.id}`;
     else if (type === "exhibition") path = `/exhibitions/${data.id}`;
 
@@ -52,7 +53,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
       <div className="info-card">
         <div className="card-content-top">
           <div className="card-meta">
-            {type === "artifact" ? (
+            {type === ITEM_TYPES.ARTIFACT ? (
               <>
                 <span className="meta-item">
                   <CalendarOutlined /> {data.yearCreated || "N/A"}
@@ -111,7 +112,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
         </div>
 
         <button className="action-btn" onClick={handleNavigate}>
-          {type === "artifact"
+          {type === ITEM_TYPES.ARTIFACT
             ? "Xem chi tiết hiện vật"
             : type === "history"
               ? "Đọc bài viết"

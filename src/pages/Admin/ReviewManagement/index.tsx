@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import ReviewDetailModal from "./components/DetailModal";
 import ReviewStats from "./components/Stats";
 import {useReviewModel} from "./model";
+import {ITEM_TYPES} from "@/config/constants";
 
 const ReviewManagement = () => {
   const {
@@ -64,10 +65,12 @@ const ReviewManagement = () => {
       key: "type",
       width: 120,
       filters: [
-        {text: "Heritage", value: "heritage_site"},
-        {text: "Artifact", value: "artifact"},
+        {text: "Heritage", value: ITEM_TYPES.HERITAGE_SITE},
+        {text: "Artifact", value: ITEM_TYPES.ARTIFACT},
       ],
-      render: (type: string) => <Tag color={type === "artifact" ? "purple" : "blue"}>{type?.toUpperCase()}</Tag>,
+      render: (type: string) => (
+        <Tag color={type === ITEM_TYPES.ARTIFACT ? "purple" : "blue"}>{type?.toUpperCase()}</Tag>
+      ),
     },
     {
       title: "Đánh giá",
@@ -154,8 +157,8 @@ const ReviewManagement = () => {
             key: "type",
             placeholder: "Loại đối tượng",
             options: [
-              {label: "Di sản", value: "heritage_site"},
-              {label: "Hiện vật", value: "artifact"},
+              {label: "Di sản", value: ITEM_TYPES.HERITAGE_SITE},
+              {label: "Hiện vật", value: ITEM_TYPES.ARTIFACT},
             ],
           },
           {

@@ -1,19 +1,13 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Card, Button, Typography, Result, Spin, message} from "antd";
-import {
-  QrcodeOutlined,
-  EnvironmentOutlined,
-  GiftOutlined,
-  ArrowLeftOutlined,
-  ReloadOutlined,
-  EnvironmentFilled,
-} from "@ant-design/icons";
+import {QrcodeOutlined, GiftOutlined, ArrowLeftOutlined, ReloadOutlined, EnvironmentFilled} from "@ant-design/icons";
 import QRScanner from "@/components/Game/QRScanner";
 import {gameService} from "@/services";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
-const {Text, Title} = Typography;
+const {Text} = Typography;
 
 const ScanPage: React.FC = () => {
   const navigate = useNavigate();
@@ -49,7 +43,7 @@ const ScanPage: React.FC = () => {
         const res = await gameService.scanObject(decodedText);
         setResult({
           success: true,
-          type: "artifact",
+          type: ITEM_TYPES.ARTIFACT,
           data: res,
         });
       }
@@ -123,7 +117,7 @@ const ScanPage: React.FC = () => {
       );
     }
 
-    if (result.type === "artifact") {
+    if (result.type === ITEM_TYPES.ARTIFACT) {
       const {artifact, rewards, isNewDiscovery} = result.data;
       return (
         <Result

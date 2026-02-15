@@ -34,6 +34,7 @@ import {ArtifactTypeLabels, ArtifactConditionLabels} from "@/types/artifact.type
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -52,7 +53,7 @@ const ArtifactDetailPage = () => {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   // Track view
-  useViewTracker("artifact", id);
+  useViewTracker(ITEM_TYPES.ARTIFACT, id);
 
   useEffect(() => {
     if (id) {
@@ -72,7 +73,7 @@ const ArtifactDetailPage = () => {
 
   const checkFavoriteStatus = async (artifactId: number) => {
     try {
-      const res = await favoriteService.check("artifact", artifactId);
+      const res = await favoriteService.check(ITEM_TYPES.ARTIFACT, artifactId);
       if (res.success && res.data) {
         setIsFavorite(res.data.isFavorited);
       }
@@ -140,7 +141,7 @@ const ArtifactDetailPage = () => {
         setIsFavorite(false);
         message.success("Đã xóa khỏi yêu thích");
       } else {
-        await favoriteService.add("artifact", Number(id));
+        await favoriteService.add(ITEM_TYPES.ARTIFACT, Number(id));
         setIsFavorite(true);
         message.success("Đã thêm vào yêu thích");
       }
@@ -297,7 +298,7 @@ const ArtifactDetailPage = () => {
                       onCancel={() => setShowCollectionModal(false)}
                       item={{
                         id: artifact.id,
-                        type: "artifact",
+                        type: ITEM_TYPES.ARTIFACT,
                         name: artifact.name,
                       }}
                     />
@@ -565,7 +566,7 @@ const ArtifactDetailPage = () => {
                       <Row gutter={[24, 24]}>
                         {relatedHeritage.map((item) => (
                           <Col xs={24} sm={12} md={8} key={`heri-${item.id}`}>
-                            <ArticleCard data={item} type="heritage" />
+                            <ArticleCard data={item} type={ITEM_TYPES.HERITAGE} />
                           </Col>
                         ))}
                         {relatedHistory.map((item) => (
@@ -630,7 +631,7 @@ const ArtifactDetailPage = () => {
           <Row gutter={[24, 24]}>
             {relatedArtifacts.map((item) => (
               <Col xs={24} sm={12} md={8} key={item.id}>
-                <ArticleCard data={item} type="artifact" />
+                <ArticleCard data={item} type={ITEM_TYPES.ARTIFACT} />
               </Col>
             ))}
           </Row>

@@ -32,6 +32,7 @@ import {
 import {notificationService} from "@/services/notification.service";
 import type {Notification} from "@/types/notification.types";
 import {formatRelativeTime} from "@/utils/formatters";
+import {ITEM_TYPES} from "@/config/constants";
 
 const {Title, Text, Paragraph} = Typography;
 
@@ -131,9 +132,9 @@ const NotificationsPage: React.FC = () => {
         return <MessageOutlined style={{...style, color: "#52c41a"}} />;
       case "quest":
         return <RocketOutlined style={{...style, color: "#13c2c2"}} />;
-      case "heritage":
+      case ITEM_TYPES.HERITAGE:
         return <EnvironmentOutlined style={{...style, color: "#1890ff"}} />;
-      case "artifact":
+      case ITEM_TYPES.ARTIFACT:
         return <GoldOutlined style={{...style, color: "#fa8c16"}} />;
       case "history":
         return <HistoryOutlined style={{...style, color: "#722ed1"}} />;
@@ -155,9 +156,9 @@ const NotificationsPage: React.FC = () => {
         return "#f6ffed";
       case "quest":
         return "#e6fffb";
-      case "heritage":
+      case ITEM_TYPES.HERITAGE:
         return "#e6f7ff";
-      case "artifact":
+      case ITEM_TYPES.ARTIFACT:
         return "#fff7e6";
       case "history":
         return "#f9f0ff";

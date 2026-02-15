@@ -24,6 +24,7 @@ import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
 import {normalizeVietnamese} from "@/utils/helpers";
 import {HistoryArticle, HeritageSite, Artifact, TimelineEvent} from "@/types";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -315,12 +316,12 @@ const HistoryDetailPage = () => {
                       <Row gutter={[24, 24]}>
                         {relatedHeritage.map((h: any) => (
                           <Col xs={24} sm={12} md={8} key={`h-${h.id}`}>
-                            <ArticleCard data={h} type="heritage" />
+                            <ArticleCard data={h} type={ITEM_TYPES.HERITAGE} />
                           </Col>
                         ))}
                         {relatedArtifacts.map((a: any) => (
                           <Col xs={24} sm={12} md={8} key={`a-${a.id}`}>
-                            <ArticleCard data={a} type="artifact" />
+                            <ArticleCard data={a} type={ITEM_TYPES.ARTIFACT} />
                           </Col>
                         ))}
                       </Row>

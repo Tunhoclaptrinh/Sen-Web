@@ -7,6 +7,7 @@ import {CloudUploadOutlined, TrophyOutlined, RiseOutlined, GoldOutlined} from "@
 import {getImageUrl} from "@/utils/image.helper";
 import {StatisticsCard} from "@/components/common";
 import {aiService, AICharacter} from "@/services/ai.service";
+import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
 const {Title, Text} = Typography;
@@ -71,7 +72,7 @@ const MuseumPage: React.FC = () => {
       quantity: item.quantity,
     })),
     ...(museum?.artifacts || []).map((art) => ({
-      type: "artifact",
+      type: ITEM_TYPES.ARTIFACT,
       id: `art-${art.artifactId}`,
       name: art.name,
       description: `Thu thập ngày ${new Date(art.acquiredAt).toLocaleDateString()}`,
@@ -154,7 +155,7 @@ const MuseumPage: React.FC = () => {
                   let color = "gold";
                   let text = "Vật phẩm";
 
-                  if (item.type === "artifact") {
+                  if (item.type === ITEM_TYPES.ARTIFACT) {
                     color = "gold";
                     text = "HIỆN VẬT";
                   } else if (item.type === "character") {
@@ -281,10 +282,8 @@ const MuseumPage: React.FC = () => {
           centered
           className="museum-tabs"
           items={[
-            {label: <span>Tất cả</span>, key: "all"},
-            {label: <span>Túi đồ</span>, key: "inventory"},
-            {label: <span>Hiện vật</span>, key: "artifact"},
             {label: <span>Nhân vật</span>, key: "character"},
+            {label: <span>Hiện vật</span>, key: ITEM_TYPES.ARTIFACT},
           ]}
         />
       </div>
@@ -336,7 +335,7 @@ const MuseumPage: React.FC = () => {
                   img = selectedItem.original.avatar
                     ? getImageUrl(selectedItem.original.avatar)
                     : `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${selectedItem.name}`;
-                } else if (selectedItem.type === "artifact" || selectedItem.type === "inventory") {
+                } else if (selectedItem.type === ITEM_TYPES.ARTIFACT || selectedItem.type === "inventory") {
                   img = selectedItem.image ? getImageUrl(selectedItem.image) : null;
                 }
                 return img ? (

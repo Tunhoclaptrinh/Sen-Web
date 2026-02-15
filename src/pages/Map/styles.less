@@ -7,24 +7,24 @@
   flex-direction: column;
 
   .map-header-bar {
-    padding: 16px 24px;
+    padding: 12px 24px;
     background: @paper-bg;
     border-bottom: 2px solid @gold-border;
     display: flex;
-    gap: 16px;
+    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    gap: 20px;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 
     .header-left {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-right: auto;
+      flex-shrink: 0;
 
       .map-icon {
-        font-size: 28px;
+        font-size: 24px;
         color: @seal-red;
       }
 
@@ -34,25 +34,115 @@
           font-family: var(--font-serif);
           font-weight: 700;
           color: @text-color-primary;
+          font-size: 18px;
+          line-height: 1.2;
         }
 
         .map-subtitle {
           color: @text-color-secondary;
-          font-size: 13px;
+          font-size: 12px;
+          display: block;
         }
       }
     }
 
-    .filter-input {
-      width: 250px;
-    }
+    .filter-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      justify-content: flex-end;
 
-    .filter-select-province {
-      width: 200px;
-    }
+      .filter-input {
+        width: 220px;
+        border-radius: 8px;
+        border: 1px solid fade(@gold-border, 60%);
+        background: fade(@paper-bg, 80%);
+        transition: all 0.3s ease;
 
-    .filter-select-type {
-      width: 180px;
+        &:hover,
+        &:focus,
+        &-focused {
+          border-color: @seal-red;
+          box-shadow: 0 0 0 2px fade(@seal-red, 10%);
+        }
+
+        .ant-input {
+          background: transparent;
+        }
+      }
+
+      .filter-select-item-type,
+      .filter-select-province,
+      .filter-select-type {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+
+        .ant-select-selector {
+          border-radius: 8px !important;
+          border: 1px solid fade(@gold-border, 60%) !important;
+          background: fade(@paper-bg, 80%) !important;
+          transition: all 0.3s ease !important;
+        }
+
+        &:hover .ant-select-selector,
+        &.ant-select-focused .ant-select-selector {
+          border-color: @seal-red !important;
+          box-shadow: 0 0 0 2px fade(@seal-red, 10%) !important;
+        }
+      }
+
+      .filter-select-item-type {
+        width: 160px;
+      }
+
+      .filter-select-province {
+        width: 180px;
+      }
+
+      .filter-select-type {
+        width: 160px;
+      }
+
+      .view-mode-toggle {
+        .custom-radio-group {
+          background: rgba(217, 54, 62, 0.05);
+          padding: 4px;
+          border-radius: 8px;
+          border: 1px solid rgba(217, 54, 62, 0.2);
+
+          .ant-radio-button-wrapper {
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            height: 32px;
+            line-height: 30px;
+            padding: 0 16px;
+            font-weight: 600;
+            color: @text-color-secondary;
+            transition: all 0.3s ease;
+            box-shadow: none;
+
+            &:before {
+              display: none !important;
+            }
+
+            &:hover {
+              color: @seal-red;
+            }
+
+            &-checked {
+              background: @seal-red !important;
+              color: white !important;
+              box-shadow: 0 2px 8px rgba(217, 54, 62, 0.3) !important;
+
+              &:hover {
+                color: white;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -140,11 +230,11 @@
         }
 
         .heritage-icon {
-          background: #1890ff;
+          background: @seal-red;
         }
 
         .artifact-icon {
-          background: #ff6b35;
+          background: #faad14;
         }
 
         span {
@@ -252,4 +342,3 @@
     }
   }
 }
-

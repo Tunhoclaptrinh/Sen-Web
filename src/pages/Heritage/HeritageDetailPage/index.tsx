@@ -38,6 +38,7 @@ import type {HeritageSite, TimelineEvent, Artifact, HistoryArticle} from "@/type
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
+import {HERITAGE_TYPE_LABELS, ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -57,7 +58,7 @@ const HeritageDetailPage = () => {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   // Track view
-  useViewTracker("heritage", id);
+  useViewTracker(ITEM_TYPES.HERITAGE, id);
 
   useEffect(() => {
     if (id) {
@@ -207,7 +208,9 @@ const HeritageDetailPage = () => {
         <div className="hero-overlay">
           <div className="hero-content">
             <Tag color="var(--primary-color)" style={{border: "none", marginBottom: 16}}>
-              {site.type?.toUpperCase().replace("_", " ") || "HERITAGE"}
+              {HERITAGE_TYPE_LABELS[site.type as keyof typeof HERITAGE_TYPE_LABELS] ||
+                site.type?.toUpperCase() ||
+                "DI SẢN"}
             </Tag>
             <h1>{site.name}</h1>
             <div className="hero-meta">
@@ -306,7 +309,7 @@ const HeritageDetailPage = () => {
                       onCancel={() => setShowCollectionModal(false)}
                       item={{
                         id: site.id,
-                        type: "heritage",
+                        type: ITEM_TYPES.HERITAGE,
                         name: site.name,
                       }}
                     />
@@ -509,7 +512,7 @@ const HeritageDetailPage = () => {
                       <Row gutter={[24, 24]}>
                         {siteArtifacts.map((artifact: Artifact) => (
                           <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
-                            <ArticleCard data={artifact} type="artifact" />
+                            <ArticleCard data={artifact} type={ITEM_TYPES.ARTIFACT} />
                           </Col>
                         ))}
                       </Row>
@@ -654,7 +657,7 @@ const HeritageDetailPage = () => {
           <Row gutter={[24, 24]}>
             {relatedSites.map((item) => (
               <Col xs={24} sm={12} md={8} key={item.id}>
-                <ArticleCard data={item} type="heritage" />
+                <ArticleCard data={item} type={ITEM_TYPES.HERITAGE} />
               </Col>
             ))}
           </Row>
