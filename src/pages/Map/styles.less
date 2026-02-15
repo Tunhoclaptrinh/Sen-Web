@@ -67,6 +67,91 @@
       height: 100%;
       background: @paper-bg;
     }
+
+    .layers-control-wrapper {
+      position: absolute;
+      top: 80px;
+      left: 16px;
+      z-index: 1000;
+
+      .layers-control-button {
+        background: white;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        font-weight: 500;
+        padding: 8px 16px;
+        height: auto;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &:hover {
+          background: #f5f5f5;
+          border-color: rgba(0, 0, 0, 0.2);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .anticon {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .map-legend {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      border: 2px solid @gold-border;
+      font-family: var(--font-serif);
+
+      .legend-title {
+        font-weight: bold;
+        font-size: 14px;
+        color: @text-color-primary;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-size: 13px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .legend-icon {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .heritage-icon {
+          background: #1890ff;
+        }
+
+        .artifact-icon {
+          background: #ff6b35;
+        }
+
+        span {
+          color: @text-color-secondary;
+        }
+      }
+    }
   }
 
   // Popup Styling
@@ -98,12 +183,73 @@
       .game-btn-primary();
       height: 32px;
       font-size: 12px;
-      padding: 0 12px;
-      width: 100%;
+    }
+  }
 
-      // Override game-btn-primary defaults for small size
-      text-transform: none;
-      letter-spacing: normal;
+  // Marker Label Styling
+  :global {
+    .marker-label {
+      background: rgba(255, 255, 255, 0.9) !important;
+      padding: 2px 6px !important;
+      border-radius: 4px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      white-space: nowrap !important;
+    }
+  }
+
+  // LayerControl Styles (Legacy Leaflet - Not used with Google Maps)
+  :global {
+    .leaflet-control-layers {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: 1px solid @gold-border;
+      background: @paper-bg;
+    }
+
+    .leaflet-control-layers-list {
+      padding: 8px;
+    }
+
+    .leaflet-control-layers-base label {
+      font-weight: 600;
+      color: @text-color-primary;
+      margin-bottom: 8px;
+    }
+
+    .leaflet-control-layers-selector {
+      margin-right: 8px;
+    }
+
+    .leaflet-control-layers-overlays {
+      border-top: 1px solid @gold-border;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .leaflet-control-layers-overlays label {
+      color: @text-color-secondary;
+    }
+  }
+
+  // Google Maps Custom Styling
+  :global {
+    // Custom info window styling
+    .gm-style .gm-style-iw-c {
+      border-radius: 12px;
+      padding: 0;
+    }
+
+    .gm-style .gm-style-iw-d {
+      overflow: auto !important;
+    }
+
+    // Map type control styling
+    .gm-style .gmnoprint {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
   }
 }
+
