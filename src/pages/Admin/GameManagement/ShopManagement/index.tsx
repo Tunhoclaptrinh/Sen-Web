@@ -4,6 +4,7 @@ import {ShoppingCartOutlined} from "@ant-design/icons";
 import {useShopModel} from "./model";
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
+import {getImageUrl} from "@/utils/image.helper";
 
 const ShopManagement: React.FC = () => {
   const model = useShopModel();
@@ -16,7 +17,7 @@ const ShopManagement: React.FC = () => {
       key: "image",
       width: 80,
       render: (url: string) =>
-        url ? <img src={url} alt="item" style={{width: 40, height: 40, borderRadius: 4}} /> : null,
+        url ? <img src={getImageUrl(url)} alt="item" style={{width: 40, height: 40, borderRadius: 4}} /> : null,
     },
     {
       title: "Tên vật phẩm",
@@ -46,6 +47,42 @@ const ShopManagement: React.FC = () => {
     },
   ];
 
+  const filters = [
+    {
+      key: "type",
+      label: "Loại vật phẩm",
+      type: "select" as const,
+      options: [
+        {label: "Avatar (Trang phục)", value: "avatar"},
+        {label: "Title (Danh hiệu)", value: "title"},
+        {label: "Theme (Giao diện)", value: "theme"},
+        {label: "Collectible (Sưu tầm)", value: "collectible"},
+        {label: "Hint", value: "hint"},
+        {label: "Boost", value: "boost"},
+        {label: "Character Skin", value: "character_skin"},
+        {label: "Decoration", value: "decoration"},
+      ],
+    },
+    {
+      key: "currency",
+      label: "Loại tiền tệ",
+      type: "select" as const,
+      options: [
+        {label: "Xu (Coins)", value: "coins"},
+        {label: "Cánh sen (Petals)", value: "petals"},
+      ],
+    },
+    {
+      key: "isActive",
+      label: "Trạng thái",
+      type: "select" as const,
+      options: [
+        {label: "Đang bán", value: true},
+        {label: "Hết hàng", value: false},
+      ],
+    },
+  ];
+
   return (
     <>
       <DataTable
@@ -56,8 +93,13 @@ const ShopManagement: React.FC = () => {
         dataSource={model.data}
         pagination={model.pagination}
         onChange={model.handleTableChange}
+        onRefresh={model.refresh}
         searchable
         onSearch={model.search}
+        filters={filters}
+        filterValues={model.filters}
+        onFilterChange={(key, value) => model.updateFilters({[key]: value})}
+        onClearFilters={model.clearFilters}
         onAdd={model.openCreate}
         onEdit={model.openEdit}
         onDelete={model.remove}

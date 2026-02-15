@@ -419,6 +419,7 @@ const routes: RouteObject[] = [
         element: <BadgeManagement />,
       },
       {
+        path: "shop",
         element: <ShopManagement />,
       },
       {
