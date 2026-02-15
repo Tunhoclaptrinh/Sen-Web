@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import {Html5QrcodeScanner} from "html5-qrcode";
 import {Typography} from "antd";
+import "./styles.less";
 
 const {Text} = Typography;
 
@@ -14,7 +15,7 @@ const QRScanner: React.FC<QRScannerProps> = ({onScanSuccess, onScanFailure}) => 
     const scanner = new Html5QrcodeScanner(
       "reader",
       {
-        fps: 10,
+        fps: 15,
         qrbox: {width: 250, height: 250},
         aspectRatio: 1.0,
       },
@@ -32,10 +33,18 @@ const QRScanner: React.FC<QRScannerProps> = ({onScanSuccess, onScanFailure}) => 
   }, []);
 
   return (
-    <div style={{width: "100%", maxWidth: "500px", margin: "0 auto"}}>
-      <div id="reader" style={{width: "100%"}}></div>
-      <div style={{textAlign: "center", marginTop: 16}}>
-        <Text type="secondary">Hướng camera vào mã QR để quét</Text>
+    <div className="scanner-root">
+      <div className="scanner-wrapper">
+        <div id="reader"></div>
+        <div className="scanner-overlay">
+          <div className="scanner-frame">
+            <div className="scanner-corners-2" />
+            <div className="scanning-line" />
+          </div>
+        </div>
+      </div>
+      <div className="scanner-hint">
+        <Text>Hướng ống kính vào mật mã để khám phá di sản</Text>
       </div>
     </div>
   );

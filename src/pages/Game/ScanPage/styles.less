@@ -1,0 +1,177 @@
+@import "../common.less";
+
+.scan-page-wrapper {
+  .game-page-background();
+  padding: 40px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+
+  .nav-back-wrapper {
+    .nav-back-wrapper-style();
+  }
+
+  .scan-card {
+    .game-card-style();
+    width: 100%;
+    max-width: 600px;
+    margin-top: 60px;
+    overflow: hidden;
+
+    .ant-card-head {
+      border-bottom: 1px solid rgba(93, 64, 55, 0.1);
+      background-color: rgba(93, 64, 55, 0.03);
+
+      .ant-card-head-title {
+        font-family: @font-serif;
+        color: @seal-red;
+        font-weight: 700;
+        font-size: 1.25rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    }
+
+    .ant-card-body {
+      padding: 0;
+    }
+
+    .scanner-container {
+      padding: 24px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .processing-container {
+      padding: 60px 24px;
+      text-align: center;
+
+      .ant-spin-text {
+        font-family: @font-serif;
+        color: @text-color-primary;
+        font-weight: 600;
+        margin-top: 16px;
+      }
+    }
+  }
+
+  // Result Styling Overrides
+  .ant-result {
+    padding: 32px 24px;
+    animation: slideUp 0.4s ease-out;
+
+    .ant-result-title {
+      font-family: @font-serif;
+      color: @text-color-primary;
+      font-weight: 800;
+      font-size: 1.8rem;
+    }
+
+    .ant-result-subtitle {
+      font-family: @font-sans;
+      color: @text-color-secondary;
+      font-size: 1rem;
+    }
+
+    .result-stats {
+      margin-bottom: 24px;
+      padding: 16px;
+      background: rgba(197, 160, 101, 0.08); // Gold tint
+      border-radius: 8px;
+      border: 1px dashed @gold-border;
+    }
+
+    .artifact-preview {
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+
+      img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 3px solid @gold-border;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 40px;
+        height: 40px;
+        background-color: @seal-red;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L9 9L1 12L9 15L12 23L15 15L23 12L15 9L12 1Z'/%3E%3C/svg%3E");
+        mask-size: contain;
+        mask-repeat: no-repeat;
+      }
+    }
+
+    .ant-result-extra {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+
+      button {
+        width: 240px;
+
+        &.ant-btn-primary {
+          .game-btn-primary();
+        }
+
+        &:not(.ant-btn-primary) {
+          .nav-back-btn {
+            // Reusing back btn logic but for regular buttons
+            background: #fff9e6;
+            border: 2px solid @text-color-secondary;
+            color: @text-color-secondary;
+            font-weight: 600;
+            height: 48px;
+            border-radius: 8px;
+
+            &:hover {
+              border-color: @text-color-primary;
+              color: @text-color-primary;
+            }
+          }
+          // Applying manual style as mixin might be too specific
+          height: 48px;
+          border-radius: 8px;
+          font-family: @font-serif;
+          font-weight: 600;
+          border: 2px solid @gold-border;
+          color: @text-color-primary;
+          background: #fff !important;
+
+          &:hover {
+            border-color: @seal-red;
+            color: @seal-red;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

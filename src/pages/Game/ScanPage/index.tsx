@@ -1,11 +1,19 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Card, Button, Typography, Result, Spin, message} from "antd";
-import {QrcodeOutlined, EnvironmentOutlined, GiftOutlined} from "@ant-design/icons";
+import {
+  QrcodeOutlined,
+  EnvironmentOutlined,
+  GiftOutlined,
+  ArrowLeftOutlined,
+  ReloadOutlined,
+  EnvironmentFilled,
+} from "@ant-design/icons";
 import QRScanner from "@/components/Game/QRScanner";
 import {gameService} from "@/services";
+import "./styles.less";
 
-const {Text} = Typography;
+const {Text, Title} = Typography;
 
 const ScanPage: React.FC = () => {
   const navigate = useNavigate();
@@ -72,11 +80,11 @@ const ScanPage: React.FC = () => {
           title="Quét thất bại"
           subTitle={result.message}
           extra={[
-            <Button type="primary" key="retry" onClick={handleReset}>
-              Thử lại
+            <Button type="primary" key="retry" icon={<ReloadOutlined />} onClick={handleReset}>
+              Thử lại ngay
             </Button>,
             <Button key="back" onClick={() => navigate(-1)}>
-              Quay lại
+              Quay lại trang chủ
             </Button>,
           ]}
         />
@@ -88,22 +96,27 @@ const ScanPage: React.FC = () => {
       return (
         <Result
           status="success"
-          icon={<EnvironmentOutlined style={{color: "#52c41a"}} />}
-          title="Check-in Thành công!"
-          subTitle={`Bạn đã check-in tại ${locationName}`}
+          icon={<EnvironmentFilled style={{color: "#8b1d1d", fontSize: 64}} />}
+          title="Ghi danh thành công!"
+          subTitle={
+            <span>
+              Tại hạ đã ghi danh bạn tại <strong>{locationName}</strong>
+            </span>
+          }
           extra={[
-            <div key="stats" style={{marginBottom: 24}}>
-              <Text strong style={{fontSize: 18, color: "#faad14"}}>
-                +{pointsEarned} Điểm
+            <div key="stats" className="result-stats">
+              <Text strong style={{fontSize: 22, color: "#faad14", display: "block", marginBottom: 8}}>
+                +{pointsEarned} Công đức
               </Text>
-              <br />
-              <Text type="secondary">Tổng số lần check-in: {totalCheckins}</Text>
+              <Text type="secondary">
+                Đã ghé thăm: <strong>{totalCheckins}</strong> lần
+              </Text>
             </div>,
             <Button type="primary" key="map" onClick={() => navigate("/game/map")}>
-              Xem bản đồ
+              Xem bản đồ di tích
             </Button>,
             <Button key="continue" onClick={handleReset}>
-              Tiếp tục quét
+              Tiếp tục tầm bảo
             </Button>,
           ]}
         />
@@ -115,29 +128,26 @@ const ScanPage: React.FC = () => {
       return (
         <Result
           status="success"
-          icon={<GiftOutlined style={{color: "#eb2f96"}} />}
-          title={isNewDiscovery ? "Phát hiện Bảo vật mới!" : "Đã thu thập lại"}
+          icon={<GiftOutlined style={{color: "#c5a065", fontSize: 64}} />}
+          title={isNewDiscovery ? "Phát hiện Kỳ vật!" : "Thu thập Kỳ vật"}
           subTitle={artifact.name}
           extra={[
-            <div key="artifact-img" style={{marginBottom: 16}}>
-              <img
-                src={artifact.image}
-                alt={artifact.name}
-                style={{width: 120, height: 120, objectFit: "cover", borderRadius: 8}}
-              />
+            <div key="artifact-img" className="artifact-preview">
+              <img src={artifact.image} alt={artifact.name} />
             </div>,
-            <div key="stats" style={{marginBottom: 24}}>
-              <Text type="secondary">{artifact.description}</Text>
-              <br />
-              <Text strong style={{fontSize: 18, color: "#faad14"}}>
+            <div key="stats" className="result-stats">
+              <Text type="secondary" style={{display: "block", marginBottom: 12, fontStyle: "italic"}}>
+                {artifact.description}
+              </Text>
+              <Text strong style={{fontSize: 20, color: "#faad14"}}>
                 +{rewards.coins} Xu | +{rewards.petals} Cánh Sen
               </Text>
             </div>,
             <Button type="primary" key="collection" onClick={() => navigate("/profile/library")}>
-              Xem bộ sưu tập
+              Vào tàng kinh các
             </Button>,
             <Button key="continue" onClick={handleReset}>
-              Tiếp tục quét
+              Tiếp tục tìm kiếm
             </Button>,
           ]}
         />
@@ -146,23 +156,32 @@ const ScanPage: React.FC = () => {
   };
 
   return (
-    <div style={{padding: 24, display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh"}}>
+    <div className="scan-page-wrapper">
+      <div className="nav-back-wrapper" onClick={() => navigate(-1)}>
+        <button className="nav-back-btn">
+          <ArrowLeftOutlined />
+        </button>
+      </div>
+
       <Card
+        className="scan-card"
         title={
           <span>
-            <QrcodeOutlined /> Quét QR Code
+            <QrcodeOutlined style={{marginRight: 10}} />
+            Tầm Bảo & Ghi Danh
           </span>
         }
-        style={{width: "100%", maxWidth: 600, minHeight: 400}}
       >
         {processing ? (
-          <div style={{textAlign: "center", padding: 50}}>
-            <Spin size="large" tip="Đang xử lý..." />
+          <div className="processing-container">
+            <Spin size="large" tip="Đang giải mã mật văn..." />
           </div>
         ) : result ? (
           renderResult()
         ) : (
-          <QRScanner onScanSuccess={handleScan} />
+          <div className="scanner-container">
+            <QRScanner onScanSuccess={handleScan} />
+          </div>
         )}
       </Card>
     </div>
