@@ -1,12 +1,9 @@
 @import "@/styles/variables.less";
-@import "../../../pages/Game/common.less";
 
 // Statistics Card Styles: Anticon in top, text below, and number at the right
 .statistics-item {
-  color: @seal-red;
-  background-color: @paper-bg;
-  border: 2px solid @gold-border;
-  box-shadow: 4px 4px 0 rgba(93, 64, 55, 0.1);
+  color: var(--color-primary);
+  background-color: var(--color-primary-bg);
   border-radius: var(--border-radius);
   transition: all 0.3s ease;
 
@@ -23,16 +20,14 @@
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15);
-    border-color: @seal-red;
-    transition: all 0.3s ease;
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.025);
+    transition: transform 0.3s ease;
   }
 
   .text {
-    color: @text-color-primary;
-    font-weight: 700;
-    font-family: var(--font-serif);
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
     width: 100%;
 
     display: flex;
@@ -40,17 +35,15 @@
     gap: 6px;
 
     .anticon {
-      font-size: 18px;
-      color: @seal-red;
+      font-size: 16px;
+      color: var(--color-primary);
     }
   }
 
   .num {
-    font-weight: 800;
+    font-weight: 700;
     font-size: 1.75rem;
     line-height: 1;
-    font-family: var(--font-serif);
-    color: @seal-red;
 
     @media (max-width: @screen-xs) {
       font-size: 1.25rem;
