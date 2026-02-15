@@ -2,7 +2,7 @@
 export * from "./auth.types";
 // export * from "./common.types";
 // export * from "./model.types"; // Comment out or remove if causing issues with User name
-export type { User, UserRole } from "./auth.types"; // Explicit re-export
+export type {User, UserRole} from "./auth.types"; // Explicit re-export
 export * from "./heritage.types";
 export * from "./artifact.types";
 export * from "./api.types";
@@ -12,7 +12,7 @@ export * from "./game.types";
 export * from "./notification.types";
 export * from "./history.types";
 export * from "./quest.types";
-
+export * from "./review.types";
 
 // Common Types
 
@@ -39,11 +39,7 @@ export interface FilterParams {
   [key: string]: any;
 }
 
-export interface QueryParams
-  extends PaginationParams,
-  SortParams,
-  SearchParams,
-  FilterParams { }
+export interface QueryParams extends PaginationParams, SortParams, SearchParams, FilterParams {}
 
 export interface Pagination {
   page: number;
@@ -116,7 +112,7 @@ export interface FilterConfig {
   placeholder: string;
   width?: number;
   colSpan?: number;
-  options: Array<{ label: string; value: any }>;
+  options: Array<{label: string; value: any}>;
   disabled?: boolean;
   loading?: boolean;
   value?: any;
@@ -187,10 +183,7 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
-  T,
-  Exclude<keyof T, Keys>
-> &
+export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<T, Exclude<keyof T, Keys>> &
   {
     [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
   }[Keys];
@@ -212,7 +205,7 @@ export interface TableColumn<T = any> {
   sorter?: boolean;
   render?: (value: any, record: T, index: number) => React.ReactNode;
   ellipsis?: boolean;
-  filters?: Array<{ text: string; value: any }>;
+  filters?: Array<{text: string; value: any}>;
 }
 
 export interface TablePaginationConfig {

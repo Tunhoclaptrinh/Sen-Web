@@ -20,6 +20,7 @@ import ArticleCard from "@/components/common/cards/ArticleCard";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import dayjs from "dayjs";
 import {ITEM_TYPES} from "@/config/constants";
+import ReviewSection from "@/components/common/Review/ReviewSection";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -181,7 +182,7 @@ const ExhibitionDetailPage: React.FC = () => {
                   label: `Hiện vật (${artifacts.length})`,
                   children: (
                     <div className="article-main-wrapper">
-                      <Title level={3} style={{fontFamily: "Aleo", marginBottom: 24}}>
+                      <Title level={3} style={{fontFamily: "Aleo, serif", marginBottom: 24, fontWeight: 700}}>
                         Hiện vật trưng bày
                       </Title>
                       {artifacts.length > 0 ? (
@@ -284,6 +285,21 @@ const ExhibitionDetailPage: React.FC = () => {
           name: exhibition.name,
         }}
       />
+
+      {/* REVIEWS SECTION */}
+      <div className="reviews-bottom-section">
+        <div className="content-container">
+          <ReviewSection
+            type="exhibition"
+            referenceId={Number(id)}
+            rating={exhibition.rating}
+            totalReviews={exhibition.totalReviews}
+            onSuccess={() =>
+              id && exhibitionService.getById(Number(id)).then((res) => res.data && setExhibition(res.data))
+            }
+          />
+        </div>
+      </div>
     </div>
   );
 };

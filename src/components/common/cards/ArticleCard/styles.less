@@ -117,8 +117,30 @@
       div {
         color: var(--text-color-secondary) !important;
       }
-    }
+      &.rating-badge {
+        background: fade(#faad14, 10%);
+        padding: 2px 8px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
 
+        .anticon {
+          margin-right: 0;
+        }
+
+        .rating-val {
+          color: @text-color-primary;
+          font-weight: 700;
+          font-size: 13px;
+        }
+
+        .review-count {
+          color: @text-color-secondary;
+          font-size: 11px;
+        }
+      }
+    }
     .card-footer {
       margin-top: auto;
       border: none;

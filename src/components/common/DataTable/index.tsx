@@ -703,6 +703,7 @@ const DataTable: React.FC<DataTableProps> = ({
               showQuickJumper: true,
               showTotal: (total: number) => `Tổng ${total} mục`,
               pageSizeOptions: ["10", "20", "50", "100"],
+              hideOnSinglePage: false,
             } as any
           }
           onChange={onPaginationChange}

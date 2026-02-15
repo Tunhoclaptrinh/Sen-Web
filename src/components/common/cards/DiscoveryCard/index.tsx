@@ -88,7 +88,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
                   <UserOutlined /> {data.authorName || data.author || "Hệ thống"}
                 </span>
                 <span className="meta-item">
-                  <CommentOutlined /> {data.commentCount || 0}
+                  <CommentOutlined /> {data.totalReviews ?? data.total_reviews ?? data.commentCount ?? 0}
                 </span>
                 {(data.address || data.region) && (
                   <span className="meta-item">

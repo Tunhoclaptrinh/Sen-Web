@@ -1,4 +1,4 @@
-import { BaseEntity } from "./index";
+import {BaseEntity} from "./index";
 
 export interface HistoryArticle extends BaseEntity {
   title: string;
@@ -8,12 +8,14 @@ export interface HistoryArticle extends BaseEntity {
   authorName?: string;
   publishDate?: string;
   category?: string;
-  
+
   // Status & Metrics
   isActive: boolean;
   isFeatured: boolean;
   views: number;
-  
+  rating?: number;
+  totalReviews?: number;
+
   // Relations
   relatedHeritageIds?: number[];
   relatedArtifactIds?: number[];

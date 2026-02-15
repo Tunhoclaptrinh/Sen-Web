@@ -25,6 +25,7 @@ import {useViewTracker} from "@/hooks/useViewTracker";
 import {normalizeVietnamese} from "@/utils/helpers";
 import {HistoryArticle, HeritageSite, Artifact, TimelineEvent} from "@/types";
 import {ITEM_TYPES} from "@/config/constants";
+import ReviewSection from "@/components/common/Review/ReviewSection";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -363,6 +364,19 @@ const HistoryDetailPage = () => {
             },
           ]}
         />
+      </div>
+
+      {/* REVIEWS SECTION */}
+      <div className="reviews-bottom-section">
+        <div className="content-container">
+          <ReviewSection
+            type="history_article"
+            referenceId={Number(id)}
+            rating={article.rating}
+            totalReviews={article.totalReviews}
+            onSuccess={() => id && fetchData(id)}
+          />
+        </div>
       </div>
 
       {/* RELATED HISTORY BOTTOM */}

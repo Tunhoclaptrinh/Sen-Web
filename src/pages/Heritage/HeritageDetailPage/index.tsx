@@ -39,6 +39,7 @@ import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
 import {HERITAGE_TYPE_LABELS, ITEM_TYPES} from "@/config/constants";
+import ReviewSection from "@/components/common/Review/ReviewSection";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -506,7 +507,7 @@ const HeritageDetailPage = () => {
                   {siteArtifacts.length > 0 && (
                     <div className="discovery-block">
                       <Title level={3}>
-                        <ReadOutlined /> Hiện vật Tiêu biểu
+                        <ReadOutlined /> Hiện vật liên quan
                       </Title>
                       <p>Những bảo vật quý giá gắn liền với di tích này.</p>
                       <Row gutter={[24, 24]}>
@@ -647,12 +648,25 @@ const HeritageDetailPage = () => {
         />
       </div>
 
+      {/* REVIEWS SECTION */}
+      <div className="reviews-bottom-section">
+        <div className="content-container">
+          <ReviewSection
+            type="heritage_site"
+            referenceId={Number(id)}
+            rating={site.rating}
+            totalReviews={site.totalReviews}
+            onSuccess={() => id && dispatch(fetchHeritageSiteById(id))}
+          />
+        </div>
+      </div>
+
       {/* RELATED SECTION (Bottom) */}
       <div className="related-bottom-section">
         <div className="content-container">
           <Divider />
           <Title level={3} className="section-title">
-            Có thể bạn quan tâm
+            Di sản văn hóa khác
           </Title>
           <Row gutter={[24, 24]}>
             {relatedSites.map((item) => (

@@ -68,9 +68,13 @@ const ReviewManagement = () => {
         {text: "Heritage", value: ITEM_TYPES.HERITAGE_SITE},
         {text: "Artifact", value: ITEM_TYPES.ARTIFACT},
       ],
-      render: (type: string) => (
-        <Tag color={type === ITEM_TYPES.ARTIFACT ? "purple" : "blue"}>{type?.toUpperCase()}</Tag>
-      ),
+      render: (type: string) => {
+        let color = "blue";
+        if (type === ITEM_TYPES.ARTIFACT) color = "purple";
+        else if (type === "exhibition") color = "pink";
+        else if (type === "history_article") color = "orange";
+        return <Tag color={color}>{type?.toUpperCase().replace("_", " ")}</Tag>;
+      },
     },
     {
       title: "Đánh giá",
@@ -159,6 +163,8 @@ const ReviewManagement = () => {
             options: [
               {label: "Di sản", value: ITEM_TYPES.HERITAGE_SITE},
               {label: "Hiện vật", value: ITEM_TYPES.ARTIFACT},
+              {label: "Triển lãm", value: "exhibition"},
+              {label: "Bài viết lịch sử", value: "history_article"},
             ],
           },
           {

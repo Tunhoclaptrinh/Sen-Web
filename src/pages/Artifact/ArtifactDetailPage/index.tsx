@@ -35,6 +35,7 @@ import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
 import {ITEM_TYPES} from "@/config/constants";
+import ReviewSection from "@/components/common/Review/ReviewSection";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -561,7 +562,7 @@ const ArtifactDetailPage = () => {
                   {(relatedHeritage.length > 0 || relatedHistory.length > 0) && (
                     <div className="discovery-block">
                       <Title level={3}>
-                        <EnvironmentOutlined /> Di sản & Lịch liên quan
+                        <EnvironmentOutlined /> Di sản & Lịch sử liên quan
                       </Title>
                       <Row gutter={[24, 24]}>
                         {relatedHeritage.map((item) => (
@@ -619,6 +620,19 @@ const ArtifactDetailPage = () => {
             },
           ]}
         />
+      </div>
+
+      {/* REVIEWS SECTION */}
+      <div className="reviews-bottom-section">
+        <div className="content-container">
+          <ReviewSection
+            type="artifact"
+            referenceId={Number(id)}
+            rating={artifact.rating}
+            totalReviews={artifact.totalReviews}
+            onSuccess={() => id && dispatch(fetchArtifactById(id))}
+          />
+        </div>
       </div>
 
       {/* RELATED ARTIFACTS (Bottom) */}

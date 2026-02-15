@@ -217,6 +217,8 @@ export const ITEM_TYPES = {
   HERITAGE: "heritage",
   ARTIFACT: "artifact",
   HERITAGE_SITE: "heritage_site",
+  EXHIBITION: "exhibition",
+  HISTORY_ARTICLE: "history_article",
 } as const;
 
 export const ITEM_TYPE_LABELS = {

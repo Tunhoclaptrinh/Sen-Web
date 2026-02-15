@@ -57,24 +57,4 @@ export interface FavoriteStats {
   byType: Record<string, number>;
 }
 
-// Review
-export interface Review extends BaseEntity, TimestampEntity {
-  userId: number;
-  type: "artifact" | "heritageSite" | "exhibition" | "article";
-  heritageSiteId?: number;
-  artifactId?: number;
-  rating: number;
-  comment?: string;
-  images?: string[];
-  isVerified?: boolean;
-  user?: UserType;
-}
-
-export interface ReviewDTO {
-  type: "artifact" | "heritageSite" | "exhibition" | "article";
-  heritageSiteId?: number;
-  artifactId?: number;
-  rating: number;
-  comment?: string;
-  images?: string[];
-}
+// Review types moved to review.types.ts

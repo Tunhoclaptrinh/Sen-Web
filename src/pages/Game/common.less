@@ -304,3 +304,22 @@
     }
   }
 }
+
+.related-section-title-style() {
+  text-align: center;
+  margin-bottom: 40px;
+  color: @text-color-primary;
+  font-family: @font-serif;
+  font-weight: 700;
+  font-size: 28px;
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: @seal-red;
+    margin: 16px auto 0;
+  }
+}

@@ -1,0 +1,303 @@
+@import (reference) "../../../styles/variables.less";
+@import "../../../pages/Game/common.less";
+
+.review-section-container {
+  padding: 64px 24px;
+  max-width: 850px;
+  margin: 0 auto;
+  background: transparent;
+
+  .review-section-header {
+    text-align: center;
+    margin-bottom: 48px;
+
+    .section-title {
+      font-family: @font-serif;
+      font-size: 36px;
+      color: @seal-red;
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: inline-block;
+      position: relative;
+      padding: 0 15px;
+      letter-spacing: 0.5px;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 40px;
+        height: 1.5px;
+        background: @gold-border;
+        opacity: 0.6;
+      }
+
+      &::before {
+        right: 100%;
+        background: linear-gradient(to right, transparent, @gold-border);
+      }
+      &::after {
+        left: 100%;
+        background: linear-gradient(to left, transparent, @gold-border);
+      }
+    }
+
+    .review-stats-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      background: @paper-bg;
+      padding: 16px 40px;
+      border-radius: 60px;
+      border: 1.5px solid @gold-border;
+      box-shadow: 0 8px 24px rgba(93, 64, 55, 0.1) !important;
+      width: fit-content;
+      margin: 0 auto;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border: 1px dashed fade(@gold-border, 40%);
+        border-radius: 60px;
+        pointer-events: none;
+      }
+
+      .avg-rating {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .rating-value {
+          font-family: @font-serif;
+          font-size: 32px;
+          font-weight: 900;
+          color: @seal-red;
+          line-height: 1;
+        }
+
+        .ant-rate {
+          color: @gold-color;
+          font-size: 18px;
+        }
+      }
+
+      .total-reviews-summary {
+        font-family: @font-serif;
+        font-size: 14px;
+        color: @text-color-secondary;
+        font-style: italic;
+
+        strong {
+          color: @text-color-primary;
+          font-weight: 800;
+        }
+      }
+    }
+  }
+
+  .review-main-content {
+    .review-list-card {
+      background: fade(@paper-bg, 80%) !important;
+      border: 1.5px solid fade(@gold-border, 30%) !important;
+      border-radius: 20px !important;
+      padding: 32px;
+      box-shadow: 0 12px 40px rgba(93, 64, 55, 0.05) !important;
+      backdrop-filter: blur(8px);
+
+      .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 1.5px solid fade(@gold-border, 20%);
+
+        h3 {
+          font-family: @font-serif;
+          font-size: 22px;
+          font-weight: 800;
+          margin: 0;
+          color: @text-color-primary;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          &::before {
+            content: "✦";
+            color: @gold-border;
+            font-size: 16px;
+          }
+        }
+
+        .write-review-btn {
+          .game-btn-primary();
+          border-radius: 6px;
+          height: 38px;
+          font-size: 13px;
+          padding: 0 24px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 4px 0 @seal-border;
+
+          &:hover {
+            box-shadow: 0 2px 0 @seal-border;
+          }
+        }
+      }
+
+      .review-form-wrapper {
+        margin-bottom: 40px;
+        padding: 32px;
+        background: @paper-bg;
+        border-radius: 12px;
+        border: 1px solid @gold-border;
+        box-shadow: inset 0 2px 10px rgba(93, 64, 55, 0.05);
+
+        .review-form-container {
+          padding: 0;
+          box-shadow: none !important;
+          background: transparent;
+
+          h4 {
+            font-family: @font-serif;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: @seal-red;
+            font-weight: 800;
+            text-align: center;
+          }
+
+          .submit-review-btn {
+            .game-btn-primary();
+            height: 44px;
+            font-size: 15px;
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 16px;
+          }
+        }
+      }
+
+      .ant-card-body {
+        padding: 0;
+      }
+    }
+  }
+
+  .review-item {
+    padding: 24px 0;
+    border-bottom: 1px solid fade(@gold-border, 15%);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: fade(@paper-bg, 40%);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .review-content {
+      flex: 1;
+
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+
+        .user-name {
+          font-family: @font-serif;
+          font-size: 16px;
+          font-weight: 800;
+          color: @text-color-primary;
+        }
+
+        .review-date {
+          font-family: @font-serif;
+          font-size: 12px;
+          color: @text-color-secondary;
+          font-style: italic;
+        }
+      }
+
+      .ant-rate {
+        font-size: 13px;
+        color: @gold-color;
+      }
+    }
+
+    .review-comment {
+      color: #5d4037; // @text-color-primary
+      line-height: 1.7;
+      font-size: 15px;
+      margin-top: 10px;
+      margin-bottom: 0;
+      font-family: @font-sans;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 10px 15px;
+      border-radius: 8px;
+      border-left: 2px solid fade(@gold-border, 40%);
+    }
+  }
+
+  .review-form-locked {
+    padding: 40px;
+    text-align: center;
+    background: fade(@paper-bg, 60%);
+    border: 1px dashed @gold-border;
+    border-radius: 16px;
+
+    .ant-typography-secondary {
+      font-family: @font-serif;
+      font-size: 15px;
+      font-style: italic;
+      color: @text-color-secondary;
+    }
+  }
+
+  // Ant Design Empty State Overrides
+  .ant-empty {
+    padding: 48px 0;
+
+    &-image {
+      margin-bottom: 16px;
+    }
+
+    &-description {
+      font-family: @font-serif;
+      font-size: 15px;
+      color: @text-color-secondary;
+    }
+  }
+
+  // Ant Design Pagination Overrides
+  .ant-pagination {
+    margin-top: 32px !important;
+
+    &-item-active {
+      border-color: @seal-red;
+      background: @seal-red;
+      a {
+        color: white !important;
+      }
+    }
+
+    &-item:hover {
+      border-color: @seal-red;
+      a {
+        color: @seal-red;
+      }
+    }
+  }
+}
+
+.reviews-bottom-section {
+  margin-top: 40px;
+  border-top: 1px solid fade(@gold-border, 20%);
+}

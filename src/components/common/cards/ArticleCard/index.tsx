@@ -8,6 +8,7 @@ import {
   UserOutlined,
   CommentOutlined,
   ArrowRightOutlined,
+  StarFilled,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import {resolveImage, getImageUrl} from "@/utils/image.helper";
@@ -90,9 +91,17 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
               <UserOutlined /> {normalizedAuthor}
             </span>
           )}
-          {data.commentCount !== undefined && type !== "collection" && (
-            <span className="meta-item">
-              <CommentOutlined /> {data.commentCount > 0 ? `${data.commentCount}` : "0"}
+          {(data.totalReviews !== undefined || data.total_reviews !== undefined || data.commentCount !== undefined) &&
+            type !== "collection" && (
+              <span className="meta-item">
+                <CommentOutlined /> {data.totalReviews ?? data.total_reviews ?? data.commentCount ?? 0}
+              </span>
+            )}
+          {data.rating !== undefined && (data.totalReviews || data.total_reviews) > 0 && (
+            <span className="meta-item rating-badge">
+              <StarFilled style={{color: "#fadb14"}} />
+              <span className="rating-val">{data.rating || 0}</span>
+              <span className="review-count">({data.totalReviews || data.total_reviews})</span>
             </span>
           )}
         </div>
