@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters } from '@/store/slices/gameSlice';
-import { useAuth } from '@/hooks/useAuth'; 
+import { useAuth } from '@/hooks/useAuth';
 import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal, message } from 'antd';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import gameService from '@/services/game.service';
@@ -49,17 +49,12 @@ const ChaptersPage: React.FC = () => {
     };
 
     const getChapterColor = (chapter: Chapter | null | undefined) => {
-        const colors: Record<string, string> = {
-            'Văn hóa Đại Việt': '#ff69b4',
-            'Thời Hoàng Kim': '#ffd700',
-            'Di sản Bất tử': '#ffffff',
-        };
-        return chapter?.color || colors[chapter?.theme || ''] || '#1890ff';
+        return chapter?.color || '#8b1d1d';
     };
 
     const getChapterImage = (chapter: Chapter) => {
         if (chapter.image) return chapter.image;
-        
+
         // Return a default image if no image is set
         return "https://media.licdn.com/dms/image/v2/D5612AQE8NiooxTxA3w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1695825196046?e=1770249600&v=beta&t=Oy9UgJswkfS4zaALRlZyxKH9xh3Cga6Mb5aWMOSJBtw";
     };
@@ -74,7 +69,7 @@ const ChaptersPage: React.FC = () => {
 
     return (
         <div className="chapters-page">
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="chapters-header"
@@ -182,15 +177,15 @@ const ChaptersPage: React.FC = () => {
                                             cover={
                                                 <div className="chapter-cover">
                                                     <div className="chapter-image-wrapper">
-                                                        <img 
-                                                            src={getChapterImage(chapter)} 
-                                                            alt="" 
-                                                            className="chapter-img-backdrop" 
+                                                        <img
+                                                            src={getChapterImage(chapter)}
+                                                            alt=""
+                                                            className="chapter-img-backdrop"
                                                         />
-                                                        <img 
-                                                            src={getChapterImage(chapter)} 
-                                                            alt={chapter.name} 
-                                                            className="chapter-img-main" 
+                                                        <img
+                                                            src={getChapterImage(chapter)}
+                                                            alt={chapter.name}
+                                                            className="chapter-img-main"
                                                         />
                                                     </div>
                                                     <div className="chapter-theme-tag">

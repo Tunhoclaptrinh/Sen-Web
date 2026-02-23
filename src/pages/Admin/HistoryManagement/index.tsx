@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import {Popover, Divider, Modal} from "antd";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
-import DataTable from "@components/common/DataTable";
+import DataTable from "@/components/common/DataTable";
 import {Button} from "@/components/common";
 import {formatDate} from "@/utils/formatters";
 

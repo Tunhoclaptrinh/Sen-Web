@@ -70,9 +70,27 @@ const HistoryDetailPage = () => {
         setRelatedLevels(data.relatedLevels || []);
         setRelatedProducts(data.relatedProducts || []);
 
-        // Also fetch general related history items for the bottom section
-        const resRelated = await historyService.getRelated(currentId);
-        if (resRelated.success) setRelatedHistory(resRelated.data || []);
+        // Fetch related history (prioritize explicit links + fill up to 3)
+        const relHistIds = data.relatedHistoryIds || [];
+        const relatedHistoryData: HistoryArticle[] = [];
+        
+        if (relHistIds.length > 0) {
+          const resRelIds = await historyService.getByIds(relHistIds);
+          if (resRelIds.data) relatedHistoryData.push(...resRelIds.data);
+        }
+
+        if (relatedHistoryData.length < 3) {
+          const resRelated = await historyService.getRelated(currentId, 6);
+          if (resRelated.data) {
+            const existingIds = new Set(relatedHistoryData.map(h => h.id));
+            resRelated.data.forEach(h => {
+              if (h.id !== Number(currentId) && !existingIds.has(h.id) && relatedHistoryData.length < 3) {
+                relatedHistoryData.push(h);
+              }
+            });
+          }
+        }
+        setRelatedHistory(relatedHistoryData);
       } else {
         message.error("Không tìm thấy bài viết");
       }

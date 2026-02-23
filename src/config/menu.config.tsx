@@ -192,7 +192,7 @@ export const customerMenu: IMenuItem[] = [
   },
   {
     key: "books",
-    path: "/undefined",
+    path: "/game/books",
     name: "Sách & Truyện",
     disabled: true,
   },

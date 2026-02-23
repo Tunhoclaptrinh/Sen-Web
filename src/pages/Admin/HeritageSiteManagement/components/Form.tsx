@@ -88,9 +88,12 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           const heritageId = initialValues.id as number;
           if (!heritageId) return;
 
-          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+          const [timelineRes, artifactsRes, relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
             heritageService.getTimeline(heritageId),
             heritageService.getArtifacts(heritageId),
+            (initialValues.relatedHeritageIds?.length ?? 0) > 0
+              ? heritageService.getByIds(initialValues.relatedHeritageIds!)
+              : Promise.resolve({success: true, data: []}),
             (initialValues.relatedArtifactIds?.length ?? 0) > 0
               ? artifactService.getAll({
                   ids: initialValues.relatedArtifactIds!.join(","),
@@ -139,12 +142,27 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             },
           );
 
+          // Map related heritage to {label, value}
+          const relatedHeritage = (initialValues.relatedHeritageIds || []).map(
+            (id: number | {label: string; value: number}) => {
+              const her = relHeritageRes.success
+                ? relHeritageRes.data?.find((h: HeritageSite) => h.id === (typeof id === "object" ? id.value : id))
+                : null;
+              return her
+                ? {label: her.name, value: her.id}
+                : typeof id === "object"
+                  ? id
+                  : {label: `ID: ${id}`, value: id};
+            },
+          );
+
           const formattedValues: any = {
             ...initialValues,
             publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
             timeline: timeline,
             relatedArtifactIds: relatedArtifacts,
             relatedHistoryIds: relatedHistory,
+            relatedHeritageIds: relatedHeritage,
           };
 
           // Set available provinces based on region
@@ -290,7 +308,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             "isActive",
           ];
           const tab2Fields = ["description"];
-          const tab3Fields = ["relatedArtifactIds", "relatedHistoryIds", "timeline"];
+          const tab3Fields = ["relatedArtifactIds", "relatedHistoryIds", "relatedHeritageIds", "timeline"];
 
           if (tab1Fields.includes(firstErrorField)) {
             setActiveTab("1");
@@ -334,6 +352,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         values.relatedHistoryIds?.map((item: number | {value: number}) =>
           typeof item === "object" ? item.value : item,
         ) || [],
+      relatedHeritageIds:
+        values.relatedHeritageIds?.map((item: number | {value: number}) =>
+          typeof item === "object" ? item.value : item,
+        ) || [],
       culturalPeriod: values.culturalPeriod,
       visitHours: values.visitHours,
       entranceFee: values.entranceFee,
@@ -374,6 +396,23 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       return [];
     } catch (error) {
       console.error("Fetch history articles failed", error);
+      return [];
+    }
+  };
+
+  // Fetch function for Heritage Search
+  const fetchHeritageList = async (search: string) => {
+    try {
+      const response = await heritageService.getAll({q: search, limit: 10});
+      if (response.success && response.data) {
+        return response.data.map((item: HeritageSite) => ({
+          label: item.name,
+          value: item.id,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Fetch heritage failed", error);
       return [];
     }
   };
@@ -645,6 +684,15 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             label: "Dòng thời gian & Hiện vật",
             children: (
               <>
+                <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm và chọn di sản khác..."
+                    fetchOptions={fetchHeritageList}
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+
                 <Form.Item label="Hiện vật liên quan" name="relatedArtifactIds">
                   <DebounceSelect
                     mode="multiple"

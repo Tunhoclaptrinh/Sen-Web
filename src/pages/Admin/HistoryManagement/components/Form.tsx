@@ -6,6 +6,7 @@ import {useAuth} from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
+import historyService from "@/services/history.service";
 import categoryService, {Category} from "@/services/category.service";
 
 interface HistoryFormProps {
@@ -69,12 +70,15 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       if (open && isEditMode) {
         try {
           // Fetch labels for related IDs
-          const [relHeritageRes, relArtifactRes] = await Promise.all([
+          const [relHeritageRes, relArtifactRes, relHistoryRes] = await Promise.all([
             initialValues.relatedHeritageIds?.length > 0
               ? heritageService.getAll({ids: initialValues.relatedHeritageIds.join(",")})
               : Promise.resolve({success: true, data: []}),
             initialValues.relatedArtifactIds?.length > 0
               ? artifactService.getAll({ids: initialValues.relatedArtifactIds.join(",")})
+              : Promise.resolve({success: true, data: []}),
+            initialValues.relatedHistoryIds?.length > 0
+              ? historyService.getAll({ids: initialValues.relatedHistoryIds.join(",")})
               : Promise.resolve({success: true, data: []}),
           ]);
 
@@ -104,10 +108,24 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 : {label: `ID: ${id}`, value: id};
           });
 
+          // Map related history to {label, value}
+          const relatedHistoryArr = (initialValues.relatedHistoryIds || []).map((id: any) => {
+            const hist =
+              relHistoryRes.success && relHistoryRes.data
+                ? relHistoryRes.data.find((h: any) => h.id === (typeof id === "object" ? id.value : id))
+                : null;
+            return hist
+              ? {label: hist.title, value: hist.id}
+              : typeof id === "object"
+                ? id
+                : {label: `ID: ${id}`, value: id};
+          });
+
           const formattedValues = {
             ...memoizedInitialValues,
             relatedHeritageIds: relatedHeri,
             relatedArtifactIds: relatedArtifacts,
+            relatedHistoryIds: relatedHistoryArr,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
@@ -150,6 +168,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedArtifactIds:
         values.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedHistoryIds:
+        values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
     const success = await onSubmit(submitData);
     if (success) {
@@ -179,7 +199,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
           "categoryId",
         ];
         const tab2Fields = ["content"];
-        const tab3Fields = ["relatedHeritageIds", "relatedArtifactIds", "relatedLevelIds"];
+        const tab3Fields = ["relatedHeritageIds", "relatedArtifactIds", "relatedLevelIds", "relatedHistoryIds"];
 
         if (tab1Fields.includes(firstErrorField)) {
           setActiveTab("1");
@@ -215,6 +235,19 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       return response.success && response.data
         ? response.data.map((item: any) => ({
             label: item.name,
+            value: item.id,
+          }))
+        : [];
+    } catch (error) {
+      return [];
+    }
+  };
+  const fetchHistoryList = async (search: string) => {
+    try {
+      const response = await historyService.getAll({q: search, _limit: 10});
+      return response.success && response.data
+        ? response.data.map((item: any) => ({
+            label: item.title,
             value: item.id,
           }))
         : [];
@@ -380,6 +413,14 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm hiện vật..."
                     fetchOptions={fetchArtifactList}
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+                <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm bài viết..."
+                    fetchOptions={fetchHistoryList}
                     style={{width: "100%"}}
                   />
                 </Form.Item>

@@ -1,9 +1,14 @@
-import {Input, InputNumber, Row, Col, Form, Switch, Radio, ColorPicker, DatePicker} from "antd";
-import {FormModal} from "@/components/common";
+import {Input, InputNumber, Row, Col, Form, Switch, Radio, ColorPicker, DatePicker, Divider, Space} from "antd";
+import {LinkOutlined} from "@ant-design/icons";
+import {FormModal, DebounceSelect} from "@/components/common";
 import {useEffect, useState, useMemo} from "react";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {useAuth} from "@/hooks/useAuth";
 import dayjs from "dayjs";
+import heritageService from "@/services/heritage.service";
+import artifactService from "@/services/artifact.service";
+import historyService from "@/services/history.service";
+import {HeritageSite, Artifact, HistoryArticle} from "@/types";
 
 interface ChapterFormProps {
   open: boolean;
@@ -67,18 +72,85 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
   }, [initialValues, user]);
 
   useEffect(() => {
-    if (open) {
-      if (initialValues) {
-        form.setFieldsValue(memoizedInitialValues);
-      } else {
-        form.resetFields();
-        form.setFieldsValue(memoizedInitialValues);
+    const initData = async () => {
+      if (open) {
+        if (initialValues) {
+          try {
+            // Fetch labels for related IDs
+            const [relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+              (initialValues.relatedHeritageIds?.length ?? 0) > 0
+                ? heritageService.getByIds(initialValues.relatedHeritageIds!)
+                : Promise.resolve({success: true, data: []}),
+              (initialValues.relatedArtifactIds?.length ?? 0) > 0
+                ? artifactService.getAll({
+                    ids: initialValues.relatedArtifactIds!.join(","),
+                  })
+                : Promise.resolve({success: true, data: []}),
+              (initialValues.relatedHistoryIds?.length ?? 0) > 0
+                ? historyService.getAll({
+                    ids: initialValues.relatedHistoryIds!.join(","),
+                  })
+                : Promise.resolve({success: true, data: []}),
+            ]);
+
+            const formattedValues = {
+              ...memoizedInitialValues,
+              relatedHeritageIds: (initialValues.relatedHeritageIds || []).map((id: number) => {
+                const item = relHeritageRes.data?.find((h: HeritageSite) => h.id === id);
+                return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
+              }),
+              relatedArtifactIds: (initialValues.relatedArtifactIds || []).map((id: number) => {
+                const item = relArtifactsRes.data?.find((a: Artifact) => a.id === id);
+                return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
+              }),
+              relatedHistoryIds: (initialValues.relatedHistoryIds || []).map((id: number) => {
+                const item = relHistoryRes.data?.find((h: HistoryArticle) => h.id === id);
+                return item ? {label: item.title, value: item.id} : {label: `ID: ${id}`, value: id};
+              }),
+            };
+            form.setFieldsValue(formattedValues);
+          } catch (error) {
+            console.error("Failed to init chapter related data", error);
+            form.setFieldsValue(memoizedInitialValues);
+          }
+        } else {
+          form.resetFields();
+          form.setFieldsValue(memoizedInitialValues);
+        }
       }
-    }
+    };
+
+    initData();
   }, [open, memoizedInitialValues, form, initialValues]);
 
   const handleOk = async (values: any) => {
-    await onSubmit(values);
+    // Transform related IDs back to numbers
+    const submitData = {
+      ...values,
+      relatedHeritageIds:
+        values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedArtifactIds:
+        values.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedHistoryIds:
+        values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+    };
+    await onSubmit(submitData);
+  };
+
+  // Fetch functions for DebounceSelect
+  const fetchHeritageList = async (search: string) => {
+    const res = await heritageService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((h: HeritageSite) => ({label: h.name, value: h.id})) : [];
+  };
+
+  const fetchArtifactList = async (search: string) => {
+    const res = await artifactService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((a: Artifact) => ({label: a.name, value: a.id})) : [];
+  };
+
+  const fetchHistoryList = async (search: string) => {
+    const res = await historyService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((h: HistoryArticle) => ({label: h.title, value: h.id})) : [];
   };
 
   const isEditMode = !!initialValues;
@@ -188,6 +260,45 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
               </ul>
             </div>
           </div>
+        </Col>
+      </Row>
+
+      <Divider orientation="left" style={{margin: "24px 0 16px"}}>
+        <Space>
+          <LinkOutlined /> Nội dung liên quan (Ngon Logic)
+        </Space>
+      </Divider>
+
+      <Row gutter={24}>
+        <Col span={8}>
+          <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
+            <DebounceSelect
+              mode="multiple"
+              placeholder="Tìm di sản..."
+              fetchOptions={fetchHeritageList}
+              style={{width: "100%"}}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="Hiện vật liên quan" name="relatedArtifactIds">
+            <DebounceSelect
+              mode="multiple"
+              placeholder="Tìm hiện vật..."
+              fetchOptions={fetchArtifactList}
+              style={{width: "100%"}}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds">
+            <DebounceSelect
+              mode="multiple"
+              placeholder="Tìm bài viết..."
+              fetchOptions={fetchHistoryList}
+              style={{width: "100%"}}
+            />
+          </Form.Item>
         </Col>
       </Row>
     </FormModal>

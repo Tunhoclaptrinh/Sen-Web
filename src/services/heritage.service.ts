@@ -22,6 +22,14 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   }
 
   /**
+   * Get multiple heritage sites by IDs
+   */
+  async getByIds(ids: number[] | string[]): Promise<BaseApiResponse<HeritageSite[]>> {
+    const idString = Array.isArray(ids) ? ids.join(",") : ids;
+    return this.getAll({ids: idString});
+  }
+
+  /**
    * Get nearby heritage sites based on coordinates
    */
   async getNearby(

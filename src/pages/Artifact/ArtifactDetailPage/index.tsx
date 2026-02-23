@@ -87,39 +87,100 @@ const ArtifactDetailPage = () => {
     try {
       const currentId = currentItem.id;
 
-      // 1. Fetch related artifacts (same heritage site or random)
-      if (currentItem.heritageSiteId) {
-        const res = await artifactService.getAll({
-          heritageSiteId: currentItem.heritageSiteId,
-          limit: 4,
+      // 1. Fetch related artifacts (prioritize explicit links)
+      const relArtIds = currentItem.relatedArtifactIds || [];
+      let relatedArtifactsData: Artifact[] = [];
+
+      if (relArtIds.length > 0) {
+        const resRel = await artifactService.getAll({
+          ids: relArtIds.join(","),
         });
-        if (res.data) {
-          setRelatedArtifacts(res.data.filter((a) => a.id !== currentId).slice(0, 3));
-        }
-      } else {
-        const res = await artifactService.getAll({limit: 4});
-        if (res.data) {
-          setRelatedArtifacts(res.data.filter((a) => a.id !== currentId).slice(0, 3));
+        if (resRel.data) relatedArtifactsData = resRel.data;
+      }
+
+      // If we don't have enough, fallback to same heritage site
+      if (relatedArtifactsData.length < 3 && currentItem.heritageSiteId) {
+        const resSiteArt = await artifactService.getAll({
+          heritageSiteId: currentItem.heritageSiteId,
+          limit: 6,
+        });
+        if (resSiteArt.data) {
+          const existingIds = new Set(relatedArtifactsData.map(a => a.id));
+          resSiteArt.data.forEach(a => {
+            if (a.id !== currentId && !existingIds.has(a.id) && relatedArtifactsData.length < 3) {
+              relatedArtifactsData.push(a);
+            }
+          });
         }
       }
 
-      // 2. Fetch related heritage
+      // If still not enough, fill with random ones
+      if (relatedArtifactsData.length < 3) {
+        const resAll = await artifactService.getAll({limit: 6});
+        if (resAll.data) {
+          const existingIds = new Set(relatedArtifactsData.map(a => a.id));
+          resAll.data.forEach(a => {
+            if (a.id !== currentId && !existingIds.has(a.id) && relatedArtifactsData.length < 3) {
+              relatedArtifactsData.push(a);
+            }
+          });
+        }
+      }
+      setRelatedArtifacts(relatedArtifactsData);
+
+      // 2. Fetch related heritage (prioritize explicit + fill up to 3)
       const relHeriIds = currentItem.relatedHeritageIds || [];
+      const relatedHeritageData: HeritageSite[] = [];
+      
       if (relHeriIds.length > 0) {
-        const res = await heritageService.getAll({ids: relHeriIds.join(",")});
-        if (res.data) setRelatedHeritage(res.data);
-      } else if (currentItem.heritageSiteId) {
-        // Fallback to the parent heritage site
-        const res = await heritageService.getById(currentItem.heritageSiteId);
-        if (res.data) setRelatedHeritage([res.data]);
+        const res = await heritageService.getByIds(relHeriIds);
+        if (res.data) relatedHeritageData.push(...res.data);
       }
+      
+      if (relatedHeritageData.length < 3) {
+        // Fallback: try parent site, then random
+        if (currentItem.heritageSiteId) {
+          const isCurrentInRel = relatedHeritageData.some(h => h.id === currentItem.heritageSiteId);
+          if (!isCurrentInRel) {
+            const res = await heritageService.getById(currentItem.heritageSiteId);
+            if (res.data) relatedHeritageData.push(res.data);
+          }
+        }
+        
+        if (relatedHeritageData.length < 3) {
+          const resAll = await heritageService.getAll({limit: 6});
+          if (resAll.data) {
+            const existingIds = new Set(relatedHeritageData.map(h => h.id));
+            resAll.data.forEach(h => {
+              if (!existingIds.has(h.id) && relatedHeritageData.length < 3) {
+                relatedHeritageData.push(h);
+              }
+            });
+          }
+        }
+      }
+      setRelatedHeritage(relatedHeritageData);
 
-      // 3. Fetch related history
+      // 3. Fetch related history (prioritize explicit + fill up to 3)
       const relHistIds = currentItem.relatedHistoryIds || [];
+      const relatedHistoryData: HistoryArticle[] = [];
       if (relHistIds.length > 0) {
-        const res = await historyService.getAll({ids: relHistIds.join(",")});
-        if (res.data) setRelatedHistory(res.data);
+        const res = await historyService.getByIds(relHistIds);
+        if (res.data) relatedHistoryData.push(...res.data);
       }
+      
+      if (relatedHistoryData.length < 3) {
+        const resAll = await historyService.getAll({limit: 6});
+        if (resAll.data) {
+          const existingIds = new Set(relatedHistoryData.map(h => h.id));
+          resAll.data.forEach(h => {
+            if (!existingIds.has(h.id) && relatedHistoryData.length < 3) {
+              relatedHistoryData.push(h);
+            }
+          });
+        }
+      }
+      setRelatedHistory(relatedHistoryData);
     } catch (e) {
       console.error("Failed to fetch related data", e);
     }

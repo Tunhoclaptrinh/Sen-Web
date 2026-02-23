@@ -92,11 +92,30 @@ const HeritageDetailPage = () => {
     try {
       const currentId = currentItem.id.toString();
 
-      // 1. Fetch nearby/related sites
-      const resRelated = await heritageService.getAll({limit: 4});
-      if (resRelated.data) {
-        setRelatedSites(resRelated.data.filter((s) => s.id !== Number(currentId)).slice(0, 3));
+      // 1. Fetch related sites (prioritize explicit links)
+      const relSiteIds = currentItem.relatedHeritageIds || [];
+      let relatedSitesData: HeritageSite[] = [];
+      
+      if (relSiteIds.length > 0) {
+        const resRel = await heritageService.getAll({
+          ids: relSiteIds.join(","),
+        });
+        if (resRel.data) relatedSitesData = resRel.data;
       }
+      
+      // If we don't have enough, fill with random ones
+      if (relatedSitesData.length < 3) {
+        const resAll = await heritageService.getAll({limit: 6});
+        if (resAll.data) {
+          const existingIds = new Set(relatedSitesData.map(s => s.id));
+          resAll.data.forEach(s => {
+            if (s.id !== Number(currentId) && !existingIds.has(s.id) && relatedSitesData.length < 3) {
+              relatedSitesData.push(s);
+            }
+          });
+        }
+      }
+      setRelatedSites(relatedSitesData);
 
       // 2. Fetch artifacts (from backlink AND relatedArtifactIds)
       const resBackArtifacts = await heritageService.getArtifacts(currentId);
@@ -116,14 +135,26 @@ const HeritageDetailPage = () => {
       }
       setSiteArtifacts(allArtifacts);
 
-      // 3. Fetch History (from related_history_ids)
+      // 3. Fetch History (prioritize explicit links + fill up to 3)
       const relHistIds = currentItem.relatedHistoryIds || [];
+      const relatedHistoryData: HistoryArticle[] = [];
       if (relHistIds.length > 0) {
-        const resHist = await historyService.getAll({
-          ids: relHistIds.join(","),
-        });
-        if (resHist.data) setRelatedHistoryArr(resHist.data);
+        const resHist = await historyService.getByIds(relHistIds);
+        if (resHist.data) relatedHistoryData.push(...resHist.data);
       }
+
+      if (relatedHistoryData.length < 3) {
+        const resRelated = await historyService.getRelated(currentId, 6);
+        if (resRelated.data) {
+          const existingIds = new Set(relatedHistoryData.map((h) => h.id));
+          resRelated.data.forEach((h) => {
+            if (!existingIds.has(h.id) && relatedHistoryData.length < 3) {
+              relatedHistoryData.push(h);
+            }
+          });
+        }
+      }
+      setRelatedHistoryArr(relatedHistoryData);
 
       // 4. Fetch Timeline
       const resTimeline = await heritageService.getTimeline(currentId);

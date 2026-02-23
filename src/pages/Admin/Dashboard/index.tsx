@@ -244,14 +244,14 @@ const Dashboard = () => {
       count: (stats?.heritage?.pending || 0) + (stats?.artifacts?.pending || 0) + (stats?.learning?.pending || 0),
       color: "#faad14",
       icon: <WarningOutlined />,
-      link: "/admin/heritage?status=pending",
+      link: "/admin/heritage-sites?status=pending",
     },
     {
       label: "Bản nháp",
       count: (stats?.heritage?.draft || 0) + (stats?.artifacts?.draft || 0) + (stats?.learning?.draft || 0),
       color: "#1890ff",
       icon: <EditOutlined />,
-      link: "/admin/heritage?status=draft",
+      link: "/admin/heritage-sites?status=draft",
     },
     {
       label: "Đánh giá mới",
@@ -263,7 +263,7 @@ const Dashboard = () => {
   ];
 
   const quickCreateItems = [
-    {key: "/admin/heritage", icon: <BankOutlined />, label: "Thêm Di sản"},
+    {key: "/admin/heritage-sites", icon: <BankOutlined />, label: "Thêm Di sản"},
     {key: "/admin/artifacts", icon: <FileOutlined />, label: "Thêm Hiện vật"},
     {key: "/admin/history", icon: <HistoryOutlined />, label: "Viết bài Lịch sử"},
     {key: "/admin/learning", icon: <BookOutlined />, label: "Tạo bài học"},
@@ -586,7 +586,7 @@ const Dashboard = () => {
               }}
               bodyStyle={{flex: 1, overflowY: "auto", padding: "12px 24px"}}
               extra={
-                <Button type="link" size="small" onClick={() => navigate("/admin/settings/notifications")}>
+                <Button type="link" size="small" onClick={() => navigate("/notifications")}>
                   Tất cả
                 </Button>
               }

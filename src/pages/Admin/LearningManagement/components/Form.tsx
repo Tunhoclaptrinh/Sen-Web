@@ -1,12 +1,16 @@
 import React from "react";
 import {Form, Input, Select, InputNumber, Button, Steps, Row, Col, DatePicker} from "antd";
-import {ReadOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
+import {ReadOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, LinkOutlined} from "@ant-design/icons";
 import TinyEditor from "@/components/common/TinyEditor";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
-import {FormModal, Button as StyledButton} from "@/components/common";
+import {FormModal, Button as StyledButton, DebounceSelect} from "@/components/common";
 import {useAuth} from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import categoryService, {Category} from "@/services/category.service";
+import heritageService from "@/services/heritage.service";
+import artifactService from "@/services/artifact.service";
+import historyService from "@/services/history.service";
+import {HeritageSite, Artifact, HistoryArticle} from "@/types";
 
 interface LearningFormProps {
   visible: boolean;
@@ -75,20 +79,73 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
       form.resetFields();
       setCurrentStep(0);
       if (initialValues) {
-        form.setFieldsValue(memoizedInitialValues);
+        const initData = async () => {
+          try {
+            // Fetch labels for related IDs
+            const [relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+              (initialValues.relatedHeritageIds?.length ?? 0) > 0
+                ? heritageService.getByIds(initialValues.relatedHeritageIds!)
+                : Promise.resolve({success: true, data: []}),
+              (initialValues.relatedArtifactIds?.length ?? 0) > 0
+                ? artifactService.getAll({
+                    ids: initialValues.relatedArtifactIds!.join(","),
+                  })
+                : Promise.resolve({success: true, data: []}),
+              (initialValues.relatedHistoryIds?.length ?? 0) > 0
+                ? historyService.getAll({
+                    ids: initialValues.relatedHistoryIds!.join(","),
+                  })
+                : Promise.resolve({success: true, data: []}),
+            ]);
+
+            const formattedValues = {
+              ...memoizedInitialValues,
+              relatedHeritageIds: (initialValues.relatedHeritageIds || []).map((id: number) => {
+                const item = relHeritageRes.data?.find((h: HeritageSite) => h.id === id);
+                return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
+              }),
+              relatedArtifactIds: (initialValues.relatedArtifactIds || []).map((id: number) => {
+                const item = relArtifactsRes.data?.find((a: Artifact) => a.id === id);
+                return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
+              }),
+              relatedHistoryIds: (initialValues.relatedHistoryIds || []).map((id: number) => {
+                const item = relHistoryRes.data?.find((h: HistoryArticle) => h.id === id);
+                return item ? {label: item.title, value: item.id} : {label: `ID: ${id}`, value: id};
+              }),
+            };
+
+            form.setFieldsValue(formattedValues);
+          } catch (error) {
+            console.error("Failed to init learning related data", error);
+            form.setFieldsValue(memoizedInitialValues);
+          }
+        };
+
+        initData();
       }
     }
   }, [visible, memoizedInitialValues, form, initialValues]);
 
   const handleFinish = (values: any) => {
+    // Transform related IDs back to numbers
+    const submitData = {
+      ...values,
+      relatedHeritageIds:
+        values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedArtifactIds:
+        values.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedHistoryIds:
+        values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+    };
+
     // Auto-generate IDs for questions if missing
-    if (values.quiz && values.quiz.questions) {
-      values.quiz.questions = values.quiz.questions.map((q: any, idx: number) => ({
+    if (submitData.quiz && submitData.quiz.questions) {
+      submitData.quiz.questions = submitData.quiz.questions.map((q: any, idx: number) => ({
         ...q,
         id: q.id || Date.now() + idx, // Simple ID generation
       }));
     }
-    onSubmit(values);
+    onSubmit(submitData);
   };
 
   const next = async () => {
@@ -110,6 +167,22 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
     } catch (error) {
       // Validation failed
     }
+  };
+
+  // Fetch functions for DebounceSelect
+  const fetchHeritageList = async (search: string) => {
+    const res = await heritageService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((h: HeritageSite) => ({label: h.name, value: h.id})) : [];
+  };
+
+  const fetchArtifactList = async (search: string) => {
+    const res = await artifactService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((a: Artifact) => ({label: a.name, value: a.id})) : [];
+  };
+
+  const fetchHistoryList = async (search: string) => {
+    const res = await historyService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((h: HistoryArticle) => ({label: h.title, value: h.id})) : [];
   };
 
   const prev = () => {
@@ -142,12 +215,12 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
               Quay lại
             </StyledButton>
           )}
-          {currentStep < 1 && (
+          {currentStep < 2 && (
             <StyledButton variant="primary" onClick={next}>
               Tiếp theo
             </StyledButton>
           )}
-          {currentStep === 1 && (
+          {currentStep === 2 && (
             <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick}>
               {isEdit ? "Cập nhật" : "Hoàn tất"}
             </StyledButton>
@@ -159,6 +232,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
         <Steps current={currentStep}>
           <Steps.Step title="Thông tin chung" description="Thiết lập nội dung" />
           <Steps.Step title="Cấu hình Quiz" description="Câu hỏi & Trắc nghiệm" />
+          <Steps.Step title="Liên kết" icon={<LinkOutlined />} description="Nội dung liên quan" />
         </Steps>
       </div>
 
@@ -458,6 +532,40 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                 </div>
               )}
             </Form.List>
+          </div>
+        </div>
+
+        {/* Step 3: Related Content */}
+        <div style={{display: currentStep === 2 ? "block" : "none"}}>
+          <div style={{background: "#f9f9f9", padding: 24, borderRadius: 12, border: "1px solid #f0f0f0"}}>
+            <h3 style={{marginBottom: 20}}>Nội dung liên quan (Ngon Logic)</h3>
+
+            <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
+              <DebounceSelect
+                mode="multiple"
+                placeholder="Tìm di sản..."
+                fetchOptions={fetchHeritageList}
+                style={{width: "100%"}}
+              />
+            </Form.Item>
+
+            <Form.Item label="Hiện vật liên quan" name="relatedArtifactIds">
+              <DebounceSelect
+                mode="multiple"
+                placeholder="Tìm hiện vật..."
+                fetchOptions={fetchArtifactList}
+                style={{width: "100%"}}
+              />
+            </Form.Item>
+
+            <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds">
+              <DebounceSelect
+                mode="multiple"
+                placeholder="Tìm bài viết..."
+                fetchOptions={fetchHistoryList}
+                style={{width: "100%"}}
+              />
+            </Form.Item>
           </div>
         </div>
       </Form>

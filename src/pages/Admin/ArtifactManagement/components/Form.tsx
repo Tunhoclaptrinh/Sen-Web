@@ -6,6 +6,7 @@ import {ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLa
 import {useEffect, useState} from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
+import artifactService from "@/services/artifact.service";
 import categoryService from "@/services/category.service";
 
 interface ArtifactFormProps {
@@ -42,7 +43,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       if (open && isEdit && initialValues) {
         try {
           // Fetch labels for related IDs
-          const [relHeritageRes, relHistoryRes] = await Promise.all([
+          const [relHeritageRes, relHistoryRes, relArtifactRes] = await Promise.all([
             initialValues.relatedHeritageIds?.length > 0
               ? heritageService.getAll({
                   ids: initialValues.relatedHeritageIds.join(","),
@@ -53,9 +54,14 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   ids: initialValues.relatedHistoryIds.join(","),
                 })
               : Promise.resolve({success: true, data: []}),
+            initialValues.relatedArtifactIds?.length > 0
+              ? artifactService.getAll({
+                  ids: initialValues.relatedArtifactIds.join(","),
+                })
+              : Promise.resolve({success: true, data: []}),
           ]);
 
-          // Map related heritage to {label, value}
+          // Map related heritage
           const relatedHeri = (initialValues.relatedHeritageIds || []).map((id: any) => {
             const heri =
               relHeritageRes.success && relHeritageRes.data
@@ -68,7 +74,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 : {label: `ID: ${id}`, value: id};
           });
 
-          // Map related history to {label, value}
+          // Map related history
           const relatedHistoryArr = (initialValues.relatedHistoryIds || []).map((id: any) => {
             const hist =
               relHistoryRes.success && relHistoryRes.data
@@ -81,10 +87,24 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 : {label: `ID: ${id}`, value: id};
           });
 
+          // Map related artifacts
+          const relatedArts = (initialValues.relatedArtifactIds || []).map((id: any) => {
+            const art =
+              relArtifactRes.success && relArtifactRes.data
+                ? relArtifactRes.data.find((a: any) => a.id === (typeof id === "object" ? id.value : id))
+                : null;
+            return art
+              ? {label: art.name, value: art.id}
+              : typeof id === "object"
+                ? id
+                : {label: `ID: ${id}`, value: id};
+          });
+
           const formattedValues = {
             ...initialValues,
             relatedHeritageIds: relatedHeri,
             relatedHistoryIds: relatedHistoryArr,
+            relatedArtifactIds: relatedArts,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
@@ -161,7 +181,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           "isOnDisplay",
         ];
         const tab2Fields = ["description", "historicalContext", "culturalSignificance"];
-        const tab3Fields = ["relatedHeritageIds", "relatedHistoryIds"];
+        const tab3Fields = ["relatedHeritageIds", "relatedHistoryIds", "relatedArtifactIds"];
 
         if (tab1Fields.includes(firstErrorField)) {
           setActiveTab("1");
@@ -196,6 +216,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedHistoryIds:
         values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedArtifactIds:
+        values.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
     const success = await onSubmit(submitData);
     if (success) {
@@ -233,6 +255,22 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       return [];
     } catch (error) {
       console.error("Fetch history articles failed", error);
+      return [];
+    }
+  };
+
+  const fetchArtifactList = async (search: string) => {
+    try {
+      const response = await artifactService.getAll({q: search, limit: 10});
+      if (response.success && response.data) {
+        return response.data.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Fetch artifacts failed", error);
       return [];
     }
   };
@@ -504,6 +542,19 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm bài viết..."
                     fetchOptions={fetchHistoryList}
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Hiện vật liên quan"
+                  name="relatedArtifactIds"
+                  tooltip="Các hiện vật khác có liên quan hoặc cùng bộ sưu tập"
+                >
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm hiện vật..."
+                    fetchOptions={fetchArtifactList}
                     style={{width: "100%"}}
                   />
                 </Form.Item>

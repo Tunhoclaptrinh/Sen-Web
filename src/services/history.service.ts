@@ -12,6 +12,14 @@ class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticl
   }
 
   /**
+   * Get multiple history articles by IDs
+   */
+  async getByIds(ids: number[] | string[]): Promise<BaseApiResponse<HistoryArticle[]>> {
+    const idString = Array.isArray(ids) ? ids.join(",") : ids;
+    return this.getAll({ids: idString});
+  }
+
+  /**
    * Get related articles
    */
   async getRelated(id: number | string, limit: number = 5): Promise<BaseApiResponse<HistoryArticle[]>> {

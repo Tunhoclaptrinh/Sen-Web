@@ -21,6 +21,14 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
   }
 
   /**
+   * Get multiple artifacts by IDs
+   */
+  async getByIds(ids: number[] | string[]): Promise<BaseApiResponse<Artifact[]>> {
+    const idString = Array.isArray(ids) ? ids.join(",") : ids;
+    return this.getAll({ids: idString});
+  }
+
+  /**
    * Get related artifacts (same heritage site or category)
    */
   async getRelated(
