@@ -5,12 +5,12 @@ import apiClient from '../../config/axios.config';
 // Shop Service Wrapper
 const shopApi = {
     getShopItems: async () => {
-        const response = await apiClient.get('/shop');
-        return response; // Configured axios interceptor returns data directly
+        const response: any = await apiClient.get('/shop');
+        return Array.isArray(response) ? response : (response.data || []);
     },
     getUserInventory: async () => {
-        const response = await apiClient.get('/shop/inventory');
-        return response;
+        const response: any = await apiClient.get('/shop/inventory');
+        return Array.isArray(response) ? response : (response.data || []);
     },
     purchaseItem: async (itemId: number, quantity: number) => {
         const response = await apiClient.post('/shop/buy', { itemId, quantity });
