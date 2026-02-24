@@ -1,0 +1,230 @@
+.learning-detail-page {
+  /* Existing overrides if needed */
+}
+
+/* Custom Completion Modal Styles */
+.completion-modal-custom {
+  .ant-modal-content {
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    background: transparent;
+  }
+
+  .ant-modal-body {
+    padding: 0;
+  }
+
+  .completion-content {
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    /* Decorative Background */
+    &::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(
+        circle,
+        rgba(255, 215, 0, 0.2) 0%,
+        transparent 70%
+      );
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(
+        circle,
+        rgba(82, 196, 26, 0.2) 0%,
+        transparent 70%
+      );
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .completion-icon-wrapper {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 24px;
+
+      .main-icon {
+        font-size: 80px;
+        color: #52c41a;
+        filter: drop-shadow(0 4px 10px rgba(82, 196, 26, 0.4));
+      }
+
+      .star-decoration {
+        position: absolute;
+        font-size: 24px;
+        color: #faad14;
+        animation: float 3s ease-in-out infinite;
+      }
+    }
+
+    .completion-title {
+      font-family: "Playfair Display", serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .completion-subtitle {
+      font-size: 16px;
+      color: #8c8c8c;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .score-card {
+      background: linear-gradient(135deg, #f6ffed 0%, #ffffff 100%);
+      border: 2px solid #b7eb8f;
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 20px rgba(82, 196, 26, 0.1);
+
+      .score-value {
+        font-size: 48px;
+        font-weight: 800;
+        color: #52c41a;
+        line-height: 1;
+        margin-bottom: 4px;
+        text-shadow: 0 2px 0 rgba(255, 255, 255, 1);
+      }
+
+      .score-label {
+        font-size: 14px;
+        color: #52c41a;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    }
+
+    .rewards-section {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+
+      .reward-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .reward-value {
+          font-size: 24px;
+          font-weight: 700;
+          color: #faad14;
+        }
+
+        .reward-label {
+          font-size: 12px;
+          color: #8c8c8c;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .action-button {
+      width: 100%;
+      height: 48px;
+      font-size: 16px;
+      font-weight: 600;
+      background: linear-gradient(90deg, #52c41a 0%, #389e0d 100%);
+      border: none;
+      box-shadow: 0 4px 15px rgba(82, 196, 26, 0.4);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(82, 196, 26, 0.5);
+      }
+    }
+  }
+
+  /* Warning / Fail State specific overrides */
+  &.warning-state {
+    .completion-content {
+      &::after {
+        background: radial-gradient(
+          circle,
+          rgba(255, 77, 79, 0.2) 0%,
+          transparent 70%
+        );
+      }
+
+      .completion-icon-wrapper .main-icon {
+        color: #ff4d4f;
+        filter: drop-shadow(0 4px 10px rgba(255, 77, 79, 0.4));
+      }
+
+      .score-card {
+        background: linear-gradient(135deg, #fff1f0 0%, #ffffff 100%);
+        border-color: #ffccc7;
+        box-shadow: 0 8px 20px rgba(255, 77, 79, 0.1);
+
+        .score-value,
+        .score-label {
+          color: #ff4d4f;
+        }
+      }
+
+      .action-button {
+        background: linear-gradient(90deg, #ff4d4f 0%, #cf1322 100%);
+        box-shadow: 0 4px 15px rgba(255, 77, 79, 0.4);
+
+        &:hover {
+          box-shadow: 0 6px 20px rgba(255, 77, 79, 0.5);
+        }
+      }
+    }
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Confetti Container */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}

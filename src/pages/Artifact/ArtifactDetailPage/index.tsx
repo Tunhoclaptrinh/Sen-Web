@@ -365,7 +365,7 @@ const ArtifactDetailPage = () => {
                         <Row gutter={[48, 24]}>
                           <Col xs={24} md={12}>
                             <h3 className="info-section-title">
-                               Đặc Điểm Hiện Vật
+                               Đặc điểm Hiện vật
                             </h3>
                             <ul className="info-grid-list">
                               <li>
@@ -545,7 +545,7 @@ const ArtifactDetailPage = () => {
                       <Row gutter={[16, 16]}>
                         <Col xs={24} md={12}>
                           <div className="game-card-mini" style={{ border: "1px solid #eee", borderRadius: 12, padding: 16, display: "flex", gap: 16, alignItems: "center" }}>
-                            <div className="game-thumb" style={{ width: 80, height: 80, borderRadius: 8, background: "#eee", backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`, backgroundSize: "cover" }} />
+                            <div className="game-thumb" style={{ width: 80, height: 80, borderRadius: 8, background: "#eee", backgroundImage: `url(/images/hoatiettrongdong.png)`, backgroundSize: "cover" }} />
                             <div className="game-info" style={{ flex: 1 }}>
                                 <h4 style={{ margin: 0, fontSize: 16 }}>Khám phá 3D</h4>
                                 <div style={{ color: "#888", fontSize: 13 }}>Xem chi tiết mọi góc cạnh của hiện vật</div>
@@ -555,7 +555,7 @@ const ArtifactDetailPage = () => {
                         </Col>
                          <Col xs={24} md={12}>
                           <div className="game-card-mini" style={{ border: "1px solid #eee", borderRadius: 12, padding: 16, display: "flex", gap: 16, alignItems: "center" }}>
-                            <div className="game-thumb" style={{ width: 80, height: 80, borderRadius: 8, background: "#eee", backgroundImage: `url(https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200)`, backgroundSize: "cover" }} />
+                            <div className="game-thumb" style={{ width: 80, height: 80, borderRadius: 8, background: "#eee", backgroundImage: `url(/images/Game.png)`, backgroundSize: "cover" }} />
                             <div className="game-info" style={{ flex: 1 }}>
                                 <h4 style={{ margin: 0, fontSize: 16 }}>Giải đố Lịch sử</h4>
                                 <div style={{ color: "#888", fontSize: 13 }}>Thử thách kiến thức về hiện vật này</div>

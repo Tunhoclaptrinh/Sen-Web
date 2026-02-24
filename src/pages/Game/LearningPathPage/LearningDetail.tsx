@@ -20,7 +20,6 @@ import {
     CheckCircleFilled, 
     CloseCircleFilled, 
     QuestionCircleOutlined,
-    TrophyFilled, 
     StarFilled,
     FireFilled,
     CheckOutlined,
@@ -29,6 +28,8 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import learningService, { LearningModule } from '@/services/learning.service';
 import { motion, AnimatePresence } from 'framer-motion';
+
+import "./LearningDetail.less";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -43,6 +44,22 @@ const LearningDetail: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [currentStep, setCurrentStep] = useState<'content' | 'quiz'>('content');
     const [timeLeft, setTimeLeft] = useState(0);
+
+    // Modal State
+    const [completionData, setCompletionData] = useState<{
+        visible: boolean;
+        success: boolean;
+        score: number;
+        pointsEarned: number;
+        isLevelUp?: boolean;
+        newLevel?: number;
+        passingScore?: number;
+    }>({
+        visible: false,
+        success: false,
+        score: 0,
+        pointsEarned: 0
+    });
 
     const handleNavigate = React.useCallback((path: string) => {
         startTransition(() => {
@@ -181,102 +198,31 @@ const LearningDetail: React.FC = () => {
         try {
             setSubmitting(true);
             const response = await learningService.completeModule(module.id, {
-                timeSpent: ((module.estimatedDuration || 30) * 60) - timeLeft, // Calculate actual time spent
+                timeSpent: ((module.estimatedDuration || 30) * 60) - timeLeft,
                 score: score,
-                answers: answers // Send answers for backend validation
+                answers: answers 
             });
 
-            if (response.success) {
-                if (response.data.passed) {
-                    // Check for level up in response data (updated backend)
-                    const responseData = response.data as any; // Cast safely for extended properties 
-                    const isLevelUp = responseData.isLevelUp;
-                    const newLevel = responseData.newLevel;
-
-                    Modal.success({
-                        title: null, // Custom title below
-                        icon: null,
-                        width: 500,
-                        className: 'completion-modal',
-                        content: (
-                            <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                                >
-                                    <CheckCircleFilled style={{ fontSize: 64, color: '#52c41a', marginBottom: 16 }} />
-                                </motion.div>
-                                
-                                <Title level={2} style={{ color: '#52c41a', marginBottom: 8 }}>Xuất Sắc!</Title>
-                                <Text style={{ fontSize: 16, color: '#555' }}>Bạn đã hoàn thành bài học</Text>
-                                
-                                <div style={{ 
-                                    background: '#f6ffed', 
-                                    border: '1px solid #b7eb8f', 
-                                    borderRadius: 16, 
-                                    padding: '16px', 
-                                    marginTop: 24,
-                                    marginBottom: 24
-                                }}>
-                                    <div style={{ fontSize: 36, fontWeight: 800, color: '#52c41a' }}>
-                                        {response.data.score}
-                                    </div>
-                                    <Text type="secondary">Điểm số</Text>
-                                </div>
-
-                                {isLevelUp && (
-                                    <motion.div 
-                                        initial={{ y: 20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        style={{ marginBottom: 24 }}
-                                    >
-                                        <Tag color="gold" style={{ padding: '8px 16px', fontSize: 16, borderRadius: 20, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                            <TrophyFilled /> LEVEL UP! {newLevel}
-                                        </Tag>
-                                    </motion.div>
-                                )}
-
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: 24 }}>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#faad14', fontSize: 20, fontWeight: 'bold' }}>+{response.data.pointsEarned}</div>
-                                        <Text type="secondary" style={{ fontSize: 12 }}>EXP</Text>
-                                    </div>
-                                </div>
-                            </div>
-                        ),
-                        okText: 'Tiếp tục hành trình',
-                        centered: true,
-                        okButtonProps: { 
-                            size: 'large', 
-                            shape: 'round',
-                            style: { background: 'linear-gradient(135deg, #52c41a 0%, #389e0d 100%)', border: 'none' } 
-                        },
-                        onOk: () => {
-                            handleNavigate('/game/learning');
-                        }
-                    });
-                } else {
-                    Modal.warning({
-                        title: 'Cần Cố Gắng Hơn',
-                        icon: <CloseCircleFilled style={{ color: '#ff4d4f' }} />,
-                        content: (
-                            <div style={{ textAlign: 'center', marginTop: 16 }}>
-                                <Title level={2} style={{ color: '#ff4d4f', margin: 0 }}>{response.data.score}</Title>
-                                <Text type="secondary">Điểm cần đạt: {module.quiz?.passingScore || 70}</Text>
-                                <p style={{ marginTop: 16 }}>Đừng nản chí! Hãy ôn lại kiến thức và thử lại nhé.</p>
-                            </div>
-                        ),
-                        okText: 'Thử lại ngay',
-                        centered: true,
-                        okButtonProps: { size: 'large', shape: 'round', danger: true },
-                        onOk: () => {
-                            setAnswers({});
-                            const element = document.getElementById('quiz-section');
-                            if (element) element.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    });
-                }
+            if (response.data.passed) {
+                // Success State
+                setCompletionData({
+                    visible: true,
+                    success: true,
+                    score: response.data.score,
+                    pointsEarned: response.data.pointsEarned,
+                    isLevelUp: (response.data as any).isLevelUp,
+                    newLevel: (response.data as any).newLevel,
+                    passingScore: module.quiz?.passingScore || 70
+                });
+            } else {
+                // Fail State
+                setCompletionData({
+                    visible: true,
+                    success: false,
+                    score: response.data.score,
+                    pointsEarned: 0,
+                    passingScore: module.quiz?.passingScore || 70
+                });
             }
         } catch (error) {
              message.error('Lỗi nộp bài');
@@ -317,7 +263,132 @@ const LearningDetail: React.FC = () => {
                 </div>
             </div>
 
-            <div style={{ maxWidth: '100%', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+            {/* Custom Completion Modal */}
+            <Modal
+                open={completionData.visible}
+                footer={null}
+                closable={false}
+                centered
+                width={480}
+                className={`completion-modal-custom ${!completionData.success ? 'warning-state' : ''}`}
+                maskStyle={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.6)' }}
+            >
+                <div className="completion-content">
+                    {/* Icon Animation */}
+                    <div className="completion-icon-wrapper">
+                        <motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                        >
+                            {completionData.success ? (
+                                <CheckCircleFilled className="main-icon" />
+                            ) : (
+                                <CloseCircleFilled className="main-icon" />
+                            )}
+                        </motion.div>
+                        
+                        {completionData.success && (
+                            <>
+                                <motion.div 
+                                    className="star-decoration" 
+                                    style={{ top: 0, left: 40 }}
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.3 }}
+                                >
+                                    <StarFilled />
+                                </motion.div>
+                                <motion.div 
+                                    className="star-decoration" 
+                                    style={{ bottom: 10, right: 40, fontSize: 18, animationDelay: '1s' }}
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <StarFilled />
+                                </motion.div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Title */}
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <h2 className="completion-title">
+                            {completionData.success ? 'Xuất sắc!' : 'Cần Cố Gắng Thêm'}
+                        </h2>
+                        <p className="completion-subtitle">
+                            {completionData.success 
+                                ? 'Bạn đã hoàn thành bài học này một cách tuyệt vời.' 
+                                : `Bạn cần đạt tối thiểu ${completionData.passingScore} điểm để qua bài.`}
+                        </p>
+                    </motion.div>
+
+                    {/* Score Card */}
+                    <motion.div
+                        className="score-card"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <div className="score-value">{completionData.score}</div>
+                        <div className="score-label">Điểm Số Của Bạn</div>
+                    </motion.div>
+
+                    {/* Level Up & Rewards */}
+                    {completionData.success && (
+                        <motion.div
+                            className="rewards-section"
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                        >
+                            <div className="reward-item">
+                                <div className="reward-value">+{completionData.pointsEarned}</div>
+                                <div className="reward-label">EXP</div>
+                            </div>
+                            {completionData.isLevelUp && (
+                                <div className="reward-item">
+                                     <Tag color="gold" style={{ fontSize: 14, padding: '4px 12px', margin: 0 }}>
+                                        LEVEL UP! {completionData.newLevel}
+                                     </Tag>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {/* Action Button */}
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.8 }}
+                    >
+                        <Button 
+                            type="primary" 
+                            shape="round" 
+                            size="large" 
+                            className="action-button"
+                            onClick={() => {
+                                if (completionData.success) {
+                                    handleNavigate('/game/learning');
+                                } else {
+                                    // Retry logic
+                                    setCompletionData(prev => ({ ...prev, visible: false }));
+                                    setAnswers({});
+                                    const element = document.getElementById('quiz-section');
+                                    if (element) element.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }}
+                        >
+                            {completionData.success ? 'Tiếp tục Hành trình' : 'Thử Lại Ngay'}
+                        </Button>
+                    </motion.div>
+                </div>
+            </Modal>
                 
                 {/* CSS for Article Content */}
                 <style>{`
@@ -746,7 +817,7 @@ const LearningDetail: React.FC = () => {
 
                                                 {/* Submit Button */}
                                                 <Tooltip title={
-                                                    Object.keys(answers).length < module.quiz.questions.length 
+                                                    (Object.keys(answers).length < module.quiz.questions.length)
                                                     ? 'Vui lòng hoàn thành tất cả câu hỏi' 
                                                     : 'Nộp bài ngay'
                                                 }>
@@ -762,7 +833,7 @@ const LearningDetail: React.FC = () => {
                                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                             background: 'linear-gradient(135deg, #A31D1D 0%, #800000 100%)',
                                                             border: 'none',
-                                                            opacity: Object.keys(answers).length < module.quiz.questions.length ? 0.5 : 1,
+                                                            opacity: (Object.keys(answers).length < module.quiz.questions.length) ? 0.5 : 1,
                                                             boxShadow: '0 8px 20px rgba(163, 29, 29, 0.3)'
                                                         }}
                                                         icon={<CheckOutlined style={{ fontSize: 24, fontWeight: 'bold' }} />}
@@ -778,7 +849,6 @@ const LearningDetail: React.FC = () => {
                         </AnimatePresence>
                     </Col>
                 </Row>
-            </div>
 
 
         </div>

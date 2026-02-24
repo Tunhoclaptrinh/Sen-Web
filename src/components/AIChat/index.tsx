@@ -763,7 +763,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     if ((!input.trim() && !selectedFile) || loading || !currentCharacter) return;
 
     if (selectedFile) {
-        // console.log("Sending file:", selectedFile.name);
         // Implement upload logic here later
     }
 

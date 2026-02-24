@@ -35,7 +35,6 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
 
     const handleRunLevel = async (level: any) => {
         try {
-            console.log("Preparing run level:", level.id);
             // 1. Try to use screens from local level object first
             if (level.screens && Array.isArray(level.screens) && level.screens.length > 0) {
                 setSimulatorScreens(level.screens);

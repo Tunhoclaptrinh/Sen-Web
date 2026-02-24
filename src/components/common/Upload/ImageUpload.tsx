@@ -128,7 +128,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       const apiBase =
         import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
       const url = `${apiBase}/upload/file`;
-      console.log(`Upload Target URL: ${url}`);
       xhr.open("POST", url);
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 

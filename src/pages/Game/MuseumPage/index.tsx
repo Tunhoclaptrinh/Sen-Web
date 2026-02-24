@@ -50,7 +50,7 @@ const MuseumPage: React.FC = () => {
     };
 
     const handleCollectIncome = () => {
-        console.log('Collect income');
+        // console.log('Collect income');
     };
 
     // Enrich inventory items with shop data

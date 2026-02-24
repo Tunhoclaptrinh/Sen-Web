@@ -287,7 +287,7 @@ const Header: React.FC = () => {
             <div className="mobile-auth-section">
               <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button type="primary" block className="action-btn-premium">
-                  Đăng Nhập
+                  Đăng nhập
                 </Button>
               </Link>
             </div>

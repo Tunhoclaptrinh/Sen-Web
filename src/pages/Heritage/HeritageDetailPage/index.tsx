@@ -443,7 +443,7 @@ const HeritageDetailPage = () => {
                         </Col>
                         <Col xs={24} md={12}>
                           <h3 className="info-section-title">
-                            Địa Điểm & Xếp Hạng
+                            Địa điểm & Xếp hạng
                           </h3>
                           <ul className="info-grid-list">
                             <li>

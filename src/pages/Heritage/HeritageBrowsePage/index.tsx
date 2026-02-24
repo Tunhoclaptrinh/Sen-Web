@@ -91,7 +91,7 @@ const HeritageBrowsePage: React.FC = () => {
             {/* 1. Hero Section */}
             <section className="hero-section">
                 <div className="hero-content">
-                    <Title level={1}>Hành Trình Di Sản</Title>
+                    <Title level={1}>Hành trình Di sản</Title>
                     <p className="hero-subtitle">
                         Kết nối quá khứ và hiện tại, khám phá vẻ đẹp bất tận của danh lam thắng cảnh
                         và di tích lịch sử Việt Nam.

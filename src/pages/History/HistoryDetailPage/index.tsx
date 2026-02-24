@@ -197,7 +197,7 @@ const HistoryDetailPage = () => {
                             label: 'Dòng thời gian',
                             children: (
                                 <div className="article-main-wrapper">
-                                    <Title level={3} style={{fontFamily: 'Aleo, serif', marginBottom: 32, textAlign: 'center'}}>Các Mốc Sự Kiện Quan Trọng</Title>
+                                    <Title level={3} style={{fontFamily: 'Aleo, serif', marginBottom: 32, textAlign: 'center'}}>Các mốc Sự kiện Quan trọng</Title>
                                     {article.timelineEvents && article.timelineEvents.length > 0 ? (
                                         <div style={{maxWidth: 800, margin: '0 auto'}}>
                                             <Timeline mode="alternate">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import {
     Row,
@@ -49,16 +49,12 @@ const ArtifactBrowsePage: React.FC = () => {
         total: 0,
     });
 
-    useEffect(() => {
-        fetchArtifacts();
-    }, [pagination.current, filters]);
-
-    const fetchArtifacts = async () => {
+    const fetchArtifacts = useCallback(async (page: number, pageSize: number) => {
         try {
             setLoading(true);
             const response = await artifactService.getAll({
-                page: pagination.current,
-                limit: pagination.pageSize,
+                page: page,
+                limit: pageSize,
                 ...filters,
             });
             
@@ -84,7 +80,13 @@ const ArtifactBrowsePage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters]);
+
+    const { current, pageSize } = pagination;
+
+    useEffect(() => {
+        fetchArtifacts(current, pageSize);
+    }, [fetchArtifacts, current, pageSize]);
 
     const handleSearch = (value: string) => {
         setFilters((prev) => ({ ...prev, q: value }));
@@ -135,7 +137,7 @@ const ArtifactBrowsePage: React.FC = () => {
                             allowClear
                             style={{ width: '100%' }}
                             value={filters.yearCreated ? dayjs(filters.yearCreated, 'YYYY') : null}
-                            onChange={(date, dateString) => 
+                            onChange={(_, dateString) => 
                                 setFilters((prev) => ({ 
                                     ...prev, 
                                     yearCreated: dateString as string 

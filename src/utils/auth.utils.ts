@@ -230,7 +230,6 @@ export const setupAutoLogout = (onLogout: () => void): (() => void) => {
         if (!token) return;
 
         if (jwtUtils.isExpired(token)) {
-            console.log('[Auth] Token expired, logging out...');
             authUtils.clearAuth();
             onLogout();
         }
@@ -261,7 +260,6 @@ export const setupTokenRefresh = (
         const refreshThreshold = minutesBeforeExpiry * 60; // Convert to seconds
 
         if (timeUntilExpiry > 0 && timeUntilExpiry < refreshThreshold) {
-            console.log('[Auth] Token expiring soon, refreshing...');
             try {
                 await onRefresh();
             } catch (error) {
