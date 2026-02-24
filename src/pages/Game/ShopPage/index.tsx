@@ -14,7 +14,7 @@ const {Title, Text} = Typography;
 
 const ShopPage: React.FC = () => {
   const dispatch = useDispatch();
-  const {items, inventory, loading, purchaseLoading, error, successMessage} = useSelector(
+  const {items = [], inventory = [], loading, purchaseLoading, error, successMessage} = useSelector(
     (state: RootState) => state.shop,
   );
   const {progress} = useSelector((state: RootState) => state.game);

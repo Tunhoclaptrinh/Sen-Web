@@ -15,7 +15,7 @@ const {Title, Text} = Typography;
 const MuseumPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const {museum, museumLoading} = useAppSelector((state) => state.game);
-  const {inventory, items: shopItems, loading: shopLoading} = useAppSelector((state) => state.shop);
+  const {inventory = [], items: shopItems = [], loading: shopLoading} = useAppSelector((state) => state.shop);
   const [activeTab, setActiveTab] = useState("all");
 
   // Modal state
