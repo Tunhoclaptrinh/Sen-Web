@@ -154,7 +154,7 @@
       color: rgba(255, 255, 255, 0.8) !important;
       
       &:hover, &.ant-menu-item-selected {
-        color: rgb(255, 161, 66) !important;
+        color: var(--gold-color) !important;
         background: transparent !important;
         font-weight: 700 !important;
       }
@@ -218,7 +218,7 @@
   background: transparent !important;
   line-height: 64px !important; // Match header height
   width: 100%;
-  
+  font-family: @font-serif;
 
   .ant-menu-item {
     font-size: 16px;
@@ -251,6 +251,7 @@
 
   .user-text {
     font-weight: 500;
+    font-family: @font-serif;
   }
 
   &:hover {
