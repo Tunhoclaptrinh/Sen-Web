@@ -34,6 +34,13 @@
       transform: scale(1.1);
   }
 
+  // Keep aspect ratio for Image Viewer and Hidden Object (show full image)
+  &.image-viewer-screen .game-background,
+  &.hidden-object-screen .game-background {
+      background-size: contain;
+      background-repeat: no-repeat;
+  }
+
   // Dark overlay for Quiz Screen & Image Viewer
   &.quiz-screen .game-background::after,
   &.image-viewer-screen .game-background::after,
@@ -385,16 +392,24 @@
         // Video Layer - Full Screen / Maximize
         .video-frame {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
             height: 100%;
-            z-index: 0; 
+            max-width: 100%;
+            max-height: 100%;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             iframe {
                 width: 100%;
                 height: 100%;
+                max-height: 100%;
                 border: none;
+                aspect-ratio: 16/9;
             }
         }
 
@@ -451,7 +466,8 @@
           padding: 24px;
           width: 100%;
           max-width: 900px;
-          height: 85vh;
+          max-height: 85%;
+          height: auto;
           display: flex;
           flex-direction: column;
           gap: 16px;
@@ -468,10 +484,14 @@
           justify-content: center;
           position: relative;
           padding: 12px;
+          min-height: 300px;
+          max-height: 450px;
 
           img {
               max-width: 100%;
               max-height: 100%;
+              width: auto;
+              height: auto;
               object-fit: contain;
               border-radius: 4px;
               cursor: zoom-in;
@@ -550,6 +570,7 @@
     position: relative;
     flex: 1; 
     background: #000;
+    overflow: hidden;
     
     .scene-container {
         flex: 1;
@@ -569,16 +590,22 @@
             box-shadow: 0 0 40px rgba(0,0,0,0.8);
             display: inline-block; /* Wraps tightly around the image */
             max-width: 100%;
+            max-height: 100%;
             
             img.game-scene-image {
                 display: block; 
                 width: auto;
                 height: auto;
                 max-width: 100%;
-                max-height: calc(100vh - 160px); 
+                max-height: 400px;
                 pointer-events: none; 
                 border: 2px solid @gold-border;
                 border-radius: 4px;
+                object-fit: contain;
+
+                @media (min-height: 800px) {
+                  max-height: 480px;
+                }
             }
         }
 

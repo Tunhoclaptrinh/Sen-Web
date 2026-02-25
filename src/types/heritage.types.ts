@@ -265,6 +265,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
   relatedHeritageIds?: number[];
+  relatedLevelIds?: number[];
   relatedArtifacts?: any[]; // Full objects if needed
   relatedLevels?: any[];
   relatedProducts?: any[];
@@ -297,6 +298,7 @@ export interface HeritageSiteDTO {
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
   relatedHeritageIds?: number[];
+  relatedLevelIds?: number[];
   references?: string;
 }
 

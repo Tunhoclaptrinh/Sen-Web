@@ -188,6 +188,78 @@
   }
 }
 
+.game-cta-banner-style() {
+  background: linear-gradient(135deg, @paper-bg 0%, #f5efe3 100%);
+  border: 2px dashed @gold-border;
+  border-radius: 12px;
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: @seal-red;
+    box-shadow: 0 4px 16px rgba(139, 29, 29, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .cta-icon {
+    font-size: 40px;
+    color: @seal-red;
+    flex-shrink: 0;
+    background: rgba(139, 29, 29, 0.08);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cta-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 4px;
+      font-family: @font-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: @text-color-primary;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: @text-color-secondary;
+    }
+  }
+
+  .ant-btn {
+    .game-btn-primary();
+    height: 44px;
+    padding: 0 28px;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+
+    .cta-icon {
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+    }
+
+    .ant-btn {
+      width: 100%;
+    }
+  }
+}
+
 .product-card-style() {
   .game-card-style();
   padding: 16px;

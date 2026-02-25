@@ -12,6 +12,7 @@ import {
   RocketOutlined,
   ShopOutlined,
   ArrowLeftOutlined,
+  ArrowRightOutlined,
   EyeOutlined,
   FolderAddOutlined,
   GlobalOutlined,
@@ -21,11 +22,13 @@ import historyService from "@/services/history.service"; // Adapt service
 import favoriteService from "@/services/favorite.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
+import gameService from "@/services/game.service";
 import {useViewTracker} from "@/hooks/useViewTracker";
 import {normalizeVietnamese} from "@/utils/helpers";
 import {HistoryArticle, HeritageSite, Artifact, TimelineEvent} from "@/types";
 import {ITEM_TYPES} from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
+import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -37,6 +40,8 @@ const HistoryDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [showGame, setShowGame] = useState(false);
+  const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
 
   // Track view
   useViewTracker("history", id);
@@ -67,8 +72,22 @@ const HistoryDetailPage = () => {
         setArticle(data);
         setRelatedHeritage(data.relatedHeritage || []);
         setRelatedArtifacts(data.relatedArtifacts || []);
-        setRelatedLevels(data.relatedLevels || []);
         setRelatedProducts(data.relatedProducts || []);
+
+        // Fetch Related Levels (Game) - Prefer auto-populated data
+        if (data.relatedLevels && data.relatedLevels.length > 0) {
+          setRelatedLevels(data.relatedLevels);
+        } else {
+          try {
+            const resLevels = await gameService.getAll({
+              relatedHistoryIds: currentId,
+              limit: 4,
+            });
+            if (resLevels.success && resLevels.data) setRelatedLevels(resLevels.data);
+          } catch (err) {
+            console.error("Failed to query related levels", err);
+          }
+        }
 
         // Fetch related history (prioritize explicit links + fill up to 3)
         const relHistIds = data.relatedHistoryIds || [];
@@ -124,6 +143,16 @@ const HistoryDetailPage = () => {
     } catch (error) {
       message.error("Lỗi khi cập nhật yêu thích");
     }
+  };
+
+  const handleStartGame = (levelId?: number) => {
+    if (levelId) {
+      setSelectedLevelId(levelId);
+    } else {
+      const demoId = article && article.id ? (Number(article.id) % 2 === 0 ? 1 : 2) : 1;
+      setSelectedLevelId(demoId);
+    }
+    setShowGame(true);
   };
 
   if (loading)
@@ -300,31 +329,66 @@ const HistoryDetailPage = () => {
                   </div>
 
                   {/* 1. Related Games */}
-                  {relatedLevels.length > 0 && (
-                    <div className="discovery-block">
-                      <Title level={3}>
-                        <RocketOutlined /> Trải nghiệm Lịch sử
-                      </Title>
-                      <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về sự kiện này.</p>
+                  <div className="discovery-block">
+                    <Title level={3}>
+                      <RocketOutlined /> Trải nghiệm Lịch sử
+                    </Title>
+                    <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về sự kiện này.</p>
+                    {showGame && selectedLevelId ? (
+                      <EmbeddedGameZone 
+                        levelId={selectedLevelId} 
+                        onClose={() => setShowGame(false)} 
+                        onNavigateToFullGame={() => navigate("/game/chapters")}
+                      />
+                    ) : (
                       <Row gutter={[24, 24]}>
-                        {relatedLevels.map((level: any) => (
-                          <Col xs={24} md={12} key={level.id}>
-                            <div className="game-card-mini">
-                              <div className="game-thumb" style={{backgroundImage: `url(${level.backgroundImage})`}} />
-                              <div className="game-info">
-                                <h4>{level.name}</h4>
-                                <div className="desc">{level.description}</div>
+                        {relatedLevels.length > 0 ? (
+                          relatedLevels.map((level: any) => (
+                            <Col xs={24} md={12} key={level.id}>
+                              <div className="game-card-mini">
+                                <div 
+                                  className="game-thumb" 
+                                  style={{backgroundImage: `url(${level.thumbnail || level.backgroundImage || level.image})`}} 
+                                />
+                                <div className="game-info">
+                                  <h4>{level.name}</h4>
+                                  <div className="desc">{level.description}</div>
+                                </div>
+                                <Button 
+                                  type="primary" 
+                                  shape="round" 
+                                  icon={<RocketOutlined />}
+                                  onClick={() => handleStartGame(level.id)}
+                                >
+                                  Chơi ngay
+                                </Button>
                               </div>
-                              <Button type="primary" shape="round" icon={<RocketOutlined />}>
-                                Chơi
+                            </Col>
+                          ))
+                        ) : (
+                          <Col span={24}>
+                            <div className="game-cta-banner">
+                              <RocketOutlined className="cta-icon" />
+                              <div className="cta-content">
+                                <h4>Khám phá thế giới game lịch sử</h4>
+                                <p>Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!</p>
+                              </div>
+                              <Button 
+                                type="primary" 
+                                size="large" 
+                                shape="round"
+                                icon={<ArrowRightOutlined />}
+                                onClick={() => navigate("/game/chapters")}
+                              >
+                                Khám phá ngay
                               </Button>
                             </div>
                           </Col>
-                        ))}
+                        )}
                       </Row>
-                      <Divider />
-                    </div>
-                  )}
+                    )}
+                    <Divider />
+                  </div>
 
                   {/* 2. Related Heritage & Artifacts */}
                   {(relatedHeritage.length > 0 || relatedArtifacts.length > 0) && (
