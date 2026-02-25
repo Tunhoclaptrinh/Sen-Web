@@ -163,7 +163,7 @@ const Header: React.FC = () => {
 
           {/* RIGHT: Social & Lang */}
           <Space size="middle" className="util-right">
-            <FacebookOutlined className="social-icon" />
+            <FacebookOutlined className="social-icon" onClick={() => window.open('https://www.facebook.com/profile.php?id=61586454543352', '_blank')} />
             <HeartOutlined className="social-icon" />
             <div className="language-switcher">
               <span className="lang-item active">

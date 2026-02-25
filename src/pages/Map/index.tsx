@@ -6,7 +6,16 @@ import heritageService from "@/services/heritage.service";
 import {artifactService} from "@/services";
 import SimpleMap from "@/components/Map/SimpleMap";
 import {useNavigate} from "react-router-dom";
-import {ITEM_TYPES, MAP_CENTER, MAP_VIEW_MODES, ItemType, MapViewMode} from "@/config/constants";
+import {
+  ITEM_TYPES,
+  MAP_CENTER,
+  MAP_VIEW_MODES,
+  ItemType,
+  MapViewMode,
+  HERITAGE_TYPE_LABELS,
+  ARTIFACT_TYPE_LABELS,
+} from "@/config/constants";
+import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
 import "./styles.less";
 
 const {Option} = Select;
@@ -33,6 +42,7 @@ interface HeritageLocation {
   province: string;
   image?: string;
   mainImage?: string;
+  thumbnail?: string;
 }
 
 interface ArtifactLocation {
@@ -44,6 +54,7 @@ interface ArtifactLocation {
   province?: string;
   image?: string;
   mainImage?: string;
+  thumbnail?: string;
   heritageSiteId?: number;
 }
 
@@ -69,6 +80,17 @@ const MapPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<MapViewMode>(MAP_VIEW_MODES.GOOGLE);
   const [mapData, setMapData] = useState<any>(null);
   const [worldData, setWorldData] = useState<any>(null);
+
+  // Helper to normalize image URLs
+  const getFullImageUrl = (url?: string) => {
+    if (!url) return "";
+    if (url.startsWith("http") || url.startsWith("data:") || url.startsWith("/")) {
+      return url;
+    }
+    // Assume relative path from API base (without /api)
+    const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api").split("/api")[0];
+    return `${baseUrl}/${url}`;
+  };
 
   // Map layers state
   const [trafficLayer, setTrafficLayer] = useState<google.maps.TrafficLayer | null>(null);
@@ -115,27 +137,59 @@ const MapPage: React.FC = () => {
   useEffect(() => {
     const fetchHighchartsData = async () => {
       try {
-        const [mapRes, worldRes] = await Promise.all([
-          fetch("https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json"),
-          fetch("https://code.highcharts.com/mapdata/custom/world.geo.json"),
-        ]);
-        const mapJson = await mapRes.json();
-        const worldJson = await worldRes.json();
+        const fetchWithTimeout = async (url: string, timeoutMs: number) => {
+          const controller = new AbortController();
+          const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
-        // Filter for SEA neighbors (consistent with HomeMapSection)
-        const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
-        const filteredFeatures = worldJson.features.filter(
-          (f: any) =>
-            neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
-        );
+          try {
+            return await fetch(url, {signal: controller.signal});
+          } finally {
+            window.clearTimeout(timeoutId);
+          }
+        };
 
+        // Fetch Vietnam Map Data FIRST to ensure core functionality
+        let mapRes: Response | null = null;
+        try {
+          mapRes = await fetchWithTimeout(
+            "https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json",
+            5000,
+          );
+        } catch (error) {
+          console.warn("CDN map fetch failed, fallback to local", error);
+        }
+
+        let mapJson: any = null;
+        if (mapRes && mapRes.ok) {
+          mapJson = await mapRes.json();
+        }
+
+        if (!mapJson || !Array.isArray(mapJson.features) || mapJson.features.length === 0) {
+          mapJson = await fetch(vnMapDataUrl).then((res) => res.json());
+        }
         setMapData(mapJson);
-        setWorldData({
-          ...worldJson,
-          features: filteredFeatures,
-        });
+
+        // Fetch World Data for background (Custom filtered for SEA)
+        try {
+          const worldRes = await fetch("https://code.highcharts.com/mapdata/custom/world.geo.json");
+          const worldJson = await worldRes.json();
+
+          // Filter for SEA neighbors
+          const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
+          const filteredFeatures = worldJson.features.filter(
+            (f: any) =>
+              neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
+          );
+
+          setWorldData({
+            ...worldJson,
+            features: filteredFeatures,
+          });
+        } catch (e) {
+          console.warn("Failed to load background map", e);
+        }
       } catch (e) {
-        console.warn("Failed to load Highcharts map data", e);
+        console.warn("Error in Highcharts data fetching", e);
       }
     };
     fetchHighchartsData();
@@ -198,7 +252,7 @@ const MapPage: React.FC = () => {
             lng: Number(h.longitude || h.lng),
             type: h.type || "Di sản",
             province: h.province,
-            thumbnail: h.mainImage || h.image || "/images/placeholder-heritage.jpg",
+            thumbnail: getFullImageUrl(h.mainImage || h.image || h.thumbnail) || "/images/placeholder-heritage.jpg",
             itemType: ITEM_TYPES.HERITAGE,
           });
         });
@@ -240,7 +294,7 @@ const MapPage: React.FC = () => {
                   lng: Number(a.longitude),
                   type: a.artifactType || "Hiện vật",
                   province: a.province || "Chưa xác định",
-                  thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
+                  thumbnail: getFullImageUrl(a.mainImage || a.image || a.thumbnail) || "/images/placeholder-artifact.jpg",
                   itemType: ITEM_TYPES.ARTIFACT,
                 });
               }
@@ -292,6 +346,11 @@ const MapPage: React.FC = () => {
 
   const provinces = Array.from(new Set(locations.map((l) => l.province).filter(Boolean))).sort();
   const types = Array.from(new Set(locations.map((l) => l.type).filter(Boolean))).sort();
+  
+  const getTypeLabel = (type: string) => {
+    return (HERITAGE_TYPE_LABELS as any)[type] || (ARTIFACT_TYPE_LABELS as any)[type] || type;
+  };
+
   const heritageCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.HERITAGE).length;
   const artifactCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.ARTIFACT).length;
 
@@ -301,8 +360,10 @@ const MapPage: React.FC = () => {
       <div className="map-header-bar">
         <div className="header-left">
           <EnvironmentOutlined className="map-icon" />
-          <Typography.Title level={4}>Bản đồ Di sản & Hiện vật</Typography.Title>
-          <Typography.Text className="map-subtitle">Đang hiển thị {filteredLocations.length} địa điểm</Typography.Text>
+          <div className="title-group">
+            <Typography.Title level={4}>Bản đồ Di sản & Hiện vật</Typography.Title>
+            <Typography.Text className="map-subtitle">Đang hiển thị {filteredLocations.length} địa điểm</Typography.Text>
+          </div>
         </div>
 
         <div className="filter-section">
@@ -346,7 +407,7 @@ const MapPage: React.FC = () => {
           <Select placeholder="Loại hình" className="filter-select-type" allowClear onChange={setTypeFilter}>
             {types.map((t) => (
               <Option key={t} value={t}>
-                {t}
+                {getTypeLabel(t)}
               </Option>
             ))}
           </Select>
@@ -358,6 +419,7 @@ const MapPage: React.FC = () => {
               optionType="button"
               buttonStyle="solid"
               size="middle"
+              className="custom-radio-group"
               options={[
                 {label: "Google Maps", value: MAP_VIEW_MODES.GOOGLE},
                 {label: "Simple Map", value: MAP_VIEW_MODES.SIMPLE},
@@ -467,7 +529,7 @@ const MapPage: React.FC = () => {
                     <div
                       className="popup-image"
                       style={{
-                        backgroundImage: `url(${selectedMarker.thumbnail})`,
+                        backgroundImage: `url(${getFullImageUrl(selectedMarker.thumbnail)})`,
                         height: "120px",
                         backgroundSize: "cover",
                         backgroundPosition: "center",
@@ -481,7 +543,7 @@ const MapPage: React.FC = () => {
                   </Typography.Title>
                   <Space size={[0, 8]} wrap className="popup-tags">
                     <Tag color={selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "warning" : "error"}>
-                      {selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "Hiện vật" : selectedMarker.type}
+                      {selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "Hiện vật" : getTypeLabel(selectedMarker.type)}
                     </Tag>
                     {selectedMarker.province && <Tag color="green">{selectedMarker.province}</Tag>}
                   </Space>

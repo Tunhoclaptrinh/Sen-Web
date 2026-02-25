@@ -222,7 +222,7 @@ const HomeMapSection: React.FC = () => {
               borderTop: "2px solid var(--gold-color)",
               borderLeft: "2px solid var(--gold-color)",
               borderTopLeftRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
           <div
@@ -235,7 +235,7 @@ const HomeMapSection: React.FC = () => {
               borderTop: "2px solid var(--gold-color)",
               borderRight: "2px solid var(--gold-color)",
               borderTopRightRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
           <div
@@ -248,7 +248,7 @@ const HomeMapSection: React.FC = () => {
               borderBottom: "2px solid var(--gold-color)",
               borderLeft: "2px solid var(--gold-color)",
               borderBottomLeftRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
           <div
@@ -261,7 +261,7 @@ const HomeMapSection: React.FC = () => {
               borderBottom: "2px solid var(--gold-color)",
               borderRight: "2px solid var(--gold-color)",
               borderBottomRightRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
 
@@ -339,7 +339,7 @@ const HomeMapSection: React.FC = () => {
           )}
 
           {/* Game Style Stats Floating Card */}
-          <div className="home-game-card home-map-stats-card" style={{top: 80, left: 60}}>
+          <div className="home-game-card home-map-stats-card" style={{top: 80, left: 60, zIndex: 1001}}>
             <div
               style={{
                 fontFamily: "var(--font-serif)",

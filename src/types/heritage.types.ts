@@ -16,7 +16,7 @@ export enum HeritageType {
 }
 
 // Heritage Type Labels (Vietnamese)
-export const HeritageTypeLabels: Record<HeritageType, string> = {
+export const HeritageTypeLabels: Record<string, string> = {
   [HeritageType.MONUMENT]: "Di tích lịch sử",
   [HeritageType.TEMPLE]: "Đền, chùa, miếu",
   [HeritageType.MUSEUM]: "Bảo tàng",
@@ -24,6 +24,11 @@ export const HeritageTypeLabels: Record<HeritageType, string> = {
   [HeritageType.HISTORIC_BUILDING]: "Công trình kiến trúc lịch sử",
   [HeritageType.NATURAL_HERITAGE]: "Di sản thiên nhiên",
   [HeritageType.INTANGIBLE_HERITAGE]: "Di sản phi vật thể",
+  // Snake case mappings for robustness (matching backend strings shown in logs)
+  "archaeological_site": "Khu khảo cổ",
+  "historic_building": "Công trình kiến trúc lịch sử",
+  "natural_heritage": "Di sản thiên nhiên",
+  "intangible_heritage": "Di sản phi vật thể",
 };
 
 // Significance Level
