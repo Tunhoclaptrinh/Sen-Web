@@ -16,7 +16,9 @@ interface DetailModalProps {
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
-  const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
+  const [
+    // relatedHeritage
+    , setRelatedHeritage] = useState<any[]>([]);
   const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
   const [relatedLevels, setRelatedLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
