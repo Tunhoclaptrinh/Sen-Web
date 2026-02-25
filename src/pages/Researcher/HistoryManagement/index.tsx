@@ -143,6 +143,12 @@ const HistoryManagement = () => {
       width: 100,
       render: (isActive: boolean) => <Tag color={isActive ? "green" : "red"}>{isActive ? "HIỂN THỊ" : "ĐÃ ẨN"}</Tag>,
     },
+    {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
+    },
   ];
 
   const tabItems = [

@@ -25,6 +25,7 @@ import {useEffect, useState, useMemo} from "react";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
+import adminLevelService from "@/services/admin-level.service";
 import categoryService, {Category} from "@/services/category.service";
 
 interface HeritageSiteFormValues extends Partial<HeritageSite> {
@@ -88,7 +89,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           const heritageId = initialValues.id as number;
           if (!heritageId) return;
 
-          const [timelineRes, artifactsRes, relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+          const [timelineRes, artifactsRes, relHeritageRes, relArtifactsRes, relHistoryRes, relLevelsRes] = await Promise.all([
             heritageService.getTimeline(heritageId),
             heritageService.getArtifacts(heritageId),
             (initialValues.relatedHeritageIds?.length ?? 0) > 0
@@ -102,6 +103,11 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             (initialValues.relatedHistoryIds?.length ?? 0) > 0
               ? historyService.getAll({
                   ids: initialValues.relatedHistoryIds!.join(","),
+                })
+              : Promise.resolve({success: true, data: []}),
+            (initialValues.relatedLevelIds?.length ?? 0) > 0
+              ? adminLevelService.getAll({
+                  ids: initialValues.relatedLevelIds!.join(","),
                 })
               : Promise.resolve({success: true, data: []}),
           ]);
@@ -156,6 +162,20 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             },
           );
 
+          // Map related levels to {label, value}
+          const relatedLevels = (initialValues.relatedLevelIds || []).map(
+            (id: number | {label: string; value: number}) => {
+              const lvl = relLevelsRes.success
+                ? relLevelsRes.data?.find((l: any) => l.id === (typeof id === "object" ? id.value : id))
+                : null;
+              return lvl
+                ? {label: lvl.name, value: lvl.id}
+                : typeof id === "object"
+                  ? id
+                  : {label: `ID: ${id}`, value: id};
+            },
+          );
+
           const formattedValues: any = {
             ...initialValues,
             publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
@@ -163,6 +183,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             relatedArtifactIds: relatedArtifacts,
             relatedHistoryIds: relatedHistory,
             relatedHeritageIds: relatedHeritage,
+            relatedLevelIds: relatedLevels,
           };
 
           // Set available provinces based on region
@@ -356,6 +377,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         values.relatedHeritageIds?.map((item: number | {value: number}) =>
           typeof item === "object" ? item.value : item,
         ) || [],
+      relatedLevelIds:
+        values.relatedLevelIds?.map((item: number | {value: number}) =>
+          typeof item === "object" ? item.value : item,
+        ) || [],
       culturalPeriod: values.culturalPeriod,
       visitHours: values.visitHours,
       entranceFee: values.entranceFee,
@@ -413,6 +438,23 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       return [];
     } catch (error) {
       console.error("Fetch heritage failed", error);
+      return [];
+    }
+  };
+
+  // Fetch function for Level Search
+  const fetchLevelList = async (search: string) => {
+    try {
+      const response = await adminLevelService.getAll({q: search, limit: 10});
+      if (response.success && response.data) {
+        return response.data.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Fetch levels failed", error);
       return [];
     }
   };
@@ -707,6 +749,15 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm và chọn bài viết lịch sử..."
                     fetchOptions={fetchHistoryList}
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+
+                <Form.Item label="Màn chơi liên quan" name="relatedLevelIds">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm và chọn màn chơi..."
+                    fetchOptions={fetchLevelList}
                     style={{width: "100%"}}
                   />
                 </Form.Item>

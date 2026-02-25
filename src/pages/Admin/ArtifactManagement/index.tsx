@@ -182,6 +182,12 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
       render: (_: any, record: any) => <Tag color="purple">{(record.relatedHistoryIds || []).length} LS</Tag>,
     },
     {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
+    },
+    {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",

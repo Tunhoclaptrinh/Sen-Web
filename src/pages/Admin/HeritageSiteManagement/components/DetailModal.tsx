@@ -1,7 +1,7 @@
 import {Modal, Descriptions, Tabs, Tag, Image, Space, List, Timeline, Typography, Button} from "antd";
 import {HeritageSite, HeritageTypeLabels, HeritageType, HeritageRegionLabels} from "@/types/heritage.types";
 import {EnvironmentOutlined, StarOutlined, EyeOutlined, PlusOutlined} from "@ant-design/icons";
-import {heritageService, artifactService, historyService} from "@/services";
+import {heritageService, artifactService, historyService, adminLevelService} from "@/services";
 import {useEffect, useState} from "react";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
@@ -25,6 +25,7 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
   const [timeline, setTimeline] = useState<TimelineItem[]>([]);
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [relatedHistory, setRelatedHistory] = useState<HistoryArticle[]>([]);
+  const [relatedLevels, setRelatedLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
 
@@ -35,8 +36,9 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
         try {
           const artifactsIds = record.relatedArtifactIds || [];
           const historyIds = record.relatedHistoryIds || [];
+          const levelIds = record.relatedLevelIds || [];
 
-          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+          const [timelineRes, artifactsRes, relArtifactsRes, relHistoryRes, relLevelsRes] = await Promise.all([
             heritageService.getTimeline(record.id),
             heritageService.getArtifacts(record.id),
             artifactsIds.length > 0
@@ -45,9 +47,13 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
             historyIds.length > 0
               ? historyService.getAll({ids: historyIds.join(",")})
               : Promise.resolve({success: true, data: []}),
+            levelIds.length > 0
+              ? adminLevelService.getAll({ids: levelIds.join(",")})
+              : Promise.resolve({success: true, data: []}),
           ]);
 
           setTimeline(timelineRes.data || []);
+          setRelatedLevels(relLevelsRes.data || []);
 
           // Merge artifacts from backlink and explicit relates
           const artifactMap = new Map<number, Artifact>();
@@ -252,6 +258,18 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
             renderItem={(item) => (
               <List.Item>
                 <ArticleCard data={item} type="history" />
+              </List.Item>
+            )}
+            loading={loading}
+          />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={`Màn chơi (${relatedLevels.length})`} key="levels">
+          <List
+            grid={{gutter: 16, xs: 1, sm: 2, md: 3, lg: 3}}
+            dataSource={relatedLevels}
+            renderItem={(item) => (
+              <List.Item>
+                <ArticleCard data={item} type="level" />
               </List.Item>
             )}
             loading={loading}

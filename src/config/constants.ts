@@ -219,11 +219,13 @@ export const ITEM_TYPES = {
   HERITAGE_SITE: "heritage_site",
   EXHIBITION: "exhibition",
   HISTORY_ARTICLE: "history_article",
+  LEVEL: "level",
 } as const;
 
 export const ITEM_TYPE_LABELS = {
   [ITEM_TYPES.HERITAGE]: "Di sản",
   [ITEM_TYPES.ARTIFACT]: "Hiện vật",
+  [ITEM_TYPES.LEVEL]: "Màn chơi",
 } as const;
 
 // Map Related Constants

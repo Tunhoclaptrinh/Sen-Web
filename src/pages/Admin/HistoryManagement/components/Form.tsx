@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
+import adminLevelService from "@/services/admin-level.service";
 import categoryService, {Category} from "@/services/category.service";
 
 interface HistoryFormProps {
@@ -70,7 +71,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       if (open && isEditMode) {
         try {
           // Fetch labels for related IDs
-          const [relHeritageRes, relArtifactRes, relHistoryRes] = await Promise.all([
+          const [relHeritageRes, relArtifactRes, relHistoryRes, relLevelsRes] = await Promise.all([
             initialValues.relatedHeritageIds?.length > 0
               ? heritageService.getAll({ids: initialValues.relatedHeritageIds.join(",")})
               : Promise.resolve({success: true, data: []}),
@@ -79,6 +80,9 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
               : Promise.resolve({success: true, data: []}),
             initialValues.relatedHistoryIds?.length > 0
               ? historyService.getAll({ids: initialValues.relatedHistoryIds.join(",")})
+              : Promise.resolve({success: true, data: []}),
+            initialValues.relatedLevelIds?.length > 0
+              ? adminLevelService.getAll({ids: initialValues.relatedLevelIds.join(",")})
               : Promise.resolve({success: true, data: []}),
           ]);
 
@@ -121,11 +125,25 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 : {label: `ID: ${id}`, value: id};
           });
 
+          // Map related levels to {label, value}
+          const relatedLevels = (initialValues.relatedLevelIds || []).map((id: any) => {
+            const lvl =
+              relLevelsRes.success && relLevelsRes.data
+                ? relLevelsRes.data.find((l: any) => l.id === (typeof id === "object" ? id.value : id))
+                : null;
+            return lvl
+              ? {label: lvl.name, value: lvl.id}
+              : typeof id === "object"
+                ? id
+                : {label: `ID: ${id}`, value: id};
+          });
+
           const formattedValues = {
             ...memoizedInitialValues,
             relatedHeritageIds: relatedHeri,
             relatedArtifactIds: relatedArtifacts,
             relatedHistoryIds: relatedHistoryArr,
+            relatedLevelIds: relatedLevels,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
@@ -170,6 +188,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         values.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedHistoryIds:
         values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedLevelIds:
+        values.relatedLevelIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
     const success = await onSubmit(submitData);
     if (success) {
@@ -248,6 +268,20 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       return response.success && response.data
         ? response.data.map((item: any) => ({
             label: item.title,
+            value: item.id,
+          }))
+        : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const fetchLevelList = async (search: string) => {
+    try {
+      const response = await adminLevelService.getAll({q: search, _limit: 10});
+      return response.success && response.data
+        ? response.data.map((item: any) => ({
+            label: item.name,
             value: item.id,
           }))
         : [];
@@ -421,6 +455,14 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm bài viết..."
                     fetchOptions={fetchHistoryList}
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+                <Form.Item label="Màn chơi liên quan" name="relatedLevelIds">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm màn chơi..."
+                    fetchOptions={fetchLevelList}
                     style={{width: "100%"}}
                   />
                 </Form.Item>

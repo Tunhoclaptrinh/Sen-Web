@@ -171,6 +171,12 @@ const ResearcherHeritageManagement = () => {
       },
     },
     {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
+    },
+    {
       title: "UNESCO",
       dataIndex: "unescoListed",
       key: "unescoListed",
