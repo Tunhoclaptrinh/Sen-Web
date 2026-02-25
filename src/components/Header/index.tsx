@@ -35,6 +35,7 @@ const Header: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isTransparent, setIsTransparent] = useState(location.pathname === '/');
 
   // Handle window resize
   useEffect(() => {
@@ -44,6 +45,21 @@ const Header: React.FC = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Handle scroll for transparency (Only on Home Page)
+  useEffect(() => {
+    const handleScroll = () => {
+      if (location.pathname === '/') {
+        setIsTransparent(window.scrollY < 50);
+      } else {
+        setIsTransparent(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [location.pathname]);
 
   // Handle logout
   const handleLogout = () => {
@@ -138,7 +154,7 @@ const Header: React.FC = () => {
   return (
     <>
       {/* TOP UTILITY BAR (Red Border + Search + Info) */}
-      <div className="top-utility-bar">
+      <div className={`top-utility-bar ${isTransparent ? 'is-transparent' : ''}`}>
         <div className="utility-content">
           {/* LEFT: Contact & Slogan */}
           {!isMobile && (
@@ -181,7 +197,7 @@ const Header: React.FC = () => {
       </div>
 
       <AntHeader
-        className="main-header"
+        className={`main-header ${isTransparent ? 'is-transparent' : ''}`}
         style={{
           padding: isMobile ? '0 16px' : '0 40px',
         }}

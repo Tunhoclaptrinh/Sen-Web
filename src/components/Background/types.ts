@@ -2,6 +2,7 @@ import React, { CSSProperties } from "react";
 
 export interface BackgroundProps {
     children?: React.ReactNode;
+    className?: string;
 
     /** Background */
     useFullBackground?: boolean;

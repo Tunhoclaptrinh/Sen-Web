@@ -15,6 +15,7 @@ import bird from "@/assets/images/background/bird.png";
 import { BackgroundProps } from "./types";
 
 const Background: React.FC<BackgroundProps> = ({
+  className,
   children,
 
   useFullBackground = false,
@@ -37,7 +38,7 @@ const Background: React.FC<BackgroundProps> = ({
   contentStyle,
 }) => {
   return (
-    <div className="bg-wrapper" style={wrapperStyle}>
+    <div className={"bg-wrapper" + (className ? " " + className : "")} style={wrapperStyle}>
       {/* Base Background */}
       {showBase && (
         <img

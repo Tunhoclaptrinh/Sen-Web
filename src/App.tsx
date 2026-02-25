@@ -70,8 +70,7 @@ const App: React.FC = () => {
             borderRadiusSM: 6,
 
             // Typography
-            fontFamily:
-              "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontFamily: "var(--font-sans)",
             fontSize: 14,
 
             // Spacing
