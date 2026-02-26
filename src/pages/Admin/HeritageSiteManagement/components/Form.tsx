@@ -640,6 +640,19 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
 
                 <Row gutter={16}>
                   <Col span={12}>
+                    <Form.Item name="latitude" label="Vĩ độ (Latitude)" tooltip="Giá trị từ -90 đến 90">
+                      <InputNumber style={{width: "100%"}} placeholder="VD: 21.0123" precision={6} step={0.0001} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="longitude" label="Kinh độ (Longitude)" tooltip="Giá trị từ -180 đến 180">
+                      <InputNumber style={{width: "100%"}} placeholder="VD: 105.8123" precision={6} step={0.0001} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={12}>
                     <Form.Item name="significance" label="Tầm quan trọng">
                       <Select placeholder="Chọn quy mô">
                         {Object.values(SignificanceLevel).map((level) => (
@@ -653,6 +666,14 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                   <Col span={12}>
                     <Form.Item name="visitHours" label="Giờ mở cửa">
                       <Input placeholder="VD: 08:30 - 17:00 hàng ngày" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item name="bookingLink" label="Link đặt vé (Affiliate)">
+                      <Input placeholder="Nhập link affiliate đặt vé (VD: https://klook.com/...)" />
                     </Form.Item>
                   </Col>
                 </Row>

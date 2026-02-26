@@ -276,6 +276,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   relatedProducts?: any[];
   relatedHistory?: any[];
   references?: string;
+  bookingLink?: string;
 }
 
 // Heritage Site Create/Update DTO
@@ -305,6 +306,7 @@ export interface HeritageSiteDTO {
   relatedHeritageIds?: number[];
   relatedLevelIds?: number[];
   references?: string;
+  bookingLink?: string;
 }
 
 // Timeline Event

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline} from "antd";
+import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline, Dropdown} from "antd";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -25,6 +25,9 @@ import {
   CrownFilled,
   ArrowLeftOutlined,
   ArrowRightOutlined,
+  MoreOutlined,
+  CompassOutlined,
+  GoogleOutlined,
 } from "@ant-design/icons";
 import {Image} from "antd";
 import dayjs from "dayjs";
@@ -414,7 +417,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Giờ mở cửa</span>
-                                <span className="value">{site.visitHours || "8:00 - 17:00"}</span>
+                                <span className="value">{site.visitHours || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -424,7 +427,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Giá vé tham quan</span>
                                 <span className="value highlight">
-                                  {site.entranceFee ? `${site.entranceFee.toLocaleString()} VNĐ` : "Miễn phí"}
+                                  {site.entranceFee ? `${site.entranceFee.toLocaleString()} VNĐ` : "Chưa có thông tin"}
                                 </span>
                               </div>
                             </li>
@@ -434,7 +437,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Năm thành lập</span>
-                                <span className="value">{site.yearEstablished || "Không rõ"}</span>
+                                <span className="value">{site.yearEstablished || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -443,7 +446,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Niên đại / Thời kỳ</span>
-                                <span className="value">{site.culturalPeriod || "Đang cập nhật"}</span>
+                                <span className="value">{site.culturalPeriod || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                           </ul>
@@ -457,7 +460,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Địa chỉ</span>
-                                <span className="value">{site.address || site.region}</span>
+                                <span className="value">{site.address || site.region || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -467,7 +470,8 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Đánh giá du khách</span>
                                 <span className="value">
-                                  {site.rating || 0}/5 <span className="sub">({site.totalReviews || 0} đánh giá)</span>
+                                  {site.rating ? `${site.rating}/5` : "Chưa có đánh giá"}{" "}
+                                  <span className="sub">({site.totalReviews || 0} đánh giá)</span>
                                 </span>
                               </div>
                             </li>
@@ -477,7 +481,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Vùng miền</span>
-                                <span className="value">{site.region}</span>
+                                <span className="value">{site.region || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             {site.unescoListed && (
@@ -503,10 +507,56 @@ const HeritageDetailPage = () => {
                           <span className="promo-text">Đặt vé với SEN để nhận ưu đãi đặc biệt!</span>
                         </div>
                         <div className="action-buttons">
-                          <Button size="large" className="direction-btn" icon={<EnvironmentOutlined />}>
-                            Chỉ đường
-                          </Button>
-                          <Button type="primary" size="large" className="booking-btn-large">
+                          <Dropdown
+                            trigger={['click']}
+                            menu={{
+                              items: [
+                                {
+                                  key: 'sen-map',
+                                  label: 'Bản đồ SEN (Tầm bảo & Checkin)',
+                                  icon: <RocketOutlined />,
+                                  onClick: () => {
+                                    const lat = site.latitude;
+                                    const lng = site.longitude;
+                                    navigate(`/map?id=${site.id}&type=${ITEM_TYPES.HERITAGE}&lat=${lat}&lng=${lng}&action=hunt`);
+                                  }
+                                },
+                                {
+                                  key: 'google-maps',
+                                  label: 'Google Maps (Tên & Địa chỉ)',
+                                  icon: <GoogleOutlined />,
+                                  onClick: () => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.name + " " + (site.address || site.region || ""))}`, "_blank")
+                                },
+                                {
+                                  key: 'google-maps-coord',
+                                  label: 'Google Maps (Tọa độ chính xác)',
+                                  icon: <CompassOutlined />,
+                                  onClick: () => {
+                                    const lat = site.latitude;
+                                    const lng = site.longitude;
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, "_blank");
+                                  }
+                                }
+                              ]
+                            }}
+                          >
+                            <Button 
+                              size="large" 
+                              className="direction-btn" 
+                              icon={<EnvironmentOutlined />}
+                            >
+                              Chỉ đường <MoreOutlined />
+                            </Button>
+                          </Dropdown>
+                          <Button 
+                            type="primary" 
+                            size="large" 
+                            className="booking-btn-large"
+                            onClick={() => {
+                              const bookingUrl = site.bookingLink || site.website || `https://www.google.com/search?q=đặt+vé+tham+quan+${encodeURIComponent(site.name)}`;
+                              window.open(bookingUrl, "_blank");
+                            }}
+                          >
                             Đặt vé ngay
                           </Button>
                         </div>

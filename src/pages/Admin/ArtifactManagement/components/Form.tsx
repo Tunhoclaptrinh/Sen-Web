@@ -477,12 +477,29 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item
-                      name="locationInSite"
-                      label="Vị trí trưng bày"
-                      rules={[{min: 5, message: "Vị trí trưng bày yêu cầu tối thiểu 5 ký tự"}]}
-                    >
+                    <Form.Item name="locationInSite" label="Vị trí trưng bày" rules={[{min: 5, message: "Vị trí trưng bày yêu cầu tối thiểu 5 ký tự"}]}>
                       <Input placeholder="Phòng số X..." />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item name="latitude" label="Vĩ độ (Latitude)" tooltip="Tọa độ GPS riêng nếu có">
+                      <InputNumber style={{width: "100%"}} placeholder="VD: 21.0123" precision={6} step={0.0001} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="longitude" label="Kinh độ (Longitude)" tooltip="Tọa độ GPS riêng nếu có">
+                      <InputNumber style={{width: "100%"}} placeholder="VD: 105.8123" precision={6} step={0.0001} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item name="bookingLink" label="Link đặt vé/tham quan (Affiliate)">
+                      <Input placeholder="Nhập link affiliate (VD: https://klook.com/...)" />
                     </Form.Item>
                   </Col>
                 </Row>
