@@ -12,6 +12,7 @@ import {
   EnvironmentOutlined,
   QrcodeOutlined,
   BellOutlined,
+  GiftOutlined,
 } from "@ant-design/icons";
 
 export interface IMenuItem {
@@ -110,6 +111,11 @@ export const adminMenu: IMenuItem[] = [
         key: "leaderboard",
         path: "/admin/leaderboard",
         name: "Bảng xếp hạng",
+      },
+      {
+        key: "welfare",
+        path: "/admin/welfare",
+        name: "Quản lý phúc lợi",
       },
     ],
   },
@@ -222,6 +228,12 @@ export const customerMenu: IMenuItem[] = [
     path: "/game/museum",
     name: "Bảo tàng",
     icon: <BankOutlined />,
+  },
+  {
+    key: "welfare",
+    path: "/game/welfare",
+    name: "Quy đổi phúc lợi",
+    icon: <GiftOutlined />,
   },
 
   // 4. CỘNG ĐỒNG

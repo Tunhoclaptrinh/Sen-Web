@@ -104,10 +104,10 @@ const Home: React.FC = () => {
               <button className="action-btn light-green-btn" onClick={() => navigate("/heritage-sites")}>
                 Di sản văn hóa
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts/browse")}>
+              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts")}>
                 Hiện vật
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/learn")}>
+              <button className="action-btn light-green-btn" onClick={() => navigate("/game/learning")}>
                 Học tập
               </button>
             </div>
