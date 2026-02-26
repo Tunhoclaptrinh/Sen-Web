@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {GoogleMap, useJsApiLoader, Marker, InfoWindow} from "@react-google-maps/api";
+import {GoogleMap, useJsApiLoader, Marker, InfoWindow, OverlayView} from "@react-google-maps/api";
 import {Spin, Typography, Select, Input, Tag, Space, Dropdown, Button, Radio, notification} from "antd";
 import {EnvironmentOutlined, SearchOutlined, CheckOutlined, AppstoreOutlined, RocketOutlined} from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
@@ -85,7 +85,7 @@ const MapPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedMarker, setSelectedMarker] = useState<Location | null>(null);
   const [_map, setMap] = useState<google.maps.Map | null>(null);
-  const [viewMode, setViewMode] = useState<MapViewMode>(MAP_VIEW_MODES.GOOGLE);
+  const [viewMode, setViewMode] = useState<MapViewMode>(MAP_VIEW_MODES.SIMPLE);
   const [mapData, setMapData] = useState<any>(null);
   const [worldData, setWorldData] = useState<any>(null);
 
@@ -93,6 +93,7 @@ const MapPage: React.FC = () => {
   const { user } = useAuth();
   const [checkingIn, setCheckingIn] = useState(false);
   const [activeGameLevel, setActiveGameLevel] = useState<number | null>(null);
+  const [activeHunt, setActiveHunt] = useState<Location | null>(null);
 
   // Helper to normalize image URLs
   const getFullImageUrl = (url?: string) => {
@@ -228,6 +229,9 @@ const MapPage: React.FC = () => {
         const found = locations.find(l => l.id === Number(id) && l.itemType === type);
         if (found) {
           setSelectedMarker(found);
+          if (searchParams.get("action") === "hunt") {
+            setActiveHunt(found);
+          }
         }
       }
     }
@@ -345,16 +349,21 @@ const MapPage: React.FC = () => {
       if (heritageRes.success && heritageRes.data) {
         heritageRes.data.forEach((h: HeritageLocation) => {
           heritageMap.set(h.id, h);
-          allLocations.push({
-            id: h.id,
-            name: h.name,
-            lat: Number(h.latitude || h.lat),
-            lng: Number(h.longitude || h.lng),
-            type: h.type || "Di sản",
-            province: h.province,
-            thumbnail: getFullImageUrl(h.mainImage || h.image || h.thumbnail) || "/images/placeholder-heritage.jpg",
-            itemType: ITEM_TYPES.HERITAGE,
-          });
+          const lat = Number(h.latitude || h.lat);
+          const lng = Number(h.longitude || h.lng);
+          
+          if (!isNaN(lat) && !isNaN(lng)) {
+            allLocations.push({
+              id: h.id,
+              name: h.name,
+              lat: lat,
+              lng: lng,
+              type: h.type || "Di sản",
+              province: h.province,
+              thumbnail: getFullImageUrl(h.mainImage || h.image || h.thumbnail) || "/images/placeholder-heritage.jpg",
+              itemType: ITEM_TYPES.HERITAGE,
+            });
+          }
         });
       }
 
@@ -376,29 +385,38 @@ const MapPage: React.FC = () => {
               if (heritageId && heritageMap.has(heritageId)) {
                 const heritage = heritageMap.get(heritageId)!;
                 const offset = getArtifactOffset(a.id);
-                allLocations.push({
-                  id: a.id,
-                  name: a.name,
-                  lat: Number(heritage.latitude || heritage.lat) + offset.latOffset,
-                  lng: Number(heritage.longitude || heritage.lng) + offset.lngOffset,
-                  type: a.artifactType || "Hiện vật",
-                  province: a.province || heritage.province || "Chưa xác định",
-                  thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
-                  itemType: ITEM_TYPES.ARTIFACT,
-                  relatedLevelIds: a.relatedLevelIds,
-                });
-              } else if (a.latitude && a.longitude) {
-                allLocations.push({
-                  id: a.id,
-                  name: a.name,
-                  lat: Number(a.latitude),
-                  lng: Number(a.longitude),
-                  type: a.artifactType || "Hiện vật",
-                  province: a.province || "Chưa xác định",
-                  thumbnail: getFullImageUrl(a.mainImage || a.image || a.thumbnail) || "/images/placeholder-artifact.jpg",
-                  itemType: ITEM_TYPES.ARTIFACT,
-                  relatedLevelIds: a.relatedLevelIds,
-                });
+                const lat = Number(heritage.latitude || heritage.lat) + offset.latOffset;
+                const lng = Number(heritage.longitude || heritage.lng) + offset.lngOffset;
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                  allLocations.push({
+                    id: a.id,
+                    name: a.name,
+                    lat: lat,
+                    lng: lng,
+                    type: a.artifactType || "Hiện vật",
+                    province: a.province || heritage.province || "Chưa xác định",
+                    thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
+                    itemType: ITEM_TYPES.ARTIFACT,
+                    relatedLevelIds: a.relatedLevelIds,
+                  });
+                }
+              } else if (a.latitude !== undefined && a.longitude !== undefined) {
+                const lat = Number(a.latitude);
+                const lng = Number(a.longitude);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                  allLocations.push({
+                    id: a.id,
+                    name: a.name,
+                    lat: lat,
+                    lng: lng,
+                    type: a.artifactType || "Hiện vật",
+                    province: a.province || "Chưa xác định",
+                    thumbnail: getFullImageUrl(a.mainImage || a.image || a.thumbnail) || "/images/placeholder-artifact.jpg",
+                    itemType: ITEM_TYPES.ARTIFACT,
+                    relatedLevelIds: a.relatedLevelIds,
+                  });
+                }
               }
             });
 
@@ -486,9 +504,14 @@ const MapPage: React.FC = () => {
     if (loc.relatedLevelIds && loc.relatedLevelIds.length > 0) {
       setActiveGameLevel(loc.relatedLevelIds[0]);
     } else {
+      setActiveHunt(loc);
+      if (_map) {
+        _map.panTo({ lat: loc.lat, lng: loc.lng });
+        _map.setZoom(18);
+      }
       notification.info({
-        message: "Bắt đầu tầm bảo",
-        description: `Bạn đang bắt đầu tìm kiếm báu vật tại ${loc.name}. Hãy quan sát xung quanh!`,
+        message: "Chuẩn bị tầm bảo",
+        description: `Bắt đầu tìm kiếm ${loc.name}. Hiệu ứng radar đã được kích hoạt!`,
         icon: <RocketOutlined style={{ color: "#faad14" }} />,
       });
     }
@@ -534,6 +557,10 @@ const MapPage: React.FC = () => {
             artifacts={filteredLocations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT)}
             allowZoom={true}
             height="100%"
+            activeHunt={activeHunt}
+            onHunt={handleHunt}
+            autoSelectId={searchParams.get("id") ? Number(searchParams.get("id")) : null}
+            autoSelectType={searchParams.get("type")}
           />
         </div>
       );
@@ -598,7 +625,16 @@ const MapPage: React.FC = () => {
             />
           ))}
 
-          {selectedMarker && (
+          {activeHunt && !isNaN(activeHunt.lat) && !isNaN(activeHunt.lng) && (
+            <OverlayView
+              position={{ lat: activeHunt.lat, lng: activeHunt.lng }}
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            >
+              <div className="radar-pulse-overlay" />
+            </OverlayView>
+          )}
+
+          {selectedMarker && !isNaN(selectedMarker.lat) && !isNaN(selectedMarker.lng) && (
             <InfoWindow
               position={{lat: selectedMarker.lat, lng: selectedMarker.lng}}
               onCloseClick={() => setSelectedMarker(null)}
@@ -749,6 +785,41 @@ const MapPage: React.FC = () => {
 
       {/* Map Container */}
       <div className="map-wrapper">
+        {activeHunt && (
+          <div className="hunt-banner-wrapper">
+            <div className="hunt-banner">
+              <div className="hunt-info">
+                <img 
+                  src={getFullImageUrl(activeHunt.thumbnail)} 
+                  alt={activeHunt.name} 
+                  className="hunt-target-img" 
+                />
+                <div className="hunt-text">
+                  <span className="target-label">Đang tìm kiếm</span>
+                  <h3 className="target-name">{activeHunt.name}</h3>
+                </div>
+              </div>
+              <div className="hunt-actions">
+                <Button 
+                   type="primary" 
+                   icon={<RocketOutlined />} 
+                   className="popup-action-btn"
+                   onClick={() => navigate(`/game/scan`)}
+                >
+                   Quét QR
+                </Button>
+                <Button 
+                  ghost 
+                  danger 
+                  icon={<CheckOutlined />} 
+                  onClick={() => setActiveHunt(null)}
+                >
+                  Hủy
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         {renderMap()}
 
         {!loading && !loadError && (

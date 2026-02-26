@@ -510,6 +510,11 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                       <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
                     </Form.Item>
                   </Col>
+                  <Col span={12}>
+                    <Form.Item name="autoCreateScanObject" label="Tự động tạo đối tượng Tầm bảo" valuePropName="checked" tooltip="Nếu bật, hệ thống sẽ tự động tạo một đối tượng quét QR/Tầm bảo cho hiện vật này với tọa độ GPS tương ứng.">
+                      <Switch checkedChildren="BẬT" unCheckedChildren="TẮT" />
+                    </Form.Item>
+                  </Col>
                 </Row>
               </>
             ),

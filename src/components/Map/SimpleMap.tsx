@@ -37,6 +37,10 @@ interface SimpleMapProps {
   allowZoom?: boolean;
   height?: string | number;
   onMapClick?: () => void;
+  activeHunt?: any;
+  onHunt?: (loc: any) => void;
+  autoSelectId?: number | null;
+  autoSelectType?: string | null;
 }
 
 const SimpleMap: React.FC<SimpleMapProps> = ({
@@ -48,6 +52,10 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
   allowZoom = false,
   height = "100%",
   onMapClick,
+  activeHunt,
+  onHunt,
+  autoSelectId,
+  autoSelectType,
 }) => {
   const navigate = useNavigate();
   const chartRef = useRef<HighchartsReact.RefObject>(null);
@@ -79,6 +87,14 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
       }
     };
 
+    (window as any).SEN_HUNT = (id: string) => {
+      console.log(`!!! [SEN_HUNT] EXECUTING !!! id=${id}`);
+      const art = artifacts.find(a => a.id === Number(id));
+      if (art && onHunt) {
+        onHunt(art);
+      }
+    };
+
     // Global Catch-all Click Debugger (Capture phase)
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -95,14 +111,25 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
           (window as any).SEN_NAVIGATE(id, type);
         }
       }
+
+      const huntBtn = target.closest(".hunt-now-btn") as HTMLElement;
+      if (huntBtn) {
+        e.stopPropagation();
+        const id = huntBtn.getAttribute("data-id");
+        console.log("!!! DETECTED CLICK ON HUNT-NOW-BTN !!!", { id });
+        if (id && (window as any).SEN_HUNT) {
+          (window as any).SEN_HUNT(id);
+        }
+      }
     };
 
     document.addEventListener("click", handleGlobalClick, true);
     return () => {
       document.removeEventListener("click", handleGlobalClick, true);
       delete (window as any).SEN_NAVIGATE;
+      delete (window as any).SEN_HUNT;
     };
-  }, [navigate]);
+  }, [navigate, onHunt, artifacts]);
 
   const chartOptions: Highcharts.Options = useMemo(
     () => ({
@@ -169,17 +196,26 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
               <div style="font-family: var(--font-sans);">
                   <b style="font-size: 16px; color: var(--text-color-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; line-height: 1.4;">${pointName}</b>
                   <span style="font-size: 13px; color: var(--text-color-secondary); display: block; margin-bottom: 12px;">${p.province || p.siteName || ""}</span>
-                  <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <i style="font-size: 12px; color: var(--seal-red);">${p.series.name}</i>
+                  <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
                     <button 
                       class="view-details-btn"
                       data-id="${p.id}"
                       data-type="${p.type}"
                       onclick="if(window.SEN_NAVIGATE) window.SEN_NAVIGATE('${p.id}', '${p.type}')"
-                      style="padding: 6px 12px; background: var(--gold-color); color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600; pointer-events: auto !important;"
+                      style="padding: 6px 12px; background: #f0f0f0; color: #262626; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; pointer-events: auto !important;"
                     >
-                      Xem chi tiết
+                      Chi tiết
                     </button>
+                    ${p.type === ITEM_TYPES.ARTIFACT ? `
+                      <button 
+                        class="hunt-now-btn"
+                        data-id="${p.id}"
+                        onclick="if(window.SEN_HUNT) window.SEN_HUNT('${p.id}')"
+                        style="padding: 6px 12px; background: var(--gold-color); color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600; pointer-events: auto !important;"
+                      >
+                        Tầm bảo
+                      </button>
+                    ` : ''}
                   </div>
               </div>
           </div>
@@ -361,6 +397,71 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
     [mapData, worldData, locations, artifacts, isFullscreen, height, allowZoom, onMapClick, navigate],
   );
 
+  const [overlayPos, setOverlayPos] = React.useState<{x: number, y: number} | null>(null);
+
+  useEffect(() => {
+    if (activeHunt && chartRef.current && chartRef.current.chart) {
+      const chart = chartRef.current.chart;
+      // Highcharts Map might not have processed the point yet, but we can use projection
+      // to find where it should be on screen.
+      // Highcharts provides chart.fromLatLonToPoint if proj4 is loaded
+      const pos = (chart as any).fromLatLonToPoint({lat: activeHunt.lat, lon: activeHunt.lng});
+      if (pos) {
+        setOverlayPos({x: pos.x, y: pos.y});
+      }
+    } else {
+      setOverlayPos(null);
+    }
+  }, [activeHunt]);
+
+  // Handle auto-select tooltip
+  useEffect(() => {
+    if ((autoSelectId || activeHunt?.id) && chartRef.current && chartRef.current.chart) {
+      const chart = chartRef.current.chart;
+      const targetId = autoSelectId || activeHunt?.id;
+      const targetType = autoSelectType || activeHunt?.itemType;
+      
+      // Find the point in the series
+      let foundPoint: any = null;
+      chart.series.forEach(s => {
+        if (!foundPoint && s.visible) {
+          const p = s.points.find((point: any) => 
+            point.id === targetId && (point.type === targetType || !targetType)
+          );
+          if (p) foundPoint = p;
+        }
+      });
+
+      if (foundPoint) {
+        // Highcharts requires a small delay to ensure rendering is complete
+        setTimeout(() => {
+          foundPoint.onMouseOver();
+          chart.tooltip.refresh(foundPoint);
+        }, 500);
+      }
+    }
+  }, [autoSelectId, autoSelectType, activeHunt, locations, artifacts]);
+
+  // Handle chart resize/zoom to update overlay position
+  useEffect(() => {
+    if (chartRef.current && chartRef.current.chart) {
+      const updatePos = () => {
+         if (activeHunt) {
+            const chart = chartRef.current?.chart;
+            const pos = (chart as any).fromLatLonToPoint({lat: activeHunt.lat, lon: activeHunt.lng});
+            if (pos) {
+              setOverlayPos({x: pos.x, y: pos.y});
+            }
+         }
+      };
+      
+      Highcharts.addEvent(chartRef.current.chart, 'render', updatePos);
+      return () => {
+        if (chartRef.current?.chart) Highcharts.removeEvent(chartRef.current.chart, 'render', updatePos);
+      };
+    }
+  }, [activeHunt]);
+
   return (
     <div className="simple-map-wrapper" style={{height: height, width: "100%", position: "relative"}}>
       <style>{`
@@ -381,6 +482,18 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
         ref={chartRef}
         containerProps={{style: {height: "100%", width: "100%"}}}
       />
+      {overlayPos && (
+        <div 
+          className="radar-pulse-overlay" 
+          style={{
+            position: 'absolute',
+            left: `${overlayPos.x}px`,
+            top: `${overlayPos.y}px`,
+            zIndex: 10,
+            transform: 'translate(-50%, -50%)'
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -1,9 +1,10 @@
 
 
 import { Tabs } from "antd";
-import { AppstoreOutlined, HeartOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, HeartOutlined, HistoryOutlined } from "@ant-design/icons";
 import CollectionsPage from "../Collections/CollectionsPage";
 import FavoritesPage from "../FavoritesPage";
+import ScanHistoryTab from "./components/ScanHistoryTab";
 import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -38,6 +39,11 @@ const LibraryPage = () => {
                       label: <span><AppstoreOutlined /> Bộ Sưu Tập</span>,
                       children: <CollectionsPage />
                   },
+                   {
+                       key: "history",
+                       label: <span><HistoryOutlined /> Tầm Bảo & Check-in</span>,
+                       children: <ScanHistoryTab />
+                   },
                   {
                       key: "favorites",
                       label: <span><HeartOutlined /> Yêu Thích</span>,

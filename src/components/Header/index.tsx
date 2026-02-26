@@ -83,7 +83,7 @@ const Header: React.FC = () => {
     if (location.pathname.startsWith('/history')) return 'history';
     if (location.pathname.startsWith('/exhibitions')) return 'exhibitions';
     if (location.pathname.startsWith('/learn')) return 'learn';
-    if (location.pathname.startsWith('/game')) return 'game';
+    if (location.pathname.startsWith('/map')) return 'map';
     if (location.pathname.startsWith('/support')) return 'support';
     return '';
   };
@@ -128,6 +128,10 @@ const Header: React.FC = () => {
     {
         key: 'artifacts',
         label: <Link to="/artifacts">Hiện vật</Link>,
+    },
+    {
+        key: 'map',
+        label: <Link to="/map">Bản đồ</Link>,
     },
     {
         key: 'history',

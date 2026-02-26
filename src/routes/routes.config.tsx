@@ -173,6 +173,10 @@ const routes: RouteObject[] = [
         path: "support",
         element: <Support />,
       },
+      {
+        path: "map",
+        element: <MapPage />,
+      },
     ],
   },
 
@@ -203,10 +207,6 @@ const routes: RouteObject[] = [
       {
         path: "scan",
         element: <ScanPage />,
-      },
-      {
-        path: "map",
-        element: <MapPage />,
       },
       {
         path: "chapters/:chapterId/levels",

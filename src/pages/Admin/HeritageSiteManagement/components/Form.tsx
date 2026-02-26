@@ -700,12 +700,20 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                           <Switch checkedChildren="CÓ" unCheckedChildren="KHÔNG" />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      <Col span={8}>
                         <Form.Item name="isActive" label="Trạng thái" valuePropName="checked">
                           <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
                         </Form.Item>
                       </Col>
                     </Row>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item name="autoCreateScanObject" label="Tự động tạo điểm Check-in (Tầm bảo)" valuePropName="checked" tooltip="Nếu bật, hệ thống sẽ tự động tạo một đối tượng quét QR/Checkin cho địa điểm này với tọa độ GPS tương ứng.">
+                      <Switch checkedChildren="BẬT" unCheckedChildren="TẮT" />
+                    </Form.Item>
                   </Col>
                 </Row>
               </>
