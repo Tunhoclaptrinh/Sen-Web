@@ -14,14 +14,18 @@ const CharacterManagement: React.FC = () => {
   const [avatarMode, setAvatarMode] = useState<"upload" | "link">("link");
   const [form] = Form.useForm();
 
-  // Detect avatar mode based on initial values
+  // Reset form and avatar mode when currentRecord or form visibility changes
   useEffect(() => {
-    if (model.currentRecord?.avatar) {
-      setAvatarMode(model.currentRecord.avatar.startsWith("http") ? "link" : "upload");
-    } else {
-      setAvatarMode("link");
+    if (model.formVisible) {
+      if (model.currentRecord) {
+        form.setFieldsValue(model.currentRecord);
+        setAvatarMode(model.currentRecord.avatar?.startsWith("http") ? "link" : "upload");
+      } else {
+        form.resetFields();
+        setAvatarMode("link");
+      }
     }
-  }, [model.currentRecord]);
+  }, [model.currentRecord, model.formVisible, form]);
 
   const columns = [
     {
