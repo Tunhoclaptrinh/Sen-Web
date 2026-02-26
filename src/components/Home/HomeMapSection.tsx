@@ -318,7 +318,7 @@ const HomeMapSection: React.FC = () => {
 
           {!isFullscreen && (
             <div style={{position: "absolute", top: 32, right: 80, zIndex: 100}}>
-              <Button className="home-game-btn" onClick={() => navigate("/game/map")} icon={<EnvironmentOutlined />}>
+              <Button className="home-game-btn" onClick={() => navigate("/map")} icon={<EnvironmentOutlined />}>
                 Khám phá toàn màn hình
               </Button>
             </div>

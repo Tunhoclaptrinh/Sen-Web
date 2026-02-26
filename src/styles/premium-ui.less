@@ -1,0 +1,138 @@
+@import "./variables.less";
+@import "../pages/Game/common.less";
+
+// Scoped class to apply premium theme
+.sen-hoa-premium {
+  // Overrides for Ant Design Components within this scope
+  
+  // Modals
+  .ant-modal-content {
+    background-color: @paper-bg !important;
+    border: 2px solid @gold-border !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    background: transparent !important;
+    padding: 24px 32px 16px !important;
+    border-bottom: 1px dashed rgba(197, 160, 101, 0.3) !important;
+    margin-bottom: 0px !important;
+  }
+
+  .ant-modal-title {
+    font-family: @font-serif !important;
+    font-size: 24px !important;
+    color: @seal-red !important;
+    font-weight: 800 !important;
+  }
+
+  .ant-modal-close {
+    top: 20px !important;
+    right: 20px !important;
+    color: @text-color-secondary !important;
+    &:hover {
+      color: @seal-red !important;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 32px !important;
+  }
+
+  // Popovers (for Notifications)
+  .ant-popover-inner {
+    background-color: @paper-bg !important;
+    border: 1px solid @gold-border !important;
+    border-radius: 12px !important;
+    padding: 2px !important; // Space for double border effect
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+    overflow: hidden;
+    position: relative;
+    
+    &::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border: 1px solid rgba(197, 160, 101, 0.4);
+      border-radius: 9px;
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+
+  // Nhún (Sink) Effect for Buttons - Improved Tactical Feel
+  .btn-premium-nhun {
+    transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    position: relative;
+    top: -2px; // Lifted by default
+    box-shadow: 0 4px 0 rgba(93, 64, 55, 0.25) !important;
+    
+    &:hover {
+      top: -1px;
+      box-shadow: 0 3px 0 rgba(93, 64, 55, 0.3) !important;
+      background: rgba(139, 29, 29, 0.05) !important;
+    }
+    
+    &:active {
+      top: 2px; // Sinks exactly to base
+      box-shadow: none !important;
+      transform: scale(0.98);
+    }
+    
+    &[disabled] {
+      top: 0 !important;
+      transform: none !important;
+      box-shadow: none !important;
+      opacity: 0.4;
+    }
+  }
+
+  .ant-popover-title {
+    font-family: @font-serif !important;
+    color: @seal-red !important;
+    font-weight: 700 !important;
+    border-bottom: 1px dashed rgba(197, 160, 101, 0.3) !important;
+    padding: 12px 16px !important;
+  }
+
+  // Cards in Notifications page
+  .notification-card {
+    .game-card-style();
+    .ant-card-body {
+      padding: 0 !important;
+    }
+  }
+
+  // Lists in Notifications
+  .notification-list-item {
+    transition: all 0.3s;
+    border-bottom: 1px solid rgba(197, 160, 101, 0.1) !important;
+    
+    &:hover {
+      background-color: rgba(197, 160, 101, 0.05) !important;
+    }
+    
+    &.unread {
+      background-color: rgba(139, 29, 29, 0.03) !important;
+      border-left: 4px solid @seal-red !important;
+    }
+  }
+}
+
+// Global Modal utility for confirm modals that are not nested
+.sen-modal-confirm {
+  .ant-modal-content {
+    background-color: @paper-bg !important;
+    border: 2px solid @gold-border !important;
+  }
+  .ant-modal-confirm-title {
+    font-family: @font-serif !important;
+    color: @seal-red !important;
+  }
+}

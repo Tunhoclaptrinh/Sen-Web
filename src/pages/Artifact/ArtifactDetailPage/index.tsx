@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs} from "antd";
+import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown} from "antd";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -21,6 +21,9 @@ import {
   GlobalOutlined,
   ArrowLeftOutlined,
   ArrowRightOutlined,
+  MoreOutlined,
+  CompassOutlined,
+  GoogleOutlined,
 } from "@ant-design/icons";
 import {Image} from "antd";
 import {fetchArtifactById} from "@store/slices/artifactSlice";
@@ -447,7 +450,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Loại hiện vật</span>
-                                <span className="value">{artifactTypeLabel}</span>
+                                <span className="value">{artifactTypeLabel || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -456,7 +459,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Thời kỳ / Năm</span>
-                                <span className="value">{artifact.yearCreated || "Không rõ"}</span>
+                                <span className="value">{artifact.yearCreated || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -465,7 +468,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Chất liệu</span>
-                                <span className="value">{artifact.material || "Không rõ"}</span>
+                                <span className="value">{artifact.material || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -474,7 +477,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Tình trạng</span>
-                                <span className="value highlight">{conditionLabel}</span>
+                                <span className="value highlight">{conditionLabel || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                           </ul>
@@ -488,7 +491,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Kích thước</span>
-                                <span className="value">{artifact.dimensions || "N/A"}</span>
+                                <span className="value">{artifact.dimensions || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -497,7 +500,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Tác giả / Nguồn</span>
-                                <span className="value">{authorName}</span>
+                                <span className="value">{authorName || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -507,7 +510,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Đánh giá chung</span>
                                 <span className="value">
-                                  {artifact.rating || 0}/5{" "}
+                                  {artifact.rating ? `${artifact.rating}/5` : "Chưa có đánh giá"}{" "}
                                   <span className="sub">({artifact.totalReviews || 0} đánh giá)</span>
                                 </span>
                               </div>
@@ -519,7 +522,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Vị trí trưng bày</span>
                                 <span className="value highlight-unesco">
-                                  {artifact.locationInSite || artifact.currentLocation || "Tại di tích"}
+                                  {artifact.locationInSite || artifact.currentLocation || "Chưa có thông tin"}
                                 </span>
                               </div>
                             </li>
@@ -578,20 +581,84 @@ const ArtifactDetailPage = () => {
                           <span>
                             * Hiện vật đang được trưng bày tại {artifact.locationInSite || "Bảo tàng / Di tích"}.
                           </span>
-                          <span className="promo-text">Liên hệ Sen để biết thêm thông tin chi tiết.</span>
+                          <span className="promo-text">Đặt trước online để có trải nghiệm tham quan tốt nhất.</span>
                         </div>
                         <div className="action-buttons">
-                          <Button
-                            size="large"
-                            className="direction-btn"
-                            icon={<EnvironmentOutlined />}
-                            onClick={() => {
-                              if (relatedHeritage && relatedHeritage.length > 0) {
-                                navigate(`/heritage/${relatedHeritage[0].id}`);
-                              }
+                          <Dropdown
+                            trigger={['click']}
+                            menu={{
+                              items: [
+                                {
+                                  key: 'sen-map',
+                                  label: 'Bản đồ SEN (Xem hiện vật & Tầm bảo)',
+                                  icon: <RocketOutlined />,
+                                  onClick: () => {
+                                    // Artifacts might have locations, or inherit from heritage
+                                    const lat = artifact.latitude;
+                                    const lng = artifact.longitude;
+                                    const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                                    
+                                    const finalLat = lat || site?.latitude;
+                                    const finalLng = lng || site?.longitude;
+                                    
+                                    navigate(`/map?id=${artifact.id}&type=${ITEM_TYPES.ARTIFACT}&lat=${finalLat}&lng=${finalLng}&action=hunt`);
+                                  }
+                                },
+                                {
+                                  key: 'heritage-link',
+                                  label: 'Xem điểm di sản (Heritage Site)',
+                                  icon: <EnvironmentOutlined />,
+                                  onClick: () => {
+                                    if (relatedHeritage && relatedHeritage.length > 0) {
+                                      navigate(`/heritage-sites/${relatedHeritage[0].id}`);
+                                    }
+                                  }
+                                },
+                                {
+                                  key: 'google-maps',
+                                  label: 'Google Maps (Tên & Địa chỉ)',
+                                  icon: <GoogleOutlined />,
+                                  onClick: () => {
+                                    const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(artifact.name + " " + (site?.name || ""))}`, "_blank");
+                                  }
+                                },
+                                {
+                                  key: 'google-maps-coord',
+                                  label: 'Google Maps (Tọa độ chính xác)',
+                                  icon: <CompassOutlined />,
+                                  onClick: () => {
+                                    const lat = artifact.latitude;
+                                    const lng = artifact.longitude;
+                                    const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                                    
+                                    const finalLat = lat || site?.latitude;
+                                    const finalLng = lng || site?.longitude;
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${finalLat},${finalLng}`, "_blank");
+                                  }
+                                }
+                              ]
                             }}
                           >
-                            Xem điểm đến
+                            <Button
+                              size="large"
+                              className="direction-btn"
+                              icon={<EnvironmentOutlined />}
+                            >
+                              Chỉ đường <MoreOutlined />
+                            </Button>
+                          </Dropdown>
+                          <Button
+                            type="primary"
+                            size="large"
+                            className="booking-btn-large"
+                            onClick={() => {
+                              const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                              const bookingUrl = artifact.bookingLink || site?.bookingLink || site?.website || `https://www.google.com/search?q=đặt+vé+tham+quan+${encodeURIComponent(site?.name || artifact.name)}`;
+                              window.open(bookingUrl, "_blank");
+                            }}
+                          >
+                            {artifact.bookingLink ? "Đến xem hiện vật" : "Đặt vé tham quan"}
                           </Button>
                         </div>
                       </div>

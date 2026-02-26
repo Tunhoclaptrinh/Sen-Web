@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Tag, Badge} from "antd";
+import {Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Badge} from "antd";
 import {
   BellOutlined,
   CheckCircleOutlined,
@@ -14,6 +14,7 @@ import {
   EnvironmentOutlined,
 } from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
+import NotificationDetailModal from "@/components/common/NotificationDetailModal";
 import {notificationService} from "@/services/notification.service";
 import type {Notification} from "@/types/notification.types";
 import {formatRelativeTime} from "@/utils/formatters";
@@ -32,6 +33,8 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   const fetchNotifications = async () => {
     setLoading(true);
@@ -77,15 +80,18 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
 
   const handleMarkAsRead = async (item: Notification, e?: React.MouseEvent) => {
     e?.stopPropagation();
+    setSelectedNotification(item);
+    setDetailVisible(true);
+    
     if (!item.isRead) {
-      await notificationService.markAsRead(item.id);
-      // Optimistic update
-      setNotifications((prev) => prev.map((n) => (n.id === item.id ? {...n, isRead: true} : n)));
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-      // If in unread tab, maybe remove it? Or just keep it as read until refresh.
-      // keeping it is better UX for "oops didn't mean to click"
-    } else {
-      // Optional: Mark as unread? Backend doesn't support it usually.
+      try {
+        await notificationService.markAsRead(item.id);
+        // Optimistic update
+        setNotifications((prev) => prev.map((n) => (n.id === item.id ? {...n, isRead: true} : n)));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+      }
     }
   };
 
@@ -155,49 +161,58 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
 
   const content = (
     <div
+      className="sen-hoa-premium"
       style={{
         width: isMobile ? "100%" : 400,
         display: "flex",
         flexDirection: "column",
-        background: "#fff",
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+        background: "transparent",
       }}
     >
       {/* Header - Sticky */}
       <div
         style={{
           padding: "16px 20px",
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: "1px dashed rgba(197, 160, 101, 0.3)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          background: "rgba(255,255,255,0.95)",
-          backdropFilter: "blur(10px)",
+          background: "transparent",
           position: "sticky",
           top: 0,
           zIndex: 10,
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
         }}
       >
         <div style={{display: "flex", alignItems: "center", gap: 8}}>
-          <Title level={5} style={{margin: 0}}>
+          <Title level={5} style={{margin: 0, fontFamily: "var(--font-serif)", color: "var(--seal-red)"}}>
             Thông báo
           </Title>
-          {unreadCount > 0 && (
-            <Tag color="error" style={{borderRadius: 10}}>
-              {unreadCount} mới
-            </Tag>
-          )}
+          {unreadCount > 0 && <Badge count={unreadCount} size="small" />}
         </div>
         <Tooltip title="Đánh dấu tất cả đã đọc">
           <Button
             type="text"
             size="small"
-            icon={<CheckCircleOutlined />}
-            onClick={handleMarkAllRead}
+            icon={<CheckCircleOutlined style={{fontSize: 14}} />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleMarkAllRead();
+            }}
             disabled={unreadCount === 0}
-            style={{color: unreadCount > 0 ? "#1890ff" : "#bfbfbf"}}
+            className="btn-premium-nhun"
+            style={{
+              color: unreadCount > 0 ? "white" : "#bfbfbf",
+              background: unreadCount > 0 ? "var(--seal-red)" : "#f5f5f5",
+              border: unreadCount > 0 ? "1px solid var(--seal-border)" : "1px solid #d9d9d9",
+              borderRadius: "4px",
+              width: "28px",
+              height: "28px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 0,
+              margin: "4px 0", // Space for vertical nhún
+            }}
           />
         </Tooltip>
       </div>
@@ -235,19 +250,16 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
             dataSource={notifications}
             renderItem={(item) => (
               <List.Item
-                className="notification-item-hover"
+                className={`notification-list-item ${!item.isRead ? "unread" : ""}`}
                 onClick={() => {
                   handleMarkAsRead(item);
-                  // Navigate if has link?
-                  // if (item.link) navigate(item.link);
                 }}
                 style={{
                   padding: "16px 20px",
                   cursor: "pointer",
-                  background: !item.isRead ? "#f0f9ff" : "#fff",
-                  borderBottom: "1px solid #f9f9f9",
                   transition: "all 0.2s",
                   position: "relative",
+                  borderBottom: "1px solid rgba(197, 160, 101, 0.1)",
                 }}
               >
                 <div style={{display: "flex", width: "100%", gap: 16}}>
@@ -256,13 +268,16 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
                     <div
                       style={{
                         position: "absolute",
-                        left: 6,
+                        left: 10,
                         top: "50%",
                         transform: "translateY(-50%)",
-                        width: 6,
-                        height: 6,
+                        width: 10,
+                        height: 10,
                         borderRadius: "50%",
-                        background: "#1890ff",
+                        background: "var(--seal-red)",
+                        border: "2px solid #fff",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                        zIndex: 2,
                       }}
                     />
                   )}
@@ -282,11 +297,11 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
                   />
 
                   <div style={{flex: 1, overflow: "hidden"}}>
-                    <div style={{display: "flex", justifyContent: "space-between", marginBottom: 4}}>
-                      <Text strong={!item.isRead} style={{fontSize: 14, color: "#262626"}}>
+                    <div style={{display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2}}>
+                      <Text strong={!item.isRead} style={{fontSize: 15, color: "var(--text-color-primary)", fontFamily: "var(--font-serif)"}}>
                         {item.title}
                       </Text>
-                      <Text type="secondary" style={{fontSize: 11, whiteSpace: "nowrap", marginLeft: 8}}>
+                      <Text type="secondary" style={{fontSize: 11, whiteSpace: "nowrap", marginLeft: 8, opacity: 0.7}}>
                         {formatRelativeTime(item.createdAt)}
                       </Text>
                     </div>
@@ -297,6 +312,36 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
                       {item.message}
                     </Paragraph>
                   </div>
+
+                  {/* Actions for individual item */}
+                  {!item.isRead && (
+                    <div style={{display: "flex", alignItems: "center", marginLeft: 8, height: "100%"}}>
+                      <Tooltip title="Đánh dấu đã đọc">
+                        <Button
+                          type="text"
+                          size="small"
+                          icon={<CheckCircleOutlined style={{fontSize: 12}} />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMarkAsRead(item);
+                          }}
+                          className="btn-premium-nhun"
+                          style={{
+                            color: "white",
+                            background: "var(--seal-red)",
+                            border: "1px solid var(--seal-border)",
+                            borderRadius: "4px",
+                            width: "24px",
+                            height: "24px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: 0,
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                  )}
                 </div>
               </List.Item>
             )}
@@ -320,29 +365,33 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
         )}
       </div>
 
-      {/* Footer - Sticky */}
+      {/* Footer - Optimized */}
       <div
         style={{
-          padding: "12px 20px",
-          borderTop: "1px solid #f0f0f0",
+          padding: "8px 16px",
+          borderTop: "1px dashed rgba(197, 160, 101, 0.2)",
           textAlign: "center",
-          background: "#fafafa",
-          borderBottomLeftRadius: 12,
-          borderBottomRightRadius: 12,
+          background: "transparent",
         }}
       >
         <Button
           type="link"
           onClick={() => {
-            setVisible(false);
             navigate("/notifications");
+            setVisible?.(false);
           }}
-          style={{fontWeight: 500}}
+          className="btn-premium-nhun"
+          style={{fontFamily: "var(--font-serif)", color: "var(--seal-red)"}}
         >
           Xem tất cả thông báo
         </Button>
       </div>
 
+      <NotificationDetailModal
+        visible={detailVisible}
+        onClose={() => setDetailVisible(false)}
+        notification={selectedNotification}
+      />
       <style>
         {`
                 .notification-item-hover:hover {

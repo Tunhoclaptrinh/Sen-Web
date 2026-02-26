@@ -6,7 +6,9 @@ import shopService from "@/services/shop.service";
 export const useShopModel = () => {
     // UI State
     const [currentRecord, setCurrentRecord] = useState<any | null>(null);
+    const [viewRecord, setViewRecord] = useState<any | null>(null);
     const [formVisible, setFormVisible] = useState(false);
+    const [detailVisible, setDetailVisible] = useState(false);
 
     // CRUD Setup
     const crudOptions = useMemo(() => ({
@@ -36,6 +38,16 @@ export const useShopModel = () => {
         setCurrentRecord(null);
     };
 
+    const openDetail = (record: any) => {
+        setViewRecord(record);
+        setDetailVisible(true);
+    };
+
+    const closeDetail = () => {
+        setDetailVisible(false);
+        setViewRecord(null);
+    };
+
     const handleSubmit = async (values: any) => {
         let success = false;
         if (currentRecord) {
@@ -53,10 +65,14 @@ export const useShopModel = () => {
     return {
         ...crud,
         currentRecord,
+        viewRecord,
         formVisible,
+        detailVisible,
         openCreate,
         openEdit,
         closeForm,
+        openDetail,
+        closeDetail,
         handleSubmit,
     };
 };

@@ -13,6 +13,7 @@ export enum HeritageType {
   HISTORIC_BUILDING = "historicBuilding",
   NATURAL_HERITAGE = "naturalHeritage",
   INTANGIBLE_HERITAGE = "intangibleHeritage",
+  OTHER = "other",
 }
 
 // Heritage Type Labels (Vietnamese)
@@ -276,6 +277,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   relatedProducts?: any[];
   relatedHistory?: any[];
   references?: string;
+  bookingLink?: string;
 }
 
 // Heritage Site Create/Update DTO
@@ -305,6 +307,7 @@ export interface HeritageSiteDTO {
   relatedHeritageIds?: number[];
   relatedLevelIds?: number[];
   references?: string;
+  bookingLink?: string;
 }
 
 // Timeline Event

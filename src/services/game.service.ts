@@ -344,6 +344,33 @@ class GameService extends BaseService {
     const response = await this.post("/checkin", {locationId});
     return response.data;
   }
+
+  /**
+   * Get user scan and check-in history
+   */
+  async getScanHistory(): Promise<{
+    history: Array<{
+      id: number;
+      userId: number;
+      objectId: number;
+      type: "checkin" | "collect_artifact";
+      scannedAt: string;
+      scanCode: string;
+      objectName: string;
+      objectImage: string;
+      rewards: Array<{ amount: number; currency: string }>;
+    }>;
+    stats: {
+      totalCheckins: number;
+      totalArtifacts: number;
+      uniqueSites: number;
+      totalCoinsEarned: number;
+      totalPetalsEarned: number;
+    };
+  }> {
+    const response = await this.get("/scan-history");
+    return response.data;
+  }
 }
 
 export const gameService = new GameService();

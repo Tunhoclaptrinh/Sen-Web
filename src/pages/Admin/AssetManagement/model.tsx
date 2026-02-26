@@ -50,6 +50,32 @@ export const useAssetModel = () => {
         return success;
     };
 
+    const handleGenerateCode = (form: any) => {
+        const type = form.getFieldValue("type") || "SCAN";
+        const prefix = type === "artifact" ? "SEN_ART" : type === "heritage_site" ? "SEN_SITE" : "SEN_QR";
+        const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const code = `${prefix}_${randomStr}`;
+        form.setFieldsValue({ code });
+    };
+
+    const downloadQRCode = (code: string, fileName: string) => {
+        const canvas = document.getElementById(`qr-code-download-${code}`) as HTMLCanvasElement;
+        if (canvas) {
+            const pngUrl = canvas
+                .toDataURL("image/png")
+                .replace("image/png", "image/octet-stream");
+            const downloadLink = document.createElement("a");
+            downloadLink.href = pngUrl;
+            downloadLink.download = `${fileName || code}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            message.success("Bắt đầu tải mã QR...");
+        } else {
+            message.error("Không tìm thấy mã QR để tải!");
+        }
+    };
+
     return {
         ...crud,
         currentRecord,
@@ -58,5 +84,7 @@ export const useAssetModel = () => {
         openEdit,
         closeForm,
         handleSubmit,
+        handleGenerateCode,
+        downloadQRCode
     };
 };
