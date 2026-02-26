@@ -5,14 +5,13 @@ import {
   Button,
   Avatar,
   message,
-  Tabs,
-  Spin,
-  Empty,
-  Badge,
   Card,
   Popconfirm,
   Tooltip,
-  Tag,
+  Spin,
+  Tabs,
+  Badge,
+  Empty,
 } from "antd";
 import {
   BellOutlined,
@@ -20,15 +19,12 @@ import {
   DeleteOutlined,
   GiftOutlined,
   TrophyOutlined,
-  InfoCircleOutlined,
-  MessageOutlined,
-  RocketOutlined,
   ReadOutlined,
   EnvironmentOutlined,
   GoldOutlined,
-  HistoryOutlined,
-  BookOutlined,
 } from "@ant-design/icons";
+
+import NotificationDetailModal from "@/components/common/NotificationDetailModal";
 import {notificationService} from "@/services/notification.service";
 import type {Notification} from "@/types/notification.types";
 import {formatRelativeTime} from "@/utils/formatters";
@@ -36,14 +32,17 @@ import {ITEM_TYPES} from "@/config/constants";
 
 const {Title, Text, Paragraph} = Typography;
 
+import "./styles.less";
+
 const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const [activeTab, setActiveTab] = useState("all");
-  // Global unread count from the API (total, not just current page)
+  const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [unreadTotal, setUnreadTotal] = useState(0);
 
   const fetchNotifications = async () => {
@@ -70,14 +69,13 @@ const NotificationsPage: React.FC = () => {
     if (item.isRead) return;
     try {
       await notificationService.markAsRead(item.id);
-      // Optimistic update
       setNotifications((prev) => prev.map((n) => (n.id === item.id ? {...n, isRead: true} : n)));
-      // If we are in 'unread' tab, we might want to keep showing it but mark as read, or remove it?
-      // Standard behavior: keep it until refresh or let it fade.
-      // If using server side filter, removing it might affect pagination sequence.
-      // For now, let's just mark it read.
       setUnreadTotal((prev) => Math.max(0, prev - 1));
       message.success("Đã đánh dấu đã đọc");
+      if (activeTab === "unread") {
+        // If in unread tab, maybe refresh after a small delay or remove locally
+        setTimeout(() => fetchNotifications(), 1000);
+      }
     } catch (error) {
       message.error("Thao tác thất bại");
     }
@@ -89,7 +87,6 @@ const NotificationsPage: React.FC = () => {
       setNotifications((prev) => prev.map((n) => ({...n, isRead: true})));
       setUnreadTotal(0);
       message.success("Đã đánh dấu tất cả là đã đọc");
-      // If in unread tab, refreshing would empty the list.
       if (activeTab === "unread") {
         fetchNotifications();
       }
@@ -125,159 +122,94 @@ const NotificationsPage: React.FC = () => {
     const style = {fontSize: 20};
     switch (type) {
       case "reward":
-        return <GiftOutlined style={{...style, color: "#ff4d4f"}} />;
+        return <GiftOutlined style={{...style, color: "#8b1d1d"}} />;
       case "achievement":
-        return <TrophyOutlined style={{...style, color: "#faad14"}} />;
-      case "social":
-        return <MessageOutlined style={{...style, color: "#52c41a"}} />;
-      case "quest":
-        return <RocketOutlined style={{...style, color: "#13c2c2"}} />;
+        return <TrophyOutlined style={{...style, color: "#c5a065"}} />;
       case ITEM_TYPES.HERITAGE:
-        return <EnvironmentOutlined style={{...style, color: "#1890ff"}} />;
+        return <EnvironmentOutlined style={{...style, color: "#5d4037"}} />;
       case ITEM_TYPES.ARTIFACT:
-        return <GoldOutlined style={{...style, color: "#fa8c16"}} />;
-      case "history":
-        return <HistoryOutlined style={{...style, color: "#722ed1"}} />;
-      case "learning":
-        return <BookOutlined style={{...style, color: "#eb2f96"}} />;
-      case "system":
+        return <GoldOutlined style={{...style, color: "#8b1d1d"}} />;
       default:
-        return <InfoCircleOutlined style={{...style, color: "#1890ff"}} />;
-    }
-  };
-
-  const getAvatarBg = (type: string) => {
-    switch (type) {
-      case "reward":
-        return "#fff1f0";
-      case "achievement":
-        return "#fffbe6";
-      case "social":
-        return "#f6ffed";
-      case "quest":
-        return "#e6fffb";
-      case ITEM_TYPES.HERITAGE:
-        return "#e6f7ff";
-      case ITEM_TYPES.ARTIFACT:
-        return "#fff7e6";
-      case "history":
-        return "#f9f0ff";
-      case "learning":
-        return "#fff0f6";
-      default:
-        return "#f5f5f5";
+        return <BellOutlined style={{...style, color: "#886a64"}} />;
     }
   };
 
   return (
-    <div style={{maxWidth: 1200, margin: "0 auto", paddingBottom: 60, paddingTop: 20}}>
-      {/* Premium Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 24,
-          background: "rgba(255,255,255,0.8)",
-          backdropFilter: "blur(10px)",
-          padding: "24px 32px",
-          borderRadius: 24,
-          border: "1px solid rgba(255,255,255,0.3)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.04)",
-        }}
-      >
-        <div style={{display: "flex", alignItems: "center", gap: 16}}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 20,
-              background: "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 8px 16px rgba(255, 107, 107, 0.25)",
-            }}
-          >
-            <BellOutlined style={{fontSize: 26, color: "#fff"}} />
+    <div className="notifications-page-container sen-hoa-premium">
+      {/* Heritage Header */}
+      <div className="notifications-header">
+        <div className="header-left">
+          <div className="icon-seal">
+            <BellOutlined />
           </div>
-          <div>
-            <Title level={2} style={{margin: 0, fontSize: 24, fontWeight: 700, color: "#1a1a1a"}}>
-              Thông báo
-            </Title>
-            <div style={{display: "flex", alignItems: "center", gap: 8}}>
-              <Text type="secondary" style={{fontSize: 14}}>
-                Cập nhật hoạt động của bạn
-              </Text>
-              {unreadTotal > 0 && (
-                <Tag color="error" style={{borderRadius: 10, border: "none"}}>
-                  {unreadTotal} chưa đọc
-                </Tag>
-              )}
+          <div className="title-group">
+            <div style={{display: "flex", alignItems: "center", gap: 12}}>
+              <Title level={2} style={{margin: 0}}>Thông báo</Title>
+              {unreadTotal > 0 && <Badge count={unreadTotal} className="unread-badge" style={{backgroundColor: "var(--seal-red)"}} />}
+            </div>
+            <div className="subtitle">
+              <Text>Cập nhật hoạt động của bạn</Text>
             </div>
           </div>
         </div>
 
-        <div style={{display: "flex", gap: 12}}>
-          <Tooltip title="Đánh dấu tất cả là đã đọc">
-            <Button
-              icon={<ReadOutlined />}
-              onClick={handleMarkAllRead}
-              disabled={unreadTotal === 0 && activeTab === "all"} // Simple disable logic
-              type="text"
-              style={{background: "#f5f5f5", color: "#595959"}}
-            >
-              Đã đọc
-            </Button>
-          </Tooltip>
+        <div className="header-actions">
+          <Button
+            icon={<ReadOutlined />}
+            onClick={handleMarkAllRead}
+            disabled={unreadTotal === 0}
+            className="btn-heritage-ghost btn-premium-nhun"
+            style={{
+              padding: "0 20px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            Đọc tất cả
+          </Button>
 
           <Popconfirm
             title="Xóa tất cả thông báo?"
-            description="Hành động này không thể hoàn tác."
             onConfirm={handleDeleteAll}
             okText="Xóa hết"
             cancelText="Hủy"
             okButtonProps={{danger: true}}
           >
-            <Tooltip title="Xóa tất cả">
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                disabled={notifications.length === 0}
-                type="text"
-                style={{background: "#fff1f0"}}
-              />
-            </Tooltip>
+            <Button 
+              danger 
+              icon={<DeleteOutlined />} 
+              disabled={notifications.length === 0} 
+              className="btn-heritage-danger btn-premium-nhun" 
+            />
           </Popconfirm>
         </div>
       </div>
 
-      {/* Content Card */}
-      <Card bordered={false} style={{borderRadius: 24, overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.03)"}}>
+      {/* Main Content Card */}
+      <Card className="notifications-main-card">
         <Tabs
           activeKey={activeTab}
           onChange={(key) => {
-            setActiveTab(key);
-            setPage(1); // Reset page on tab change
+            setActiveTab(key as any);
+            setPage(1);
           }}
           items={[
             {
               key: "all",
-              label: <span style={{padding: "0 8px", fontSize: 15}}>Tất cả</span>,
+              label: "Tất cả thông báo",
             },
             {
               key: "unread",
-              label: (
-                <span style={{padding: "0 8px", fontSize: 15}}>Chưa đọc {unreadTotal > 0 && `(${unreadTotal})`}</span>
-              ),
+              label: `Chưa đọc ${unreadTotal > 0 ? `(${unreadTotal})` : ""}`,
             },
           ]}
-          tabBarStyle={{padding: "0 16px"}}
         />
 
         {loading ? (
-          <div style={{textAlign: "center", padding: "60px 0"}}>
-            <Spin size="large" />
+          <div className="loading-wrapper">
+            <Spin size="large" tip="Đang tìm kiếm tin mới..." />
           </div>
         ) : notifications.length > 0 ? (
           <List
@@ -293,114 +225,90 @@ const NotificationsPage: React.FC = () => {
             }}
             renderItem={(item) => (
               <List.Item
-                actions={[
-                  !item.isRead && (
-                    <Tooltip title="Đánh dấu đã đọc">
-                      <Button
-                        type="text"
-                        shape="circle"
-                        icon={<CheckCircleOutlined style={{color: "#1890ff"}} />}
-                        onClick={() => handleMarkAsRead(item)}
-                        style={{background: "#e6f7ff"}}
-                      />
-                    </Tooltip>
-                  ),
-                  <Popconfirm
-                    title="Xóa thông báo này?"
-                    onConfirm={() => handleDelete(item.id)}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                    okButtonProps={{danger: true}}
-                  >
-                    <Button type="text" danger shape="circle" icon={<DeleteOutlined />} className="delete-btn-hover" />
-                  </Popconfirm>,
-                ]}
-                style={{
-                  padding: "24px",
-                  transition: "all 0.3s",
-                  background: !item.isRead
-                    ? "linear-gradient(to right, rgba(230, 247, 255, 0.4), rgba(255, 255, 255, 0))"
-                    : "transparent",
-                  borderBottom: "1px solid #f5f5f5",
-                  position: "relative",
+                className={`notification-list-item ${!item.isRead ? "unread" : ""}`}
+                onClick={() => {
+                  setSelectedNotification(item);
+                  setDetailVisible(true);
+                  if (!item.isRead) handleMarkAsRead(item);
                 }}
-                className="notification-list-item"
+                style={{ cursor: "pointer" }}
+                actions={[
+                    !item.isRead && (
+                      <Tooltip title="Đánh dấu đã đọc">
+                        <Button
+                          type="text"
+                          icon={<CheckCircleOutlined style={{fontSize: 14}} />}
+                          onClick={() => handleMarkAsRead(item)}
+                          className="mark-read-btn btn-premium-nhun"
+                          style={{
+                            color: "white",
+                            background: "var(--seal-red)",
+                            border: "1px solid var(--seal-border)",
+                            borderRadius: "4px",
+                            width: "32px",
+                            height: "32px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: 0,
+                          }}
+                        />
+                      </Tooltip>
+                    ),
+                    <Popconfirm title="Xóa thông báo này?" onConfirm={() => handleDelete(item.id)}>
+                      <Button 
+                        type="text" 
+                        danger 
+                        icon={<DeleteOutlined style={{fontSize: 14}} />} 
+                        className="delete-btn btn-premium-nhun" 
+                        style={{
+                          background: "#fff1f0",
+                          border: "1px solid #ffa39e",
+                          borderRadius: "4px",
+                          width: "32px",
+                          height: "32px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: 0,
+                        }}
+                      />
+                    </Popconfirm>,
+                ]}
               >
-                {/* Active indicator strip */}
-                {!item.isRead && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: "24px",
-                      bottom: "24px",
-                      width: 3,
-                      background: "#1890ff",
-                      borderRadius: "0 4px 4px 0",
-                    }}
-                  />
-                )}
-
                 <List.Item.Meta
                   avatar={
                     <Avatar
                       icon={getIcon(item.type)}
                       size={48}
-                      style={{
-                        backgroundColor: getAvatarBg(item.type),
-                        border: "1px solid rgba(0,0,0,0.03)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
+                      className={`notification-avatar ${item.type}`}
                     />
                   }
                   title={
-                    <div style={{display: "flex", alignItems: "center", gap: 10, marginBottom: 4}}>
-                      <Text strong={!item.isRead} style={{fontSize: 16, color: "#1f1f1f"}}>
-                        {item.title}
-                      </Text>
-                      {!item.isRead && <Badge status="processing" color="#1890ff" />}
-                      {item.isRead && <CheckCircleOutlined style={{fontSize: 12, color: "#52c41a", opacity: 0.5}} />}
+                    <div className="item-title-row">
+                      <Text strong={!item.isRead}>{item.title}</Text>
+                      <Text className="time-text">{formatRelativeTime(item.createdAt)}</Text>
                     </div>
                   }
-                  description={
-                    <div>
-                      <Paragraph style={{margin: "4px 0 10px", color: "#595959", fontSize: 14, lineHeight: 1.6}}>
-                        {item.message}
-                      </Paragraph>
-                      <Text type="secondary" style={{fontSize: 12}}>
-                        {formatRelativeTime(item.createdAt)}
-                      </Text>
-                    </div>
-                  }
+                  description={<Paragraph className="item-message">{item.message}</Paragraph>}
                 />
               </List.Item>
             )}
           />
         ) : (
-          <div style={{padding: "60px 0"}}>
+          <div className="empty-wrapper">
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={
-                <div style={{color: "#8c8c8c"}}>
-                  {activeTab === "unread" ? "Tuyệt vời! Bạn đã đọc hết thông báo" : "Bạn chưa có thông báo nào"}
-                </div>
-              }
+              description={activeTab === "unread" ? "Tuyệt vời! Bạn đã đọc sạch thông báo." : "Hòm thư đang trống."}
             />
           </div>
         )}
       </Card>
-      <style>
-        {`
-                .notification-list-item:hover {
-                    background-color: #fafafa !important; 
-                }
-                .delete-btn-hover:hover {
-                    background-color: #fff1f0 !important;
-                }
-                `}
-      </style>
+      <NotificationDetailModal 
+        visible={detailVisible}
+        onClose={() => setDetailVisible(false)}
+        notification={selectedNotification}
+      />
     </div>
   );
 };
