@@ -50,15 +50,29 @@ const MuseumPage: React.FC = () => {
   };
 
   const handleUseItem = (itemId: number) => {
-    dispatch(useItem({itemId}));
-    setDetailModalVisible(false);
+    const item = enrichedInventory.find(i => i.itemId === itemId);
+    if (!item) return;
+
+    Modal.confirm({
+      title: 'Xác nhận sử dụng',
+      content: `Bạn có chắc chắn muốn sử dụng "${item.name}" không?`,
+      okText: 'Sử dụng',
+      cancelText: 'Hủy',
+      onOk: () => {
+        dispatch(useItem({ itemId }));
+        setDetailModalVisible(false);
+      }
+    });
   };
 
   // Enrich inventory items with shop data
-  const enrichedInventory = inventory.map((invItem) => {
-    const itemDetail = shopItems.find((s) => s.id === invItem.itemId);
-    return {...invItem, ...itemDetail};
-  });
+  // Enrich and filter inventory items with shop data - items with 0 quantity should disappear
+  const enrichedInventory = inventory
+    .filter((invItem) => invItem.quantity > 0)
+    .map((invItem) => {
+      const itemDetail = shopItems.find((s) => s.id === invItem.itemId);
+      return {...invItem, ...itemDetail};
+    });
 
   // Combine all items into a unified list
   const allItems = [
@@ -156,24 +170,36 @@ const MuseumPage: React.FC = () => {
                   let text = "Vật phẩm";
 
                   if (item.type === ITEM_TYPES.ARTIFACT) {
-                    color = "gold";
-                    text = "HIỆN VẬT";
+                    color = "orange";
+                    text = (item.original?.artifactType || "Hiện vật").toUpperCase();
                   } else if (item.type === "character") {
                     color = "magenta";
                     text = "ĐỒNG HÀNH";
                   } else if (item.type === "inventory") {
                     // Map shop types
-                    const shopType = item.original?.type;
-                    if (["powerup", "hint", "boost"].includes(shopType)) {
-                      color = "blue";
-                      text = "HỖ TRỢ";
-                    } else if (["decoration", "theme"].includes(shopType)) {
-                      color = "purple";
-                      text = "TRANG TRÍ";
-                    } else {
-                      color = "cyan";
-                      text = "SƯU TẦM";
-                    }
+                      const shopType = item.original?.type;
+                      if (["consumable_hint", "hint"].includes(shopType)) {
+                        color = "blue";
+                        text = "GỢI Ý";
+                      } else if (["consumable_shield", "boost"].includes(shopType)) {
+                        color = "green";
+                        text = "BẢO VỆ";
+                      } else if (["permanent_theme", "theme"].includes(shopType)) {
+                        color = "purple";
+                        text = "GIAO DIỆN";
+                      } else if (["permanent_avatar", "avatar"].includes(shopType)) {
+                        color = "magenta";
+                        text = "AVATAR";
+                      } else if (shopType === "decoration") {
+                        color = "volcano";
+                        text = "TRANG TRÍ";
+                      } else if (shopType === "premium_ai") {
+                        color = "gold";
+                        text = "AI VIP";
+                      } else {
+                        color = "cyan";
+                        text = (item.original?.type || "vật phẩm").toUpperCase();
+                      }
                   }
 
                   return <Tag color={color}>{text}</Tag>;
@@ -282,6 +308,7 @@ const MuseumPage: React.FC = () => {
           centered
           className="museum-tabs"
           items={[
+            {label: <span>Tất cả</span>, key: "all"},
             {label: <span>Nhân vật</span>, key: "character"},
             {label: <span>Hiện vật</span>, key: ITEM_TYPES.ARTIFACT},
           ]}
@@ -308,7 +335,7 @@ const MuseumPage: React.FC = () => {
           <Button key="close" onClick={() => setDetailModalVisible(false)}>
             Đóng
           </Button>,
-          selectedItem?.type === "inventory" && selectedItem?.original.isConsumable && (
+          selectedItem?.type === "inventory" && (
             <Button key="use" type="primary" onClick={() => handleUseItem(selectedItem.original.itemId)}>
               Sử dụng
             </Button>
@@ -359,9 +386,44 @@ const MuseumPage: React.FC = () => {
             <div style={{marginTop: 24, textAlign: "left", background: "#f5f5f5", padding: 16, borderRadius: 8}}>
               <div style={{display: "flex", justifyContent: "space-between", marginBottom: 8}}>
                 <Text strong>Loại:</Text>
-                <Tag color={selectedItem.type === "character" ? "blue" : "green"}>
-                  {selectedItem.type === "character" ? "Nhân vật" : "Cổ vật"}
-                </Tag>
+                {(() => {
+                  let color = "gold";
+                  let text = "Vật phẩm";
+
+                  if (selectedItem.type === ITEM_TYPES.ARTIFACT) {
+                    color = "orange";
+                    text = (selectedItem.original?.artifactType || "Hiện vật").toUpperCase();
+                  } else if (selectedItem.type === "character") {
+                    color = "magenta";
+                    text = "ĐỒNG HÀNH";
+                  } else if (selectedItem.type === "inventory") {
+                      const shopType = selectedItem.original?.type;
+                      if (["consumable_hint", "hint"].includes(shopType)) {
+                        color = "blue";
+                        text = "GỢI Ý";
+                      } else if (["consumable_shield", "boost"].includes(shopType)) {
+                        color = "green";
+                        text = "BẢO VỆ";
+                      } else if (["permanent_theme", "theme"].includes(shopType)) {
+                        color = "purple";
+                        text = "GIAO DIỆN";
+                      } else if (["permanent_avatar", "avatar"].includes(shopType)) {
+                        color = "magenta";
+                        text = "AVATAR";
+                      } else if (shopType === "decoration") {
+                        color = "volcano";
+                        text = "TRANG TRÍ";
+                      } else if (shopType === "premium_ai") {
+                        color = "gold";
+                        text = "AI VIP";
+                      } else {
+                        color = "cyan";
+                        text = (selectedItem.original?.type || "VẬT PHẨM").toUpperCase();
+                      }
+                  }
+
+                  return <Tag color={color}>{text}</Tag>;
+                })()}
               </div>
               <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Text strong>Số lượng:</Text>

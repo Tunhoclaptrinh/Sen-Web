@@ -13,6 +13,7 @@ export enum HeritageType {
   HISTORIC_BUILDING = "historicBuilding",
   NATURAL_HERITAGE = "naturalHeritage",
   INTANGIBLE_HERITAGE = "intangibleHeritage",
+  OTHER = "other",
 }
 
 // Heritage Type Labels (Vietnamese)

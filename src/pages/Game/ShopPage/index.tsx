@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Tabs, Button, message, Spin, Modal, Typography, Card, Col, Tag, Row} from "antd";
-import {ShopOutlined, MinusOutlined, PlusOutlined, DollarOutlined} from "@ant-design/icons";
+import {ShopOutlined, DollarOutlined} from "@ant-design/icons";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/store";
 import {fetchShopData, purchaseItem, clearMessages} from "@/store/slices/shopSlice";
@@ -9,8 +9,9 @@ import {ShopItem} from "@/types/game.types";
 import {aiService, AICharacter} from "@/services/ai.service";
 import "./styles.less";
 import {getImageUrl} from "@/utils/image.helper";
+import ShopDetailModal from "./components/ShopDetailModal";
 
-const {Title, Text} = Typography;
+const {Title} = Typography;
 
 const ShopPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,6 @@ const ShopPage: React.FC = () => {
   const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
   const [purchaseQuantity, setPurchaseQuantity] = useState(1);
-  const [loadingItemId, setLoadingItemId] = useState<number | null>(null);
 
   // AI Character state
   const [availableCharacters, setAvailableCharacters] = useState<AICharacter[]>([]);
@@ -124,31 +124,7 @@ const ShopPage: React.FC = () => {
   };
 
   const handleBuyItem = (item: ShopItem) => {
-    const balance = item.currency === "petals" ? progress?.totalSenPetals || 0 : progress?.coins || 0;
-    if (balance < item.price) {
-      message.warning(`Bạn không đủ ${item.currency === "petals" ? "Cánh Sen" : "Xu"}!`);
-      return;
-    }
-
-    if (item.isConsumable) {
-      handleOpenModal(item);
-    } else {
-      Modal.confirm({
-        title: "Xác nhận mua",
-        content: `Bạn muốn mua ${item.name} với giá ${item.price} ${item.currency === "petals" ? "Sen" : "Xu"}?`,
-        okText: "Mua ngay",
-        cancelText: "Hủy",
-        onOk: () => {
-          setLoadingItemId(item.id);
-          dispatch(purchaseItem({itemId: item.id, quantity: 1}) as any)
-            .unwrap()
-            .catch(() => {})
-            .finally(() => {
-              setLoadingItemId(null);
-            });
-        },
-      });
-    }
+    handleOpenModal(item);
   };
 
   const renderShopItem = (item: ShopItem) => {
@@ -163,6 +139,7 @@ const ShopPage: React.FC = () => {
         <Card
           hoverable
           className="shop-card"
+          onClick={() => handleOpenModal(item)}
           cover={
             <div className="card-cover">
               {itemImage ? (
@@ -288,8 +265,7 @@ const ShopPage: React.FC = () => {
                 type="primary"
                 className={`buy-btn ${isOwned ? "owned" : ""}`}
                 onClick={() => !isOwned && handleBuyItem(item)}
-                loading={loadingItemId === item.id}
-                disabled={isOwned || loadingItemId === item.id}
+                disabled={isOwned}
               >
                 {isOwned ? "Đã sở hữu" : "Mua ngay"}
               </Button>
@@ -464,89 +440,18 @@ const ShopPage: React.FC = () => {
         </div>
       )}
 
-      <Modal
-        title={
-          <Title level={4} style={{margin: 0}}>
-            Mua vật phẩm
-          </Title>
-        }
-        open={purchaseModalVisible}
-        onCancel={() => setPurchaseModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setPurchaseModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Button key="buy" type="primary" loading={purchaseLoading} onClick={handleConfirmPurchase}>
-            Mua ({selectedItem ? selectedItem.price * purchaseQuantity : 0}{" "}
-            {selectedItem?.currency === "petals" ? "Sen" : "Xu"})
-          </Button>,
-        ]}
-        centered
-      >
-        {selectedItem && (
-          <div className="purchase-modal-content" style={{textAlign: "center"}}>
-            <div style={{marginBottom: 16}}>
-              {selectedItem.image ? (
-                <img
-                  src={getImageUrl(selectedItem.image)}
-                  alt={selectedItem.name}
-                  style={{width: 80, height: 80, objectFit: "contain", marginBottom: 8}}
-                />
-              ) : (
-                <div style={{fontSize: "3rem"}}>{selectedItem.icon}</div>
-              )}
-              <Title level={5}>{selectedItem.name}</Title>
-              <Text type="secondary">{selectedItem.description}</Text>
-
-              {(() => {
-                const owned = inventory.find((i) => i.itemId === selectedItem.id);
-                if (owned && selectedItem.isConsumable) {
-                  return (
-                    <div
-                      style={{
-                        marginTop: 12,
-                        color: "#8b1d1d", // @seal-red
-                        background: "rgba(139, 29, 29, 0.08)",
-                        padding: "4px 12px",
-                        borderRadius: "16px",
-                        display: "inline-block",
-                        fontWeight: 700,
-                        border: "1px solid rgba(139, 29, 29, 0.2)",
-                        fontFamily: '"Merriweather", serif',
-                      }}
-                    >
-                      Bạn đang có: {owned.quantity}
-                    </div>
-                  );
-                }
-                return null;
-              })()}
-            </div>
-
-            <div
-              className="quantity-control"
-              style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 16, marginBottom: 24}}
-            >
-              <Button
-                icon={<MinusOutlined />}
-                onClick={() => handleModalQuantityChange(-1)}
-                disabled={purchaseQuantity <= 1}
-              />
-              <span style={{fontSize: 24, fontWeight: "bold", minWidth: 40}}>{purchaseQuantity}</span>
-              <Button icon={<PlusOutlined />} onClick={() => handleModalQuantityChange(1)} />
-            </div>
-
-            <div className="price-summary" style={{background: "#f5f5f5", padding: 12, borderRadius: 8}}>
-              <Text>
-                Đơn giá: {selectedItem.price} {selectedItem.currency === "petals" ? "Sen" : "Xu"}
-              </Text>
-              <div style={{fontSize: 18, fontWeight: "bold", color: "#cf1322", marginTop: 4}}>
-                Tổng: {selectedItem.price * purchaseQuantity} {selectedItem.currency === "petals" ? "Sen" : "Xu"}
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <ShopDetailModal
+        visible={purchaseModalVisible}
+        onClose={() => setPurchaseModalVisible(false)}
+        item={selectedItem}
+        quantity={purchaseQuantity}
+        onQuantityChange={handleModalQuantityChange}
+        onConfirmPurchase={handleConfirmPurchase}
+        purchaseLoading={purchaseLoading}
+        isOwned={inventory.some((inv) => inv.itemId === selectedItem?.id) && !selectedItem?.isConsumable}
+        inventoryQuantity={inventory.find((inv) => inv.itemId === selectedItem?.id)?.quantity}
+        userBalance={selectedItem?.currency === "petals" ? progress?.totalSenPetals || 0 : progress?.coins || 0}
+      />
     </div>
   );
 };

@@ -1,9 +1,10 @@
-import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message} from "antd";
+import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message, Radio, Space} from "antd";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
+import {LinkOutlined} from "@ant-design/icons";
 import {useAuth} from "@/hooks/useAuth";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLabels} from "@/types";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback} from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import artifactService from "@/services/artifact.service";
@@ -33,6 +34,16 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   const [heritageSites, setHeritageSites] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("1");
+  const [imageType, setImageType] = useState<'url' | 'upload'>('url');
+  const [showCustomType, setShowCustomType] = useState(false);
+
+  const onTypeChange = useCallback((value: string) => {
+    const isOther = value === 'other';
+    setShowCustomType(isOther);
+    if (!isOther) {
+      form.setFieldsValue({ artifactType: value });
+    }
+  }, [form]);
 
   useEffect(() => {
     if (open) setActiveTab("1");
@@ -129,7 +140,27 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
           form.setFieldsValue(formattedValues);
         } catch (error) {
           console.error("Failed to init artifact data", error);
-          form.setFieldsValue(initialValues);
+        }
+
+        // Common sync logic for both Edit and Create (if initialValues exists)
+        if (initialValues) {
+          // Image type sync
+          const isUpload = initialValues.image?.startsWith('/uploads/');
+          setImageType(isUpload ? 'upload' : 'url');
+          form.setFieldsValue({ imageType: isUpload ? 'upload' : 'url' });
+
+          // Type sync
+          const isDefaultType = Object.values(ArtifactType).includes(initialValues.artifactType as ArtifactType) && initialValues.artifactType !== ArtifactType.OTHER;
+          if (isDefaultType) {
+            setShowCustomType(false);
+            form.setFieldsValue({ artifactTypeSelect: initialValues.artifactType });
+          } else {
+            setShowCustomType(true);
+            form.setFieldsValue({ 
+              artifactTypeSelect: 'other',
+              customArtifactType: initialValues.artifactType 
+            });
+          }
         }
       }
       // 2. Chế độ Thêm mới (isEdit = false) -> Reset form
@@ -142,6 +173,10 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         }, {});
         form.setFieldsValue(resetValues);
         form.resetFields(); // Call this as well to reset errors/touched state
+
+        setImageType('url');
+        setShowCustomType(false);
+        form.setFieldsValue({ imageType: 'url', artifactTypeSelect: ArtifactType.OTHER });
 
         // Set defaults
         form.setFieldsValue({
@@ -353,8 +388,28 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
               <>
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item label="Hình ảnh đại diện" name="image">
-                      <ImageUpload maxCount={1} />
+                    <Form.Item label="Hình ảnh đại diện">
+                      <div style={{ marginBottom: 8 }}>
+                        <Radio.Group 
+                          value={imageType} 
+                          onChange={(e) => setImageType(e.target.value)}
+                          buttonStyle="solid"
+                          size="small"
+                        >
+                          <Radio.Button value="url">Dán liên kết</Radio.Button>
+                          <Radio.Button value="upload">Tải ảnh lên</Radio.Button>
+                        </Radio.Group>
+                      </div>
+                      
+                      {imageType === 'upload' ? (
+                        <Form.Item name="image" noStyle>
+                          <ImageUpload maxCount={1} />
+                        </Form.Item>
+                      ) : (
+                        <Form.Item name="image" noStyle>
+                          <Input placeholder="https://..." prefix={<LinkOutlined />} />
+                        </Form.Item>
+                      )}
                     </Form.Item>
                   </Col>
                   <Col span={16}>
@@ -396,18 +451,34 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item
-                      name="artifactType"
-                      label="Loại hình"
-                      rules={[{required: true, message: "Vui lòng chọn loại hình"}]}
-                    >
-                      <Select placeholder="Chọn loại hình">
-                        {Object.values(ArtifactType).map((type) => (
-                          <Select.Option key={type} value={type}>
-                            {ArtifactTypeLabels[type]}
-                          </Select.Option>
-                        ))}
-                      </Select>
+                    <Form.Item label="Loại hình">
+                      <Space.Compact style={{ width: '100%' }}>
+                        <Form.Item name="artifactTypeSelect" noStyle>
+                          <Select placeholder="Chọn loại hình" onChange={onTypeChange} style={{ width: showCustomType ? '40%' : '100%' }}>
+                            {Object.values(ArtifactType).map((type) => (
+                              <Select.Option key={type} value={type}>
+                                {ArtifactTypeLabels[type]}
+                              </Select.Option>
+                            ))}
+                            <Select.Option value="other">Khác...</Select.Option>
+                          </Select>
+                        </Form.Item>
+                        {showCustomType && (
+                          <Form.Item 
+                            name="customArtifactType" 
+                            noStyle 
+                            rules={[{ required: true, message: 'Nhập loại' }]}
+                          >
+                            <Input 
+                              placeholder="VD: Cổ vật quý" 
+                              onChange={(e) => form.setFieldsValue({ artifactType: e.target.value })}
+                            />
+                          </Form.Item>
+                        )}
+                      </Space.Compact>
+                      <Form.Item name="artifactType" noStyle hidden>
+                        <Input />
+                      </Form.Item>
                     </Form.Item>
                   </Col>
                 </Row>

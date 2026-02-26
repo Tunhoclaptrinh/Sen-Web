@@ -32,8 +32,10 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
     // Simulator State
     const [simulatorVisible, setSimulatorVisible] = useState(false);
     const [simulatorScreens, setSimulatorScreens] = useState<any[]>([]);
+    const [simulatorBgm, setSimulatorBgm] = useState<string | undefined>();
 
     const handleRunLevel = async (level: any) => {
+        setSimulatorBgm(level.backgroundMusic);
         try {
             console.log("Preparing run level:", level.id);
             // 1. Try to use screens from local level object first
@@ -166,6 +168,7 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
                 onClose={() => setSimulatorVisible(false)}
                 screens={simulatorScreens}
                 title="Running Level (Preview)"
+                bgmUrl={simulatorBgm}
             />
         </ViewModal>
     );

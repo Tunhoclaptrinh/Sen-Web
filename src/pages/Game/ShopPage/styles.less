@@ -279,3 +279,41 @@
     }
   }
 }
+
+// Global modal overrides for premium feel
+:global {
+  .premium-shop-modal {
+    .ant-modal-content {
+      background-color: #fffcf5 !important;
+      background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png') !important;
+      border: 3px solid @gold-border !important;
+      border-radius: 12px !important;
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.15) !important;
+      padding: 0 !important;
+    }
+
+    .ant-modal-header {
+      background: transparent !important;
+      padding: 20px 24px 10px !important;
+      border-bottom: 1px solid rgba(212, 165, 116, 0.3) !important;
+      
+      .ant-modal-title {
+        background: transparent !important;
+      }
+    }
+
+    .ant-modal-body {
+      padding: 24px !important;
+    }
+
+    .ant-modal-close {
+      top: 16px !important;
+      right: 16px !important;
+      color: @seal-red !important;
+      
+      &:hover {
+        background: rgba(139, 29, 29, 0.05) !important;
+      }
+    }
+  }
+}
