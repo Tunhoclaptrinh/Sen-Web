@@ -366,6 +366,7 @@
     border: 2px solid @gold-border;
     border-top: none;
     border-radius: 0 0 8px 8px;
+    overflow: visible !important;
 
     padding: 12px;
     display: flex;
@@ -419,20 +420,19 @@
     }
 
     .play-button-fab {
-      position: absolute;
-      bottom: -15px;
-      right: -15px;
+      position: absolute !important;
+      bottom: -15px !important;
+      right: -15px !important;
       width: 56px;
       height: 56px;
 
-      // Inherit seal button styles logic
       background-color: @seal-red;
       border: 2px solid @seal-border;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 0 @seal-border;
-      z-index: 10;
+      z-index: 999 !important; 
       border-radius: 8px;
 
       .anticon {
@@ -456,11 +456,18 @@
 
 // Transparent Popover overrides
 .transparent-popover {
+  overflow: visible !important;
+  
+  .ant-popover-content {
+    overflow: visible !important;
+  }
+
   .ant-popover-inner {
     background-color: transparent !important;
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
+    overflow: visible !important;
   }
   .ant-popover-arrow {
     display: none !important; // Hide default arrow as we use custom one

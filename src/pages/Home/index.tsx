@@ -117,6 +117,7 @@ const Home: React.FC = () => {
 
       {/* 2.5 Heritage Space (Map & Leaderboard) */}
       <div className="heritage-space-block">
+        <div className="dot-pattern-overlay" />
         <div className="heritage-pattern-overlay" />
         <HomeMapSection />
         <HomeLeaderboardSection />

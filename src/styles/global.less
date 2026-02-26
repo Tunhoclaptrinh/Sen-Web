@@ -31,8 +31,21 @@ body {
   font-family: @font-sans;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background-color: #f4efe4; // Match game background base
   color: #262626;
+  position: relative;
+
+  // Global "Chấm bi" pattern
+  &::before {
+    content: ".";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #c5a065 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.3;
+  }
 }
 
 code {
