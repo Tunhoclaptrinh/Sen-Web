@@ -11,6 +11,7 @@ import {
   ShopOutlined,
   EnvironmentOutlined,
   QrcodeOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 
 export interface IMenuItem {
@@ -128,6 +129,12 @@ export const adminMenu: IMenuItem[] = [
         name: "Đánh giá & Phản hồi",
       },
     ],
+  },
+  {
+    key: "notifications",
+    path: "/admin/notifications",
+    name: "Phát thông báo",
+    icon: <BellOutlined />,
   },
   {
     key: "users",

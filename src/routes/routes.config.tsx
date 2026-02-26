@@ -64,6 +64,7 @@ const ResearcherHistoryManagement = lazy(() => import("@/pages/Researcher/Histor
 const ResearcherChapterManagement = lazy(() => import("@/pages/Researcher/ChapterManagement"));
 const ResearcherLevelManagement = lazy(() => import("@/pages/Researcher/LevelManagement"));
 const ResearcherLearningManagement = lazy(() => import("@/pages/Researcher/LearningManagement"));
+const NotificationManagement = lazy(() => import("@/pages/Admin/NotificationManagement"));
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -445,6 +446,10 @@ const routes: RouteObject[] = [
       {
         path: "users",
         element: <UserManagement />,
+      },
+      {
+        path: "notifications",
+        element: <NotificationManagement />,
       },
     ],
   },
