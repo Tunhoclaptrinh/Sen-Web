@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from "react";
+import React, {useEffect, useMemo, useCallback, useRef} from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMap from "highcharts/modules/map";
@@ -399,19 +399,32 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
 
   const [overlayPos, setOverlayPos] = React.useState<{x: number, y: number} | null>(null);
 
-  useEffect(() => {
-    if (activeHunt && chartRef.current && chartRef.current.chart) {
-      const chart = chartRef.current.chart;
-      // Highcharts Map might not have processed the point yet, but we can use projection
-      // to find where it should be on screen.
-      // Highcharts provides chart.fromLatLonToPoint if proj4 is loaded
-      const pos = (chart as any).fromLatLonToPoint({lat: activeHunt.lat, lon: activeHunt.lng});
-      if (pos) {
+  // Consolidated function to update overlay position with change detection
+  const updateOverlayPosition = useCallback(() => {
+    if (!activeHunt || !chartRef.current?.chart) {
+      if (overlayPos !== null) setOverlayPos(null);
+      return;
+    }
+
+    const chart = chartRef.current.chart;
+    const pos = (chart as any).fromLatLonToPoint({lat: activeHunt.lat, lon: activeHunt.lng});
+    
+    if (pos) {
+      // Small optimization: only update if position significantly changed (sub-pixel diffs can trigger loops)
+      const dx = overlayPos ? Math.abs(pos.x - overlayPos.x) : 999;
+      const dy = overlayPos ? Math.abs(pos.y - overlayPos.y) : 999;
+      
+      if (dx > 0.1 || dy > 0.1) {
         setOverlayPos({x: pos.x, y: pos.y});
       }
-    } else {
+    } else if (overlayPos !== null) {
       setOverlayPos(null);
     }
+  }, [activeHunt, overlayPos]);
+
+  // Sync position on activeHunt change
+  useEffect(() => {
+    updateOverlayPosition();
   }, [activeHunt]);
 
   // Handle auto-select tooltip
@@ -445,22 +458,12 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
   // Handle chart resize/zoom to update overlay position
   useEffect(() => {
     if (chartRef.current && chartRef.current.chart) {
-      const updatePos = () => {
-         if (activeHunt) {
-            const chart = chartRef.current?.chart;
-            const pos = (chart as any).fromLatLonToPoint({lat: activeHunt.lat, lon: activeHunt.lng});
-            if (pos) {
-              setOverlayPos({x: pos.x, y: pos.y});
-            }
-         }
-      };
-      
-      Highcharts.addEvent(chartRef.current.chart, 'render', updatePos);
+      Highcharts.addEvent(chartRef.current.chart, 'render', updateOverlayPosition);
       return () => {
-        if (chartRef.current?.chart) Highcharts.removeEvent(chartRef.current.chart, 'render', updatePos);
+        if (chartRef.current?.chart) Highcharts.removeEvent(chartRef.current.chart, 'render', updateOverlayPosition);
       };
     }
-  }, [activeHunt]);
+  }, [activeHunt, updateOverlayPosition]);
 
   return (
     <div className="simple-map-wrapper" style={{height: height, width: "100%", position: "relative"}}>

@@ -160,7 +160,7 @@ export const customerMenu: IMenuItem[] = [
   },
   {
     key: "map",
-    path: "/map",
+    path: "/game/map",
     name: "Bản đồ Di sản",
     icon: <EnvironmentOutlined />,
   },

@@ -2,9 +2,10 @@
 @import "../Game/common.less";
 
 .map-page-container {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 56px); // Adjusted for ProLayout header height
   display: flex;
   flex-direction: column;
+  overflow: hidden; // Prevent double scrollbars
 
   .map-header-bar {
     padding: 12px 24px;
@@ -28,20 +29,23 @@
         color: @seal-red;
       }
 
-      .title-group {
-        h4 {
-          margin: 0;
-          font-family: var(--font-serif);
-          font-weight: 700;
-          color: @text-color-primary;
-          font-size: 18px;
+      .discovery-header {
+        h2 {
+          margin: 0 !important;
+          font-family: @font-serif !important;
+          font-weight: 800;
+          color: @seal-red;
+          font-size: 22px;
           line-height: 1.2;
+          letter-spacing: 0.5px;
         }
 
         .map-subtitle {
           color: @text-color-secondary;
-          font-size: 12px;
+          font-size: 13px;
           display: block;
+          font-family: @font-sans;
+          margin-top: -2px;
         }
       }
     }

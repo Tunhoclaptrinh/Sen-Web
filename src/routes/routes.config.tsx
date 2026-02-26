@@ -248,6 +248,10 @@ const routes: RouteObject[] = [
           </LazyLoadWrapper>
         ),
       },
+      {
+        path: "map",
+        element: <MapPage />,
+      },
     ],
   },
 

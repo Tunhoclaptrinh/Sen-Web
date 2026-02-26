@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useMemo, useCallback} from "react";
 import {GoogleMap, useJsApiLoader, Marker, InfoWindow, OverlayView} from "@react-google-maps/api";
 import {Spin, Typography, Select, Input, Tag, Space, Dropdown, Button, Radio, notification} from "antd";
 import {EnvironmentOutlined, SearchOutlined, CheckOutlined, AppstoreOutlined, RocketOutlined} from "@ant-design/icons";
@@ -527,6 +527,16 @@ const MapPage: React.FC = () => {
   const heritageCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.HERITAGE).length;
   const artifactCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.ARTIFACT).length;
 
+  // Memoize filtered arrays for SimpleMap to avoid reference changes
+  const simpleMapLocations = useMemo(
+    () => filteredLocations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE),
+    [filteredLocations]
+  );
+  const simpleMapArtifacts = useMemo(
+    () => filteredLocations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT),
+    [filteredLocations]
+  );
+
   // Determine what to render
   const renderMap = () => {
     // 1. Loading state (initial)
@@ -553,8 +563,8 @@ const MapPage: React.FC = () => {
           <SimpleMap
             mapData={mapData}
             worldData={worldData}
-            locations={filteredLocations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE)}
-            artifacts={filteredLocations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT)}
+            locations={simpleMapLocations}
+            artifacts={simpleMapArtifacts}
             allowZoom={true}
             height="100%"
             activeHunt={activeHunt}
