@@ -32,7 +32,7 @@ export const getImageUrl = (path: string | string[] | undefined | null, fallback
     }
 
     // Hardcoded for now based on typical setup, ideally from config
-    const API_URL = import.meta.env.VITE_API_BASE_URL; // e.g., http://localhost:3000/api
+    const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'; // e.g., http://localhost:3000/api
 
     // If API_URL ends with /api, strip it to get the server root for static files
     const serverRoot = API_URL.endsWith('/api') 

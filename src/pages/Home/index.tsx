@@ -184,7 +184,7 @@ const Home: React.FC = () => {
           <Row gutter={[48, 0]} align="stretch" className="game-container">
             <Col xs={24} lg={14}>
               <div className="game-image-wrapper">
-                <img src="/images/Game.png" alt="Game World" />
+                <img src="/images/MapGame.png" alt="Game World" />
                 <div className="image-overlay-glow" />
               </div>
             </Col>
