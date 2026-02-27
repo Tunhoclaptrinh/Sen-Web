@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline} from "antd";
+import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline, Dropdown} from "antd";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -24,6 +24,10 @@ import {
   FolderAddOutlined,
   CrownFilled,
   ArrowLeftOutlined,
+  ArrowRightOutlined,
+  MoreOutlined,
+  CompassOutlined,
+  GoogleOutlined,
 } from "@ant-design/icons";
 import {Image} from "antd";
 import dayjs from "dayjs";
@@ -32,6 +36,7 @@ import favoriteService from "@/services/favorite.service";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
+import gameService from "@/services/game.service";
 import {RootState, AppDispatch} from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import type {HeritageSite, TimelineEvent, Artifact, HistoryArticle} from "@/types";
@@ -40,6 +45,7 @@ import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
 import {HERITAGE_TYPE_LABELS, ITEM_TYPES} from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
+import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -55,8 +61,11 @@ const HeritageDetailPage = () => {
   const [siteArtifacts, setSiteArtifacts] = useState<Artifact[]>([]);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
   const [relatedHistoryArr, setRelatedHistoryArr] = useState<HistoryArticle[]>([]);
+  const [discoveryLevels, setDiscoveryLevels] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [showGame, setShowGame] = useState(false);
+  const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
 
   // Track view
   useViewTracker(ITEM_TYPES.HERITAGE, id);
@@ -159,6 +168,21 @@ const HeritageDetailPage = () => {
       // 4. Fetch Timeline
       const resTimeline = await heritageService.getTimeline(currentId);
       if (resTimeline.success && resTimeline.data) setTimelineEvents(resTimeline.data);
+
+      // 5. Fetch Related Levels (Game) - Prefer auto-populated data
+      if (currentItem.relatedLevels && currentItem.relatedLevels.length > 0) {
+        setDiscoveryLevels(currentItem.relatedLevels);
+      } else {
+        try {
+          const resLevels = await gameService.getAll({
+            relatedHeritageIds: currentId,
+            limit: 4,
+          });
+          if (resLevels.success && resLevels.data) setDiscoveryLevels(resLevels.data);
+        } catch (err) {
+          console.error("Failed to query related levels", err);
+        }
+      }
     } catch (e) {
       console.error("Failed to fetch related data", e);
     }
@@ -202,6 +226,17 @@ const HeritageDetailPage = () => {
       .catch(() => {
         message.error("Không thể sao chép liên kết");
       });
+  };
+
+  const handleStartGame = (levelId?: number) => {
+    if (levelId) {
+      setSelectedLevelId(levelId);
+    } else {
+      // Demo fallback: use level 1 or 2 based on site ID
+      const demoId = site && site.id ? (Number(site.id) % 2 === 0 ? 1 : 2) : 1;
+      setSelectedLevelId(demoId);
+    }
+    setShowGame(true);
   };
 
   if (loading)
@@ -382,7 +417,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Giờ mở cửa</span>
-                                <span className="value">{site.visitHours || "8:00 - 17:00"}</span>
+                                <span className="value">{site.visitHours || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -392,7 +427,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Giá vé tham quan</span>
                                 <span className="value highlight">
-                                  {site.entranceFee ? `${site.entranceFee.toLocaleString()} VNĐ` : "Miễn phí"}
+                                  {site.entranceFee ? `${site.entranceFee.toLocaleString()} VNĐ` : "Chưa có thông tin"}
                                 </span>
                               </div>
                             </li>
@@ -402,7 +437,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Năm thành lập</span>
-                                <span className="value">{site.yearEstablished || "Không rõ"}</span>
+                                <span className="value">{site.yearEstablished || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -411,7 +446,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Niên đại / Thời kỳ</span>
-                                <span className="value">{site.culturalPeriod || "Đang cập nhật"}</span>
+                                <span className="value">{site.culturalPeriod || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                           </ul>
@@ -425,7 +460,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Địa chỉ</span>
-                                <span className="value">{site.address || site.region}</span>
+                                <span className="value">{site.address || site.region || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -435,7 +470,8 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Đánh giá du khách</span>
                                 <span className="value">
-                                  {site.rating || 0}/5 <span className="sub">({site.totalReviews || 0} đánh giá)</span>
+                                  {site.rating ? `${site.rating}/5` : "Chưa có đánh giá"}{" "}
+                                  <span className="sub">({site.totalReviews || 0} đánh giá)</span>
                                 </span>
                               </div>
                             </li>
@@ -445,7 +481,7 @@ const HeritageDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Vùng miền</span>
-                                <span className="value">{site.region}</span>
+                                <span className="value">{site.region || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             {site.unescoListed && (
@@ -471,10 +507,56 @@ const HeritageDetailPage = () => {
                           <span className="promo-text">Đặt vé với SEN để nhận ưu đãi đặc biệt!</span>
                         </div>
                         <div className="action-buttons">
-                          <Button size="large" className="direction-btn" icon={<EnvironmentOutlined />}>
-                            Chỉ đường
-                          </Button>
-                          <Button type="primary" size="large" className="booking-btn-large">
+                          <Dropdown
+                            trigger={['click']}
+                            menu={{
+                              items: [
+                                {
+                                  key: 'sen-map',
+                                  label: 'Bản đồ SEN (Tầm bảo & Checkin)',
+                                  icon: <RocketOutlined />,
+                                  onClick: () => {
+                                    const lat = site.latitude;
+                                    const lng = site.longitude;
+                                    navigate(`/map?id=${site.id}&type=${ITEM_TYPES.HERITAGE}&lat=${lat}&lng=${lng}&action=hunt`);
+                                  }
+                                },
+                                {
+                                  key: 'google-maps',
+                                  label: 'Google Maps (Tên & Địa chỉ)',
+                                  icon: <GoogleOutlined />,
+                                  onClick: () => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.name + " " + (site.address || site.region || ""))}`, "_blank")
+                                },
+                                {
+                                  key: 'google-maps-coord',
+                                  label: 'Google Maps (Tọa độ chính xác)',
+                                  icon: <CompassOutlined />,
+                                  onClick: () => {
+                                    const lat = site.latitude;
+                                    const lng = site.longitude;
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, "_blank");
+                                  }
+                                }
+                              ]
+                            }}
+                          >
+                            <Button 
+                              size="large" 
+                              className="direction-btn" 
+                              icon={<EnvironmentOutlined />}
+                            >
+                              Chỉ đường <MoreOutlined />
+                            </Button>
+                          </Dropdown>
+                          <Button 
+                            type="primary" 
+                            size="large" 
+                            className="booking-btn-large"
+                            onClick={() => {
+                              const bookingUrl = site.bookingLink || site.website || `https://www.google.com/search?q=đặt+vé+tham+quan+${encodeURIComponent(site.name)}`;
+                              window.open(bookingUrl, "_blank");
+                            }}
+                          >
                             Đặt vé ngay
                           </Button>
                         </div>
@@ -495,42 +577,61 @@ const HeritageDetailPage = () => {
                       <RocketOutlined /> Trải nghiệm Di sản
                     </Title>
                     <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.</p>
-                    <Row gutter={[24, 24]}>
-                      <Col xs={24} md={12}>
-                        <div className="game-card-mini">
-                          <div
-                            className="game-thumb"
-                            style={{
-                              backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`,
-                            }}
-                          />
-                          <div className="game-info">
-                            <h4>Khám phá Hoàng Thành</h4>
-                            <div className="desc">Giải mã các bí mật khảo cổ dưới lòng đất Thăng Long.</div>
-                          </div>
-                          <Button type="primary" shape="round" icon={<RocketOutlined />}>
-                            Chơi
-                          </Button>
-                        </div>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <div className="game-card-mini">
-                          <div
-                            className="game-thumb"
-                            style={{
-                              backgroundImage: `url(https://images.unsplash.com/photo-1555921015-5532091f6026?w=200)`,
-                            }}
-                          />
-                          <div className="game-info">
-                            <h4>Bảo vệ Thăng Long</h4>
-                            <div className="desc">Tham gia chiến dịch bảo vệ kinh thành.</div>
-                          </div>
-                          <Button type="primary" shape="round" icon={<RocketOutlined />}>
-                            Chơi
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
+                    {showGame && selectedLevelId ? (
+                      <EmbeddedGameZone 
+                        levelId={selectedLevelId} 
+                        onClose={() => setShowGame(false)} 
+                        onNavigateToFullGame={() => navigate("/game/chapters")}
+                      />
+                    ) : (
+                      <Row gutter={[24, 24]}>
+                        {discoveryLevels && discoveryLevels.length > 0 ? (
+                          discoveryLevels.map((level: any) => (
+                            <Col xs={24} md={12} key={level.id}>
+                              <div className="game-card-mini">
+                                <div
+                                  className="game-thumb"
+                                  style={{
+                                    backgroundImage: `url(${level.thumbnail || level.backgroundImage || level.image})`,
+                                  }}
+                                />
+                                <div className="game-info">
+                                  <h4>{level.name}</h4>
+                                  <div className="desc">{level.description}</div>
+                                </div>
+                                <Button 
+                                  type="primary" 
+                                  shape="round" 
+                                  icon={<RocketOutlined />}
+                                  onClick={() => handleStartGame(level.id)}
+                                >
+                                  Chơi ngay
+                                </Button>
+                              </div>
+                            </Col>
+                          ))
+                        ) : (
+                          <Col span={24}>
+                            <div className="game-cta-banner">
+                              <RocketOutlined className="cta-icon" />
+                              <div className="cta-content">
+                                <h4>Khám phá thế giới game lịch sử</h4>
+                                <p>Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!</p>
+                              </div>
+                              <Button 
+                                type="primary" 
+                                size="large" 
+                                shape="round"
+                                icon={<ArrowRightOutlined />}
+                                onClick={() => navigate("/game/chapters")}
+                              >
+                                Khám phá ngay
+                              </Button>
+                            </div>
+                          </Col>
+                        )}
+                      </Row>
+                    )}
                     <Divider />
                   </div>
 

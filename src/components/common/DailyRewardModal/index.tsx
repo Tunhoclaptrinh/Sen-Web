@@ -172,43 +172,55 @@ const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ visible, onClose })
             footer={null}
             centered
             width={600}
+            wrapClassName="sen-hoa-premium"
             title={
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <CalendarOutlined style={{ color: '#eb2f96' }} />
-                    <span>Điểm danh nhận quà</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <CalendarOutlined style={{ color: 'var(--seal-red)' }} />
+                    <span style={{ fontFamily: 'var(--font-serif)', fontWeight: 800 }}>Điểm danh nhận quà</span>
                 </div>
             }
-            bodyStyle={{ padding: '24px 32px' }}
         >
             <div style={{ textAlign: 'center' }}>
-                <div style={{ marginBottom: 16 }}>
-                     <Title level={2} style={{ margin: 0, color: '#faad14', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                        <FireOutlined style={{ color: '#ff4d4f' }} /> 
+                <div style={{ marginBottom: 24 }}>
+                     <Title level={2} style={{ 
+                        margin: 0, 
+                        color: 'var(--seal-red)', 
+                        fontFamily: 'var(--font-serif)',
+                        fontWeight: 900,
+                        fontSize: '2.5rem',
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        gap: 16 
+                    }}>
+                        <FireOutlined style={{ filter: 'drop-shadow(0 0 8px rgba(139, 29, 29, 0.3))' }} /> 
                         {isReset && !isClaimedToday ? '1 Ngày' : `${progress?.streakDays || 0} Ngày`}
                      </Title>
-                     <Text type="secondary">Chuỗi nỗ lực liên tiếp</Text>
+                     <Text style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--text-color-primary)', fontSize: '1.1rem' }}>
+                        Chuỗi nỗ lực liên tiếp
+                     </Text>
                      
                      {isReset && !isClaimedToday && (
-                         <div style={{ marginTop: 8 }}>
-                             <Text type="warning">Chuỗi đã bị reset do bạn quên điểm danh hôm qua!</Text>
+                         <div style={{ marginTop: 12, padding: '4px 12px', background: 'rgba(139, 29, 29, 0.05)', borderRadius: 20, display: 'inline-block' }}>
+                             <Text type="warning" style={{ fontWeight: 600 }}>Chuỗi đã bị reset do bạn quên điểm danh hôm qua!</Text>
                          </div>
                      )}
                 </div>
 
                 {renderDays()}
 
-                <div style={{ background: '#fafafa', padding: 16, borderRadius: 12, marginBottom: 24 }}>
+                <div style={{ background: 'rgba(197, 160, 101, 0.08)', padding: 20, borderRadius: 12, marginBottom: 32, border: '1px dashed var(--gold-border)' }}>
                      <Row gutter={[16, 16]}>
-                         <Col span={12} style={{ borderRight: '1px solid #f0f0f0' }}>
-                             <Text type="secondary">Phần quà hôm nay</Text>
-                             <div style={{ fontSize: 24, fontWeight: 'bold', color: '#faad14', marginTop: 4 }}>
-                                 50 <small style={{ fontSize: 14 }}>Coins</small>
+                         <Col span={12} style={{ borderRight: '1px solid var(--gold-border)' }}>
+                             <Text type="secondary" style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem' }}>Phần quà hôm nay</Text>
+                             <div style={{ fontSize: 28, fontWeight: '800', color: 'var(--seal-red)', marginTop: 8, fontFamily: 'var(--font-serif)' }}>
+                                 50 <small style={{ fontSize: 16, fontWeight: 400 }}>Coins</small>
                              </div>
                          </Col>
                          <Col span={12}>
-                             <Text type="secondary">Vật phẩm</Text>
-                             <div style={{ fontSize: 24, fontWeight: 'bold', color: '#ff4d4f', marginTop: 4 }}>
-                                 1 <small style={{ fontSize: 14 }}>Petal</small>
+                             <Text type="secondary" style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem' }}>Vật phẩm quý</Text>
+                             <div style={{ fontSize: 28, fontWeight: '800', color: 'var(--seal-red)', marginTop: 8, fontFamily: 'var(--font-serif)' }}>
+                                 1 <small style={{ fontSize: 16, fontWeight: 400 }}>Cánh Sen</small>
                              </div>
                          </Col>
                      </Row>
@@ -223,20 +235,26 @@ const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ visible, onClose })
                     loading={loading}
                     disabled={isClaimedToday}
                     style={{ 
-                        height: 50, 
-                        fontSize: 18, 
-                        borderRadius: 25,
-                        background: isClaimedToday ? '#d9d9d9' : 'linear-gradient(90deg, #faad14, #ffbb33)',
-                        borderColor: isClaimedToday ? '#d9d9d9' : '#faad14',
-                        boxShadow: isClaimedToday ? 'none' : '0 4px 15px rgba(250, 173, 20, 0.4)'
+                        height: 56, 
+                        fontSize: 20, 
+                        borderRadius: 8,
+                        background: isClaimedToday ? '#ccc' : 'var(--seal-red)',
+                        borderColor: isClaimedToday ? '#ccc' : 'var(--seal-border)',
+                        color: '#fff9e6',
+                        fontFamily: 'var(--font-serif)',
+                        fontWeight: 700,
+                        boxShadow: isClaimedToday ? 'none' : '0 4px 0 var(--seal-border)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px'
                     }}
+                    className="btn-heritage-claim"
                 >
-                    {isClaimedToday ? 'Đã nhận thưởng hôm nay' : 'Nhận thưởng ngay'}
+                    {isClaimedToday ? 'Hẹn gặp lại chủ nhân ngày mai' : 'Nhận báu vật ngay'}
                 </Button>
                 
-                <div style={{ marginTop: 16 }}>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                        *Điểm danh liên tục 7 ngày để nhận quà đặc biệt!
+                <div style={{ marginTop: 24 }}>
+                    <Text type="secondary" style={{ fontStyle: 'italic', fontSize: 13, color: 'var(--text-color-secondary)' }}>
+                        *Kiên trì 7 ngày liên tục để nhận báu vật đặc biệt từ Sen*
                     </Text>
                 </div>
             </div>

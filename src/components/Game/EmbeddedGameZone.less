@@ -1,0 +1,250 @@
+@import "../../pages/Game/common.less";
+
+.embedded-game-wrapper {
+  width: 100%;
+  
+  &.fullscreen-mode {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    padding: 0;
+    margin: 0;
+    background: #000;
+
+    .embedded-game-container {
+      width: 100%;
+      height: 100vh;
+      max-height: none;
+      border-radius: 0;
+      margin: 0;
+      box-shadow: none;
+      border: none;
+
+      .ant-card-head {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .ant-card-body {
+        height: calc(100vh - 56px);
+        max-height: none;
+      }
+    }
+  }
+}
+
+.embedded-game-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border: 1px solid @gold-border;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+
+  .ant-card-head {
+    background: #fafafa;
+    border-bottom: 1px solid @gold-border;
+    padding: 0 16px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+
+    .ant-card-head-title {
+      padding: 0;
+      font-size: 16px;
+    }
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .level-title {
+      font-family: @font-serif;
+      font-weight: 700;
+      color: @seal-red;
+      display: flex;
+      align-items: center;
+    }
+
+    .game-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .desktop-only {
+        @media (max-width: 576px) {
+          display: none;
+        }
+      }
+
+      .close-btn {
+        color: #999;
+        &:hover {
+          color: @seal-red;
+        }
+      }
+    }
+  }
+
+  .ant-card-body {
+    padding: 0;
+    position: relative;
+    min-height: 500px;
+    height: 600px;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: 768px) {
+      height: 500px;
+      max-height: 70vh;
+    }
+  }
+
+  .game-progress-bar {
+    padding: 8px 16px;
+    background: #fff;
+    border-bottom: 1px solid fade(@gold-border, 30%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .ant-progress {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .score-badge {
+      font-family: @font-serif;
+      font-weight: 700;
+      color: @gold-color;
+      white-space: nowrap;
+      background: rgba(212, 175, 55, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+  }
+
+  .game-content-viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #f0f2f5;
+
+    .game-loading {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    // Adapt screen components for compact view
+    .dialogue-screen,
+    .quiz-screen,
+    .hidden-object-screen,
+    .timeline-screen,
+    .image-viewer-screen,
+    .video-screen {
+      height: 100%;
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    // Shrink dialogue box if needed
+    .dialogue-content .story-interface {
+      bottom: 20px;
+      .dialogue-box-story {
+        padding: 20px;
+        .dialogue-text {
+          font-size: 16px;
+          min-height: 40px;
+        }
+      }
+    }
+
+    // Shrink quiz card
+    .screen-content-wrapper {
+      width: 95%;
+      .quiz-card,
+      .timeline-card {
+        padding: 20px;
+        .quiz-header,
+        .timeline-header {
+          margin-bottom: 16px;
+          .question-text {
+            font-size: 18px;
+          }
+        }
+        .quiz-options .quiz-option-btn {
+          min-height: 44px;
+          font-size: 14px;
+          padding: 8px 16px;
+        }
+      }
+    }
+
+    // Adjust timeline
+    .timeline-events-container {
+      min-height: 300px;
+      margin: 16px 0;
+    }
+
+    // Adjust hidden object HUD
+    .hidden-object-hud {
+      min-height: 80px;
+      padding: 8px 16px;
+      .hud-info .count {
+        font-size: 24px;
+      }
+      .items-list .target-item {
+        padding: 4px 12px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  &.completion-view {
+    padding: 40px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .ant-result {
+      padding: 0;
+    }
+
+    .full-game-link {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px dashed @gold-border;
+      width: 100%;
+    }
+  }
+
+  .fullscreen-btn {
+    color: #999;
+    &:hover {
+      color: @gold-color;
+    }
+  }
+}
+
+.unsupported-screen {
+  padding: 40px;
+  text-align: center;
+  color: #888;
+}

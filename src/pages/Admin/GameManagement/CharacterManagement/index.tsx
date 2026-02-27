@@ -1,13 +1,31 @@
-import React from "react";
-import {Button, Space, Modal, Form, Input, Tag, Select, Switch} from "antd";
+import React, {useState, useEffect} from "react";
+import {Button, Space, Modal, Form, Input, Tag, Select, Switch, Radio} from "antd";
+import {CloudUploadOutlined, LinkOutlined, UserOutlined} from "@ant-design/icons";
 
 import {useCharacterModel} from "./model";
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
+import FileUpload from "@/components/common/Upload/FileUpload";
+import { getImageUrl } from "@/utils/image.helper";
 
 const CharacterManagement: React.FC = () => {
   const model = useCharacterModel();
   const {user} = useAuth();
+  const [avatarMode, setAvatarMode] = useState<"upload" | "link">("link");
+  const [form] = Form.useForm();
+
+  // Reset form and avatar mode when currentRecord or form visibility changes
+  useEffect(() => {
+    if (model.formVisible) {
+      if (model.currentRecord) {
+        form.setFieldsValue(model.currentRecord);
+        setAvatarMode(model.currentRecord.avatar?.startsWith("http") ? "link" : "upload");
+      } else {
+        form.resetFields();
+        setAvatarMode("link");
+      }
+    }
+  }, [model.currentRecord, model.formVisible, form]);
 
   const columns = [
     {
@@ -16,7 +34,7 @@ const CharacterManagement: React.FC = () => {
       key: "avatar",
       width: 80,
       render: (url: string) =>
-        url ? <img src={url} alt="avatar" style={{width: 40, height: 40, borderRadius: 4}} /> : null,
+        url ? <img src={getImageUrl(url)} alt="avatar" style={{width: 40, height: 40, borderRadius: 4}} /> : null,
     },
     {
       title: "Tên nhân vật",
@@ -87,6 +105,7 @@ const CharacterManagement: React.FC = () => {
         destroyOnClose
       >
         <Form
+          form={form}
           layout="vertical"
           initialValues={model.currentRecord || {rarity: "common", is_collectible: true}}
           onFinish={model.handleSubmit}
@@ -114,8 +133,35 @@ const CharacterManagement: React.FC = () => {
             </Form.Item>
           </div>
 
-          <Form.Item name="avatar" label="Lên kết ảnh Avatar">
-            <Input placeholder="https://..." />
+          <Form.Item label="Ảnh Avatar">
+            <Space direction="vertical" style={{width: "100%"}} size={4}>
+              <Radio.Group
+                size="small"
+                value={avatarMode}
+                onChange={(e) => setAvatarMode(e.target.value)}
+                optionType="button"
+                buttonStyle="solid"
+              >
+                <Radio.Button value="upload">
+                  <CloudUploadOutlined /> Tải file
+                </Radio.Button>
+                <Radio.Button value="link">
+                  <LinkOutlined /> Link URL
+                </Radio.Button>
+              </Radio.Group>
+
+              {avatarMode === "upload" ? (
+                <div style={{marginTop: 8}}>
+                  <Form.Item name="avatar" noStyle>
+                    <FileUpload accept="image/*" placeholder="Chọn ảnh nhân vật (.jpg, .png...)" />
+                  </Form.Item>
+                </div>
+              ) : (
+                <Form.Item name="avatar" noStyle>
+                  <Input prefix={<UserOutlined />} placeholder="https://..." style={{marginTop: 8}} />
+                </Form.Item>
+              )}
+            </Space>
           </Form.Item>
 
           <Form.Item name="description" label="Mô tả">

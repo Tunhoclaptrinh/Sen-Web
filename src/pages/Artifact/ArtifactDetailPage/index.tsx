@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs} from "antd";
+import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown} from "antd";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -20,6 +20,10 @@ import {
   SafetyCertificateFilled,
   GlobalOutlined,
   ArrowLeftOutlined,
+  ArrowRightOutlined,
+  MoreOutlined,
+  CompassOutlined,
+  GoogleOutlined,
 } from "@ant-design/icons";
 import {Image} from "antd";
 import {fetchArtifactById} from "@store/slices/artifactSlice";
@@ -27,6 +31,7 @@ import favoriteService from "@/services/favorite.service";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
+import gameService from "@/services/game.service";
 import {RootState, AppDispatch} from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import type {Artifact, HeritageSite, HistoryArticle} from "@/types";
@@ -36,6 +41,7 @@ import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import {useViewTracker} from "@/hooks/useViewTracker";
 import {ITEM_TYPES} from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
+import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import "./styles.less";
 
 const {Title} = Typography;
@@ -50,8 +56,11 @@ const ArtifactDetailPage = () => {
   const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
   const [relatedHeritage, setRelatedHeritage] = useState<HeritageSite[]>([]);
   const [relatedHistory, setRelatedHistory] = useState<HistoryArticle[]>([]);
+  const [discoveryLevels, setDiscoveryLevels] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [showGame, setShowGame] = useState(false);
+  const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
 
   // Track view
   useViewTracker(ITEM_TYPES.ARTIFACT, id);
@@ -181,6 +190,21 @@ const ArtifactDetailPage = () => {
         }
       }
       setRelatedHistory(relatedHistoryData);
+
+      // 4. Fetch Related Levels (Game) - Prefer auto-populated data
+      if (currentItem.relatedLevels && currentItem.relatedLevels.length > 0) {
+        setDiscoveryLevels(currentItem.relatedLevels);
+      } else {
+        try {
+          const resLevels = await gameService.getAll({
+            relatedArtifactIds: currentId,
+            limit: 4,
+          });
+          if (resLevels.success && resLevels.data) setDiscoveryLevels(resLevels.data);
+        } catch (err) {
+          console.error("Failed to query related levels", err);
+        }
+      }
     } catch (e) {
       console.error("Failed to fetch related data", e);
     }
@@ -222,6 +246,16 @@ const ArtifactDetailPage = () => {
       .catch(() => {
         message.error("Không thể sao chép liên kết");
       });
+  };
+
+  const handleStartGame = (levelId?: number) => {
+    if (levelId) {
+      setSelectedLevelId(levelId);
+    } else {
+      const demoId = artifact && artifact.id ? (Number(artifact.id) % 2 === 0 ? 1 : 2) : 1;
+      setSelectedLevelId(demoId);
+    }
+    setShowGame(true);
   };
 
   if (loading)
@@ -416,7 +450,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Loại hiện vật</span>
-                                <span className="value">{artifactTypeLabel}</span>
+                                <span className="value">{artifactTypeLabel || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -425,7 +459,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Thời kỳ / Năm</span>
-                                <span className="value">{artifact.yearCreated || "Không rõ"}</span>
+                                <span className="value">{artifact.yearCreated || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -434,7 +468,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Chất liệu</span>
-                                <span className="value">{artifact.material || "Không rõ"}</span>
+                                <span className="value">{artifact.material || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -443,7 +477,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Tình trạng</span>
-                                <span className="value highlight">{conditionLabel}</span>
+                                <span className="value highlight">{conditionLabel || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                           </ul>
@@ -457,7 +491,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Kích thước</span>
-                                <span className="value">{artifact.dimensions || "N/A"}</span>
+                                <span className="value">{artifact.dimensions || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -466,7 +500,7 @@ const ArtifactDetailPage = () => {
                               </div>
                               <div className="info-text">
                                 <span className="label">Tác giả / Nguồn</span>
-                                <span className="value">{authorName}</span>
+                                <span className="value">{authorName || "Chưa có thông tin"}</span>
                               </div>
                             </li>
                             <li>
@@ -476,7 +510,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Đánh giá chung</span>
                                 <span className="value">
-                                  {artifact.rating || 0}/5{" "}
+                                  {artifact.rating ? `${artifact.rating}/5` : "Chưa có đánh giá"}{" "}
                                   <span className="sub">({artifact.totalReviews || 0} đánh giá)</span>
                                 </span>
                               </div>
@@ -488,7 +522,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">Vị trí trưng bày</span>
                                 <span className="value highlight-unesco">
-                                  {artifact.locationInSite || artifact.currentLocation || "Tại di tích"}
+                                  {artifact.locationInSite || artifact.currentLocation || "Chưa có thông tin"}
                                 </span>
                               </div>
                             </li>
@@ -547,20 +581,84 @@ const ArtifactDetailPage = () => {
                           <span>
                             * Hiện vật đang được trưng bày tại {artifact.locationInSite || "Bảo tàng / Di tích"}.
                           </span>
-                          <span className="promo-text">Liên hệ Sen để biết thêm thông tin chi tiết.</span>
+                          <span className="promo-text">Đặt trước online để có trải nghiệm tham quan tốt nhất.</span>
                         </div>
                         <div className="action-buttons">
-                          <Button
-                            size="large"
-                            className="direction-btn"
-                            icon={<EnvironmentOutlined />}
-                            onClick={() => {
-                              if (relatedHeritage && relatedHeritage.length > 0) {
-                                navigate(`/heritage/${relatedHeritage[0].id}`);
-                              }
+                          <Dropdown
+                            trigger={['click']}
+                            menu={{
+                              items: [
+                                {
+                                  key: 'sen-map',
+                                  label: 'Bản đồ SEN (Xem hiện vật & Tầm bảo)',
+                                  icon: <RocketOutlined />,
+                                  onClick: () => {
+                                    // Artifacts might have locations, or inherit from heritage
+                                    const lat = artifact.latitude;
+                                    const lng = artifact.longitude;
+                                    const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                                    
+                                    const finalLat = lat || site?.latitude;
+                                    const finalLng = lng || site?.longitude;
+                                    
+                                    navigate(`/map?id=${artifact.id}&type=${ITEM_TYPES.ARTIFACT}&lat=${finalLat}&lng=${finalLng}&action=hunt`);
+                                  }
+                                },
+                                {
+                                  key: 'heritage-link',
+                                  label: 'Xem điểm di sản (Heritage Site)',
+                                  icon: <EnvironmentOutlined />,
+                                  onClick: () => {
+                                    if (relatedHeritage && relatedHeritage.length > 0) {
+                                      navigate(`/heritage-sites/${relatedHeritage[0].id}`);
+                                    }
+                                  }
+                                },
+                                {
+                                  key: 'google-maps',
+                                  label: 'Google Maps (Tên & Địa chỉ)',
+                                  icon: <GoogleOutlined />,
+                                  onClick: () => {
+                                    const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(artifact.name + " " + (site?.name || ""))}`, "_blank");
+                                  }
+                                },
+                                {
+                                  key: 'google-maps-coord',
+                                  label: 'Google Maps (Tọa độ chính xác)',
+                                  icon: <CompassOutlined />,
+                                  onClick: () => {
+                                    const lat = artifact.latitude;
+                                    const lng = artifact.longitude;
+                                    const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                                    
+                                    const finalLat = lat || site?.latitude;
+                                    const finalLng = lng || site?.longitude;
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${finalLat},${finalLng}`, "_blank");
+                                  }
+                                }
+                              ]
                             }}
                           >
-                            Xem điểm đến
+                            <Button
+                              size="large"
+                              className="direction-btn"
+                              icon={<EnvironmentOutlined />}
+                            >
+                              Chỉ đường <MoreOutlined />
+                            </Button>
+                          </Dropdown>
+                          <Button
+                            type="primary"
+                            size="large"
+                            className="booking-btn-large"
+                            onClick={() => {
+                              const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
+                              const bookingUrl = artifact.bookingLink || site?.bookingLink || site?.website || `https://www.google.com/search?q=đặt+vé+tham+quan+${encodeURIComponent(site?.name || artifact.name)}`;
+                              window.open(bookingUrl, "_blank");
+                            }}
+                          >
+                            {artifact.bookingLink ? "Đến xem hiện vật" : "Đặt vé tham quan"}
                           </Button>
                         </div>
                       </div>
@@ -580,42 +678,61 @@ const ArtifactDetailPage = () => {
                       <RocketOutlined /> Trải nghiệm Hiện vật
                     </Title>
                     <p>Tương tác 3D và tham gia trò chơi liên quan đến hiện vật.</p>
-                    <Row gutter={[24, 24]}>
-                      <Col xs={24} md={12}>
-                        <div className="game-card-mini">
-                          <div
-                            className="game-thumb"
-                            style={{
-                              backgroundImage: `url(https://images.unsplash.com/photo-1599525281489-0824b223c285?w=200)`,
-                            }}
-                          />
-                          <div className="game-info">
-                            <h4>Khám phá 3D</h4>
-                            <div className="desc">Xem chi tiết mọi góc cạnh của hiện vật</div>
-                          </div>
-                          <Button type="primary" shape="round" icon={<RocketOutlined />}>
-                            Xem
-                          </Button>
-                        </div>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <div className="game-card-mini">
-                          <div
-                            className="game-thumb"
-                            style={{
-                              backgroundImage: `url(https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200)`,
-                            }}
-                          />
-                          <div className="game-info">
-                            <h4>Giải đố Lịch sử</h4>
-                            <div className="desc">Thử thách kiến thức về hiện vật này</div>
-                          </div>
-                          <Button type="primary" shape="round" icon={<RocketOutlined />}>
-                            Chơi
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
+                    {showGame && selectedLevelId ? (
+                      <EmbeddedGameZone 
+                        levelId={selectedLevelId} 
+                        onClose={() => setShowGame(false)} 
+                        onNavigateToFullGame={() => navigate("/game/chapters")}
+                      />
+                    ) : (
+                      <Row gutter={[24, 24]}>
+                        {discoveryLevels && discoveryLevels.length > 0 ? (
+                          discoveryLevels.map((level: any) => (
+                            <Col xs={24} md={12} key={level.id}>
+                              <div className="game-card-mini">
+                                <div
+                                  className="game-thumb"
+                                  style={{
+                                    backgroundImage: `url(${level.thumbnail || level.backgroundImage || level.image})`,
+                                  }}
+                                />
+                                <div className="game-info">
+                                  <h4>{level.name}</h4>
+                                  <div className="desc">{level.description}</div>
+                                </div>
+                                <Button 
+                                  type="primary" 
+                                  shape="round" 
+                                  icon={<RocketOutlined />}
+                                  onClick={() => handleStartGame(level.id)}
+                                >
+                                  Chơi ngay
+                                </Button>
+                              </div>
+                            </Col>
+                          ))
+                        ) : (
+                          <Col span={24}>
+                            <div className="game-cta-banner">
+                              <RocketOutlined className="cta-icon" />
+                              <div className="cta-content">
+                                <h4>Khám phá thế giới game lịch sử</h4>
+                                <p>Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!</p>
+                              </div>
+                              <Button 
+                                type="primary" 
+                                size="large" 
+                                shape="round"
+                                icon={<ArrowRightOutlined />}
+                                onClick={() => navigate("/game/chapters")}
+                              >
+                                Khám phá ngay
+                              </Button>
+                            </div>
+                          </Col>
+                        )}
+                      </Row>
+                    )}
                     <Divider />
                   </div>
 

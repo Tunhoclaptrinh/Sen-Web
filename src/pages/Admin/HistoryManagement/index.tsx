@@ -144,6 +144,12 @@ const HistoryManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
       render: (_: any, record: any) => <Tag color="purple">{(record.relatedArtifactIds || []).length} HV</Tag>,
     },
     {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
+    },
+    {
       title: "Danh mục",
       dataIndex: "categoryId",
       key: "categoryId",

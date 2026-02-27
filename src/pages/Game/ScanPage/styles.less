@@ -123,21 +123,6 @@
         }
 
         &:not(.ant-btn-primary) {
-          .nav-back-btn {
-            // Reusing back btn logic but for regular buttons
-            background: #fff9e6;
-            border: 2px solid @text-color-secondary;
-            color: @text-color-secondary;
-            font-weight: 600;
-            height: 48px;
-            border-radius: 8px;
-
-            &:hover {
-              border-color: @text-color-primary;
-              color: @text-color-primary;
-            }
-          }
-          // Applying manual style as mixin might be too specific
           height: 48px;
           border-radius: 8px;
           font-family: @font-serif;
@@ -152,6 +137,39 @@
           }
         }
       }
+    }
+
+    .reward-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .petal-icon-mini {
+      width: 20px;
+      height: 20px;
+      // background-image: url("@/assets/images/petal_icon.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 2px 2px rgba(235, 47, 150, 0.3));
+    }
+
+    .new-badge-tag {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      background: @seal-red;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(139, 29, 29, 0.4);
+      z-index: 2;
     }
   }
 }

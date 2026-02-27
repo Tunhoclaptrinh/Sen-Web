@@ -1,12 +1,14 @@
-import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message} from "antd";
+import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message, Radio, Space} from "antd";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
+import {LinkOutlined} from "@ant-design/icons";
 import {useAuth} from "@/hooks/useAuth";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLabels} from "@/types";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback} from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import artifactService from "@/services/artifact.service";
+import adminLevelService from "@/services/admin-level.service";
 import categoryService from "@/services/category.service";
 
 interface ArtifactFormProps {
@@ -32,6 +34,16 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   const [heritageSites, setHeritageSites] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("1");
+  const [imageType, setImageType] = useState<'url' | 'upload'>('url');
+  const [showCustomType, setShowCustomType] = useState(false);
+
+  const onTypeChange = useCallback((value: string) => {
+    const isOther = value === 'other';
+    setShowCustomType(isOther);
+    if (!isOther) {
+      form.setFieldsValue({ artifactType: value });
+    }
+  }, [form]);
 
   useEffect(() => {
     if (open) setActiveTab("1");
@@ -43,7 +55,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       if (open && isEdit && initialValues) {
         try {
           // Fetch labels for related IDs
-          const [relHeritageRes, relHistoryRes, relArtifactRes] = await Promise.all([
+          const [relHeritageRes, relHistoryRes, relArtifactRes, relLevelsRes] = await Promise.all([
             initialValues.relatedHeritageIds?.length > 0
               ? heritageService.getAll({
                   ids: initialValues.relatedHeritageIds.join(","),
@@ -57,6 +69,11 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
             initialValues.relatedArtifactIds?.length > 0
               ? artifactService.getAll({
                   ids: initialValues.relatedArtifactIds.join(","),
+                })
+              : Promise.resolve({success: true, data: []}),
+            initialValues.relatedLevelIds?.length > 0
+              ? adminLevelService.getAll({
+                  ids: initialValues.relatedLevelIds.join(","),
                 })
               : Promise.resolve({success: true, data: []}),
           ]);
@@ -100,16 +117,50 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                 : {label: `ID: ${id}`, value: id};
           });
 
+          // Map related levels
+          const relatedLevels = (initialValues.relatedLevelIds || []).map((id: any) => {
+            const lvl =
+              relLevelsRes.success && relLevelsRes.data
+                ? relLevelsRes.data.find((l: any) => l.id === (typeof id === "object" ? id.value : id))
+                : null;
+            return lvl
+              ? {label: lvl.name, value: lvl.id}
+              : typeof id === "object"
+                ? id
+                : {label: `ID: ${id}`, value: id};
+          });
+
           const formattedValues = {
             ...initialValues,
             relatedHeritageIds: relatedHeri,
             relatedHistoryIds: relatedHistoryArr,
             relatedArtifactIds: relatedArts,
+            relatedLevelIds: relatedLevels,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
           console.error("Failed to init artifact data", error);
-          form.setFieldsValue(initialValues);
+        }
+
+        // Common sync logic for both Edit and Create (if initialValues exists)
+        if (initialValues) {
+          // Image type sync
+          const isUpload = initialValues.image?.startsWith('/uploads/');
+          setImageType(isUpload ? 'upload' : 'url');
+          form.setFieldsValue({ imageType: isUpload ? 'upload' : 'url' });
+
+          // Type sync
+          const isDefaultType = Object.values(ArtifactType).includes(initialValues.artifactType as ArtifactType) && initialValues.artifactType !== ArtifactType.OTHER;
+          if (isDefaultType) {
+            setShowCustomType(false);
+            form.setFieldsValue({ artifactTypeSelect: initialValues.artifactType });
+          } else {
+            setShowCustomType(true);
+            form.setFieldsValue({ 
+              artifactTypeSelect: 'other',
+              customArtifactType: initialValues.artifactType 
+            });
+          }
         }
       }
       // 2. Chế độ Thêm mới (isEdit = false) -> Reset form
@@ -122,6 +173,10 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         }, {});
         form.setFieldsValue(resetValues);
         form.resetFields(); // Call this as well to reset errors/touched state
+
+        setImageType('url');
+        setShowCustomType(false);
+        form.setFieldsValue({ imageType: 'url', artifactTypeSelect: ArtifactType.OTHER });
 
         // Set defaults
         form.setFieldsValue({
@@ -218,6 +273,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedArtifactIds:
         values.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedLevelIds:
+        values.relatedLevelIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
     const success = await onSubmit(submitData);
     if (success) {
@@ -275,6 +332,22 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
     }
   };
 
+  const fetchLevelList = async (search: string) => {
+    try {
+      const response = await adminLevelService.getAll({q: search, limit: 10});
+      if (response.success && response.data) {
+        return response.data.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Fetch levels failed", error);
+      return [];
+    }
+  };
+
   return (
     <FormModal
       open={open}
@@ -315,8 +388,28 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
               <>
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item label="Hình ảnh đại diện" name="image">
-                      <ImageUpload maxCount={1} />
+                    <Form.Item label="Hình ảnh đại diện">
+                      <div style={{ marginBottom: 8 }}>
+                        <Radio.Group 
+                          value={imageType} 
+                          onChange={(e) => setImageType(e.target.value)}
+                          buttonStyle="solid"
+                          size="small"
+                        >
+                          <Radio.Button value="url">Dán liên kết</Radio.Button>
+                          <Radio.Button value="upload">Tải ảnh lên</Radio.Button>
+                        </Radio.Group>
+                      </div>
+                      
+                      {imageType === 'upload' ? (
+                        <Form.Item name="image" noStyle>
+                          <ImageUpload maxCount={1} />
+                        </Form.Item>
+                      ) : (
+                        <Form.Item name="image" noStyle>
+                          <Input placeholder="https://..." prefix={<LinkOutlined />} />
+                        </Form.Item>
+                      )}
                     </Form.Item>
                   </Col>
                   <Col span={16}>
@@ -358,18 +451,34 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item
-                      name="artifactType"
-                      label="Loại hình"
-                      rules={[{required: true, message: "Vui lòng chọn loại hình"}]}
-                    >
-                      <Select placeholder="Chọn loại hình">
-                        {Object.values(ArtifactType).map((type) => (
-                          <Select.Option key={type} value={type}>
-                            {ArtifactTypeLabels[type]}
-                          </Select.Option>
-                        ))}
-                      </Select>
+                    <Form.Item label="Loại hình">
+                      <Space.Compact style={{ width: '100%' }}>
+                        <Form.Item name="artifactTypeSelect" noStyle>
+                          <Select placeholder="Chọn loại hình" onChange={onTypeChange} style={{ width: showCustomType ? '40%' : '100%' }}>
+                            {Object.values(ArtifactType).map((type) => (
+                              <Select.Option key={type} value={type}>
+                                {ArtifactTypeLabels[type]}
+                              </Select.Option>
+                            ))}
+                            <Select.Option value="other">Khác...</Select.Option>
+                          </Select>
+                        </Form.Item>
+                        {showCustomType && (
+                          <Form.Item 
+                            name="customArtifactType" 
+                            noStyle 
+                            rules={[{ required: true, message: 'Nhập loại' }]}
+                          >
+                            <Input 
+                              placeholder="VD: Cổ vật quý" 
+                              onChange={(e) => form.setFieldsValue({ artifactType: e.target.value })}
+                            />
+                          </Form.Item>
+                        )}
+                      </Space.Compact>
+                      <Form.Item name="artifactType" noStyle hidden>
+                        <Input />
+                      </Form.Item>
                     </Form.Item>
                   </Col>
                 </Row>
@@ -439,12 +548,29 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item
-                      name="locationInSite"
-                      label="Vị trí trưng bày"
-                      rules={[{min: 5, message: "Vị trí trưng bày yêu cầu tối thiểu 5 ký tự"}]}
-                    >
+                    <Form.Item name="locationInSite" label="Vị trí trưng bày" rules={[{min: 5, message: "Vị trí trưng bày yêu cầu tối thiểu 5 ký tự"}]}>
                       <Input placeholder="Phòng số X..." />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item name="latitude" label="Vĩ độ (Latitude)" tooltip="Tọa độ GPS riêng nếu có">
+                      <InputNumber style={{width: "100%"}} placeholder="VD: 21.0123" precision={6} step={0.0001} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="longitude" label="Kinh độ (Longitude)" tooltip="Tọa độ GPS riêng nếu có">
+                      <InputNumber style={{width: "100%"}} placeholder="VD: 105.8123" precision={6} step={0.0001} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item name="bookingLink" label="Link đặt vé/tham quan (Affiliate)">
+                      <Input placeholder="Nhập link affiliate (VD: https://klook.com/...)" />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -453,6 +579,11 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                   <Col span={6}>
                     <Form.Item name="isOnDisplay" label="Đang trưng bày" valuePropName="checked">
                       <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="autoCreateScanObject" label="Tự động tạo đối tượng Tầm bảo" valuePropName="checked" tooltip="Nếu bật, hệ thống sẽ tự động tạo một đối tượng quét QR/Tầm bảo cho hiện vật này với tọa độ GPS tương ứng.">
+                      <Switch checkedChildren="BẬT" unCheckedChildren="TẮT" />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -555,6 +686,15 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm hiện vật..."
                     fetchOptions={fetchArtifactList}
+                    style={{width: "100%"}}
+                  />
+                </Form.Item>
+
+                <Form.Item label="Màn chơi liên quan" name="relatedLevelIds" tooltip="Các màn chơi trong game liên quan">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm màn chơi..."
+                    fetchOptions={fetchLevelList}
                     style={{width: "100%"}}
                   />
                 </Form.Item>

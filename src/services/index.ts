@@ -13,3 +13,5 @@ export {default as exhibitionService} from "./exhibition.service";
 export {default as historyService} from "./history.service";
 export {default as reviewService} from "./review.service";
 export {default as badgeService} from "./badge.service";
+export {default as adminLevelService} from "./admin-level.service";
+export {default as adminWelfareService} from "./admin-welfare.service";

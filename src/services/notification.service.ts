@@ -48,6 +48,11 @@ class NotificationService extends BaseService {
     const response = await this.put('/preferences', data);
     return response.data;
   }
+
+  async broadcastNotification(data: { title: string; message: string; type: string; refId?: number }): Promise<boolean> {
+    const response = await this.post('/broadcast', data);
+    return response.success ?? true;
+  }
 }
 
 export const notificationService = new NotificationService();

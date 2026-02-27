@@ -4,6 +4,7 @@ import {StarOutlined, EnvironmentOutlined, EyeOutlined, PlusOutlined} from "@ant
 import {useEffect, useState} from "react";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
+import adminLevelService from "@/services/admin-level.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import {getImageUrl, resolveImage} from "@/utils/image.helper";
 import {ITEM_TYPES} from "@/config/constants";
@@ -15,8 +16,11 @@ interface DetailModalProps {
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
-  const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
+  const [
+    // relatedHeritage
+    , setRelatedHeritage] = useState<any[]>([]);
   const [relatedHistory, setRelatedHistory] = useState<any[]>([]);
+  const [relatedLevels, setRelatedLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
 
@@ -27,18 +31,23 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
         try {
           const heriIds = record.relatedHeritageIds || [];
           const historyIds = record.relatedHistoryIds || [];
+          const levelIds = record.relatedLevelIds || [];
 
-          const [relHeriRes, relHistoryRes] = await Promise.all([
+          const [relHeriRes, relHistoryRes, relLevelsRes] = await Promise.all([
             heriIds.length > 0
               ? heritageService.getAll({ids: heriIds.join(",")})
               : Promise.resolve({success: true, data: []}),
             historyIds.length > 0
               ? historyService.getAll({ids: historyIds.join(",")})
               : Promise.resolve({success: true, data: []}),
+            levelIds.length > 0
+              ? adminLevelService.getAll({ids: levelIds.join(",")})
+              : Promise.resolve({success: true, data: []}),
           ]);
 
           setRelatedHeritage(relHeriRes.data || []);
           setRelatedHistory(relHistoryRes.data || []);
+          setRelatedLevels(relLevelsRes.data || []);
         } catch (error) {
           console.error("Failed to load details", error);
         } finally {
@@ -189,33 +198,6 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
           )}
         </Tabs.TabPane>
 
-        <Tabs.TabPane tab="Mô tả chi tiết" key="desc">
-          <div dangerouslySetInnerHTML={{__html: record.description || "Chưa có mô tả chi tiết."}} />
-        </Tabs.TabPane>
-
-        <Tabs.TabPane tab="Bối cảnh & Ý nghĩa" key="context">
-          <h4>Bối cảnh lịch sử</h4>
-          <div
-            dangerouslySetInnerHTML={{__html: record.historicalContext || "Chưa có dữ liệu."}}
-            style={{marginBottom: 20}}
-          />
-          <h4>Ý nghĩa văn hóa</h4>
-          <div dangerouslySetInnerHTML={{__html: record.culturalSignificance || "Chưa có dữ liệu."}} />
-        </Tabs.TabPane>
-
-        <Tabs.TabPane tab={`Di sản liên quan (${relatedHeritage.length})`} key="heritage">
-          <List
-            grid={{gutter: 16, xs: 1, sm: 2, md: 2, lg: 2}}
-            dataSource={relatedHeritage}
-            renderItem={(item) => (
-              <List.Item>
-                <ArticleCard data={item} type={ITEM_TYPES.HERITAGE} />
-              </List.Item>
-            )}
-            loading={loading}
-          />
-        </Tabs.TabPane>
-
         <Tabs.TabPane tab={`Lịch sử liên quan (${relatedHistory.length})`} key="history">
           <List
             grid={{gutter: 16, xs: 1, sm: 2, md: 2, lg: 2}}
@@ -223,6 +205,19 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
             renderItem={(item) => (
               <List.Item>
                 <ArticleCard data={item} type="history" />
+              </List.Item>
+            )}
+            loading={loading}
+          />
+        </Tabs.TabPane>
+
+        <Tabs.TabPane tab={`Màn chơi (${relatedLevels.length})`} key="levels">
+          <List
+            grid={{gutter: 16, xs: 1, sm: 2, md: 2, lg: 2}}
+            dataSource={relatedLevels}
+            renderItem={(item) => (
+              <List.Item>
+                <ArticleCard data={item} type={ITEM_TYPES.LEVEL} />
               </List.Item>
             )}
             loading={loading}

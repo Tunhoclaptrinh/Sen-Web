@@ -64,6 +64,8 @@ const ResearcherHistoryManagement = lazy(() => import("@/pages/Researcher/Histor
 const ResearcherChapterManagement = lazy(() => import("@/pages/Researcher/ChapterManagement"));
 const ResearcherLevelManagement = lazy(() => import("@/pages/Researcher/LevelManagement"));
 const ResearcherLearningManagement = lazy(() => import("@/pages/Researcher/LearningManagement"));
+const NotificationManagement = lazy(() => import("@/pages/Admin/NotificationManagement"));
+const WelfareManagement = lazy(() => import("@/pages/Admin/WelfareManagement"));
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -77,6 +79,7 @@ const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
 const GameDashboard = lazy(() => import("@/pages/Game/DashboardPage"));
 const MapPage = lazy(() => import("@/pages/Map"));
 const ScanPage = lazy(() => import("@/pages/Game/ScanPage"));
+const WelfarePage = lazy(() => import("@/pages/Game/WelfarePage"));
 
 // Wrapper component for Suspense
 const LazyLoadWrapper: React.FC<{children: React.ReactNode}> = ({children}) => (
@@ -173,6 +176,10 @@ const routes: RouteObject[] = [
         path: "support",
         element: <Support />,
       },
+      {
+        path: "map",
+        element: <MapPage />,
+      },
     ],
   },
 
@@ -203,10 +210,6 @@ const routes: RouteObject[] = [
       {
         path: "scan",
         element: <ScanPage />,
-      },
-      {
-        path: "map",
-        element: <MapPage />,
       },
       {
         path: "chapters/:chapterId/levels",
@@ -247,6 +250,14 @@ const routes: RouteObject[] = [
             <LearningPathPage />
           </LazyLoadWrapper>
         ),
+      },
+      {
+        path: "welfare",
+        element: <WelfarePage />,
+      },
+      {
+        path: "map",
+        element: <MapPage />,
       },
     ],
   },
@@ -441,6 +452,14 @@ const routes: RouteObject[] = [
       {
         path: "users",
         element: <UserManagement />,
+      },
+      {
+        path: "notifications",
+        element: <NotificationManagement />,
+      },
+      {
+        path: "welfare",
+        element: <WelfareManagement />,
       },
     ],
   },

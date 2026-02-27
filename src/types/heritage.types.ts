@@ -13,10 +13,11 @@ export enum HeritageType {
   HISTORIC_BUILDING = "historicBuilding",
   NATURAL_HERITAGE = "naturalHeritage",
   INTANGIBLE_HERITAGE = "intangibleHeritage",
+  OTHER = "other",
 }
 
 // Heritage Type Labels (Vietnamese)
-export const HeritageTypeLabels: Record<HeritageType, string> = {
+export const HeritageTypeLabels: Record<string, string> = {
   [HeritageType.MONUMENT]: "Di tích lịch sử",
   [HeritageType.TEMPLE]: "Đền, chùa, miếu",
   [HeritageType.MUSEUM]: "Bảo tàng",
@@ -24,6 +25,11 @@ export const HeritageTypeLabels: Record<HeritageType, string> = {
   [HeritageType.HISTORIC_BUILDING]: "Công trình kiến trúc lịch sử",
   [HeritageType.NATURAL_HERITAGE]: "Di sản thiên nhiên",
   [HeritageType.INTANGIBLE_HERITAGE]: "Di sản phi vật thể",
+  // Snake case mappings for robustness (matching backend strings shown in logs)
+  "archaeological_site": "Khu khảo cổ",
+  "historic_building": "Công trình kiến trúc lịch sử",
+  "natural_heritage": "Di sản thiên nhiên",
+  "intangible_heritage": "Di sản phi vật thể",
 };
 
 // Significance Level
@@ -265,11 +271,13 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
   relatedHeritageIds?: number[];
+  relatedLevelIds?: number[];
   relatedArtifacts?: any[]; // Full objects if needed
   relatedLevels?: any[];
   relatedProducts?: any[];
   relatedHistory?: any[];
   references?: string;
+  bookingLink?: string;
 }
 
 // Heritage Site Create/Update DTO
@@ -297,7 +305,9 @@ export interface HeritageSiteDTO {
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
   relatedHeritageIds?: number[];
+  relatedLevelIds?: number[];
   references?: string;
+  bookingLink?: string;
 }
 
 // Timeline Event
@@ -338,6 +348,10 @@ export interface Exhibition extends BaseEntity, TimestampEntity {
   endDate?: string;
   curator?: string;
   artifactIds?: number[];
+  relatedLevelIds?: number[];
+  relatedHeritageIds?: number[];
+  relatedArtifactIds?: number[];
+  relatedHistoryIds?: number[];
   isActive: boolean;
 }
 

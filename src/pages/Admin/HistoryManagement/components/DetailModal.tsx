@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
+import adminLevelService from "@/services/admin-level.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import {ITEM_TYPES} from "@/config/constants";
 
@@ -16,6 +17,7 @@ interface HistoryDetailModalProps {
 const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({open, onCancel, record}) => {
   const [relatedHeritage, setRelatedHeritage] = useState<any[]>([]);
   const [relatedArtifacts, setRelatedArtifacts] = useState<any[]>([]);
+  const [relatedLevels, setRelatedLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
 
@@ -26,18 +28,23 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({open, onCancel, 
         try {
           const heriIds = record.relatedHeritageIds || [];
           const artIds = record.relatedArtifactIds || [];
+          const levelIds = record.relatedLevelIds || [];
 
-          const [relHeriRes, relArtRes] = await Promise.all([
+          const [relHeriRes, relArtRes, relLevelsRes] = await Promise.all([
             heriIds.length > 0
               ? heritageService.getAll({ids: heriIds.join(",")})
               : Promise.resolve({success: true, data: []}),
             artIds.length > 0
               ? artifactService.getAll({ids: artIds.join(",")})
               : Promise.resolve({success: true, data: []}),
+            levelIds.length > 0
+              ? adminLevelService.getAll({ids: levelIds.join(",")})
+              : Promise.resolve({success: true, data: []}),
           ]);
 
           setRelatedHeritage(relHeriRes.data || []);
           setRelatedArtifacts(relArtRes.data || []);
+          setRelatedLevels(relLevelsRes.data || []);
         } catch (error) {
           console.error("Failed to load details", error);
         } finally {
@@ -195,6 +202,19 @@ const HistoryDetailModal: React.FC<HistoryDetailModalProps> = ({open, onCancel, 
             renderItem={(item) => (
               <List.Item>
                 <ArticleCard data={item} type={ITEM_TYPES.ARTIFACT} />
+              </List.Item>
+            )}
+            loading={loading}
+          />
+        </Tabs.TabPane>
+
+        <Tabs.TabPane tab={`Màn chơi (${relatedLevels.length})`} key="levels">
+          <List
+            grid={{gutter: 16, xs: 1, sm: 2, md: 2, lg: 2}}
+            dataSource={relatedLevels}
+            renderItem={(item) => (
+              <List.Item>
+                <ArticleCard data={item} type={ITEM_TYPES.LEVEL} />
               </List.Item>
             )}
             loading={loading}

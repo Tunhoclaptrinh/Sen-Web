@@ -35,6 +35,7 @@ const Header: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isTransparent, setIsTransparent] = useState(location.pathname === '/');
 
   // Handle window resize
   useEffect(() => {
@@ -44,6 +45,21 @@ const Header: React.FC = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Handle scroll for transparency (Only on Home Page)
+  useEffect(() => {
+    const handleScroll = () => {
+      if (location.pathname === '/') {
+        setIsTransparent(window.scrollY < 50);
+      } else {
+        setIsTransparent(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [location.pathname]);
 
   // Handle logout
   const handleLogout = () => {
@@ -67,7 +83,7 @@ const Header: React.FC = () => {
     if (location.pathname.startsWith('/history')) return 'history';
     if (location.pathname.startsWith('/exhibitions')) return 'exhibitions';
     if (location.pathname.startsWith('/learn')) return 'learn';
-    if (location.pathname.startsWith('/game')) return 'game';
+    if (location.pathname.startsWith('/map')) return 'map';
     if (location.pathname.startsWith('/support')) return 'support';
     return '';
   };
@@ -114,6 +130,10 @@ const Header: React.FC = () => {
         label: <Link to="/artifacts">Hiện vật</Link>,
     },
     {
+        key: 'map',
+        label: <Link to="/map">Bản đồ</Link>,
+    },
+    {
         key: 'history',
         label: <Link to="/history">Bài viết</Link>,
     },
@@ -138,7 +158,7 @@ const Header: React.FC = () => {
   return (
     <>
       {/* TOP UTILITY BAR (Red Border + Search + Info) */}
-      <div className="top-utility-bar">
+      <div className={`top-utility-bar ${isTransparent ? 'is-transparent' : ''}`}>
         <div className="utility-content">
           {/* LEFT: Contact & Slogan */}
           {!isMobile && (
@@ -163,7 +183,7 @@ const Header: React.FC = () => {
 
           {/* RIGHT: Social & Lang */}
           <Space size="middle" className="util-right">
-            <FacebookOutlined className="social-icon" />
+            <FacebookOutlined className="social-icon" onClick={() => window.open('https://www.facebook.com/profile.php?id=61586454543352', '_blank')} />
             <HeartOutlined className="social-icon" />
             <div className="language-switcher">
               <span className="lang-item active">
@@ -181,7 +201,7 @@ const Header: React.FC = () => {
       </div>
 
       <AntHeader
-        className="main-header"
+        className={`main-header ${isTransparent ? 'is-transparent' : ''}`}
         style={{
           padding: isMobile ? '0 16px' : '0 40px',
         }}

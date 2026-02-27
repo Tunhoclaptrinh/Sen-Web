@@ -21,6 +21,7 @@ import HeritageDetailModal from "./components/DetailModal";
 import HeritageForm from "./components/Form";
 import HeritageStats from "./components/Stats";
 import {HeritageType, HeritageRegion, HeritageTypeLabels, HeritageRegionLabels} from "@/types";
+import {useMemo} from "react";
 import {useHeritageModel} from "./model";
 
 const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
@@ -66,6 +67,26 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
   const onFilterChange = (key: string, value: any) => {
     updateFilters({[key]: value});
   };
+
+  // Dynamic filter options for heritage type
+  const dynamicHeritageTypeOptions = useMemo(() => {
+    const defaultTypes = Object.values(HeritageType).map((type) => ({
+      label: HeritageTypeLabels[type],
+      value: type,
+    }));
+
+    // Get unique types from data that are NOT in the default enum
+    const customTypes = data
+      ? Array.from(new Set(data.map((item: any) => item.type)))
+          .filter((type) => type && !Object.values(HeritageType).includes(type as HeritageType))
+          .map((type) => ({
+            label: type as string,
+            value: type,
+          }))
+      : [];
+
+    return [...defaultTypes, ...customTypes];
+  }, [data]);
 
   const columns = [
     {
@@ -119,9 +140,9 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
       dataIndex: "type",
       key: "type",
       width: 150,
-      filters: Object.values(HeritageType).map((type) => ({
-        text: HeritageTypeLabels[type],
-        value: type,
+      filters: dynamicHeritageTypeOptions.map((opt) => ({
+        text: opt.label,
+        value: opt.value,
       })),
       filteredValue: filters.type ? (Array.isArray(filters.type) ? filters.type : [filters.type]) : null,
       render: (type: HeritageType) => <Tag color="blue">{HeritageTypeLabels[type]?.toUpperCase() || type}</Tag>,
@@ -187,6 +208,12 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
       key: "historyCount",
       width: 100,
       render: (_: any, record: any) => <Tag color="purple">{(record.relatedHistoryIds || []).length} LS</Tag>,
+    },
+    {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
     },
     {
       title: "Trạng thái",
@@ -297,10 +324,7 @@ const HeritageSiteManagement = ({initialFilters = {}}: {initialFilters?: any}) =
           {
             key: "type",
             placeholder: "Loại hình",
-            options: Object.values(HeritageType).map((type) => ({
-              label: HeritageTypeLabels[type],
-              value: type,
-            })),
+            options: dynamicHeritageTypeOptions,
           },
           {
             key: "categoryId",

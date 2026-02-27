@@ -19,7 +19,6 @@ import "./styles.less";
 import {customerMenu} from "@/config/menu.config";
 import NotificationPopover from "@/components/common/NotificationPopover";
 import DailyRewardModal from "@/components/common/DailyRewardModal";
-// AIChat removed, now handled globally in GlobalCharacterOverlay
 
 const CustomerLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -28,13 +27,8 @@ const CustomerLayout: React.FC = () => {
   const {progress} = useSelector((state: RootState) => state.game);
 
   const [dailyRewardVisible, setDailyRewardVisible] = useState(false);
-
-  // Initial Data Fetching (Persistent Game Data)
-  // Ensures stats (Coins, Petals) are available on direct navigation or refresh
   const location = useLocation();
 
-  // Initial Data Fetching (Persistent Game Data)
-  // Ensures stats (Coins, Petals) are available and FRESH on navigation
   React.useEffect(() => {
     dispatch(fetchProgress() as any);
   }, [dispatch, location.pathname]);
@@ -63,7 +57,7 @@ const CustomerLayout: React.FC = () => {
   ];
 
   return (
-    <>
+    <div className="customer-layout-wrapper sen-hoa-premium">
       <UnifiedLayout
         menu={{request: async () => customerMenu}}
         user={user || undefined}
@@ -109,11 +103,8 @@ const CustomerLayout: React.FC = () => {
         <Outlet />
       </UnifiedLayout>
 
-      {/* Daily Reward Modal */}
       <DailyRewardModal visible={dailyRewardVisible} onClose={() => setDailyRewardVisible(false)} />
-
-      {/* AI Chat Overlay (Global) - Now handled by GlobalCharacterOverlay in App.tsx */}
-    </>
+    </div>
   );
 };
 

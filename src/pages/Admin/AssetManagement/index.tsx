@@ -1,12 +1,14 @@
 import React from "react";
 import {Button, Space, Modal, Form, Input, Select, Tag, Switch, InputNumber} from "antd";
-import {QrcodeOutlined} from "@ant-design/icons";
+import {QrcodeOutlined, DownloadOutlined, ExperimentOutlined} from "@ant-design/icons";
+import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import {useAssetModel} from "./model";
 import DataTable from "@/components/common/DataTable";
 import {useAuth} from "@/hooks/useAuth";
 import {ITEM_TYPES} from "@/config/constants";
 
 const AssetManagement: React.FC = () => {
+  const [form] = Form.useForm();
   const model = useAssetModel();
   const {user} = useAuth();
 
@@ -15,10 +17,31 @@ const AssetManagement: React.FC = () => {
       title: "Mã (QR)",
       dataIndex: "code",
       key: "code",
-      render: (code: string) => (
-        <Tag icon={<QrcodeOutlined />} color="blue">
-          {code}
-        </Tag>
+      width: 150,
+      render: (code: string, record: any) => (
+        <Space direction="vertical" align="center" style={{ width: '100%' }}>
+          <QRCodeSVG value={code} size={40} />
+          <Tag icon={<QrcodeOutlined />} color="blue">
+            {code}
+          </Tag>
+          <Button 
+            type="link" 
+            size="small" 
+            icon={<DownloadOutlined />} 
+            onClick={() => model.downloadQRCode(code, record.name)}
+          >
+            Tải mã
+          </Button>
+          {/* Hidden Canvas for Downloading */}
+          <div style={{ display: 'none' }}>
+            <QRCodeCanvas 
+              id={`qr-code-download-${code}`} 
+              value={code} 
+              size={512} 
+              includeMargin={true}
+            />
+          </div>
+        </Space>
       ),
     },
     {
@@ -76,6 +99,7 @@ const AssetManagement: React.FC = () => {
         destroyOnClose
       >
         <Form
+          form={form}
           layout="vertical"
           initialValues={
             model.currentRecord || {type: ITEM_TYPES.ARTIFACT, isActive: true, rewardCoins: 100, rewardPetals: 1}
@@ -88,7 +112,19 @@ const AssetManagement: React.FC = () => {
               label="Mã định danh (QR Code)"
               rules={[{required: true, message: "Vui lòng nhập mã"}]}
             >
-              <Input placeholder="Ví dụ: QR001, ART_VN_01" />
+              <Input 
+                placeholder="Ví dụ: QR001, ART_VN_01" 
+                suffix={
+                  <Button 
+                    type="link" 
+                    size="small" 
+                    icon={<ExperimentOutlined />} 
+                    onClick={() => model.handleGenerateCode(form)}
+                  >
+                    Tự tạo
+                  </Button>
+                }
+              />
             </Form.Item>
             <Form.Item
               name="name"
@@ -135,6 +171,21 @@ const AssetManagement: React.FC = () => {
               <InputNumber style={{width: "100%"}} step={0.000001} />
             </Form.Item>
           </div>
+
+          {model.formVisible && (
+            <Form.Item label="Xem trước mã QR" style={{ textAlign: 'center' }}>
+               <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.code !== currentValues.code}>
+                {({ getFieldValue }) => {
+                  const code = getFieldValue('code');
+                  return code ? (
+                    <div style={{ padding: '16px', background: '#f5f5f5', borderRadius: '8px', display: 'inline-block' }}>
+                      <QRCodeSVG value={code} size={150} includeMargin={true} />
+                    </div>
+                  ) : <Tag color="warning">Nhập mã để xem trước QR</Tag>;
+                }}
+              </Form.Item>
+            </Form.Item>
+          )}
 
           <Form.Item style={{marginBottom: 0, textAlign: "right"}}>
             <Space>

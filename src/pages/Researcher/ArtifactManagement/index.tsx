@@ -155,6 +155,22 @@ const ResearcherArtifactManagement = () => {
         return <Tag color={color}>{ArtifactConditionLabels[cond]?.toUpperCase() || cond}</Tag>;
       },
     },
+    {
+      title: "Hiển thị",
+      key: "isActive",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Tag color={record.isActive === false ? "red" : "green"}>
+          {record.isActive === false ? "ĐÃ ẨN" : "HIỂN THỊ"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
+    },
   ];
 
   const tabItems = [

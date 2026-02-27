@@ -13,6 +13,7 @@ import {ITEM_TYPES} from "@/config/constants";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 import headerLogo from "../../assets/images/logo.png";
+import Background from "@/components/Background";
 
 const {Title, Paragraph} = Typography;
 
@@ -53,18 +54,20 @@ const Home: React.FC = () => {
   return (
     <div className="home-page">
       {/* 1. Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <div className="brand-title">
-            <img src={brandTitle} alt="" />
+      <Background className="hero-section">
+        <section className="hero-sections">
+          <div className="hero-content">
+            <div className="brand-title">
+              <img src={brandTitle} alt="" />
+            </div>
+            <p className="hero-subtitle">Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ</p>
+            <Button className="cta-button" onClick={() => navigate("/game/chapters")}>
+              Khám phá ngay
+            </Button>
           </div>
-          <p className="hero-subtitle">Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ</p>
-          <Button className="cta-button" onClick={() => navigate("/game/chapters")}>
-            Khám phá ngay
-          </Button>
-        </div>
-        {/* Optional decorative bottom elements can go here if provided */}
-      </section>
+          {/* Optional decorative bottom elements can go here if provided */}
+        </section>
+      </Background>
 
       {/* 2. Mission Section (Sứ mệnh của Sen) */}
       <section className="mission-section">
@@ -101,10 +104,10 @@ const Home: React.FC = () => {
               <button className="action-btn light-green-btn" onClick={() => navigate("/heritage-sites")}>
                 Di sản văn hóa
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts/browse")}>
+              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts")}>
                 Hiện vật
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/learn")}>
+              <button className="action-btn light-green-btn" onClick={() => navigate("/game/learning")}>
                 Học tập
               </button>
             </div>
@@ -114,6 +117,7 @@ const Home: React.FC = () => {
 
       {/* 2.5 Heritage Space (Map & Leaderboard) */}
       <div className="heritage-space-block">
+        <div className="dot-pattern-overlay" />
         <div className="heritage-pattern-overlay" />
         <HomeMapSection />
         <HomeLeaderboardSection />

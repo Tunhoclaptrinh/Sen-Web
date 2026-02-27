@@ -67,6 +67,7 @@ const ChapterManagement = () => {
   // Simulator State
   const [simulatorVisible, setSimulatorVisible] = useState(false);
   const [simulatorScreens, setSimulatorScreens] = useState<any[]>([]);
+  const [simulatorBgm, setSimulatorBgm] = useState<string | undefined>();
 
   const openPreview = (record: any) => {
     setPreviewChapter(record);
@@ -86,6 +87,7 @@ const ChapterManagement = () => {
 
       if (levels.length > 0) {
         const firstLevel = levels[0];
+        setSimulatorBgm(firstLevel.backgroundMusic);
         // Fetch screens for the first level
         const screenRes = await adminScreenService.getScreens(firstLevel.id);
         const screens = Array.isArray(screenRes.data) ? screenRes.data : screenRes.data?.items || [];
@@ -543,6 +545,7 @@ const ChapterManagement = () => {
         onClose={() => setSimulatorVisible(false)}
         screens={simulatorScreens}
         title="Simulation"
+        bgmUrl={simulatorBgm}
       />
     </>
   );

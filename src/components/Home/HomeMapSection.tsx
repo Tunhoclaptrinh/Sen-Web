@@ -7,6 +7,7 @@ import heritageServiceReal from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import SimpleMap from "@/components/Map/SimpleMap";
 import "./HomeGame.less";
+import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
 
 const {Title, Paragraph} = Typography;
 
@@ -21,68 +22,95 @@ const HomeMapSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch Vietnam Map Data FIRST to ensure core functionality
-        const mapRes = await fetch("https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json");
-        const mapJson = await mapRes.json();
-        setMapData(mapJson);
+  const fetchData = async () => {
+    try {
+      const fetchWithTimeout = async (url: string, timeoutMs: number) => {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
-        // Fetch World Data for background (Custom filtered for SEA)
         try {
-          const worldRes = await fetch("https://code.highcharts.com/mapdata/custom/world.geo.json");
-          const worldJson = await worldRes.json();
+          return await fetch(url, {signal: controller.signal});
+        } finally {
+          window.clearTimeout(timeoutId);
+        }
+      };
+
+      // Fetch Vietnam Map Data FIRST to ensure core functionality
+      let mapRes: Response | null = null;
+      try {
+        mapRes = await fetchWithTimeout(
+          "https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json",
+          5000,
+        );
+      } catch (error) {
+        console.warn("CDN map fetch failed, fallback to local", error);
+      }
+
+      let mapJson: any = null;
+      if (mapRes && mapRes.ok) {
+        mapJson = await mapRes.json();
+      }
+
+      if (!mapJson || !Array.isArray(mapJson.features) || mapJson.features.length === 0) {
+        mapJson = await fetch(vnMapDataUrl).then((res) => res.json());
+      }
+      setMapData(mapJson);
+
+      // Fetch World Data for background (Custom filtered for SEA)
+      try {
+        const worldRes = await fetch("https://code.highcharts.com/mapdata/custom/world.geo.json");
+        const worldJson = await worldRes.json();
 
           // Filter for SEA and neighbors: China, Laos, Cambodia, Thailand, Philippines, Malaysia, Indonesia, etc.
-          const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
-          const filteredFeatures = worldJson.features.filter(
-            (f: any) =>
-              neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
-          );
+        const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
+        const filteredFeatures = worldJson.features.filter(
+          (f: any) =>
+            neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
+        );
 
-          setWorldData({
-            ...worldJson,
-            features: filteredFeatures,
-          });
-        } catch (e) {
-          console.warn("Failed to load background map", e);
-        }
+        setWorldData({
+          ...worldJson,
+          features: filteredFeatures,
+        });
+      } catch (e) {
+        console.warn("Failed to load background map", e);
+      }
 
-        // Fetch Heritage Locations
-        const locRes = await heritageServiceReal.getLocations();
-        let locs: any[] = [];
-        if (locRes.success && locRes.data) {
-          locs = locRes.data;
-          setLocations(locs);
-        }
+      // Fetch Heritage Locations
+      const locRes = await heritageServiceReal.getLocations();
+      let locs: any[] = [];
+      if (locRes.success && locRes.data) {
+        locs = locRes.data;
+        setLocations(locs);
+      }
 
-        // Fetch Artifacts
-        const artRes = await artifactService.getAll();
-        if (artRes.success && artRes.data) {
+      // Fetch Artifacts
+      const artRes = await artifactService.getAll();
+      if (artRes.success && artRes.data) {
           // Map artifacts to locations
-          const mappedArtifacts = artRes.data
-            .map((art: any) => {
-              const site = locs.find((s: any) => s.id === art.heritageSiteId);
-              if (site && site.lat && site.lng) {
-                return {
-                  ...art,
-                  lat: site.lat + (Math.random() - 0.5) * 0.05,
-                  lng: site.lng + (Math.random() - 0.5) * 0.05,
-                  siteName: site.name,
-                  itemType: ITEM_TYPES.ARTIFACT,
-                };
-              }
-              return null;
-            })
-            .filter((item: any) => item !== null);
-          setArtifacts(mappedArtifacts);
-        }
+        const mappedArtifacts = artRes.data
+          .map((art: any) => {
+            const site = locs.find((s: any) => s.id === art.heritageSiteId);
+            if (site && site.lat && site.lng) {
+              return {
+                ...art,
+                lat: site.lat + (Math.random() - 0.5) * 0.05,
+                lng: site.lng + (Math.random() - 0.5) * 0.05,
+                siteName: site.name,
+                itemType: ITEM_TYPES.ARTIFACT,
+              };
+            }
+            return null;
+          })
+          .filter((item: any) => item !== null);
+        setArtifacts(mappedArtifacts);
+      }
       } catch (error) {
         console.error("Error loading map data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
     fetchData();
   }, []);
@@ -194,7 +222,7 @@ const HomeMapSection: React.FC = () => {
               borderTop: "2px solid var(--gold-color)",
               borderLeft: "2px solid var(--gold-color)",
               borderTopLeftRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
           <div
@@ -207,7 +235,7 @@ const HomeMapSection: React.FC = () => {
               borderTop: "2px solid var(--gold-color)",
               borderRight: "2px solid var(--gold-color)",
               borderTopRightRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
           <div
@@ -220,7 +248,7 @@ const HomeMapSection: React.FC = () => {
               borderBottom: "2px solid var(--gold-color)",
               borderLeft: "2px solid var(--gold-color)",
               borderBottomLeftRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
           <div
@@ -233,7 +261,7 @@ const HomeMapSection: React.FC = () => {
               borderBottom: "2px solid var(--gold-color)",
               borderRight: "2px solid var(--gold-color)",
               borderBottomRightRadius: 8,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           ></div>
 
@@ -290,7 +318,7 @@ const HomeMapSection: React.FC = () => {
 
           {!isFullscreen && (
             <div style={{position: "absolute", top: 32, right: 80, zIndex: 100}}>
-              <Button className="home-game-btn" onClick={() => navigate("/game/map")} icon={<EnvironmentOutlined />}>
+              <Button className="home-game-btn" onClick={() => navigate("/map")} icon={<EnvironmentOutlined />}>
                 Khám phá toàn màn hình
               </Button>
             </div>
@@ -311,7 +339,7 @@ const HomeMapSection: React.FC = () => {
           )}
 
           {/* Game Style Stats Floating Card */}
-          <div className="home-game-card home-map-stats-card" style={{top: 80, left: 60}}>
+          <div className="home-game-card home-map-stats-card" style={{top: 80, left: 60, zIndex: 1001}}>
             <div
               style={{
                 fontFamily: "var(--font-serif)",

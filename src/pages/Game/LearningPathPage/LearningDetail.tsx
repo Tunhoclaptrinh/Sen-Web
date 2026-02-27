@@ -44,6 +44,7 @@ const LearningDetail: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState<"content" | "quiz">("content");
   const [timeLeft, setTimeLeft] = useState(0);
+  const [warned, setWarned] = useState(false);
 
   const handleNavigate = React.useCallback(
     (path: string) => {
@@ -99,19 +100,27 @@ const LearningDetail: React.FC = () => {
   useEffect(() => {
     if (currentStep === "quiz" && module?.estimatedDuration) {
       setTimeLeft(module.estimatedDuration * 60);
+      setWarned(false);
     }
   }, [currentStep, module]);
 
   useEffect(() => {
     if (currentStep === "quiz" && timeLeft > 0 && !submitting) {
       const timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        setTimeLeft((prev) => {
+          if (prev <= 61 && !warned) {
+            message.warning("Thời gian sắp hết! Bạn còn 1 phút để hoàn thành.");
+            setWarned(true);
+          }
+          return prev - 1;
+        });
       }, 1000);
       return () => clearInterval(timer);
-    } else if (timeLeft === 0 && currentStep === "quiz") {
-      // Optional: Auto submit or alert
+    } else if (timeLeft === 0 && currentStep === "quiz" && !submitting && module) {
+      message.info("Hết giờ làm bài! Hệ thống đang tự động nộp bài làm của bạn.");
+      handleQuizSubmit();
     }
-  }, [timeLeft, currentStep, submitting]);
+  }, [timeLeft, currentStep, submitting, module, warned]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -563,7 +572,7 @@ const LearningDetail: React.FC = () => {
                               <Title
                                 level={2}
                                 style={{
-                                  color: "white",
+                                  color: "#ffffff",
                                   margin: 0,
                                   fontSize: 24,
                                   fontFamily: "serif",
@@ -572,7 +581,7 @@ const LearningDetail: React.FC = () => {
                                   gap: 12,
                                 }}
                               >
-                                <QuestionCircleOutlined /> KIỂM TRA KIẾN THỨC
+                                <QuestionCircleOutlined style={{color: "#ffffff"}} /> <span style={{color: "#ffffff"}}>KIỂM TRA KIẾN THỨC</span>
                               </Title>
 
                               <div style={{display: "flex", gap: 10}}>

@@ -7,6 +7,7 @@ import {DebounceSelect} from "@/components/common";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
+import adminLevelService from "@/services/admin-level.service";
 import {HeritageSite, Artifact, HistoryArticle} from "@/types";
 
 interface ExhibitionFormProps {
@@ -53,7 +54,7 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
       if (initialValues) {
         try {
           // Fetch labels for related IDs
-          const [relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+          const [relHeritageRes, relArtifactsRes, relHistoryRes, relLevelsRes] = await Promise.all([
             (initialValues.relatedHeritageIds?.length ?? 0) > 0
               ? heritageService.getByIds(initialValues.relatedHeritageIds!)
               : Promise.resolve({success: true, data: []}),
@@ -65,6 +66,11 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
             (initialValues.relatedHistoryIds?.length ?? 0) > 0
               ? historyService.getAll({
                   ids: initialValues.relatedHistoryIds!.join(","),
+                })
+              : Promise.resolve({success: true, data: []}),
+            (initialValues.relatedLevelIds?.length ?? 0) > 0
+              ? adminLevelService.getAll({
+                  ids: initialValues.relatedLevelIds!.join(","),
                 })
               : Promise.resolve({success: true, data: []}),
           ]);
@@ -82,6 +88,10 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
             relatedHistoryIds: (initialValues.relatedHistoryIds || []).map((id: number) => {
               const item = relHistoryRes.data?.find((h: HistoryArticle) => h.id === id);
               return item ? {label: item.title, value: item.id} : {label: `ID: ${id}`, value: id};
+            }),
+            relatedLevelIds: (initialValues.relatedLevelIds || []).map((id: number) => {
+              const item = relLevelsRes.data?.find((l: any) => l.id === id);
+              return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
             }),
           };
 
@@ -106,6 +116,8 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
         rest.relatedArtifactIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedHistoryIds:
         rest.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedLevelIds:
+        rest.relatedLevelIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
 
     if (dates && Array.isArray(dates) && dates.length === 2 && !rest.isPermanent) {
@@ -129,6 +141,11 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
   const fetchHistoryList = async (search: string) => {
     const res = await historyService.getAll({q: search, limit: 10});
     return res.success && res.data ? res.data.map((h: HistoryArticle) => ({label: h.title, value: h.id})) : [];
+  };
+
+  const fetchLevelList = async (search: string) => {
+    const res = await adminLevelService.getAll({q: search, limit: 10});
+    return res.success && res.data ? res.data.map((l: any) => ({label: l.name, value: l.id})) : [];
   };
 
   return (
@@ -240,11 +257,20 @@ const ExhibitionForm: React.FC<ExhibitionFormProps> = ({
           />
         </Form.Item>
 
-        <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds" style={{marginBottom: 0}}>
+        <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds" style={{marginBottom: 12}}>
           <DebounceSelect
             mode="multiple"
             placeholder="Tìm bài viết..."
             fetchOptions={fetchHistoryList}
+            style={{width: "100%"}}
+          />
+        </Form.Item>
+
+        <Form.Item label="Màn chơi liên quan" name="relatedLevelIds" style={{marginBottom: 0}}>
+          <DebounceSelect
+            mode="multiple"
+            placeholder="Tìm màn chơi..."
+            fetchOptions={fetchLevelList}
             style={{width: "100%"}}
           />
         </Form.Item>

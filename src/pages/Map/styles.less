@@ -2,9 +2,10 @@
 @import "../Game/common.less";
 
 .map-page-container {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 56px); // Adjusted for ProLayout header height
   display: flex;
   flex-direction: column;
+  overflow: hidden; // Prevent double scrollbars
 
   .map-header-bar {
     padding: 12px 24px;
@@ -28,20 +29,23 @@
         color: @seal-red;
       }
 
-      .title-group {
-        h4 {
-          margin: 0;
-          font-family: var(--font-serif);
-          font-weight: 700;
-          color: @text-color-primary;
-          font-size: 18px;
+      .discovery-header {
+        h2 {
+          margin: 0 !important;
+          font-family: @font-serif !important;
+          font-weight: 800;
+          color: @seal-red;
+          font-size: 22px;
           line-height: 1.2;
+          letter-spacing: 0.5px;
         }
 
         .map-subtitle {
           color: @text-color-secondary;
-          font-size: 12px;
+          font-size: 13px;
           display: block;
+          font-family: @font-sans;
+          margin-top: -2px;
         }
       }
     }
@@ -273,6 +277,8 @@
       .game-btn-primary();
       height: 32px;
       font-size: 12px;
+      margin-top: 8px; // Added margin to ensure spacing
+      width: 100%;
     }
   }
 
@@ -341,4 +347,149 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
   }
+}
+
+.hunt-banner-wrapper {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  width: 95%;
+  max-width: 600px;
+  animation: mapSlideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  .hunt-banner {
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: white;
+    overflow: hidden;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      animation: mapShine 3s infinite;
+    }
+
+    .hunt-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .hunt-target-img {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 2px solid #faad14;
+        object-fit: cover;
+        box-shadow: 0 0 10px rgba(250, 173, 20, 0.4);
+      }
+
+      .hunt-text {
+        .target-label {
+          display: block;
+          font-size: 9px;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          color: #faad14;
+          font-weight: 700;
+          margin-bottom: 2px;
+        }
+        .target-name {
+          font-size: 16px;
+          font-weight: 700;
+          margin: 0;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          font-family: 'Playfair Display', serif;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 250px;
+        }
+      }
+    }
+
+    .hunt-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  }
+}
+
+// Radar Pulse using OverlayView
+.radar-pulse-overlay {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: rgba(250, 173, 20, 0.2);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    border: 2px solid #faad14;
+    animation: mapPulseExpand 2s infinite;
+  }
+}
+
+.scanning-visuals {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 4px solid #faad14;
+  border-radius: inherit;
+  pointer-events: none;
+  animation: mapBorderPulse 2s infinite;
+  z-index: 1001;
+}
+
+@keyframes mapPulseExpand {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+
+@keyframes mapBorderPulse {
+  0% { opacity: 0.2; border-width: 4px; }
+  50% { opacity: 0.6; border-width: 8px; }
+  100% { opacity: 0.2; border-width: 4px; }
+}
+
+@keyframes mapSlideDown {
+  0% { transform: translate(-50%, -100px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes mapShine {
+  0% { left: -100%; }
+  20% { left: 200%; }
+  100% { left: 200%; }
 }

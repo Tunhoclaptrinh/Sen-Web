@@ -1,4 +1,5 @@
 import {Tag, Tabs, Space, Tooltip} from "antd";
+import {useMemo} from "react";
 import {useAuth} from "@/hooks/useAuth";
 import {
   UndoOutlined,
@@ -66,6 +67,26 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
     updateFilters({[key]: value});
   };
 
+  // Dynamic filter options for artifact type
+  const dynamicArtifactTypeOptions = useMemo(() => {
+    const defaultTypes = Object.values(ArtifactType).map(type => ({
+      label: ArtifactTypeLabels[type],
+      value: type
+    }));
+    
+    // Get unique types from data that are NOT in the default enum
+    const customTypes = data
+      ? Array.from(new Set(data.map((item: any) => item.artifactType)))
+          .filter(type => type && !Object.values(ArtifactType).includes(type as ArtifactType))
+          .map(type => ({
+            label: type as string,
+            value: type
+          }))
+      : [];
+
+    return [...defaultTypes, ...customTypes];
+  }, [data]);
+
   const columns = [
     {
       title: "ID",
@@ -118,9 +139,9 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
       dataIndex: "artifactType",
       key: "artifactType",
       width: 150,
-      filters: Object.values(ArtifactType).map((type) => ({
-        text: ArtifactTypeLabels[type],
-        value: type,
+      filters: dynamicArtifactTypeOptions.map((opt: any) => ({
+        text: opt.label,
+        value: opt.value,
       })),
       filteredValue: filters.artifactType
         ? Array.isArray(filters.artifactType)
@@ -180,6 +201,12 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
       key: "historyCount",
       width: 100,
       render: (_: any, record: any) => <Tag color="purple">{(record.relatedHistoryIds || []).length} LS</Tag>,
+    },
+    {
+      title: "Màn chơi",
+      key: "levelsCount",
+      width: 100,
+      render: (_: any, record: any) => <Tag color="orange">{(record.relatedLevelIds || []).length} MC</Tag>,
     },
     {
       title: "Trạng thái",
@@ -290,10 +317,7 @@ const ArtifactManagement = ({initialFilters = {}}: {initialFilters?: any}) => {
           {
             key: "artifactType",
             placeholder: "Loại hình",
-            options: Object.values(ArtifactType).map((type) => ({
-              label: ArtifactTypeLabels[type],
-              value: type,
-            })),
+            options: dynamicArtifactTypeOptions,
           },
           {
             key: "categoryId",

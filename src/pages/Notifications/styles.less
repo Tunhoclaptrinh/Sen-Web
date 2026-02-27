@@ -1,0 +1,232 @@
+@import "../../pages/Game/common.less";
+
+.notifications-page-container {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 40px 100px 80px 40px; // Extra right padding for floating Sen character
+
+  .notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      
+      .icon-seal {
+        width: 48px;
+        height: 48px;
+        background: @seal-red;
+        border: 2px solid @seal-border;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 3px 3px 0 rgba(93, 64, 55, 0.2);
+        
+        .anticon {
+          font-size: 22px;
+          color: #fff9e6;
+        }
+      }
+      
+      .title-group {
+        h2 {
+          .game-title-style();
+          font-size: 1.8rem;
+          margin: 0;
+          line-height: 1.2;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        
+        .subtitle {
+          margin-top: 2px;
+          span {
+            .game-subtitle-style();
+            font-size: 0.95rem;
+            opacity: 0.8;
+          }
+        }
+        
+        .unread-badge {
+          .ant-badge-count {
+            background: @seal-red !important;
+            box-shadow: 0 0 0 1px @gold-border !important;
+            font-family: @font-sans !important;
+            height: 18px;
+            line-height: 18px;
+            min-width: 18px;
+            padding: 0 6px;
+          }
+        }
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      
+      .btn-heritage-ghost {
+        .game-btn-primary();
+        background: transparent;
+        color: @seal-red;
+        border-color: @seal-red;
+        box-shadow: none;
+        height: 40px;
+        font-size: 14px;
+        
+        &:hover {
+          background: rgba(139, 29, 29, 0.05);
+          color: @seal-red !important;
+        }
+      }
+      
+      .btn-heritage-danger {
+        .game-btn-primary();
+        background: #fff1f0;
+        color: #ff4d4f;
+        border-color: #ffa39e;
+        box-shadow: none;
+        height: 40px;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        
+        &:hover {
+          background: #ff4d4f;
+          color: white !important;
+        }
+      }
+    }
+  }
+
+  .notifications-main-card {
+    .game-card-style();
+    
+    .ant-tabs-nav {
+      margin-bottom: 0;
+      padding: 0 24px;
+      border-bottom: 1px dashed @gold-border;
+      
+      .ant-tabs-tab {
+        font-family: @font-serif;
+        font-weight: 700;
+        font-size: 16px;
+        
+        &-active .ant-tabs-tab-btn {
+          color: @seal-red !important;
+        }
+      }
+      
+      .ant-tabs-ink-bar {
+        background: @seal-red;
+      }
+    }
+
+    .loading-wrapper, .empty-wrapper {
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .notification-list-item {
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(197, 160, 101, 0.12);
+      transition: all 0.3s;
+      position: relative;
+      
+      &:hover {
+        background: rgba(197, 160, 101, 0.05) !important;
+      }
+      
+      &.unread {
+        background: rgba(139, 29, 29, 0.04);
+        
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 5px;
+          background: @seal-red;
+        }
+        
+        &::after {
+          content: "";
+          position: absolute;
+          left: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: @seal-red;
+          border: 1px solid white;
+          z-index: 2;
+        }
+      }
+
+      .item-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+        
+        span {
+          font-family: @font-serif;
+          font-size: 18px;
+          color: @text-color-primary;
+        }
+        
+        .time-text {
+          font-family: @font-sans;
+          font-size: 12px;
+          color: @text-color-secondary;
+          font-weight: 400;
+        }
+      }
+
+      .item-message {
+        font-family: @font-sans;
+        color: @text-color-secondary;
+        font-size: 14px;
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .notification-avatar {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        margin-left: 20px; // Spacing for unread indicator
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid @gold-border;
+        background: @paper-bg;
+        border-radius: 8px;
+      }
+
+      .mark-read-btn, .delete-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+        
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+  }
+}
