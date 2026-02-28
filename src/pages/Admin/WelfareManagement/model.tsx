@@ -1,13 +1,10 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { message, Modal, Input } from 'antd';
-import { useSearchParams } from 'react-router-dom';
+import { message, Modal } from 'antd';
 import { Voucher } from '@/types/welfare.types';
 import { adminWelfareService } from '@/services';
 import { useCRUD } from '@/hooks/useCRUD';
 
 export const useWelfareModel = (initialFilters: any = {}) => {
-  const [searchParams] = useSearchParams();
-
   // Stats State
   const [stats, setStats] = useState<any>(null);
   const [statsLoading, setStatsLoading] = useState(false);

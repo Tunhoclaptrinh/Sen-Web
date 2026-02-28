@@ -38,9 +38,7 @@ const MediaPicker = ({value, onChange}: {value?: string; onChange?: (val: string
         <ImageUpload 
           value={value} 
           onChange={(val) => {
-            const raw: any = Array.isArray(val) ? val[0] : val;
-            if (typeof raw === 'string') onChange?.(raw);
-            else if (typeof raw === 'object') onChange?.(raw?.url || raw?.response?.url || raw?.response?.data?.url || '');
+            onChange?.(Array.isArray(val) ? val[0] : val);
           }} 
           maxCount={1} 
         />

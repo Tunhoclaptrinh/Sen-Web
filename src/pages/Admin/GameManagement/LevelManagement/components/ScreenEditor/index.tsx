@@ -141,52 +141,8 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
       
       const submitValues = { ...values };
       
-      // Parse Screen Background Image
-      if (submitValues.backgroundImage) {
-          const raw = Array.isArray(submitValues.backgroundImage) ? submitValues.backgroundImage[0] : submitValues.backgroundImage;
-          if (typeof raw === 'string') submitValues.backgroundImage = raw;
-          else if (typeof raw === 'object') submitValues.backgroundImage = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
-      }
-      
-      // Parse Media/Timeline Image
-      if (submitValues.imageUrl) {
-          const raw = Array.isArray(submitValues.imageUrl) ? submitValues.imageUrl[0] : submitValues.imageUrl;
-          if (typeof raw === 'string') submitValues.imageUrl = raw;
-          else if (typeof raw === 'object') submitValues.imageUrl = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
-      }
-      
-      // Parse Hidden Object Items Images
-      if (type === SCREEN_TYPES.HIDDEN_OBJECT && submitValues.items?.length > 0) {
-          submitValues.items = submitValues.items.map((item: any) => {
-              if (item.image) {
-                  const raw = Array.isArray(item.image) ? item.image[0] : item.image;
-                  if (typeof raw === 'string') item.image = raw;
-                  else if (typeof raw === 'object') item.image = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
-              }
-              return item;
-          });
-      }
-      
-      // Parse Voiceover/Audio URL in content array for Dialogue/Interactive screens
-      if (submitValues.content && Array.isArray(submitValues.content)) {
-          submitValues.content = submitValues.content.map((item: any) => {
-              if (item.audioUrl) {
-                  const raw = Array.isArray(item.audioUrl) ? item.audioUrl[0] : item.audioUrl;
-                  if (typeof raw === 'string') item.audioUrl = raw;
-                  else if (typeof raw === 'object') item.audioUrl = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
-              }
-              return item;
-          });
-      }
-      
-      // Parse Screen backgroundMusic and audioUrl
-      ['backgroundMusic', 'audioUrl'].forEach(audioField => {
-          if (submitValues[audioField]) {
-              const raw = Array.isArray(submitValues[audioField]) ? submitValues[audioField][0] : submitValues[audioField];
-              if (typeof raw === 'string') submitValues[audioField] = raw;
-              else if (typeof raw === 'object') submitValues[audioField] = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
-          }
-      });
+
+
 
       if (screen) {
         // Update

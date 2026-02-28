@@ -48,11 +48,11 @@ interface ExchangeRate {
   minAmount: number;
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data?: T;
-}
+// interface ApiResponse<T> {
+//   success: boolean;
+//   message?: string;
+//   data?: T;
+// }
 
 interface ExchangeHistoryRecord {
   id: number | string;
@@ -184,7 +184,7 @@ const WelfareCenter: React.FC = () => {
   }, [selectedVoucher, fetchAllData]);
 
   const handleUseVoucher = useCallback(
-    async (userVoucherId: number) => {
+    async (_userVoucherId: number) => {
       Modal.confirm({
         title: 'Sử dụng Voucher',
         icon: <ExclamationCircleOutlined />,
@@ -193,22 +193,23 @@ const WelfareCenter: React.FC = () => {
         cancelText: 'Hủy',
         onOk: async () => {
           try {
-            const response = (await welfareService.useVoucher(
-              userVoucherId
-            )) as ApiResponse<unknown>;
-            if (response.success) {
-              message.success('Sử dụng voucher thành công!');
-              await fetchAllData();
-            } else {
-              message.error(response.message || 'Không thể sử dụng voucher');
-            }
+            message.info('Tính năng sử dụng Voucher đang được cập nhật...');
+            // const response = (await welfareService.useVoucher(
+            //   _userVoucherId
+            // )) as ApiResponse<unknown>;
+            // if (response.success) {
+            //   message.success('Sử dụng voucher thành công!');
+            //   await fetchAllData();
+            // } else {
+            //   message.error(response.message || 'Không thể sử dụng voucher');
+            // }
           } catch (_error) {
             message.error('Lỗi khi sử dụng voucher');
           }
         },
       });
     },
-    [fetchAllData]
+    []
   );
 
   // Balance panel with StatisticsCard

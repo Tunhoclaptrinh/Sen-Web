@@ -258,12 +258,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       locationInSite: values.locationInSite,
       historicalContext: values.historicalContext,
       culturalSignificance: values.culturalSignificance,
-      image: (() => {
-        const raw = Array.isArray(values.image) ? values.image[0] : values.image;
-        if (typeof raw === "string") return raw;
-        if (typeof raw === "object") return raw?.url || raw?.response?.url || raw?.response?.data?.url || "";
-        return raw || "";
-      })(),
+      image: values.image || "",
       gallery:
         values.gallery?.map((item: any) => {
           if (typeof item === "string") return item;
