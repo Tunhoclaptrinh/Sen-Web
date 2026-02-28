@@ -93,18 +93,27 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
       values.status = "pending";
     }
 
+    const submitValues = { ...values };
+
+    // Process Level Background Image
+    if (submitValues.backgroundImage) {
+      const raw = Array.isArray(submitValues.backgroundImage) ? submitValues.backgroundImage[0] : submitValues.backgroundImage;
+      if (typeof raw === 'string') submitValues.backgroundImage = raw;
+      else if (typeof raw === 'object') submitValues.backgroundImage = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+    }
+
     // Determine if it's an update or create based on ID in currentRecord
     const recordId = (currentRecord as any)?.id;
 
-    console.log("Submit Level:", {recordId, values, currentRecord});
+    console.log("Submit Level:", {recordId, values: submitValues, currentRecord});
 
     if (recordId) {
       // Update existing level
-      success = await crud.update(recordId, values);
+      success = await crud.update(recordId, submitValues);
     } else {
       // Create new level - add default screens
       // Ensure we don't accidentally send an ID field during creation
-      const {id: _, ...createData} = values;
+      const {id: _, ...createData} = submitValues;
 
       // Ensure status is set for create
       if (user?.role === "admin" && !createData.status) createData.status = "published";

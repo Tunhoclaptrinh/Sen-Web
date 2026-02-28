@@ -260,12 +260,15 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       culturalSignificance: values.culturalSignificance,
       image: (() => {
         const raw = Array.isArray(values.image) ? values.image[0] : values.image;
-        if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
+        if (typeof raw === "string") return raw;
+        if (typeof raw === "object") return raw?.url || raw?.response?.url || raw?.response?.data?.url || "";
         return raw || "";
       })(),
       gallery:
-        values.gallery?.map((item: any) => (typeof item === "object" ? item.url || item.response?.url || "" : item)) ||
-        [],
+        values.gallery?.map((item: any) => {
+          if (typeof item === "string") return item;
+          return typeof item === "object" ? item.url || item.response?.url || item.response?.data?.url || "" : item;
+        }) || [],
       shortDescription: values.shortDescription, // Sync for compatibility
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],

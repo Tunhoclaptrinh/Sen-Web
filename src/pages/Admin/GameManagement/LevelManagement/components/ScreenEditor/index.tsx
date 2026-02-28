@@ -138,10 +138,38 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
           return;
         }
       }
+      
+      const submitValues = { ...values };
+      
+      // Parse Screen Background Image
+      if (submitValues.backgroundImage) {
+          const raw = Array.isArray(submitValues.backgroundImage) ? submitValues.backgroundImage[0] : submitValues.backgroundImage;
+          if (typeof raw === 'string') submitValues.backgroundImage = raw;
+          else if (typeof raw === 'object') submitValues.backgroundImage = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+      }
+      
+      // Parse Media/Timeline Image
+      if (submitValues.imageUrl) {
+          const raw = Array.isArray(submitValues.imageUrl) ? submitValues.imageUrl[0] : submitValues.imageUrl;
+          if (typeof raw === 'string') submitValues.imageUrl = raw;
+          else if (typeof raw === 'object') submitValues.imageUrl = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+      }
+      
+      // Parse Hidden Object Items Images
+      if (type === SCREEN_TYPES.HIDDEN_OBJECT && submitValues.items?.length > 0) {
+          submitValues.items = submitValues.items.map((item: any) => {
+              if (item.image) {
+                  const raw = Array.isArray(item.image) ? item.image[0] : item.image;
+                  if (typeof raw === 'string') item.image = raw;
+                  else if (typeof raw === 'object') item.image = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+              }
+              return item;
+          });
+      }
 
       if (screen) {
         // Update
-        const res = await adminScreenService.updateScreen(levelId, screen.id, values);
+        const res = await adminScreenService.updateScreen(levelId, screen.id, submitValues);
         if (res.success) {
           message.success("Cập nhật màn chơi thành công");
           onSuccess();
@@ -150,7 +178,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
         }
       } else {
         // Create
-        const res = await adminScreenService.addScreen(levelId, values);
+        const res = await adminScreenService.addScreen(levelId, submitValues);
         if (res.success) {
            message.success("Thêm màn chơi thành công");
            onSuccess();

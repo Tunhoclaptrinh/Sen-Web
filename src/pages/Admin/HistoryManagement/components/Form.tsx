@@ -176,12 +176,15 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       publishDate: values.publishDate?.toISOString(),
       image: (() => {
         const raw = Array.isArray(values.image) ? values.image[0] : values.image;
-        if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
+        if (typeof raw === "string") return raw;
+        if (typeof raw === "object") return raw?.url || raw?.response?.url || raw?.response?.data?.url || "";
         return raw || "";
       })(),
       gallery:
-        values.gallery?.map((item: any) => (typeof item === "object" ? item.url || item.response?.url || "" : item)) ||
-        [],
+        values.gallery?.map((item: any) => {
+          if (typeof item === "string") return item;
+          return typeof item === "object" ? item.url || item.response?.url || item.response?.data?.url || "" : item;
+        }) || [],
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedArtifactIds:
