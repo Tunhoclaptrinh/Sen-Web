@@ -365,8 +365,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
                 style={{width: "100%"}}
                 min={0}
                 placeholder="0"
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                addonBefore="🌸"
+                formatter={(value) => `${value || ""}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
               />
             </Form.Item>
           </Col>
@@ -376,8 +375,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
                 style={{width: "100%"}}
                 min={0}
                 placeholder="0"
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                addonBefore="🪙"
+                formatter={(value) => `${value || ""}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
               />
             </Form.Item>
           </Col>
