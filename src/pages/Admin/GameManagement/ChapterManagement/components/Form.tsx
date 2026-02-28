@@ -35,7 +35,13 @@ const MediaPicker = ({value, onChange}: {value?: string; onChange?: (val: string
         </Radio.Group>
       </div>
       {mode === "upload" ? (
-        <ImageUpload value={value} onChange={(val) => onChange?.(Array.isArray(val) ? val[0] : val)} maxCount={1} />
+        <ImageUpload 
+          value={value} 
+          onChange={(val) => {
+            onChange?.(Array.isArray(val) ? val[0] : val);
+          }} 
+          maxCount={1} 
+        />
       ) : (
         <Input value={value} onChange={(e) => onChange?.(e.target.value)} placeholder="https://example.com/image.png" />
       )}

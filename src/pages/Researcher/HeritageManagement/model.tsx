@@ -68,7 +68,7 @@ export const useResearcherHeritageModel = () => {
           : typeof values.image === "string"
             ? values.image
             : "",
-      gallery: values.gallery?.map((img: any) => img.url || img.response?.url || img) || [],
+      gallery: values.gallery || [],
       // Auto set createdBy if new
       createdBy: user?.id,
     };

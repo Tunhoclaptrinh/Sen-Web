@@ -65,6 +65,7 @@ const ResearcherChapterManagement = lazy(() => import("@/pages/Researcher/Chapte
 const ResearcherLevelManagement = lazy(() => import("@/pages/Researcher/LevelManagement"));
 const ResearcherLearningManagement = lazy(() => import("@/pages/Researcher/LearningManagement"));
 const NotificationManagement = lazy(() => import("@/pages/Admin/NotificationManagement"));
+const WelfareManagement = lazy(() => import("@/pages/Admin/WelfareManagement"));
 
 // Game Pages
 const ChaptersPage = lazy(() => import("@/pages/Game/ChaptersPage"));
@@ -78,6 +79,7 @@ const LearningPathPage = lazy(() => import("@/pages/Game/LearningPathPage"));
 const GameDashboard = lazy(() => import("@/pages/Game/DashboardPage"));
 const MapPage = lazy(() => import("@/pages/Map"));
 const ScanPage = lazy(() => import("@/pages/Game/ScanPage"));
+const WelfarePage = lazy(() => import("@/pages/Game/WelfarePage"));
 
 // Wrapper component for Suspense
 const LazyLoadWrapper: React.FC<{children: React.ReactNode}> = ({children}) => (
@@ -248,6 +250,10 @@ const routes: RouteObject[] = [
             <LearningPathPage />
           </LazyLoadWrapper>
         ),
+      },
+      {
+        path: "welfare",
+        element: <WelfarePage />,
       },
       {
         path: "map",
@@ -450,6 +456,10 @@ const routes: RouteObject[] = [
       {
         path: "notifications",
         element: <NotificationManagement />,
+      },
+      {
+        path: "welfare",
+        element: <WelfareManagement />,
       },
     ],
   },

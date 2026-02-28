@@ -50,10 +50,14 @@ export const useShopModel = () => {
 
     const handleSubmit = async (values: any) => {
         let success = false;
+        
+        const submitValues = { ...values };
+
+
         if (currentRecord) {
-            success = await crud.update(currentRecord.id, values);
+            success = await crud.update(currentRecord.id, submitValues);
         } else {
-            success = await crud.create(values);
+            success = await crud.create(submitValues);
         }
 
         if (success) {

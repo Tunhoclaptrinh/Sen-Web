@@ -258,14 +258,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       locationInSite: values.locationInSite,
       historicalContext: values.historicalContext,
       culturalSignificance: values.culturalSignificance,
-      image: (() => {
-        const raw = Array.isArray(values.image) ? values.image[0] : values.image;
-        if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
-        return raw || "";
-      })(),
-      gallery:
-        values.gallery?.map((item: any) => (typeof item === "object" ? item.url || item.response?.url || "" : item)) ||
-        [],
+      image: values.image || "",
+      gallery: values.gallery || [],
       shortDescription: values.shortDescription, // Sync for compatibility
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],

@@ -351,15 +351,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         Object.keys(HeritageRegionLabels).find(
           (key) => HeritageRegionLabels[key as HeritageRegion] === values.region,
         ) || values.region,
-      image: (() => {
-        const raw = Array.isArray(values.image) ? values.image[0] : values.image;
-        if (typeof raw === "object") return raw?.url || raw?.response?.url || "";
-        return raw || "";
-      })(),
-      gallery:
-        values.gallery?.map((item: string | {url?: string; response?: {url: string}}) =>
-          typeof item === "object" ? item.url || item.response?.url || "" : item,
-        ) || [],
+      image: values.image || "",
+      gallery: values.gallery || [],
       timeline: values.timeline || [],
       relatedArtifactIds:
         values.relatedArtifactIds?.map((item: number | {value: number}) =>
@@ -720,8 +713,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     <Form.Item name="entranceFee" label="Giá vé">
                       <InputNumber
                         style={{width: "100%"}}
-                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                        parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
+                        formatter={(value) => `${value || ""}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        parser={(value) => value ? value.replace(/\$\s?|(,*)/g, "") : ""}
                       />
                     </Form.Item>
                   </Col>

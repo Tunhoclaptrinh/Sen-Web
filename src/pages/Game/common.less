@@ -21,6 +21,24 @@
 .game-page-background() {
   background-color: #f4efe4; // Nền tổng thể màu kem ấm
   min-height: 100vh;
+  position: relative;
+
+  // Pattern "Chấm bi" (Dotted pattern)
+  &::before {
+    content: ".";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, @gold-border 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  // Ensure children are above the pattern
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .game-card-style() {

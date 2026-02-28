@@ -39,7 +39,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const rawUrls = Array.isArray(value) ? value : value ? [value] : [];
     const urls = rawUrls.filter(url => typeof url === 'string' && !url.includes('fakepath'));
     const apiBase =
-      import.meta.env.VITE_API_BASE_URL;
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
     const apiHost = apiBase.replace(/\/api$/, "");
 
     const newFileList: UploadFile[] = urls.map((url, index) => ({

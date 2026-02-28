@@ -104,10 +104,10 @@ const Home: React.FC = () => {
               <button className="action-btn light-green-btn" onClick={() => navigate("/heritage-sites")}>
                 Di sản văn hóa
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts/browse")}>
+              <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts")}>
                 Hiện vật
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/learn")}>
+              <button className="action-btn light-green-btn" onClick={() => navigate("/game/learning")}>
                 Học tập
               </button>
             </div>
@@ -117,6 +117,7 @@ const Home: React.FC = () => {
 
       {/* 2.5 Heritage Space (Map & Leaderboard) */}
       <div className="heritage-space-block">
+        <div className="dot-pattern-overlay" />
         <div className="heritage-pattern-overlay" />
         <HomeMapSection />
         <HomeLeaderboardSection />
@@ -187,7 +188,7 @@ const Home: React.FC = () => {
           <Row gutter={[48, 0]} align="stretch" className="game-container">
             <Col xs={24} lg={14}>
               <div className="game-image-wrapper">
-                <img src="/images/Game.png" alt="Game World" />
+                <img src="/images/MapGame.png" alt="Game World" />
                 <div className="image-overlay-glow" />
               </div>
             </Col>

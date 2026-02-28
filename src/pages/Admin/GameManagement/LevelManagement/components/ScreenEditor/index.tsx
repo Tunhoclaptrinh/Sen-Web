@@ -138,10 +138,15 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
           return;
         }
       }
+      
+      const submitValues = { ...values };
+      
+
+
 
       if (screen) {
         // Update
-        const res = await adminScreenService.updateScreen(levelId, screen.id, values);
+        const res = await adminScreenService.updateScreen(levelId, screen.id, submitValues);
         if (res.success) {
           message.success("Cập nhật màn chơi thành công");
           onSuccess();
@@ -150,7 +155,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
         }
       } else {
         // Create
-        const res = await adminScreenService.addScreen(levelId, values);
+        const res = await adminScreenService.addScreen(levelId, submitValues);
         if (res.success) {
            message.success("Thêm màn chơi thành công");
            onSuccess();
