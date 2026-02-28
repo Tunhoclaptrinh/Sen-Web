@@ -102,6 +102,13 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
       else if (typeof raw === 'object') submitValues.backgroundImage = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
     }
 
+    // Process Level Background Music
+    if (submitValues.backgroundMusic) {
+      const raw = Array.isArray(submitValues.backgroundMusic) ? submitValues.backgroundMusic[0] : submitValues.backgroundMusic;
+      if (typeof raw === 'string') submitValues.backgroundMusic = raw;
+      else if (typeof raw === 'object') submitValues.backgroundMusic = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+    }
+
     // Determine if it's an update or create based on ID in currentRecord
     const recordId = (currentRecord as any)?.id;
 

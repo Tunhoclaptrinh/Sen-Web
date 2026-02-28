@@ -166,6 +166,27 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
               return item;
           });
       }
+      
+      // Parse Voiceover/Audio URL in content array for Dialogue/Interactive screens
+      if (submitValues.content && Array.isArray(submitValues.content)) {
+          submitValues.content = submitValues.content.map((item: any) => {
+              if (item.audioUrl) {
+                  const raw = Array.isArray(item.audioUrl) ? item.audioUrl[0] : item.audioUrl;
+                  if (typeof raw === 'string') item.audioUrl = raw;
+                  else if (typeof raw === 'object') item.audioUrl = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+              }
+              return item;
+          });
+      }
+      
+      // Parse Screen backgroundMusic and audioUrl
+      ['backgroundMusic', 'audioUrl'].forEach(audioField => {
+          if (submitValues[audioField]) {
+              const raw = Array.isArray(submitValues[audioField]) ? submitValues[audioField][0] : submitValues[audioField];
+              if (typeof raw === 'string') submitValues[audioField] = raw;
+              else if (typeof raw === 'object') submitValues[audioField] = raw?.url || raw?.response?.url || raw?.response?.data?.url || '';
+          }
+      });
 
       if (screen) {
         // Update
