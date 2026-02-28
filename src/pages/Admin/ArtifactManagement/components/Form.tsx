@@ -259,11 +259,7 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
       historicalContext: values.historicalContext,
       culturalSignificance: values.culturalSignificance,
       image: values.image || "",
-      gallery:
-        values.gallery?.map((item: any) => {
-          if (typeof item === "string") return item;
-          return typeof item === "object" ? item.url || item.response?.url || item.response?.data?.url || "" : item;
-        }) || [],
+      gallery: values.gallery || [],
       shortDescription: values.shortDescription, // Sync for compatibility
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],

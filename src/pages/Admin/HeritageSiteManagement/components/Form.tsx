@@ -352,11 +352,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           (key) => HeritageRegionLabels[key as HeritageRegion] === values.region,
         ) || values.region,
       image: values.image || "",
-      gallery:
-        values.gallery?.map((item: any) => {
-          if (typeof item === "string") return item;
-          return typeof item === "object" ? item.url || item.response?.url || item.response?.data?.url || "" : item;
-        }) || [],
+      gallery: values.gallery || [],
       timeline: values.timeline || [],
       relatedArtifactIds:
         values.relatedArtifactIds?.map((item: number | {value: number}) =>
