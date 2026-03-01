@@ -96,7 +96,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
             <Tooltip title="Bộ sưu tập" placement="left">
               <button
                 className="quick-action-btn quick-action-btn--collection"
-                onClick={() => navigate("/collections")}
+                onClick={() => navigate("/profile/library")}
               >
                 <BookOutlined />
               </button>

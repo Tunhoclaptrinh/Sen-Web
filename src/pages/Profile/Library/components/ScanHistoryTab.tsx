@@ -100,7 +100,7 @@ const ScanHistoryTab: React.FC = () => {
             key: 'rewards',
             render: (_: any, record: any) => (
                 <Space direction="vertical" size={2}>
-                    {record.rewards.length > 0 ? (
+                    {record.rewards && record.rewards.length > 0 ? (
                         record.rewards.map((reward: any, idx: number) => (
                             <Tag key={idx} color={reward.currency === 'coins' ? 'orange' : 'magenta'} style={{ borderRadius: 12 }}>
                                 {reward.currency === 'coins' ? '🪙' : '🌸'} +{reward.amount} {reward.currency === 'coins' ? 'Xu' : 'Cánh Sen'}

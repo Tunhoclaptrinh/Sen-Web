@@ -49,7 +49,7 @@ const CustomerLayout: React.FC = () => {
       key: "collections",
       icon: <BookOutlined />,
       label: "Bộ sưu tập",
-      onClick: () => navigate("/collections"),
+      onClick: () => navigate("/profile/library"),
     },
     {
       type: "divider",

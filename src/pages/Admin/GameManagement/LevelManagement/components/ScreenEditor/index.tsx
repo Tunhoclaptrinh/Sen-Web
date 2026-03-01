@@ -138,12 +138,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
           return;
         }
       }
-      
       const submitValues = { ...values };
-      
-
-
-
       if (screen) {
         // Update
         const res = await adminScreenService.updateScreen(levelId, screen.id, submitValues);
