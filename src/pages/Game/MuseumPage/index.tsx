@@ -177,7 +177,7 @@ const MuseumPage: React.FC = () => {
                     text = "ĐỒNG HÀNH";
                   } else if (item.type === "inventory") {
                     // Map shop types
-                      const shopType = item.original?.type;
+                      const shopType = item.original?.type || "";
                       if (["consumable_hint", "hint"].includes(shopType)) {
                         color = "blue";
                         text = "GỢI Ý";
@@ -397,7 +397,7 @@ const MuseumPage: React.FC = () => {
                     color = "magenta";
                     text = "ĐỒNG HÀNH";
                   } else if (selectedItem.type === "inventory") {
-                      const shopType = selectedItem.original?.type;
+                      const shopType = selectedItem.original?.type || "";
                       if (["consumable_hint", "hint"].includes(shopType)) {
                         color = "blue";
                         text = "GỢI Ý";

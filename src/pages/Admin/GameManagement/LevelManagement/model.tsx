@@ -92,11 +92,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     } else if (user?.role === "researcher" && !values.status) {
       values.status = "pending";
     }
-
     const submitValues = { ...values };
-
-
-
     // Determine if it's an update or create based on ID in currentRecord
     const recordId = (currentRecord as any)?.id;
 

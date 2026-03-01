@@ -650,7 +650,7 @@ const LearningDetail: React.FC = () => {
                         </div>
 
                         <div style={{padding: "24px 32px"}}>
-                          {module.quiz.questions.map((q, idx) => (
+                          {module.quiz?.questions?.map((q, idx) => (
                             <div key={q.id || idx} style={{marginBottom: 24}}>
                               <div style={{marginBottom: 12}}>
                                 <span
@@ -687,7 +687,7 @@ const LearningDetail: React.FC = () => {
                                 style={{width: "100%"}}
                               >
                                 <Row gutter={[12, 12]}>
-                                  {q.options.map((opt, optIdx) => (
+                                  {q.options?.map((opt, optIdx) => (
                                     <Col xs={24} key={optIdx}>
                                       <Radio
                                         value={optIdx}

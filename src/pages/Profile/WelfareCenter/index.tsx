@@ -240,7 +240,7 @@ const WelfareCenter: React.FC = () => {
         },
         {
           title: 'Voucher Khả Dụng',
-          value: vouchers.filter((v: Voucher) => v.isActive).length,
+          value: (vouchers || []).filter((v: Voucher) => v.isActive).length,
           icon: <TeamOutlined />,
           valueColor: '#52c41a',
         },
@@ -251,7 +251,7 @@ const WelfareCenter: React.FC = () => {
   // Available Vouchers Tab
   const renderAvailableVouchersTab = () => (
     <Spin spinning={loading}>
-      {vouchers.length === 0 ? (
+      {(!vouchers || vouchers.length === 0) ? (
         <Empty description="Không có voucher khả dụng" />
       ) : (
         <Row gutter={[16, 16]}>
@@ -424,7 +424,7 @@ const WelfareCenter: React.FC = () => {
 
     return (
       <Spin spinning={loading}>
-        {userVouchers.length === 0 ? (
+        {(!userVouchers || userVouchers.length === 0) ? (
           <Empty description="Bạn chưa có voucher nào" />
         ) : (
           <Table
@@ -477,7 +477,7 @@ const WelfareCenter: React.FC = () => {
 
     return (
       <Spin spinning={loading}>
-        {_exchangeHistory.length === 0 ? (
+        {(!_exchangeHistory || _exchangeHistory.length === 0) ? (
           <Empty description="Chưa có lịch sử giao dịch" />
         ) : (
           <Table
@@ -529,12 +529,12 @@ const WelfareCenter: React.FC = () => {
           items={[
             {
               key: 'available',
-              label: `📦 Voucher Khả Dụng (${vouchers.length})`,
+              label: `📦 Voucher Khả Dụng (${vouchers?.length || 0})`,
               children: renderAvailableVouchersTab(),
             },
             {
               key: 'my-vouchers',
-              label: `🎁 Voucher Của Tôi (${userVouchers.length})`,
+              label: `🎁 Voucher Của Tôi (${userVouchers?.length || 0})`,
               children: renderMyVouchersTab(),
             },
             {

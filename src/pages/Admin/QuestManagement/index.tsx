@@ -20,7 +20,7 @@ const QuestManagement: React.FC = () => {
       dataIndex: "type",
       key: "type",
       render: (type: string) => {
-        const colors: any = {
+        const colors: Record<string, string> = {
           daily: "cyan",
           main: "gold",
           achievement: "purple",
@@ -31,12 +31,16 @@ const QuestManagement: React.FC = () => {
     {
       title: "Phần thưởng",
       key: "rewards",
-      render: (_: any, record: any) => (
-        <Space>
-          {record.rewards?.coins && <Tag color="gold">{record.rewards.coins} Xu</Tag>}
-          {record.rewards?.experience && <Tag color="blue">{record.rewards.experience} Exp</Tag>}
-        </Space>
-      ),
+      render: (_: unknown, record: Record<string, any>) => {
+        const reward = Array.isArray(record.rewards) ? record.rewards[0] : record.rewards;
+        return (
+          <Space>
+            {reward?.coins && <Tag color="gold">{reward.coins} Xu</Tag>}
+            {reward?.experience && <Tag color="blue">{reward.experience} Exp</Tag>}
+            {reward?.petals && <Tag color="pink">{reward.petals} Hoa</Tag>}
+          </Space>
+        );
+      },
     },
     {
       title: "Trạng thái",
@@ -73,8 +77,21 @@ const QuestManagement: React.FC = () => {
       >
         <Form
           layout="vertical"
-          initialValues={model.currentRecord || {type: "daily", isActive: true}}
-          onFinish={model.handleSubmit}
+          initialValues={{
+            ...model.currentRecord,
+            type: model.currentRecord?.type || "daily",
+            isActive: model.currentRecord?.isActive ?? true,
+            rewards: Array.isArray(model.currentRecord?.rewards) ? model.currentRecord.rewards[0] : model.currentRecord?.rewards,
+            requirements: Array.isArray(model.currentRecord?.requirements) ? model.currentRecord.requirements[0] : model.currentRecord?.requirements
+          }}
+          onFinish={(values) => {
+            const formattedValues = {
+              ...values,
+              rewards: values.rewards ? [values.rewards] : [],
+              requirements: values.requirements ? [values.requirements] : [] // Simplistic mapping, real app might have dynamic lists
+            };
+            model.handleSubmit(formattedValues);
+          }}
         >
           <Form.Item
             name="title"
