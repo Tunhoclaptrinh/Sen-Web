@@ -45,7 +45,6 @@ const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
           const audioUrl = getImageUrl(
             currentDialogue.audio || (currentDialogue as any).audioUrl || (currentDialogue as any).url,
           );
-          console.log("Playing dialogue audio:", audioUrl);
           audioRef.current = new Audio(audioUrl);
           audioRef.current.play().catch((e) => {
             console.warn("Audio play failed (interaction required or invalid file):", e);

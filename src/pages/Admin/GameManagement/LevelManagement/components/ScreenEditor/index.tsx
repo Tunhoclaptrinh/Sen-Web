@@ -221,8 +221,7 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
                                     .then(values => {
                                         handleSubmit(values);
                                     })
-                                    .catch(info => {
-                                        console.log('Validate Failed:', info);
+                                    .catch(() => {
                                     });
                             }}
                             loading={loading}

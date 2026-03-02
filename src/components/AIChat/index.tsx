@@ -573,7 +573,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     // 🎭 Restore emotion từ message khi replay
     const message = chatHistory.find(m => m.id === messageId);
     if (message?.emotion) {
-      console.log('🎭 Restoring emotion for replay:', message.emotion);
       dispatch(updateSenSettings({
         gesture: (message.emotion.gesture || 'normal') as 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back',
         mouthState: (message.emotion.mouthState || 'smile') as 'smile' | 'smile_2' | 'sad' | 'open' | 'close' | 'half' | 'tongue' | 'angry',
@@ -760,7 +759,6 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     if ((!input.trim() && !selectedFile) || loading || !currentCharacter) return;
 
     if (selectedFile) {
-        // console.log("Sending file:", selectedFile.name);
         // Implement upload logic here later
     }
 

@@ -84,8 +84,7 @@ const WelfareManagement: React.FC = () => {
     });
   };
 
-  const onFinish = (values: any) => {
-    console.log('Final values:', values);
+  const onFinish = () => {
     
     if (editingId) {
       message.success('Cập nhật voucher thành công');

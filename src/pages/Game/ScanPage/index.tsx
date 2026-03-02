@@ -22,7 +22,6 @@ const ScanPage: React.FC = () => {
     setProcessing(true);
 
     try {
-      console.log("Scanned:", decodedText);
 
       // Check if it's a Check-in code
       if (decodedText.startsWith("CHECKIN_")) {
