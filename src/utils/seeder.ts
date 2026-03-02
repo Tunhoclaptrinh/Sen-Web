@@ -154,11 +154,9 @@ export const seedData = async () => {
            const searchRes = await artifactService.getAll({ q: art.name });
            const existing = searchRes.data && searchRes.data.find(a => a.name === art.name);
 
-           if (existing) {
-               console.log(`Updating existing artifact: ${art.name}`);
+           if (existing) {  
                await artifactService.update(existing.id, art as any);
            } else {
-               console.log(`Creating new artifact: ${art.name}`);
                await artifactService.create(art as any);
            }
        } catch (err) {
@@ -174,10 +172,8 @@ export const seedData = async () => {
             const existing = searchRes.data && searchRes.data.find(s => s.name === site.name);
             
             if (existing) {
-                console.log(`Updating existing heritage site: ${site.name}`);
                 await heritageService.update(existing.id, site as any);
             } else {
-                 console.log(`Creating new heritage site: ${site.name}`);
                 await heritageService.create(site as any);
             }
         } catch (err) {

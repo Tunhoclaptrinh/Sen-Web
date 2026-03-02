@@ -96,8 +96,6 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     // Determine if it's an update or create based on ID in currentRecord
     const recordId = (currentRecord as any)?.id;
 
-    console.log("Submit Level:", {recordId, values: submitValues, currentRecord});
-
     if (recordId) {
       // Update existing level
       success = await crud.update(recordId, submitValues);

@@ -117,8 +117,6 @@ const LevelManagement = ({
     setSimulatorBgm(level.backgroundMusic);
 
     try {
-      // ALWAYS Fetch fresh screens for the level
-      console.log("Fetching fresh screens for simulator...");
       const res = await adminScreenService.getScreens(level.id);
       const screens = Array.isArray(res.data) ? res.data : res.data?.items || [];
 

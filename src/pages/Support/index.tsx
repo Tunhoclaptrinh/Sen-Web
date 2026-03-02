@@ -9,11 +9,9 @@ const {Panel} = Collapse;
 const SupportPage: React.FC = () => {
   const [form] = Form.useForm();
 
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
+  const onFinish = () => {
     // TODO: Implement contact form submission logic
     form.resetFields();
-    // Could show a success message here
   };
 
   const faqData = [
