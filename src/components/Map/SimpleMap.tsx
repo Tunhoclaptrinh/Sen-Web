@@ -72,12 +72,9 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
 
   // Failsafe Global Navigation Bridge
   useEffect(() => {
-    console.log("!!! SEN_NAVIGATE BRIDGE INITIALIZING !!!");
     
     (window as any).SEN_NAVIGATE = (id: string, type: string) => {
-      console.log(`!!! [SEN_NAVIGATE] EXECUTING !!! id=${id}, type=${type}`);
       if (!id || id === 'undefined') {
-        console.error("!!! [SEN_NAVIGATE] ERROR: ID is missing or undefined !!!");
         return;
       }
       if (type === ITEM_TYPES.ARTIFACT) {
@@ -88,7 +85,6 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
     };
 
     (window as any).SEN_HUNT = (id: string) => {
-      console.log(`!!! [SEN_HUNT] EXECUTING !!! id=${id}`);
       const art = artifacts.find(a => a.id === Number(id));
       if (art && onHunt) {
         onHunt(art);
@@ -99,14 +95,12 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       // Broad log for debugging what's blocking clicks
-      console.log("!!! RAW DOCUMENT CLICK !!!", target);
       
       const btn = target.closest(".view-details-btn") as HTMLElement;
       if (btn) {
         e.stopPropagation();
         const id = btn.getAttribute("data-id");
         const type = btn.getAttribute("data-type");
-        console.log("!!! DETECTED CLICK ON VIEW-DETAILS-BTN !!!", { id, type });
         if (id && (window as any).SEN_NAVIGATE) {
           (window as any).SEN_NAVIGATE(id, type);
         }
@@ -116,7 +110,6 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
       if (huntBtn) {
         e.stopPropagation();
         const id = huntBtn.getAttribute("data-id");
-        console.log("!!! DETECTED CLICK ON HUNT-NOW-BTN !!!", { id });
         if (id && (window as any).SEN_HUNT) {
           (window as any).SEN_HUNT(id);
         }
@@ -176,7 +169,6 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
         },
         formatter: function (this: any) {
           const p = this.point;
-          console.log("!!! FORMATTER POINT DATA !!!", { id: p.id, type: p.type, name: p.name });
           if (p.isLabel || p.series.type === "map" || p.series.name === "World" || p.series.name === "Vietnam") return false;
 
           const image = p.image || p.thumbnail || p.mainImage || "";

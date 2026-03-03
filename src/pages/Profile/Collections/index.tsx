@@ -57,7 +57,7 @@ const Collections = () => {
     }
   };
 
-  if (loading && items.length === 0) {
+  if (loading && (!items || items.length === 0)) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
         <Spin size="large" />
@@ -85,7 +85,7 @@ const Collections = () => {
 
       {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
 
-      {items.length === 0 ? (
+      {(!items || items.length === 0) ? (
         <Empty description="Bạn chưa có bộ sưu tập nào" />
       ) : (
         <List

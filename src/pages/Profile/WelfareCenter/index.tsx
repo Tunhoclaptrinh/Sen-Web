@@ -48,11 +48,11 @@ interface ExchangeRate {
   minAmount: number;
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data?: T;
-}
+// interface ApiResponse<T> {
+//   success: boolean;
+//   message?: string;
+//   data?: T;
+// }
 
 interface ExchangeHistoryRecord {
   id: number | string;
@@ -184,7 +184,7 @@ const WelfareCenter: React.FC = () => {
   }, [selectedVoucher, fetchAllData]);
 
   const handleUseVoucher = useCallback(
-    async (userVoucherId: number) => {
+    async (_userVoucherId: number) => {
       Modal.confirm({
         title: 'Sử dụng Voucher',
         icon: <ExclamationCircleOutlined />,
@@ -193,22 +193,23 @@ const WelfareCenter: React.FC = () => {
         cancelText: 'Hủy',
         onOk: async () => {
           try {
-            const response = (await welfareService.useVoucher(
-              userVoucherId
-            )) as ApiResponse<unknown>;
-            if (response.success) {
-              message.success('Sử dụng voucher thành công!');
-              await fetchAllData();
-            } else {
-              message.error(response.message || 'Không thể sử dụng voucher');
-            }
+            message.info('Tính năng sử dụng Voucher đang được cập nhật...');
+            // const response = (await welfareService.useVoucher(
+            //   _userVoucherId
+            // )) as ApiResponse<unknown>;
+            // if (response.success) {
+            //   message.success('Sử dụng voucher thành công!');
+            //   await fetchAllData();
+            // } else {
+            //   message.error(response.message || 'Không thể sử dụng voucher');
+            // }
           } catch (_error) {
             message.error('Lỗi khi sử dụng voucher');
           }
         },
       });
     },
-    [fetchAllData]
+    []
   );
 
   // Balance panel with StatisticsCard
@@ -239,7 +240,7 @@ const WelfareCenter: React.FC = () => {
         },
         {
           title: 'Voucher Khả Dụng',
-          value: vouchers.filter((v: Voucher) => v.isActive).length,
+          value: (vouchers || []).filter((v: Voucher) => v.isActive).length,
           icon: <TeamOutlined />,
           valueColor: '#52c41a',
         },
@@ -250,7 +251,7 @@ const WelfareCenter: React.FC = () => {
   // Available Vouchers Tab
   const renderAvailableVouchersTab = () => (
     <Spin spinning={loading}>
-      {vouchers.length === 0 ? (
+      {(!vouchers || vouchers.length === 0) ? (
         <Empty description="Không có voucher khả dụng" />
       ) : (
         <Row gutter={[16, 16]}>
@@ -423,7 +424,7 @@ const WelfareCenter: React.FC = () => {
 
     return (
       <Spin spinning={loading}>
-        {userVouchers.length === 0 ? (
+        {(!userVouchers || userVouchers.length === 0) ? (
           <Empty description="Bạn chưa có voucher nào" />
         ) : (
           <Table
@@ -476,7 +477,7 @@ const WelfareCenter: React.FC = () => {
 
     return (
       <Spin spinning={loading}>
-        {_exchangeHistory.length === 0 ? (
+        {(!_exchangeHistory || _exchangeHistory.length === 0) ? (
           <Empty description="Chưa có lịch sử giao dịch" />
         ) : (
           <Table
@@ -528,12 +529,12 @@ const WelfareCenter: React.FC = () => {
           items={[
             {
               key: 'available',
-              label: `📦 Voucher Khả Dụng (${vouchers.length})`,
+              label: `📦 Voucher Khả Dụng (${vouchers?.length || 0})`,
               children: renderAvailableVouchersTab(),
             },
             {
               key: 'my-vouchers',
-              label: `🎁 Voucher Của Tôi (${userVouchers.length})`,
+              label: `🎁 Voucher Của Tôi (${userVouchers?.length || 0})`,
               children: renderMyVouchersTab(),
             },
             {

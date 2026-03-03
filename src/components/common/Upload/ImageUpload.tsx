@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Upload, message, Modal } from "antd";
-import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Upload, message, Modal, Input, Button } from "antd";
+import { PlusOutlined, LoadingOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
 interface ImageUploadProps {
-  value?: string | string[]; // URL string or array of URL strings
+  value?: string | string[];
   onChange?: (value: string | string[]) => void;
-  maxCount?: number; // 1 for single image, >1 for gallery
-  folder?: string; // Optional, though we default to generic upload
+  maxCount?: number;
+  folder?: string;
 }
 
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -26,20 +26,31 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  // Sync fileList with value prop
+  // For single image: toggle between URL input and file upload
+  const [mode, setMode] = useState<"url" | "upload">(() => {
+    const url = Array.isArray(value) ? value[0] : value;
+    // If it's a relative path (uploaded locally), use upload mode; otherwise URL mode
+    return url && !url.startsWith("http") && url.startsWith("/") ? "upload" : "url";
+  });
+
+  // For gallery: show/hide URL input row
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+
+  // Sync fileList with value prop (only in upload/gallery mode)
   React.useEffect(() => {
-    // If we have any file currently uploading, do not override from props
-    // to prevent the UI from flickering or resetting the progress.
+    if (maxCount === 1 && mode === "url") return;
+
     const isUploading = fileList.some((file) => file.status === "uploading");
     if (isUploading) return;
 
     const rawUrls = Array.isArray(value) ? value : value ? [value] : [];
-    const urls = rawUrls.filter(url => typeof url === 'string' && !url.includes('fakepath'));
-    const apiBase =
-      import.meta.env.VITE_API_BASE_URL;
+    const urls = rawUrls.filter(
+      (url) => typeof url === "string" && !url.includes("fakepath")
+    );
+    const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
     const apiHost = apiBase.replace(/\/api$/, "");
 
     const newFileList: UploadFile[] = urls.map((url, index) => ({
@@ -49,15 +60,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       url: url.startsWith("http") ? url : `${apiHost}${url}`,
     }));
 
-    // Simple check to avoid infinite loop or unnecessary re-renders
-    // We only update if the lengths differ or URLs differ
     const currentUrls = fileList.map((f) => f.url).filter(Boolean);
     const newUrls = newFileList.map((f) => f.url).filter(Boolean);
 
     if (JSON.stringify(currentUrls) !== JSON.stringify(newUrls)) {
       setFileList(newFileList);
     }
-  }, [value, fileList]); // fileList in dep array is needed for isUploading check, but we guard against loop with JSON check
+  }, [value, mode, fileList, maxCount]);
 
   const handleCancel = () => setPreviewOpen(false);
 
@@ -65,48 +74,25 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as RcFile);
     }
-
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
   };
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
-
-    // Filter for successfully uploaded files to update parent
     const doneFiles = newFileList.filter((file) => file.status === "done");
-
-    // Only trigger onChange if ALL files are done (or removed)
-    // Actually, we should trigger whenever the *valid* list changes.
-    // But if we are uploading, we might not want to trigger onChange with partial data?
-    // Standard practice: Trigger onChange with whatever valid URLs we have.
-
     const urls = doneFiles
       .map((file) => {
-        if (file.response) {
-          return file.response.data.url;
-        }
-        // If it was already there (from props), strip the host if needed?
-        // Usually we want to store relative paths if that's what backend expects.
-        // But our prop sync added the host.
-        // Let's rely on the fact that if it's existing, it has a URL.
-        // We might need to strip the host prefix if we want to save relative paths.
+        if (file.response) return file.response.data.url;
         if (file.url) {
-          const apiBase =
-            import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+          const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
           const apiHost = apiBase.replace(/\/api$/, "");
-          // If url starts with apiHost, strip it.
-          if (file.url.startsWith(apiHost)) {
-            return file.url.substring(apiHost.length);
-          }
+          if (file.url.startsWith(apiHost)) return file.url.substring(apiHost.length);
           return file.url;
         }
         return "";
       })
       .filter(Boolean);
-
-    // If we are strictly in 'done' state for all files involved?
-    // Ideally update every time a file finishes.
 
     if (maxCount === 1) {
       onChange?.(urls[0] || "");
@@ -117,7 +103,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const customRequest = async (options: any) => {
     const { onSuccess, onError, file, onProgress } = options;
-
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -125,34 +110,28 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     try {
       const token = localStorage.getItem("sen_token");
       const xhr = new XMLHttpRequest();
-      const apiBase =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+      const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
       const url = `${apiBase}/upload/file`;
-      console.log(`Upload Target URL: ${url}`);
       xhr.open("POST", url);
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
-          const percent = (e.loaded / e.total) * 100;
-          onProgress({ percent });
+          onProgress({ percent: (e.loaded / e.total) * 100 });
         }
       };
 
       xhr.onload = () => {
         setLoading(false);
         if (xhr.status >= 200 && xhr.status < 300) {
-          const response = JSON.parse(xhr.responseText);
-          onSuccess(response);
+          onSuccess(JSON.parse(xhr.responseText));
         } else {
-          console.error("Upload Error Status:", xhr.status);
-          console.error("Upload Error Response:", xhr.responseText);
-          let errorMsg = "Upload failed";
+          let errorMsg = "Upload thất bại";
           try {
             const res = JSON.parse(xhr.responseText);
             if (res.message) errorMsg = res.message;
-          } catch (e) {
-            errorMsg = xhr.statusText || "Upload failed";
+          } catch {
+            errorMsg = xhr.statusText || "Upload thất bại";
           }
           onError(new Error(errorMsg));
           message.error(errorMsg);
@@ -161,17 +140,53 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       xhr.onerror = () => {
         setLoading(false);
-        console.error("Upload Network Error");
-        onError(new Error("Network error"));
-        message.error("Network error during upload");
+        onError(new Error("Lỗi mạng"));
+        message.error("Lỗi mạng khi upload");
       };
 
       xhr.send(formData);
     } catch (err) {
       setLoading(false);
-      console.error("Upload Catch Error:", err);
       onError(err as Error);
-      message.error("Something went wrong");
+      message.error("Có lỗi xảy ra");
+    }
+  };
+
+  // Add a URL to the gallery
+  const handleAddUrl = () => {
+    const url = urlInput.trim();
+    if (!url.startsWith("http")) {
+      message.warning("URL không hợp lệ, phải bắt đầu bằng http hoặc https");
+      return;
+    }
+    if (maxCount === 1) {
+      onChange?.(url);
+      setUrlInput("");
+      setShowUrlInput(false);
+    } else {
+      if (fileList.length >= maxCount) {
+        message.warning(`Chỉ được thêm tối đa ${maxCount} ảnh`);
+        return;
+      }
+      const newFile: UploadFile = {
+        uid: `url-${Date.now()}`,
+        name: url.split("/").pop() || "image",
+        status: "done",
+        url,
+      };
+      const newFileList = [...fileList, newFile];
+      setFileList(newFileList);
+      onChange?.(newFileList.map((f) => f.url || "").filter(Boolean));
+      setUrlInput("");
+      setShowUrlInput(false);
+    }
+  };
+
+  const handleModeChange = (newMode: "url" | "upload") => {
+    setMode(newMode);
+    if (newMode === "upload") {
+      // Clear URL value when switching to upload mode
+      setFileList([]);
     }
   };
 
@@ -182,6 +197,79 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     </div>
   );
 
+  const previewModal = (
+    <Modal
+      open={previewOpen}
+      title={null}
+      footer={null}
+      onCancel={handleCancel}
+      closable={false}
+      styles={{ body: { padding: 0 } }}
+    >
+      <img alt="preview" style={{ width: "100%", display: "block" }} src={previewImage} />
+    </Modal>
+  );
+
+  // ─── Single image (maxCount === 1) ───────────────────────────────
+  if (maxCount === 1) {
+    return (
+      <>
+        {/* Mode toggle */}
+        <div style={{ marginBottom: 8, display: "flex", gap: 4 }}>
+          {(["url", "upload"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => handleModeChange(m)}
+              style={{
+                padding: "2px 10px",
+                fontSize: 12,
+                borderRadius: 4,
+                cursor: "pointer",
+                background: mode === m ? "#1677ff" : "#f5f5f5",
+                color: mode === m ? "#fff" : "#555",
+                border: `1px solid ${mode === m ? "#1677ff" : "#d9d9d9"}`,
+                transition: "all 0.2s",
+              }}
+            >
+              {m === "url" ? (
+                <><LinkOutlined style={{ marginRight: 4 }} />Dán liên kết</>
+              ) : (
+                <><UploadOutlined style={{ marginRight: 4 }} />Tải ảnh lên</>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {mode === "url" ? (
+          <Input
+            value={Array.isArray(value) ? value[0] : value}
+            onChange={(e) => onChange?.(e.target.value)}
+            placeholder="https://..."
+            prefix={<LinkOutlined />}
+            allowClear
+          />
+        ) : (
+          <>
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              customRequest={customRequest}
+              maxCount={1}
+              accept="image/*"
+            >
+              {fileList.length >= 1 ? null : uploadButton}
+            </Upload>
+            {previewModal}
+          </>
+        )}
+      </>
+    );
+  }
+
+  // ─── Gallery (maxCount > 1) ───────────────────────────────────────
   return (
     <>
       <Upload
@@ -195,20 +283,49 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       >
         {fileList.length >= maxCount ? null : uploadButton}
       </Upload>
-      <Modal
-        open={previewOpen}
-        title={null}
-        footer={null}
-        onCancel={handleCancel}
-        closable={false}
-        styles={{ body: { padding: 0 } }}
-      >
-        <img
-          alt="example"
-          style={{ width: "100%", display: "block" }}
-          src={previewImage}
-        />
-      </Modal>
+
+      {/* URL add button */}
+      {fileList.length < maxCount && (
+        <div style={{ marginTop: 8 }}>
+          {!showUrlInput ? (
+            <Button
+              size="small"
+              icon={<LinkOutlined />}
+              type="dashed"
+              onClick={() => setShowUrlInput(true)}
+            >
+              Nhập URL ảnh
+            </Button>
+          ) : (
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <Input
+                size="small"
+                style={{ flex: 1 }}
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                prefix={<LinkOutlined />}
+                onPressEnter={handleAddUrl}
+                autoFocus
+              />
+              <Button size="small" type="primary" onClick={handleAddUrl}>
+                Thêm
+              </Button>
+              <Button
+                size="small"
+                onClick={() => {
+                  setShowUrlInput(false);
+                  setUrlInput("");
+                }}
+              >
+                Hủy
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {previewModal}
     </>
   );
 };

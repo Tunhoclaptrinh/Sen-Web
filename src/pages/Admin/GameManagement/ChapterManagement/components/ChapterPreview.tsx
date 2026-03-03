@@ -37,7 +37,6 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
     const handleRunLevel = async (level: any) => {
         setSimulatorBgm(level.backgroundMusic);
         try {
-            console.log("Preparing run level:", level.id);
             // 1. Try to use screens from local level object first
             if (level.screens && Array.isArray(level.screens) && level.screens.length > 0) {
                 setSimulatorScreens(level.screens);
@@ -71,13 +70,11 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
     const fetchLevels = async () => {
         setLoading(true);
         try {
-            console.log("Fetching levels for chapterId:", chapterId);
             const res = await adminLevelService.getAll({
                 page: 1, 
                 limit: 50, 
                 chapterId: chapterId  // ✅ Fix: Use camelCase to match database field
             });
-            console.log("Levels fetched:", res);
             
             if (res.data) {
                 // Mock user-specific fields for the map (locked, completed)

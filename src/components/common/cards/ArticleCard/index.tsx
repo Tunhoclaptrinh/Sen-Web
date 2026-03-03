@@ -49,7 +49,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
   };
 
   const rawImage =
-    resolveImage(data.image) || resolveImage(data.main_image) || resolveImage(data.images) || data.thumbnail;
+    resolveImage(data.image) ||
+    resolveImage(data.main_image) ||
+    resolveImage(data.images) ||
+    data.thumbnail;
   const imageUrl = getImageUrl(
     rawImage,
     type === "collection" ? "/images/collection-placeholder.jpg" : "https://via.placeholder.com/800x600",

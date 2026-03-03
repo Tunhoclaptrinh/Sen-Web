@@ -252,7 +252,7 @@ const Profile = () => {
           data={[
             {
               title: "Bộ sưu tập",
-              value: collections.length || 0,
+              value: collections?.length || 0,
               icon: <AppstoreOutlined />,
               valueColor: "#c5a065", // Gold
             },
@@ -468,12 +468,10 @@ const Profile = () => {
           <div className="progress-info">
             <div className="progress-label">Tiến độ sưu tập</div>
             <div className="progress-sub">
-              Bạn đã mở khóa {validEarnedBadges.length}/{allBadges.length} huy hiệu
+              Bạn đã mở khóa {validEarnedBadges?.length || 0}/{allBadges?.length || 0} huy hiệu
             </div>
           </div>
-          <div className="progress-percentage">
-            {Math.round((validEarnedBadges.length / (allBadges.length || 1)) * 100)}%
-          </div>
+            {Math.round(((validEarnedBadges?.length || 0) / (allBadges?.length || 1)) * 100)}%
         </div>
 
         {badgesLoading ? (
