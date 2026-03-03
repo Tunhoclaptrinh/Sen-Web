@@ -1,5 +1,5 @@
-import {Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs, message, DatePicker, Radio, Space} from "antd";
-import {PlusOutlined, MinusCircleOutlined, LinkOutlined} from "@ant-design/icons";
+import {Input, InputNumber, Select, Switch, Row, Col, Form, Button, Tabs, message, DatePicker, Space} from "antd";
+import {PlusOutlined, MinusCircleOutlined} from "@ant-design/icons";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {useAuth} from "@/hooks/useAuth";
@@ -204,10 +204,6 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             }
           }
 
-          // Image type sync
-          const isUpload = initialValues.image?.startsWith('/uploads/');
-          setImageType(isUpload ? 'upload' : 'url');
-          form.setFieldsValue({ imageType: isUpload ? 'upload' : 'url' });
 
           // Type sync
           const isDefaultType = Object.values(HeritageType).includes(initialValues.type as HeritageType) && initialValues.type !== HeritageType.OTHER;
@@ -233,9 +229,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         form.resetFields();
         setSelectedRegion("");
         setAvailableProvinces([]);
-        setImageType('url');
-        setShowCustomType(false);
-        form.setFieldsValue({ imageType: 'url', typeSelect: HeritageType.MONUMENT });
+        form.setFieldsValue({ typeSelect: HeritageType.MONUMENT });
         form.setFieldsValue(memoizedInitialValues);
       }
     };
@@ -246,7 +240,6 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
   const [activeTab, setActiveTab] = useState("1");
   const [availableProvinces, setAvailableProvinces] = useState<HeritageProvince[]>([]);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
-  const [imageType, setImageType] = useState<'url' | 'upload'>('url');
   const [showCustomType, setShowCustomType] = useState(false);
 
   const onTypeChange = (value: string) => {
@@ -488,28 +481,8 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
               <>
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item label="Hình ảnh đại diện">
-                      <div style={{ marginBottom: 8 }}>
-                        <Radio.Group 
-                          value={imageType} 
-                          onChange={(e) => setImageType(e.target.value)}
-                          buttonStyle="solid"
-                          size="small"
-                        >
-                          <Radio.Button value="url">Dán liên kết</Radio.Button>
-                          <Radio.Button value="upload">Tải ảnh lên</Radio.Button>
-                        </Radio.Group>
-                      </div>
-                      
-                      {imageType === 'upload' ? (
-                        <Form.Item name="image" noStyle>
-                          <ImageUpload maxCount={1} />
-                        </Form.Item>
-                      ) : (
-                        <Form.Item name="image" noStyle>
-                          <Input placeholder="https://..." prefix={<LinkOutlined />} />
-                        </Form.Item>
-                      )}
+                    <Form.Item label="Hình ảnh đại diện" name="image">
+                      <ImageUpload maxCount={1} />
                     </Form.Item>
                   </Col>
                   <Col span={16}>

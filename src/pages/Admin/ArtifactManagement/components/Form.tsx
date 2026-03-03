@@ -1,6 +1,5 @@
-import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message, Radio, Space} from "antd";
+import {Input, InputNumber, Select, Switch, Row, Col, Form, Tabs, message, Space} from "antd";
 import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
-import {LinkOutlined} from "@ant-design/icons";
 import {useAuth} from "@/hooks/useAuth";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 import {ArtifactType, ArtifactCondition, ArtifactTypeLabels, ArtifactConditionLabels} from "@/types";
@@ -34,7 +33,6 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
   const [heritageSites, setHeritageSites] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("1");
-  const [imageType, setImageType] = useState<'url' | 'upload'>('url');
   const [showCustomType, setShowCustomType] = useState(false);
 
   const onTypeChange = useCallback((value: string) => {
@@ -144,10 +142,6 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
 
         // Common sync logic for both Edit and Create (if initialValues exists)
         if (initialValues) {
-          // Image type sync
-          const isUpload = initialValues.image?.startsWith('/uploads/');
-          setImageType(isUpload ? 'upload' : 'url');
-          form.setFieldsValue({ imageType: isUpload ? 'upload' : 'url' });
 
           // Type sync
           const isDefaultType = Object.values(ArtifactType).includes(initialValues.artifactType as ArtifactType) && initialValues.artifactType !== ArtifactType.OTHER;
@@ -174,9 +168,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
         form.setFieldsValue(resetValues);
         form.resetFields(); // Call this as well to reset errors/touched state
 
-        setImageType('url');
         setShowCustomType(false);
-        form.setFieldsValue({ imageType: 'url', artifactTypeSelect: ArtifactType.OTHER });
+        form.setFieldsValue({ artifactTypeSelect: ArtifactType.OTHER });
 
         // Set defaults
         form.setFieldsValue({
@@ -382,28 +375,8 @@ const ArtifactForm: React.FC<ArtifactFormProps> = ({
               <>
                 <Row gutter={16}>
                   <Col span={8}>
-                    <Form.Item label="Hình ảnh đại diện">
-                      <div style={{ marginBottom: 8 }}>
-                        <Radio.Group 
-                          value={imageType} 
-                          onChange={(e) => setImageType(e.target.value)}
-                          buttonStyle="solid"
-                          size="small"
-                        >
-                          <Radio.Button value="url">Dán liên kết</Radio.Button>
-                          <Radio.Button value="upload">Tải ảnh lên</Radio.Button>
-                        </Radio.Group>
-                      </div>
-                      
-                      {imageType === 'upload' ? (
-                        <Form.Item name="image" noStyle>
-                          <ImageUpload maxCount={1} />
-                        </Form.Item>
-                      ) : (
-                        <Form.Item name="image" noStyle>
-                          <Input placeholder="https://..." prefix={<LinkOutlined />} />
-                        </Form.Item>
-                      )}
+                    <Form.Item label="Hình ảnh đại diện" name="image">
+                      <ImageUpload maxCount={1} />
                     </Form.Item>
                   </Col>
                   <Col span={16}>
