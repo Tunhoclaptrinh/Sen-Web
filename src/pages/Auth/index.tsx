@@ -14,19 +14,19 @@ import {
   LockOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
-  PhoneOutlined,
   FacebookFilled,
   GoogleCircleFilled,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { useAppDispatch } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
-import { login, register } from "../../store/slices/authSlice";
+import { login } from "../../store/slices/authSlice";
 import logo from "@/assets/images/logo2.png";
 import { motion, AnimatePresence } from "framer-motion";
 import Background from "@/components/Background";
 import "./styles.less";
 
-const { Text, Paragraph } = Typography;
+const { Text, Paragraph, Title } = Typography;
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -38,20 +38,10 @@ const AuthPage = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Register state
-  const [regName, setRegName] = useState("");
-  const [regEmail, setRegEmail] = useState("");
-  const [regPhone, setRegPhone] = useState("");
-
-  const [regPassword, setRegPassword] = useState("");
-  const [regConfirmPassword, setRegConfirmPassword] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
-
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePhone = (phone: string) => /^[0-9]{10,11}$/.test(phone);
 
   const formVariants = {
     initial: { opacity: 0, y: 10 },
@@ -89,70 +79,6 @@ const AuthPage = () => {
       navigate("/"); // tự chuyển trang
     } catch (error: any) {
       message.error(`❌ ${error || "Đăng nhập thất bại"}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!regName) newErrors.regName = "Vui lòng nhập họ tên";
-    else if (regName.length < 2)
-      newErrors.regName = "Họ tên phải có ít nhất 2 ký tự";
-
-    if (!regEmail) newErrors.regEmail = "Vui lòng nhập email";
-    else if (!validateEmail(regEmail))
-      newErrors.regEmail = "Email không hợp lệ";
-
-    if (!regPhone) newErrors.regPhone = "Vui lòng nhập số điện thoại";
-    else if (!validatePhone(regPhone))
-      newErrors.regPhone = "Số điện thoại phải có 10-11 chữ số";
-
-    if (!regPassword) newErrors.regPassword = "Vui lòng nhập mật khẩu";
-    else if (regPassword.length < 6)
-      newErrors.regPassword = "Mật khẩu phải ít nhất 6 ký tự";
-
-    if (!regConfirmPassword)
-      newErrors.regConfirmPassword = "Vui lòng xác nhận mật khẩu";
-    else if (regPassword !== regConfirmPassword)
-      newErrors.regConfirmPassword = "Mật khẩu không khớp";
-
-    if (!agreeTerms) {
-      message.error("Bạn phải đồng ý với điều khoản dịch vụ");
-      return;
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-
-    try {
-      // gọi API register thật
-      await dispatch(
-        register({
-          name: regName,
-          email: regEmail,
-          phone: regPhone,
-          // address: regAddress, // Removed because regAddress is unused in UI form input
-          password: regPassword,
-        }),
-      ).unwrap();
-
-      message.success("✅ Đăng ký thành công! Chào mừng bạn đến Sen");
-
-      // tự động login sau khi register xong
-      await dispatch(
-        login({ email: regEmail, password: regPassword }),
-      ).unwrap();
-
-      navigate("/"); // chuyển sang trang chủ
-    } catch (error: any) {
-      message.error(`❌ ${error || "Đăng ký thất bại"}`);
     } finally {
       setLoading(false);
     }
@@ -351,202 +277,43 @@ const AuthPage = () => {
                 variants={formVariants}
                 style={{ width: "100%" }}
               >
-                <div>
-                  <div style={{ marginBottom: 16 }}>
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Họ và tên"
-                      size="large"
-                      value={regName}
-                      onChange={(e) => setRegName(e.target.value)}
-                      status={errors.regName ? "error" : ""}
+                <div style={{ padding: '24px 0', textAlign: 'center' }}>
+                  <div style={{
+                    background: 'rgba(212, 165, 116, 0.1)',
+                    border: '1px solid rgba(212, 165, 116, 0.3)',
+                    borderRadius: 12,
+                    padding: 24,
+                    marginBottom: 20
+                  }}>
+                    <InfoCircleOutlined style={{ fontSize: 32, color: '#d4a574', marginBottom: 16 }} />
+                    <Title level={4} style={{ color: '#d4a574', marginBottom: 16 }}>Thông báo đăng ký</Title>
+                    <Paragraph style={{ color: '#fff', fontSize: 15, lineHeight: '1.6' }}>
+                      Chức năng đăng ký đang tạm thời bị vô hiệu hóa, chỉ những người đăng ký form trước đó mới được cấp tài khoản.
+                    </Paragraph>
+                    <Paragraph style={{ color: '#fff', fontSize: 15, lineHeight: '1.6' }}>
+                      Để được trải nghiệm bạn vui lòng điền vào form sau đây:
+                    </Paragraph>
+                    <Button
+                      type="primary"
+                      href="https://forms.gle/cwdik45vbWVNfbJ98"
+                      target="_blank"
                       style={{
-                        borderRadius: 8,
-                        border: "1px solid rgba(255,255,255,0.4)",
-                        background: "rgba(255,255,255,0.2)",
-                        color: "#fff",
+                        background: '#d4a574',
+                        borderColor: '#d4a574',
+                        height: 'auto',
+                        padding: '10px 24px',
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        marginTop: 8,
+                        borderRadius: 8
                       }}
-                    />
-                    {errors.regName && (
-                      <Text
-                        style={{
-                          color: "#ff6b6b",
-                          fontSize: 12,
-                          display: "block",
-                          marginTop: 4,
-                        }}
-                      >
-                        {errors.regName}
-                      </Text>
-                    )}
-                  </div>
-                  <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
-                    <div style={{ flex: 1 }}>
-                      <Input
-                        prefix={<UserOutlined />}
-                        placeholder="Nhập email"
-                        size="large"
-                        value={regEmail}
-                        onChange={(e) => setRegEmail(e.target.value)}
-                        status={errors.regEmail ? "error" : ""}
-                        style={{
-                          borderRadius: 8,
-                          border: "1px solid rgba(255,255,255,0.4)",
-                          background: "rgba(255,255,255,0.2)",
-                          color: "#fff",
-                        }}
-                      />
-                      {errors.regEmail && (
-                        <Text
-                          style={{
-                            color: "#ff6b6b",
-                            fontSize: 12,
-                            display: "block",
-                            marginTop: 4,
-                          }}
-                        >
-                          {errors.regEmail}
-                        </Text>
-                      )}
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                      <Input
-                        prefix={<PhoneOutlined />}
-                        placeholder="Số điện thoại"
-                        size="large"
-                        value={regPhone}
-                        onChange={(e) => setRegPhone(e.target.value)}
-                        status={errors.regPhone ? "error" : ""}
-                        style={{
-                          borderRadius: 8,
-                          border: "1px solid rgba(255,255,255,0.4)",
-                          background: "rgba(255,255,255,0.2)",
-                          color: "#fff",
-                        }}
-                      />
-                      {errors.regPhone && (
-                        <Text
-                          style={{
-                            color: "#ff6b6b",
-                            fontSize: 12,
-                            display: "block",
-                            marginTop: 4,
-                          }}
-                        >
-                          {errors.regPhone}
-                        </Text>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={{ marginBottom: 16 }}>
-                    <Input.Password
-                      prefix={<LockOutlined />}
-                      placeholder="Nhập mật khẩu"
-                      size="large"
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
-                      status={errors.regPassword ? "error" : ""}
-                      style={{
-                        borderRadius: 8,
-                        border: "1px solid rgba(255,255,255,0.4)",
-                        background: "rgba(255,255,255,0.2)",
-                        color: "#fff",
-                      }}
-                      iconRender={(visible) =>
-                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                    {errors.regPassword && (
-                      <Text
-                        style={{
-                          color: "#ff6b6b",
-                          fontSize: 12,
-                          display: "block",
-                          marginTop: 4,
-                        }}
-                      >
-                        {errors.regPassword}
-                      </Text>
-                    )}
-                  </div>
-
-                  <div style={{ marginBottom: 16 }}>
-                    <Input.Password
-                      prefix={<LockOutlined />}
-                      placeholder="Xác nhận mật khẩu"
-                      size="large"
-                      value={regConfirmPassword}
-                      onChange={(e) => setRegConfirmPassword(e.target.value)}
-                      onPressEnter={handleRegister}
-                      status={errors.regConfirmPassword ? "error" : ""}
-                      style={{
-                        borderRadius: 8,
-                        border: "1px solid rgba(255,255,255,0.4)",
-                        background: "rgba(255,255,255,0.2)",
-                        color: "#fff",
-                      }}
-                      iconRender={(visible) =>
-                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                    {errors.regConfirmPassword && (
-                      <Text
-                        style={{
-                          color: "#ff6b6b",
-                          fontSize: 12,
-                          display: "block",
-                          marginTop: 4,
-                        }}
-                      >
-                        {errors.regConfirmPassword}
-                      </Text>
-                    )}
-                  </div>
-
-                  <div style={{ marginBottom: 20 }}>
-                    <Checkbox
-                      style={{ color: "white" }}
-                      checked={agreeTerms}
-                      onChange={(e) => setAgreeTerms(e.target.checked)}
                     >
-                      Tôi đồng ý với{" "}
-                      <Button
-                        type="link"
-                        style={{ color: "#FFC0CB", padding: 0, height: "auto" }}
-                      >
-                        Điều khoản dịch vụ
-                      </Button>
-                    </Checkbox>
+                      Điền Form Đăng Ký
+                    </Button>
                   </div>
-
-                  <Button
-                    onClick={handleRegister}
-                    loading={loading}
-                    block
-                    size="large"
-                    style={{
-                      color: "white",
-                      background: "linear-gradient(135deg, #d4a574, #c27d4f)",
-                      border: "none",
-                      fontWeight: 600,
-                      borderRadius: 8,
-                      boxShadow: "0 4px 12px rgba(212, 165, 116, 0.45)",
-                      transition: "0.25s",
-                      marginBottom: 20,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow =
-                        "0 0 18px rgba(212,165,116,0.75)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow =
-                        "0 4px 12px rgba(212,165,116,0.45)";
-                    }}
-                  >
-                    {loading ? "Đang đăng ký..." : "Đăng Ký"}
-                  </Button>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)' }}>
+                    Chúng tôi sẽ liên hệ với bạn sau khi tài khoản được phê duyệt.
+                  </Text>
                 </div>
               </motion.div>
             )}

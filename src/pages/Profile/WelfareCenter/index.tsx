@@ -15,6 +15,7 @@ import {
   Empty,
   Table,
   Divider,
+  Alert,
 } from 'antd';
 import {
   GiftOutlined,
@@ -290,8 +291,8 @@ const WelfareCenter: React.FC = () => {
                         String(v.type) === 'external'
                           ? 'blue'
                           : String(v.type) === 'shop'
-                          ? 'green'
-                          : 'orange'
+                            ? 'green'
+                            : 'orange'
                       }
                       style={{ marginTop: 8, display: 'block' }}
                     >
@@ -323,8 +324,8 @@ const WelfareCenter: React.FC = () => {
                           {v.currencyType === 'coins'
                             ? '💰'
                             : v.currencyType === 'petals'
-                            ? '🌸'
-                            : '👑'}
+                              ? '🌸'
+                              : '👑'}
                         </Text>
                       </Col>
                     </Row>
@@ -502,6 +503,17 @@ const WelfareCenter: React.FC = () => {
           <Text type="secondary">Quy đổi tiền tệ, đổi voucher và quản lý phúc lợi của bạn</Text>
         </div>
 
+        <Alert
+          message={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>Lưu ý quan trọng</span>}
+          description={
+            <span style={{ fontSize: '16px' }}>
+              Tính năng này đang được phát triển và dự kiến phát triển hiện tại chưa hoạt động được thực tế. Chúng tôi sẽ sớm cập nhật trong thời gian tới.
+            </span>
+          }
+          type="warning"
+          showIcon
+        />
+
         {renderBalancePanel()}
 
         <Row gutter={16} style={{ marginBottom: 16 }}>
@@ -656,8 +668,8 @@ const WelfareCenter: React.FC = () => {
                     {selectedVoucher.currencyType === 'coins'
                       ? '💰'
                       : selectedVoucher.currencyType === 'petals'
-                      ? '🌸'
-                      : '👑'}
+                        ? '🌸'
+                        : '👑'}
                   </div>
                 </Col>
                 <Col span={12}>
@@ -667,8 +679,8 @@ const WelfareCenter: React.FC = () => {
                     {selectedVoucher.currencyType === 'coins'
                       ? '💰'
                       : selectedVoucher.currencyType === 'petals'
-                      ? '🌸'
-                      : '👑'}
+                        ? '🌸'
+                        : '👑'}
                   </div>
                 </Col>
               </Row>

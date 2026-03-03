@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Tabs, 
-  Card, 
-  Row, 
-  Col, 
-  Button, 
-  Typography, 
-  Tag, 
-  Statistic, 
-  Modal, 
-  message, 
+import {
+  Tabs,
+  Card,
+  Row,
+  Col,
+  Button,
+  Typography,
+  Tag,
+  Statistic,
+  Modal,
+  message,
   Divider,
   List,
   Avatar,
   Image,
-  Flex
+  Flex,
+  Alert
 } from 'antd';
-import { 
-  GiftOutlined, 
-  HistoryOutlined, 
+import {
+  GiftOutlined,
+  HistoryOutlined,
   SwapOutlined,
   ClockCircleOutlined
 } from '@ant-design/icons';
@@ -140,8 +141,8 @@ const WelfarePage: React.FC = () => {
             <Card className="stat-card pcoin-stat-premium" bodyStyle={{ padding: 0 }}>
               <Flex align="center">
                 <div className="pcoin-sidebar-image">
-                  <Image 
-                    src={getImageUrl(P_COIN_IMAGE)} 
+                  <Image
+                    src={getImageUrl(P_COIN_IMAGE)}
                     height={140}
                     style={{ objectFit: 'contain', padding: '12px' }}
                     preview={{
@@ -150,9 +151,9 @@ const WelfarePage: React.FC = () => {
                   />
                 </div>
                 <div className="pcoin-stat-content" style={{ padding: '24px 16px' }}>
-                  <Statistic 
-                    title={<span style={{ fontWeight: 700, fontSize: '16px' }}>P-Coin khả dụng</span>} 
-                    value={stats.pCoins} 
+                  <Statistic
+                    title={<span style={{ fontWeight: 700, fontSize: '16px' }}>P-Coin khả dụng</span>}
+                    value={stats.pCoins}
                     suffix="P"
                     valueStyle={{ color: '#c5a065', fontWeight: 800, fontSize: '28px' }}
                   />
@@ -232,9 +233,9 @@ const WelfarePage: React.FC = () => {
               <Paragraph ellipsis={{ rows: 2 }}>{v.description}</Paragraph>
               <div className="voucher-footer">
                 <Text type="secondary"><ClockCircleOutlined /> Còn {v.stock} lượt</Text>
-                <Button 
-                  type="primary" 
-                  shape="round" 
+                <Button
+                  type="primary"
+                  shape="round"
                   disabled={stats.pCoins < v.price}
                   onClick={() => handleRedeemVoucher(v)}
                 >
@@ -290,7 +291,18 @@ const WelfarePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="welfare-content">
+      <div className="welfare-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <Alert
+          message={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>Lưu ý quan trọng</span>}
+          description={
+            <span style={{ fontSize: '16px' }}>
+              Tính năng này đang được phát triển và dự kiến phát triển hiện tại chưa hoạt động được thực tế. Chúng tôi sẽ sớm cập nhật trong thời gian tới.
+            </span>
+          }
+          type="warning"
+          showIcon
+          style={{ marginBottom: 24 }}
+        />
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
