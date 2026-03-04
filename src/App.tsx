@@ -11,6 +11,8 @@ import ErrorBoundary from "./components/common/ErrorBoundary";
 import { ToastProvider } from "./components/common/Toast";
 import { GlobalCharacterProvider } from "./contexts/GlobalCharacterContext";
 import GlobalCharacterOverlay from "./components/GlobalCharacterOverlay";
+import { initGA, sendPageView } from "./utils/analytics";
+import { useLocation } from "react-router-dom";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -22,10 +24,17 @@ const App: React.FC = () => {
   );
   const { theme: uiTheme } = useSelector((state: RootState) => state.ui);
 
-  // Initialize Auth on Mount
+  // Initialize Auth and GA on Mount
   useEffect(() => {
     dispatch(initializeAuth() as any);
+    initGA();
   }, [dispatch]);
+
+  // Track Page Views
+  const location = useLocation();
+  useEffect(() => {
+    sendPageView(location.pathname + location.search);
+  }, [location]);
 
   // Listen for Storage Changes (Multi-tab Logout)
   useEffect(() => {

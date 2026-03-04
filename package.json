@@ -44,6 +44,7 @@
     "react-draggable": "^4.5.0",
     "react-helmet-async": "^2.0.4",
     "react-leaflet": "^4.2.1",
+    "react-ga4": "^2.1.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.20.0",
     "recharts": "^2.10.3",
