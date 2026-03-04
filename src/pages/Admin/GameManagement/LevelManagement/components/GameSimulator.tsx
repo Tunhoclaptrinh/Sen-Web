@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { ViewModal } from "@/components/common";
-import { 
-    RedoOutlined, 
+import {
+    RedoOutlined,
     StepForwardOutlined,
     FullscreenOutlined,
     SoundOutlined,
@@ -32,16 +32,17 @@ interface GameSimulatorProps {
     bgmUrl?: string; // New Prop
 }
 
-const GameSimulator: React.FC<GameSimulatorProps> = ({ 
-    visible, 
-    onClose, 
-    screens, 
+const GameSimulator: React.FC<GameSimulatorProps> = ({
+    visible,
+    onClose,
+    screens,
     initialScreenIndex = 0,
     title = "Chạy thử (Preview Mode)",
     bgmUrl
 }) => {
     const [currentIndex, setCurrentIndex] = useState(initialScreenIndex);
     const [score, setScore] = useState(0);
+    const [replayKey, setReplayKey] = useState(0);
     const [isMuted, setIsMuted] = useState(false);
     const [bgmVolume, setBgmVolume] = useState(0.5);
     const [sfxVolume, setSfxVolume] = useState(1.0);
@@ -50,11 +51,11 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     // BGM Logic
     useEffect(() => {
         if (!bgmUrl || !visible) {
-             if (bgmAudioRef.current) {
-                 bgmAudioRef.current.pause();
-                 bgmAudioRef.current = null;
-             }
-             return;
+            if (bgmAudioRef.current) {
+                bgmAudioRef.current.pause();
+                bgmAudioRef.current = null;
+            }
+            return;
         }
 
         const url = getImageUrl(bgmUrl);
@@ -62,7 +63,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             bgmAudioRef.current = new Audio(url);
             bgmAudioRef.current.loop = true;
         } else if (bgmAudioRef.current.src !== url) {
-             bgmAudioRef.current.src = url;
+            bgmAudioRef.current.src = url;
         }
 
         // Apply volume
@@ -75,9 +76,9 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         }
 
         return () => {
-             if (bgmAudioRef.current) {
-                 bgmAudioRef.current.pause();
-             }
+            if (bgmAudioRef.current) {
+                bgmAudioRef.current.pause();
+            }
         };
     }, [bgmUrl, visible, isMuted, bgmVolume]);
 
@@ -104,17 +105,17 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     const handleAnswerSubmit = async (answerId: string) => {
         const screen = currentScreen as any;
         // QuizScreen sends text as answerId (based on its implementation), so we must check text as well
-        const option = screen.options?.find((o: any) => o.id === answerId) 
-                    || screen.options?.find((o: any) => o._id === answerId)
-                    || screen.options?.find((o: any) => o.text === answerId);
-        
+        const option = screen.options?.find((o: any) => o.id === answerId)
+            || screen.options?.find((o: any) => o._id === answerId)
+            || screen.options?.find((o: any) => o.text === answerId);
+
         if (option?.isCorrect) {
             message.success("Đúng rồi! (+Điểm)");
             setScore(prev => prev + 10);
             return { isCorrect: true, pointsEarned: 10, explanation: "Chính xác!" };
         } else {
-             message.error("Sai rồi!");
-             return { isCorrect: false, pointsEarned: 0, explanation: "Sai rồi, hãy thử lại!" };
+            message.error("Sai rồi!");
+            return { isCorrect: false, pointsEarned: 0, explanation: "Sai rồi, hãy thử lại!" };
         }
     };
 
@@ -131,10 +132,10 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     const handleCollectItem = async (itemId: string) => {
         const screen = currentScreen as any;
         const item = screen.items?.find((i: any) => i.id === itemId);
-        
+
         if (!item) {
-             return { 
-                success: false, 
+            return {
+                success: false,
                 pointsEarned: 0,
                 item: { id: itemId, name: 'Unknown', factPopup: '' },
                 progress: { collected: 0, required: 1, allCollected: false }
@@ -144,7 +145,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         // Update collected tracking
         const currentCollected = collectedItemsMap[screen.id] || [];
         const newCollected = currentCollected.includes(itemId) ? currentCollected : [...currentCollected, itemId];
-        
+
         setCollectedItemsMap(prev => ({
             ...prev,
             [screen.id]: newCollected
@@ -154,22 +155,22 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         const isAllCollected = newCollected.length >= required;
 
         if (!currentCollected.includes(itemId)) {
-             setScore(prev => prev + 5);
-             message.success("Đã tìm thấy vật phẩm!");
+            setScore(prev => prev + 5);
+            message.success("Đã tìm thấy vật phẩm!");
         }
 
-        return { 
-            success: true, 
+        return {
+            success: true,
             pointsEarned: 5,
-            item: { 
-                id: itemId, 
-                name: item.name, 
-                factPopup: item.factPopup || item.content || item.description || "Bạn đã tìm thấy một manh mối quan trọng!" 
+            item: {
+                id: itemId,
+                name: item.name,
+                factPopup: item.factPopup || item.content || item.description || "Bạn đã tìm thấy một manh mối quan trọng!"
             },
-            progress: { 
-                collected: newCollected.length, 
-                required: required, 
-                allCollected: isAllCollected 
+            progress: {
+                collected: newCollected.length,
+                required: required,
+                allCollected: isAllCollected
             }
         };
     };
@@ -181,7 +182,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         // Ensure start index is within bounds
         const start = Math.min(currentIndex, screens.length - 1);
         if (start < 0) return undefined;
-        
+
         for (let i = start; i >= 0; i--) {
             if (screens[i]?.backgroundImage) {
                 return screens[i].backgroundImage;
@@ -193,7 +194,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     const effectiveBg = getEffectiveBackground();
 
     const renderScreenContent = () => {
-        if (!currentScreen) return <div style={{padding: 40, textAlign: 'center', color: 'white'}}>Không có dữ liệu màn chơi</div>;
+        if (!currentScreen) return <div style={{ padding: 40, textAlign: 'center', color: 'white' }}>Không có dữ liệu màn chơi</div>;
 
         const commonProps = {
             onNext: handleNext,
@@ -205,12 +206,15 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             backgroundImage: currentScreen.backgroundImage || effectiveBg
         };
 
+        const screenKey = `${currentIndex}_${replayKey}`;
+
         switch (currentScreen.type) {
             case SCREEN_TYPES.DIALOGUE:
-                return <DialogueScreen data={screenWithBg as any} {...commonProps} />;
+                return <DialogueScreen key={screenKey} data={screenWithBg as any} {...commonProps} />;
             case SCREEN_TYPES.QUIZ:
                 return (
                     <QuizScreen
+                        key={screenKey}
                         data={currentScreen as any}
                         {...commonProps}
                         onSubmitAnswer={handleAnswerSubmit}
@@ -220,6 +224,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             case SCREEN_TYPES.HIDDEN_OBJECT:
                 return (
                     <HiddenObjectScreen
+                        key={screenKey}
                         data={screenWithBg as any} // Hidden Object usually requires specific bg, but fallback doesn't hurt
                         {...commonProps}
                         onCollect={handleCollectItem}
@@ -228,17 +233,18 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             case SCREEN_TYPES.TIMELINE:
                 return (
                     <TimelineScreen
+                        key={screenKey}
                         data={screenWithBg as any}
                         {...commonProps}
                         onSubmit={handleTimelineSubmit}
                     />
                 );
             case SCREEN_TYPES.IMAGE_VIEWER:
-                return <ImageViewerScreen data={screenWithBg as any} {...commonProps} />;
+                return <ImageViewerScreen key={screenKey} data={screenWithBg as any} {...commonProps} />;
             case SCREEN_TYPES.VIDEO:
-                return <VideoScreen data={screenWithBg as any} {...commonProps} />;
+                return <VideoScreen key={screenKey} data={screenWithBg as any} {...commonProps} />;
             default:
-                return <div style={{color: 'white', padding: 20}}>Loại màn hình chưa hỗ trợ preview: {currentScreen.type}</div>;
+                return <div key={screenKey} style={{ color: 'white', padding: 20 }}>Loại màn hình chưa hỗ trợ preview: {currentScreen.type}</div>;
         }
     };
 
@@ -251,23 +257,23 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             bodyStyle={{ padding: 0, height: '80vh', overflow: 'hidden', background: '#000' }}
             className="game-simulator-modal"
         >
-            <div className="gameplay-page" style={{height: '100%', position: 'relative', margin: 0}}>
+            <div className="gameplay-page" style={{ height: '100%', position: 'relative', margin: 0 }}>
                 {/* Simulator Controls Overlay */}
                 <div style={{
-                    position: 'absolute', 
-                    top: 10, 
-                    right: 10, 
-                    zIndex: 9999, 
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    zIndex: 9999,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8
                 }}>
-                    <div style={{ 
-                        background: 'rgba(0,0,0,0.6)', 
-                        color: '#ffc107', 
-                        padding: '4px 12px', 
-                        borderRadius: 20, 
-                        fontSize: 13, 
+                    <div style={{
+                        background: 'rgba(0,0,0,0.6)',
+                        color: '#ffc107',
+                        padding: '4px 12px',
+                        borderRadius: 20,
+                        fontSize: 13,
                         fontWeight: 600,
                         border: '1px solid rgba(255,193,7,0.3)',
                         display: 'flex',
@@ -279,20 +285,21 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                         <span>Điểm giả lập: {score}</span>
                     </div>
 
-                    <Button 
-                        size="small" 
-                        icon={<RedoOutlined />} 
+                    <Button
+                        size="small"
+                        icon={<RedoOutlined />}
                         onClick={() => {
                             setCurrentIndex(initialScreenIndex);
                             setScore(0);
+                            setReplayKey(prev => prev + 1);
                         }}
                     >
                         Replay
                     </Button>
-                    <Button 
-                        size="small" 
-                        type="primary" 
-                        icon={<StepForwardOutlined />} 
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<StepForwardOutlined />}
                         onClick={handleNext}
                     >
                         Force Next
@@ -313,29 +320,29 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                             }
                         }}
                     />
-                    
-                     
-                     <AudioSettingsPopover
+
+
+                    <AudioSettingsPopover
                         isMuted={isMuted}
                         onMuteToggle={setIsMuted}
                         bgmVolume={bgmVolume}
                         onBgmVolumeChange={setBgmVolume}
                         sfxVolume={sfxVolume}
                         onSfxVolumeChange={setSfxVolume}
-                     >
-                         <Button
+                    >
+                        <Button
                             size="small"
                             icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
                             title="Cài đặt âm thanh"
                         />
-                     </AudioSettingsPopover>
+                    </AudioSettingsPopover>
                 </div>
 
                 <div style={{
-                    width: '100%', 
-                    height: '100%', 
-                    display: 'flex', 
-                    justifyContent: 'center', 
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
                     alignItems: 'center',
                     background: '#000'
                 }}>

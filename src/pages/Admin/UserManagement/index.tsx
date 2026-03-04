@@ -1,15 +1,15 @@
-import {Space, Tag, Avatar, Switch} from "antd";
-import {UserOutlined} from "@ant-design/icons";
-import {getImageUrl} from "@/utils/image.helper";
-import {User} from "@/types";
+import { Space, Tag, Avatar, Switch } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { getImageUrl } from "@/utils/image.helper";
+import { User } from "@/types";
 import DataTable from "@/components/common/DataTable";
-import {useAuth} from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 
 import UserDetailModal from "./components/DetailModal";
 import UserForm from "./components/Form";
 
-import {useUserModel} from "./model";
+import { useUserModel } from "./model";
 import UserStatsCard from "./components/Stats";
 
 // Force HMR update
@@ -49,21 +49,21 @@ const UserManagement = () => {
     closeDetail,
   } = useUserModel();
 
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   // Filter handlers
   const onFilterChange = (key: string, value: any) => {
-    updateFilters({[key]: value});
+    updateFilters({ [key]: value });
   };
 
   // Columns definition (must be after handlers)
   const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      width: 80,
-    },
+    // {
+    //   title: "ID",
+    //   dataIndex: "id",
+    //   key: "id",
+    //   width: 80,
+    // },
     {
       title: "Người dùng",
       dataIndex: "name",
@@ -74,8 +74,8 @@ const UserManagement = () => {
         <Space>
           <Avatar icon={<UserOutlined />} src={getImageUrl(record.avatar)} />
           <div>
-            <div style={{fontWeight: 500}}>{text}</div>
-            <div style={{fontSize: 12, color: "#888"}}>{record.email}</div>
+            <div style={{ fontWeight: 500 }}>{text}</div>
+            <div style={{ fontSize: 12, color: "#888" }}>{record.email}</div>
           </div>
         </Space>
       ),
@@ -94,10 +94,10 @@ const UserManagement = () => {
       key: "role",
       width: 120,
       filters: [
-        {text: "Admin", value: "admin"},
-        {text: "Customer", value: "customer"},
-        {text: "Researcher", value: "researcher"},
-        {text: "Curator", value: "curator"},
+        { text: "Admin", value: "admin" },
+        { text: "Customer", value: "customer" },
+        { text: "Researcher", value: "researcher" },
+        { text: "Curator", value: "curator" },
       ],
       filteredValue: filters.role ? (Array.isArray(filters.role) ? filters.role : [filters.role]) : null,
       render: (role: string) => {
@@ -117,8 +117,8 @@ const UserManagement = () => {
       key: "isActive",
       width: 100,
       filters: [
-        {text: "Hoạt động", value: true},
-        {text: "Bị khóa", value: false},
+        { text: "Hoạt động", value: true },
+        { text: "Bị khóa", value: false },
       ],
       filteredValue: filters.isActive
         ? Array.isArray(filters.isActive)
@@ -176,9 +176,9 @@ const UserManagement = () => {
             key: "role",
             placeholder: "Vai trò",
             options: [
-              {label: "Admin", value: "admin"},
-              {label: "Customer", value: "customer"},
-              {label: "Researcher", value: "researcher"},
+              { label: "Admin", value: "admin" },
+              { label: "Customer", value: "customer" },
+              { label: "Researcher", value: "researcher" },
             ],
             operators: ["eq", "in", "ne"], // Support Equals, In, Not Equals
             defaultOperator: "in",
@@ -187,8 +187,8 @@ const UserManagement = () => {
             key: "isActive",
             placeholder: "Trạng thái",
             options: [
-              {label: "Hoạt động", value: true},
-              {label: "Bị khóa", value: false},
+              { label: "Hoạt động", value: true },
+              { label: "Bị khóa", value: false },
             ],
             operators: ["eq"],
             defaultOperator: "eq",
