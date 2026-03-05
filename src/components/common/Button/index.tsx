@@ -2,6 +2,7 @@ import React, { CSSProperties } from 'react';
 import { Button as AntButton, ButtonProps as AntButtonProps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
+import { useGameSounds } from '@/hooks/useSound';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 type ButtonSize = 'small' | 'medium' | 'large';
@@ -76,8 +77,10 @@ const Button: React.FC<CustomButtonProps> = ({
     className,
     style,
     children,
+    onClick,
     ...props
 }) => {
+    const { playClick } = useGameSounds();
     const variantStyle = variantStyles[variant];
     const sizeStyle = sizeStyles[buttonSize];
 
@@ -113,6 +116,10 @@ const Button: React.FC<CustomButtonProps> = ({
     return (
         <AntButton
             {...props}
+            onClick={(e) => {
+                playClick();
+                if (onClick) onClick(e);
+            }}
             disabled={disabled}
             loading={loading}
             className={buttonClassName}

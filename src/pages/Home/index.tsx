@@ -1,27 +1,27 @@
-import React, {useEffect, useState, useRef} from "react";
-import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {Row, Col, Typography, Button} from "antd";
-import {ArrowRightOutlined} from "@ant-design/icons";
-import {fetchHeritageSites} from "@store/slices/heritageSlice";
-import {fetchArtifacts} from "@store/slices/artifactSlice";
-import {RootState, AppDispatch} from "@/store";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Row, Col, Typography, Button } from "antd";
+import { ArrowRightOutlined } from "@ant-design/icons";
+import { fetchHeritageSites } from "@store/slices/heritageSlice";
+import { fetchArtifacts } from "@store/slices/artifactSlice";
+import { RootState, AppDispatch } from "@/store";
 import FeatureCard from "@/components/common/cards/FeatureCard";
 import HomeMapSection from "@/components/Home/HomeMapSection";
 import HomeLeaderboardSection from "@/components/Home/HomeLeaderboardSection";
-import {ITEM_TYPES} from "@/config/constants";
+import { ITEM_TYPES } from "@/config/constants";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 import headerLogo from "../../assets/images/logo.png";
 import Background from "@/components/Background";
 
-const {Title, Paragraph} = Typography;
+const { Title, Paragraph } = Typography;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const {items: sites} = useSelector((state: RootState) => state.heritage);
-  const {items: artifacts} = useSelector((state: RootState) => state.artifact);
+  const { items: sites } = useSelector((state: RootState) => state.heritage);
+  const { items: artifacts } = useSelector((state: RootState) => state.artifact);
 
   // State for background animation
   const [isShaking, setIsShaking] = useState(false);
@@ -47,8 +47,8 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchHeritageSites({_limit: 4}));
-    dispatch(fetchArtifacts({_limit: 4}));
+    dispatch(fetchHeritageSites({ _limit: 4 }));
+    dispatch(fetchArtifacts({ _limit: 4 }));
   }, [dispatch]);
 
   return (
@@ -62,7 +62,7 @@ const Home: React.FC = () => {
             </div>
             <p className="hero-subtitle">Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ</p>
             <Button className="cta-button" onClick={() => navigate("/game/chapters")}>
-              Khám phá ngay
+              Khám phả ngay
             </Button>
           </div>
           {/* Optional decorative bottom elements can go here if provided */}
@@ -166,10 +166,10 @@ const Home: React.FC = () => {
 
       {/* 5. Game Integration Section */}
       <section className="game-section">
-        <div style={{maxWidth: 1400, margin: "0 auto", padding: "0 80px"}}>
-          <div className="section-header" style={{textAlign: "center", marginBottom: 60}}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 80px" }}>
+          <div className="section-header" style={{ textAlign: "center", marginBottom: 60 }}>
             <Title level={2} className="header-title">
-              Trải nghiệm <span style={{color: "var(--primary-color)"}}>Gamification</span>
+              Trải nghiệm <span style={{ color: "var(--primary-color)" }}>Gamification</span>
             </Title>
             <Paragraph
               style={{
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
             <Col xs={24} lg={10}>
               <div className="game-info-card">
                 <div className="card-icon-header">
-                  <img src={headerLogo} alt="Sen Logo" style={{height: 48, marginBottom: 20}} />
+                  <img src={headerLogo} alt="Sen Logo" style={{ height: 48, marginBottom: 20 }} />
                 </div>
                 <h3 className="card-title">Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi</h3>
 

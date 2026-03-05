@@ -1,7 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {Row, Col, Card, Tabs, Button, Spin, Empty, Progress, Tag, message, Modal, Typography, Space} from "antd";
-import {StatisticsCard} from "@/components/common";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Row, Col, Card, Tabs, Spin, Empty, Progress, Tag, message, Modal, Typography, Space } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
+import { StatisticsCard } from "@/components/common";
 import {
   TrophyOutlined,
   CalendarOutlined,
@@ -10,8 +12,8 @@ import {
   GiftOutlined,
   RocketOutlined,
 } from "@ant-design/icons";
-import {motion, AnimatePresence} from "framer-motion";
-import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchActiveQuests,
   startQuest,
@@ -20,22 +22,23 @@ import {
   clearError,
   QuestState,
 } from "@/store/slices/questSlice";
-import type {Quest} from "@/types/quest.types";
+import type { Quest } from "@/types/quest.types";
 import "./styles.less";
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 
-const {Title, Paragraph} = Typography;
+const { Title, Paragraph } = Typography;
 
 const QuestsPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const {activeQuests, activeLoading, error, successMessage} = useAppSelector(
+  const { activeQuests, activeLoading, error, successMessage } = useAppSelector(
     (state) =>
-      (state.quest || {activeQuests: [], activeLoading: false, error: null, successMessage: null}) as QuestState,
+      (state.quest || { activeQuests: [], activeLoading: false, error: null, successMessage: null }) as QuestState,
   );
   const [activeTab, setActiveTab] = useState("all");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const { playClick } = useGameSounds();
 
   useEffect(() => {
     dispatch(fetchActiveQuests());
@@ -142,7 +145,7 @@ const QuestsPage: React.FC = () => {
   };
 
   const containerVariants = {
-    hidden: {opacity: 0},
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
@@ -152,7 +155,7 @@ const QuestsPage: React.FC = () => {
   };
 
   const itemVariants = {
-    hidden: {y: 20, opacity: 0},
+    hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
@@ -196,7 +199,7 @@ const QuestsPage: React.FC = () => {
 
   return (
     <div className="premium-quests-page">
-      <motion.div initial={{opacity: 0, y: -20}} animate={{opacity: 1, y: 0}} className="page-header">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="page-header">
         <Title level={1} className="main-title">
           <TrophyOutlined className="title-icon" /> Đường đến Vinh quang
         </Title>
@@ -204,20 +207,20 @@ const QuestsPage: React.FC = () => {
       </motion.div>
 
       <div className="stats-container">
-        <StatisticsCard data={statsData} hideCard colSpan={{xs: 12, sm: 12, md: 6}} />
+        <StatisticsCard data={statsData} hideCard colSpan={{ xs: 12, sm: 12, md: 6 }} />
       </div>
 
       <div className="tabs-container glass-morphism">
         <Tabs
           activeKey={activeTab}
-          onChange={setActiveTab}
+          onChange={(key) => { playClick(); setActiveTab(key); }}
           centered
           items={[
-            {key: "all", label: "Tất cả"},
-            {key: "daily", label: "Hằng ngày"},
-            {key: "weekly", label: "Hằng tuần"},
-            {key: "achievement", label: "Thành tích"},
-            {key: "exploration", label: "Thám hiểm"},
+            { key: "all", label: "Tất cả" },
+            { key: "daily", label: "Hằng ngày" },
+            { key: "weekly", label: "Hằng tuần" },
+            { key: "achievement", label: "Thành tích" },
+            { key: "exploration", label: "Thám hiểm" },
           ]}
         />
       </div>
@@ -231,14 +234,14 @@ const QuestsPage: React.FC = () => {
           className="quests-grid-container"
         >
           {getQuestsByTab().length === 0 ? (
-            <motion.div initial={{opacity: 0}} animate={{opacity: 1}}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <Empty description="Hiện không có nhiệm vụ nào trong mục này" />
             </motion.div>
           ) : (
             <Row gutter={[24, 24]}>
               {getQuestsByTab().map((quest) => (
                 <Col xs={24} sm={12} lg={8} key={quest.id}>
-                  <motion.div variants={itemVariants} whileHover={{y: -5}}>
+                  <motion.div variants={itemVariants} whileHover={{ y: -5 }}>
                     <Card
                       className={`quest-card glass-morphism ${quest.progress?.status || "locked"}`}
                       cover={
@@ -259,7 +262,7 @@ const QuestsPage: React.FC = () => {
                       <Title level={4} className="quest-title">
                         {quest.title}
                       </Title>
-                      <Paragraph ellipsis={{rows: 2}} className="quest-desc">
+                      <Paragraph ellipsis={{ rows: 2 }} className="quest-desc">
                         {quest.description}
                       </Paragraph>
 
@@ -299,8 +302,8 @@ const QuestsPage: React.FC = () => {
                       <div className="quest-actions">
                         {!quest.progress ? (
                           <Button
-                            type="primary"
-                            block
+                            variant="primary"
+                            fullWidth
                             className="action-btn start-btn"
                             onClick={() => handleStartQuest(quest.id)}
                           >
@@ -308,8 +311,8 @@ const QuestsPage: React.FC = () => {
                           </Button>
                         ) : quest.progress.status === "completed" ? (
                           <Button
-                            type="primary"
-                            block
+                            variant="primary"
+                            fullWidth
                             className="action-btn claim-btn"
                             icon={<GiftOutlined />}
                             onClick={() => handleClaimRewards(quest.id)}
@@ -317,15 +320,15 @@ const QuestsPage: React.FC = () => {
                             Nhận Thưởng
                           </Button>
                         ) : quest.progress.status === "claimed" ? (
-                          <Button block disabled className="action-btn claimed-btn">
+                          <Button fullWidth disabled className="action-btn claimed-btn">
                             <CheckCircleOutlined /> Đã Hoàn Thành
                           </Button>
                         ) : (
-                          <div style={{display: "flex", gap: 8}}>
-                            <Button ghost type="primary" onClick={() => handleViewDetail(quest)} style={{flex: 1}}>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <Button variant="outline" onClick={() => handleViewDetail(quest)} style={{ flex: 1 }}>
                               Chi tiết
                             </Button>
-                            <Button type="primary" onClick={() => handleNavigate(quest)} style={{flex: 1}}>
+                            <Button variant="primary" onClick={() => handleNavigate(quest)} style={{ flex: 1 }}>
                               Thực hiện
                             </Button>
                           </div>
@@ -382,10 +385,10 @@ const QuestsPage: React.FC = () => {
             </div>
 
             <Button
-              type="primary"
-              size="large"
-              block
-              onClick={() => setDetailModalVisible(false)}
+              variant="primary"
+              buttonSize="large"
+              fullWidth
+              onClick={() => { playClick(); setDetailModalVisible(false); }}
               className="modal-close-btn"
             >
               Đã hiểu

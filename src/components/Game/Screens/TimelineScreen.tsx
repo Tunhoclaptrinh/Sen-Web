@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from "react";
-import {Card, Button, Typography, message} from "antd";
-import {CheckOutlined, HolderOutlined} from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { Card, Button, Typography, message } from "antd";
+import { CheckOutlined, HolderOutlined } from "@ant-design/icons";
 import {
   DndContext,
   closestCenter,
@@ -18,25 +18,26 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
-import {CSS} from "@dnd-kit/utilities";
-import type {TimelineScreen as TimelineScreenType} from "@/types/game.types";
+import { CSS } from "@dnd-kit/utilities";
+import type { TimelineScreen as TimelineScreenType } from "@/types/game.types";
+import { useGameSounds } from "@/hooks/useSound";
 import "./styles.less";
 
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
 interface Props {
   data: TimelineScreenType;
   onNext: () => void;
-  onSubmit: (order: string[]) => Promise<{isCorrect: boolean; correct_order?: string[]}>;
+  onSubmit: (order: string[]) => Promise<{ isCorrect: boolean; correct_order?: string[] }>;
   fallbackImage?: string;
   loading?: boolean;
 }
 
 // Sub-component for Sortable Item
-const SortableItem = ({id, event, isCorrect}: {id: string; event: any; isCorrect: boolean | null}) => {
-  const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
+const SortableItem = ({ id, event, isCorrect }: { id: string; event: any; isCorrect: boolean | null }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   // Apply transform and transition
   const style: React.CSSProperties = {
@@ -55,7 +56,7 @@ const SortableItem = ({id, event, isCorrect}: {id: string; event: any; isCorrect
       className={`timeline-event-item ${isDragging ? "dragging" : ""}`}
     >
       <div className={`drag-handle ${isCorrect ? "disabled" : ""}`} {...(isCorrect ? {} : listeners)}>
-        <HolderOutlined style={{fontSize: 18}} />
+        <HolderOutlined style={{ fontSize: 18 }} />
       </div>
       <div className="event-year">{isCorrect ? event.year : "????"}</div>
       <div className="event-content">
@@ -74,10 +75,11 @@ const transformEvents = (data: TimelineScreenType) => {
   return [];
 };
 
-const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage, loading}) => {
+const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage, loading }) => {
   const [events, setEvents] = useState(() => transformEvents(data));
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { playClick } = useGameSounds();
 
   // Computed background
   const bgImage = data.backgroundImage || fallbackImage;
@@ -103,7 +105,7 @@ const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage,
   }, [data]);
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const {active, over} = event;
+    const { active, over } = event;
 
     if (active.id !== over?.id && !isCorrect) {
       setEvents((items) => {
@@ -127,9 +129,9 @@ const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage,
       setIsCorrect(result.isCorrect);
 
       if (result.isCorrect) {
-        message.success({content: "Chính xác! Bạn đã sắp xếp đúng dòng lịch sử.", key: "timeline_check"});
+        message.success({ content: "Chính xác! Bạn đã sắp xếp đúng dòng lịch sử.", key: "timeline_check" });
       } else {
-        message.error({content: "Chưa chính xác. Hãy thử lại!", key: "timeline_check"});
+        message.error({ content: "Chưa chính xác. Hãy thử lại!", key: "timeline_check" });
       }
     } catch (error) {
       console.error(error);
@@ -141,9 +143,9 @@ const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage,
 
   if (events.length === 0) {
     return (
-      <div style={{padding: 24, textAlign: "center", color: "white"}}>
+      <div style={{ padding: 24, textAlign: "center", color: "white" }}>
         <h3>Không có dữ liệu sự kiện</h3>
-        <Button onClick={onNext}>Bỏ qua</Button>
+        <Button onClick={() => { playClick(); onNext(); }}>Bỏ qua</Button>
       </div>
     );
   }
@@ -161,10 +163,10 @@ const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage,
       <div className="screen-content-wrapper">
         <Card className="timeline-card">
           <div className="timeline-header">
-            <Title level={3} style={{margin: 0}}>
+            <Title level={3} style={{ margin: 0 }}>
               {data.content?.title || "Dòng Chảy Lịch Sử"}
             </Title>
-            <Text type="secondary" style={{display: "block", marginTop: 8, fontSize: 16}}>
+            <Text type="secondary" style={{ display: "block", marginTop: 8, fontSize: 16 }}>
               {data.content?.description || "Kéo thả các sự kiện để sắp xếp theo đúng trình tự thời gian."}
             </Text>
           </div>
@@ -181,12 +183,12 @@ const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage,
             </div>
           </div>
 
-          <div className="timeline-actions" style={{textAlign: "center", marginTop: 24}}>
+          <div className="timeline-actions" style={{ textAlign: "center", marginTop: 24 }}>
             {isCorrect ? (
               <Button
                 type="primary"
                 size="large"
-                onClick={onNext}
+                onClick={() => { playClick(); onNext(); }}
                 icon={<CheckOutlined />}
                 className="continue-btn"
                 disabled={loading}
@@ -194,7 +196,7 @@ const TimelineScreen: React.FC<Props> = ({data, onNext, onSubmit, fallbackImage,
                 Tiếp tục hành trình
               </Button>
             ) : (
-              <Button type="primary" size="large" onClick={handleCheck} loading={submitting} disabled={submitting}>
+              <Button type="primary" size="large" onClick={() => { playClick(); handleCheck(); }} loading={submitting} disabled={submitting}>
                 Kiểm tra kết quả
               </Button>
             )}

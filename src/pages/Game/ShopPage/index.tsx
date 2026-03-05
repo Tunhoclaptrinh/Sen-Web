@@ -1,24 +1,27 @@
-import React, {useEffect, useState} from "react";
-import {Tabs, Button, message, Spin, Modal, Typography, Card, Col, Tag, Row} from "antd";
-import {ShopOutlined, DollarOutlined} from "@ant-design/icons";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "@/store";
-import {fetchShopData, purchaseItem, clearMessages} from "@/store/slices/shopSlice";
-import {fetchProgress} from "@/store/slices/gameSlice";
-import {ShopItem} from "@/types/game.types";
-import {aiService, AICharacter} from "@/services/ai.service";
+import React, { useEffect, useState } from "react";
+import { Tabs, message, Spin, Modal, Typography, Card, Col, Tag, Row } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
+import { ShopOutlined, DollarOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { fetchShopData, purchaseItem, clearMessages } from "@/store/slices/shopSlice";
+import { fetchProgress } from "@/store/slices/gameSlice";
+import { ShopItem } from "@/types/game.types";
+import { aiService, AICharacter } from "@/services/ai.service";
 import "./styles.less";
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 import ShopDetailModal from "./components/ShopDetailModal";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const ShopPage: React.FC = () => {
   const dispatch = useDispatch();
-  const {items = [], inventory = [], loading, purchaseLoading, error, successMessage} = useSelector(
+  const { items = [], inventory = [], loading, purchaseLoading, error, successMessage } = useSelector(
     (state: RootState) => state.shop,
   );
-  const {progress} = useSelector((state: RootState) => state.game);
+  const { progress } = useSelector((state: RootState) => state.game);
+  const { playClick } = useGameSounds();
 
   // Local state
   const [activeTab, setActiveTab] = useState("all");
@@ -76,7 +79,7 @@ const ShopPage: React.FC = () => {
   });
 
   // Create unified list combining shop items and AI characters, sorted by owned status (owned at end)
-  const allCards: Array<{type: "shop" | "ai"; data: any; isOwned: boolean}> = [
+  const allCards: Array<{ type: "shop" | "ai"; data: any; isOwned: boolean }> = [
     // Shop items
     ...filteredItems.map((item) => ({
       type: "shop" as const,
@@ -115,12 +118,12 @@ const ShopPage: React.FC = () => {
       return;
     }
 
-    dispatch(purchaseItem({itemId: selectedItem.id, quantity: purchaseQuantity}) as any)
+    dispatch(purchaseItem({ itemId: selectedItem.id, quantity: purchaseQuantity }) as any)
       .unwrap()
       .then(() => {
         setPurchaseModalVisible(false);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleBuyItem = (item: ShopItem) => {
@@ -139,12 +142,12 @@ const ShopPage: React.FC = () => {
         <Card
           hoverable
           className="shop-card"
-          onClick={() => handleOpenModal(item)}
+          onClick={() => { playClick(); handleOpenModal(item); }}
           cover={
             <div className="card-cover">
               {itemImage ? (
                 <>
-                  <div className="blur-background" style={{backgroundImage: `url(${itemImage})`}} />
+                  <div className="blur-background" style={{ backgroundImage: `url(${itemImage})` }} />
                   <img
                     src={itemImage}
                     alt={item.name}
@@ -250,7 +253,7 @@ const ShopPage: React.FC = () => {
               <span className="price-value">
                 {item.currency === "petals" ? (
                   <>
-                    <span style={{fontSize: "1.2rem"}}>🌸</span> {item.price}
+                    <span style={{ fontSize: "1.2rem" }}>🌸</span> {item.price}
                   </>
                 ) : (
                   <>
@@ -262,9 +265,12 @@ const ShopPage: React.FC = () => {
 
             <div className="buy-btn-wrapper">
               <Button
-                type="primary"
+                variant="primary"
                 className={`buy-btn ${isOwned ? "owned" : ""}`}
-                onClick={() => !isOwned && handleBuyItem(item)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isOwned) handleBuyItem(item);
+                }}
                 disabled={isOwned}
               >
                 {isOwned ? "Đã sở hữu" : "Mua ngay"}
@@ -272,7 +278,7 @@ const ShopPage: React.FC = () => {
             </div>
           </div>
         </Card>
-      </Col>
+      </Col >
     );
   };
 
@@ -291,6 +297,7 @@ const ShopPage: React.FC = () => {
       okText: "Mua ngay",
       cancelText: "Hủy",
       onOk: async () => {
+        playClick();
         setPurchasingCharacterId(character.id);
         try {
           const result = await aiService.purchaseCharacter(character.id);
@@ -336,7 +343,7 @@ const ShopPage: React.FC = () => {
             <div className="card-cover">
               {characterImage ? (
                 <>
-                  <div className="blur-background" style={{backgroundImage: `url(${characterImage})`}} />
+                  <div className="blur-background" style={{ backgroundImage: `url(${characterImage})` }} />
                   <img
                     src={characterImage}
                     alt={character.name}
@@ -365,7 +372,7 @@ const ShopPage: React.FC = () => {
                 <Tag color="magenta">ĐỒNG HÀNH</Tag>
               </div>
               {character.rarity && (
-                <div style={{position: "absolute", top: 8, left: 8}}>
+                <div style={{ position: "absolute", top: 8, left: 8 }}>
                   <Tag color={rarityColors[character.rarity] || "default"}>
                     {rarityLabels[character.rarity] || character.rarity.toUpperCase()}
                   </Tag>
@@ -383,15 +390,18 @@ const ShopPage: React.FC = () => {
             <div className="price-section">
               <span>Giá bán:</span>
               <span className="price-value">
-                <DollarOutlined style={{marginRight: 4, color: "#FFD700", fontSize: "1.2rem"}} /> {character.price || 0}
+                <DollarOutlined style={{ marginRight: 4, color: "#FFD700", fontSize: "1.2rem" }} /> {character.price || 0}
               </span>
             </div>
 
             <div className="buy-btn-wrapper">
               <Button
-                type="primary"
+                variant="primary"
                 className={`buy-btn ${character.isOwned ? "owned" : ""}`}
-                onClick={() => !character.isOwned && handlePurchaseCharacter(character)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!character.isOwned) handlePurchaseCharacter(character);
+                }}
                 loading={purchasingCharacterId === character.id}
                 disabled={character.isOwned || purchasingCharacterId === character.id}
               >
@@ -416,19 +426,19 @@ const ShopPage: React.FC = () => {
       <div className="tabs-container">
         <Tabs
           activeKey={activeTab}
-          onChange={setActiveTab}
+          onChange={(key) => { playClick(); setActiveTab(key); }}
           centered
           items={[
-            {label: <span>Tất cả</span>, key: "all"},
-            {label: <span>Hỗ trợ</span>, key: "powerups"},
-            {label: <span>Nhân vật & AI</span>, key: "characters"},
-            {label: <span>Giao diện</span>, key: "themes"},
+            { label: <span>Tất cả</span>, key: "all" },
+            { label: <span>Hỗ trợ</span>, key: "powerups" },
+            { label: <span>Nhân vật & AI</span>, key: "characters" },
+            { label: <span>Giao diện</span>, key: "themes" },
           ]}
         />
       </div>
 
       {loading || charactersLoading ? (
-        <div style={{textAlign: "center", padding: 50}}>
+        <div style={{ textAlign: "center", padding: 50 }}>
           <Spin size="large" />
         </div>
       ) : (

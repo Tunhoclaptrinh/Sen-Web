@@ -4,7 +4,6 @@ import {
   Card,
   Row,
   Col,
-  Button,
   Typography,
   Tag,
   Statistic,
@@ -17,6 +16,8 @@ import {
   Flex,
   Alert
 } from 'antd';
+import Button from '@/components/common/Button';
+import { useGameSounds } from '@/hooks/useSound';
 import {
   GiftOutlined,
   HistoryOutlined,
@@ -58,6 +59,7 @@ const WelfarePage: React.FC = () => {
     totalExchanged: 5000,
     vouchersClaimed: 3
   });
+  const { playClick } = useGameSounds();
 
   // Load data - Mocking for now to show UI
   useEffect(() => {
@@ -115,6 +117,7 @@ const WelfarePage: React.FC = () => {
       okText: 'Đồng ý',
       cancelText: 'Hủy',
       onOk: () => {
+        playClick();
         message.success('Quy đổi thành công!');
         // Trigger refresh
       }
@@ -128,6 +131,7 @@ const WelfarePage: React.FC = () => {
       okText: 'Đổi ngay',
       cancelText: 'Hủy',
       onOk: () => {
+        playClick();
         message.success('Đổi voucher thành công! Kiểm tra trong Kho quà của bạn.');
       }
     });
@@ -182,7 +186,7 @@ const WelfarePage: React.FC = () => {
                         <Text type="secondary">Tỷ lệ 10:1</Text>
                       </div>
                     </div>
-                    <Button type="primary" onClick={() => handleExchangePCoin(1000, 'Coins')}>Đổi ngay</Button>
+                    <Button variant="primary" onClick={() => handleExchangePCoin(1000, 'Coins')}>Đổi ngay</Button>
                   </div>
                 </Col>
                 <Col span={12}>
@@ -194,7 +198,7 @@ const WelfarePage: React.FC = () => {
                         <Text type="secondary">Tỷ lệ 1:2</Text>
                       </div>
                     </div>
-                    <Button type="primary" onClick={() => handleExchangePCoin(100, 'Cánh Sen')}>Đổi ngay</Button>
+                    <Button variant="primary" onClick={() => handleExchangePCoin(100, 'Cánh Sen')}>Đổi ngay</Button>
                   </div>
                 </Col>
               </Row>
@@ -234,7 +238,7 @@ const WelfarePage: React.FC = () => {
               <div className="voucher-footer">
                 <Text type="secondary"><ClockCircleOutlined /> Còn {v.stock} lượt</Text>
                 <Button
-                  type="primary"
+                  variant="primary"
                   shape="round"
                   disabled={stats.pCoins < v.price}
                   onClick={() => handleRedeemVoucher(v)}
@@ -305,7 +309,7 @@ const WelfarePage: React.FC = () => {
         />
         <Tabs
           activeKey={activeTab}
-          onChange={setActiveTab}
+          onChange={(key) => { playClick(); setActiveTab(key); }}
           centered
           className="welfare-tabs"
           items={[

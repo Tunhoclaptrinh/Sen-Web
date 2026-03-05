@@ -11,6 +11,7 @@ import aiReducer from "./slices/aiSlice";
 import learningReducer from "./slices/learningSlice";
 import shopReducer from "./slices/shopSlice";
 import questReducer from "./slices/questSlice";
+import audioReducer from "./slices/audioSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     learning: learningReducer,
     quest: questReducer,
     shop: shopReducer,
+    audio: audioReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

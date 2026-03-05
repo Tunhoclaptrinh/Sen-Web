@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters } from '@/store/slices/gameSlice';
 import { useAuth } from '@/hooks/useAuth';
-import { Card, Row, Col, Progress, Button, Spin, Typography, Tag, Modal, message } from 'antd';
+import { Card, Row, Col, Progress, Spin, Typography, Tag, Modal, message } from 'antd';
+import Button from '@/components/common/Button';
+import { useGameSounds } from '@/hooks/useSound';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import gameService from '@/services/game.service';
 import type { Chapter } from '@/types';
@@ -18,6 +20,7 @@ const ChaptersPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth(); // Import useAuth
     const { chapters, chaptersLoading, progress, progressLoading } = useAppSelector((state) => state.game);
+    const { playClick } = useGameSounds();
 
     useEffect(() => {
         dispatch(fetchChapters());
@@ -160,12 +163,15 @@ const ChaptersPage: React.FC = () => {
                                         <Card
                                             hoverable={isUnlocked}
                                             className={`chapter-card ${!isUnlocked ? 'locked' : ''}`}
-                                            onClick={() => handleChapterClick(chapter)}
+                                            onClick={() => {
+                                                if (isUnlocked) playClick();
+                                                handleChapterClick(chapter);
+                                            }}
                                             actions={isUnlocked ? [
                                                 <Button
-                                                    type="primary"
+                                                    variant="primary"
                                                     className="play-button"
-                                                    block
+                                                    fullWidth
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         navigate(`/game/chapters/${chapter.id}/levels`);
@@ -237,7 +243,7 @@ const ChaptersPage: React.FC = () => {
                                                         <>
                                                             <Text>Cần {chapter.requiredPetals} cánh sen</Text>
                                                             <Button
-                                                                type="primary"
+                                                                variant="primary"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     handleUnlockChapter(chapter.id);

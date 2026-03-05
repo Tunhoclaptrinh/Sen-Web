@@ -1,15 +1,22 @@
-import React, {useState, useEffect, useMemo, useCallback} from "react";
-import {GoogleMap, useJsApiLoader, Marker, InfoWindow, OverlayView} from "@react-google-maps/api";
-import {Spin, Typography, Select, Input, Tag, Space, Dropdown, Button, Radio, notification} from "antd";
-import {EnvironmentOutlined, SearchOutlined, CheckOutlined, AppstoreOutlined, RocketOutlined} from "@ant-design/icons";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow, OverlayView } from "@react-google-maps/api";
+import { Spin, Typography, Select, Input, Tag, Space, Dropdown, Radio, notification, Modal } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
+import {
+  EnvironmentOutlined,
+  SearchOutlined,
+  CheckOutlined,
+  AppstoreOutlined,
+  RocketOutlined,
+} from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
-import {artifactService} from "@/services";
+import { artifactService } from "@/services";
 import SimpleMap from "@/components/Map/SimpleMap";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import gameService from "@/services/game.service";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
-import { Modal } from "antd";
 import {
   ITEM_TYPES,
   MAP_CENTER,
@@ -23,7 +30,7 @@ import {
 import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
 import "./styles.less";
 
-const {Option} = Select;
+const { Option } = Select;
 
 interface Location {
   id: number;
@@ -94,6 +101,7 @@ const MapPage: React.FC = () => {
   const [checkingIn, setCheckingIn] = useState(false);
   const [activeGameLevel, setActiveGameLevel] = useState<number | null>(null);
   const [activeHunt, setActiveHunt] = useState<Location | null>(null);
+  const { playClick } = useGameSounds();
 
   // Helper to normalize image URLs
   const getFullImageUrl = (url?: string) => {
@@ -115,7 +123,7 @@ const MapPage: React.FC = () => {
   const [showBicycling, setShowBicycling] = useState(false);
 
   // Load Google Maps API
-  const {isLoaded, loadError} = useJsApiLoader({
+  const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
     language: "vi",
@@ -246,7 +254,7 @@ const MapPage: React.FC = () => {
           const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
           try {
-            return await fetch(url, {signal: controller.signal});
+            return await fetch(url, { signal: controller.signal });
           } finally {
             window.clearTimeout(timeoutId);
           }
@@ -351,7 +359,7 @@ const MapPage: React.FC = () => {
           heritageMap.set(h.id, h);
           const lat = Number(h.latitude || h.lat);
           const lng = Number(h.longitude || h.lng);
-          
+
           if (!isNaN(lat) && !isNaN(lng)) {
             allLocations.push({
               id: h.id,
@@ -374,7 +382,7 @@ const MapPage: React.FC = () => {
         let totalArtifacts = 0;
 
         while (hasMore) {
-          const artifactRes = await artifactService.getAll({limit: 100, page: currentPage});
+          const artifactRes = await artifactService.getAll({ limit: 100, page: currentPage });
 
           if (artifactRes.success && artifactRes.data && artifactRes.data.length > 0) {
             totalArtifacts += artifactRes.data.length;
@@ -476,6 +484,7 @@ const MapPage: React.FC = () => {
     try {
       setCheckingIn(true);
       const res = await gameService.checkIn(locId);
+      playClick();
       notification.success({
         message: "Check-in thành công!",
         description: `Chúc mừng! Bạn đã nhận được ${res.pointsEarned} điểm cúp tại ${res.locationName}.`,
@@ -519,7 +528,7 @@ const MapPage: React.FC = () => {
 
   const provinces = Array.from(new Set(locations.map((l) => l.province).filter(Boolean))).sort();
   const types = Array.from(new Set(locations.map((l) => l.type).filter(Boolean))).sort();
-  
+
   const getTypeLabel = (type: string) => {
     return (HERITAGE_TYPE_LABELS as any)[type] || (ARTIFACT_TYPE_LABELS as any)[type] || type;
   };
@@ -559,7 +568,7 @@ const MapPage: React.FC = () => {
         );
       }
       return (
-        <div className="simple-map-container" style={{height: "100%", background: "#fff"}}>
+        <div className="simple-map-container" style={{ height: "100%", background: "#fff" }}>
           <SimpleMap
             mapData={mapData}
             worldData={worldData}
@@ -581,9 +590,9 @@ const MapPage: React.FC = () => {
       // Small safety check for the global google object
       if (typeof google === 'undefined') {
         return (
-           <div className="loading-overlay">
-              <Spin size="large" tip="Đang khởi tạo Google Maps..." />
-           </div>
+          <div className="loading-overlay">
+            <Spin size="large" tip="Đang khởi tạo Google Maps..." />
+          </div>
         );
       }
 
@@ -609,8 +618,8 @@ const MapPage: React.FC = () => {
           {filteredLocations.map((loc) => (
             <Marker
               key={`${loc.itemType}-${loc.id}`}
-              position={{lat: loc.lat, lng: loc.lng}}
-              onClick={() => setSelectedMarker(loc)}
+              position={{ lat: loc.lat, lng: loc.lng }}
+              onClick={() => { playClick(); setSelectedMarker(loc); }}
               title={`${loc.name} - ${loc.type}`}
               icon={
                 typeof google !== 'undefined' ? {
@@ -624,12 +633,12 @@ const MapPage: React.FC = () => {
               label={
                 filteredLocations.length < 50
                   ? {
-                      text: loc.name.length > 15 ? loc.name.substring(0, 15) + "..." : loc.name,
-                      color: loc.itemType === ITEM_TYPES.ARTIFACT ? "#faad14" : "#d9363e",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                      className: "marker-label",
-                    }
+                    text: loc.name.length > 15 ? loc.name.substring(0, 15) + "..." : loc.name,
+                    color: loc.itemType === ITEM_TYPES.ARTIFACT ? "#faad14" : "#d9363e",
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    className: "marker-label",
+                  }
                   : undefined
               }
             />
@@ -646,10 +655,10 @@ const MapPage: React.FC = () => {
 
           {selectedMarker && !isNaN(selectedMarker.lat) && !isNaN(selectedMarker.lng) && (
             <InfoWindow
-              position={{lat: selectedMarker.lat, lng: selectedMarker.lng}}
+              position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
               onCloseClick={() => setSelectedMarker(null)}
             >
-              <div className="map-popup-content" style={{maxWidth: "250px"}}>
+              <div className="map-popup-content" style={{ maxWidth: "250px" }}>
                 {selectedMarker.thumbnail && (
                   <div
                     className="popup-image"
@@ -663,7 +672,7 @@ const MapPage: React.FC = () => {
                     }}
                   />
                 )}
-                <Typography.Title level={5} style={{margin: "8px 0"}}>
+                <Typography.Title level={5} style={{ margin: "8px 0" }}>
                   {selectedMarker.name}
                 </Typography.Title>
                 <Space size={[0, 8]} wrap className="popup-tags">
@@ -674,8 +683,8 @@ const MapPage: React.FC = () => {
                 </Space>
                 <Space direction="vertical" style={{ width: "100%", marginTop: "12px" }}>
                   <Button
-                    type="primary"
-                    block
+                    variant="primary"
+                    fullWidth
                     onClick={() =>
                       navigate(
                         selectedMarker.itemType === "artifact"
@@ -689,7 +698,8 @@ const MapPage: React.FC = () => {
 
                   {selectedMarker.itemType === ITEM_TYPES.HERITAGE ? (
                     <Button
-                      block
+                      fullWidth
+                      variant="primary"
                       icon={<CheckOutlined />}
                       loading={checkingIn}
                       onClick={() => handleCheckIn(selectedMarker.id)}
@@ -699,9 +709,10 @@ const MapPage: React.FC = () => {
                     </Button>
                   ) : (
                     <Button
-                      block
+                      fullWidth
+                      variant="primary"
                       icon={<RocketOutlined />}
-                      onClick={() => handleHunt(selectedMarker)}
+                      onClick={() => { playClick(); handleHunt(selectedMarker); }}
                       style={{ background: "#faad14", color: "white", borderColor: "#faad14" }}
                     >
                       Tầm bảo ngay
@@ -779,14 +790,14 @@ const MapPage: React.FC = () => {
           <div className="view-mode-toggle">
             <Radio.Group
               value={viewMode}
-              onChange={(e) => setViewMode(e.target.value)}
+              onChange={(e) => { playClick(); setViewMode(e.target.value); }}
               optionType="button"
               buttonStyle="solid"
               size="middle"
               className="custom-radio-group"
               options={[
-                {label: "Google Maps", value: MAP_VIEW_MODES.GOOGLE},
-                {label: "Simple Map", value: MAP_VIEW_MODES.SIMPLE},
+                { label: "Google Maps", value: MAP_VIEW_MODES.GOOGLE },
+                { label: "Simple Map", value: MAP_VIEW_MODES.SIMPLE },
               ]}
             />
           </div>
@@ -799,10 +810,10 @@ const MapPage: React.FC = () => {
           <div className="hunt-banner-wrapper">
             <div className="hunt-banner">
               <div className="hunt-info">
-                <img 
-                  src={getFullImageUrl(activeHunt.thumbnail)} 
-                  alt={activeHunt.name} 
-                  className="hunt-target-img" 
+                <img
+                  src={getFullImageUrl(activeHunt.thumbnail)}
+                  alt={activeHunt.name}
+                  className="hunt-target-img"
                 />
                 <div className="hunt-text">
                   <span className="target-label">Đang tìm kiếm</span>
@@ -810,18 +821,19 @@ const MapPage: React.FC = () => {
                 </div>
               </div>
               <div className="hunt-actions">
-                <Button 
-                   type="primary" 
-                   icon={<RocketOutlined />} 
-                   className="popup-action-btn"
-                   onClick={() => navigate(`/game/scan`)}
+                <Button
+                  variant="primary"
+                  fullWidth
+                  icon={<RocketOutlined />}
+                  className="hunt-start-btn"
+                  onClick={() => { playClick(); handleHunt(activeHunt!); }}
                 >
-                   Quét QR
+                  Bắt đầu tầm bảo
                 </Button>
-                <Button 
-                  ghost 
-                  danger 
-                  icon={<CheckOutlined />} 
+                <Button
+                  ghost
+                  danger
+                  icon={<CheckOutlined />}
                   onClick={() => setActiveHunt(null)}
                 >
                   Hủy
@@ -849,7 +861,7 @@ const MapPage: React.FC = () => {
                         }}
                       >
                         <span>🚗 Giao thông</span>
-                        {showTraffic && <CheckOutlined style={{color: "#1890ff"}} />}
+                        {showTraffic && <CheckOutlined style={{ color: "#1890ff" }} />}
                       </div>
                     ),
                     onClick: () => setShowTraffic(!showTraffic),
@@ -866,7 +878,7 @@ const MapPage: React.FC = () => {
                         }}
                       >
                         <span>🚊 Phương tiện công cộng</span>
-                        {showTransit && <CheckOutlined style={{color: "#1890ff"}} />}
+                        {showTransit && <CheckOutlined style={{ color: "#1890ff" }} />}
                       </div>
                     ),
                     onClick: () => setShowTransit(!showTransit),
@@ -883,7 +895,7 @@ const MapPage: React.FC = () => {
                         }}
                       >
                         <span>🚴 Xe đạp</span>
-                        {showBicycling && <CheckOutlined style={{color: "#1890ff"}} />}
+                        {showBicycling && <CheckOutlined style={{ color: "#1890ff" }} />}
                       </div>
                     ),
                     onClick: () => setShowBicycling(!showBicycling),
@@ -893,7 +905,7 @@ const MapPage: React.FC = () => {
               trigger={["click"]}
               placement="bottomRight"
             >
-              <Button className="layers-control-button" icon={<AppstoreOutlined />} size="large">
+              <Button className="layers-control-button" icon={<AppstoreOutlined />} buttonSize="large">
                 Lớp bản đồ
               </Button>
             </Dropdown>
@@ -925,7 +937,7 @@ const MapPage: React.FC = () => {
         centered
         destroyOnClose
         className="game-modal"
-        bodyStyle={{padding: 0}}
+        bodyStyle={{ padding: 0 }}
       >
         {activeGameLevel && <EmbeddedGameZone levelId={activeGameLevel} onClose={() => setActiveGameLevel(null)} />}
       </Modal>

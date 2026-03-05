@@ -1,20 +1,23 @@
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {Card, Button, Typography, Result, Spin, message, Tag, Space} from "antd";
-import {QrcodeOutlined, GiftOutlined, ArrowLeftOutlined, ReloadOutlined, EnvironmentFilled, StarFilled} from "@ant-design/icons";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, Typography, Result, Spin, message, Tag, Space } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
+import { QrcodeOutlined, GiftOutlined, ArrowLeftOutlined, ReloadOutlined, EnvironmentFilled, StarFilled } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import QRScanner from "@/components/Game/QRScanner";
-import {gameService} from "@/services";
-import {ITEM_TYPES} from "@/config/constants";
+import { gameService } from "@/services";
+import { ITEM_TYPES } from "@/config/constants";
 import "./styles.less";
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 const ScanPage: React.FC = () => {
   const navigate = useNavigate();
   const [scanning, setScanning] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState<any>(null); // Scan result data
+  const { playClick } = useGameSounds();
 
   const handleScan = async (decodedText: string) => {
     if (processing || !scanning) return;
@@ -74,10 +77,10 @@ const ScanPage: React.FC = () => {
           title="Quét thất bại"
           subTitle={result.message}
           extra={[
-            <Button type="primary" key="retry" icon={<ReloadOutlined />} onClick={handleReset}>
+            <Button variant="primary" key="retry" icon={<ReloadOutlined />} onClick={handleReset}>
               Thử lại ngay
             </Button>,
-            <Button key="back" onClick={() => navigate(-1)}>
+            <Button key="back" variant="outline" onClick={() => navigate(-1)}>
               Quay lại trang chủ
             </Button>,
           ]}
@@ -86,7 +89,7 @@ const ScanPage: React.FC = () => {
     }
 
     if (result.type === "checkin") {
-      const {pointsEarned, locationName, totalCheckins} = result.data;
+      const { pointsEarned, locationName, totalCheckins } = result.data;
       return (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -100,7 +103,7 @@ const ScanPage: React.FC = () => {
                 animate={{ y: [0, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
-                <EnvironmentFilled style={{color: "#8b1d1d", fontSize: 64}} />
+                <EnvironmentFilled style={{ color: "#8b1d1d", fontSize: 64 }} />
               </motion.div>
             }
             title="Ghi danh thành công!"
@@ -112,11 +115,11 @@ const ScanPage: React.FC = () => {
             extra={[
               <div key="stats" className="result-stats">
                 <motion.div
-                   initial={{ opacity: 0, x: -20 }}
-                   animate={{ opacity: 1, x: 0 }}
-                   transition={{ delay: 0.4 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  <Text strong style={{fontSize: 22, color: "#faad14", display: "block", marginBottom: 8}}>
+                  <Text strong style={{ fontSize: 22, color: "#faad14", display: "block", marginBottom: 8 }}>
                     +{pointsEarned} Công đức
                   </Text>
                 </motion.div>
@@ -124,10 +127,10 @@ const ScanPage: React.FC = () => {
                   Đã ghé thăm: <strong>{totalCheckins}</strong> lần
                 </Text>
               </div>,
-              <Button type="primary" key="map" onClick={() => navigate("/map")}>
+              <Button variant="primary" key="map" onClick={() => navigate("/map")}>
                 Xem bản đồ di tích
               </Button>,
-              <Button key="continue" onClick={handleReset}>
+              <Button key="continue" variant="outline" onClick={handleReset}>
                 Tiếp tục tầm bảo
               </Button>,
             ]}
@@ -137,12 +140,12 @@ const ScanPage: React.FC = () => {
     }
 
     if (result.type === ITEM_TYPES.ARTIFACT) {
-      const {artifact, rewards, isNewDiscovery, newBadges} = result.data;
+      const { artifact, rewards, isNewDiscovery, newBadges } = result.data;
       return (
         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 1, scale: 1 }}
-           transition={{ duration: 0.5, type: "spring" }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, type: "spring" }}
         >
           <Result
             status="success"
@@ -151,46 +154,46 @@ const ScanPage: React.FC = () => {
                 animate={{ rotate: [0, -10, 10, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
               >
-                <GiftOutlined style={{color: "#c5a065", fontSize: 64}} />
+                <GiftOutlined style={{ color: "#c5a065", fontSize: 64 }} />
               </motion.div>
             }
             title={isNewDiscovery ? "Phát hiện Kỳ vật!" : "Thu thập Kỳ vật"}
             subTitle={artifact.name}
             extra={[
-              <motion.div 
-                key="artifact-img" 
+              <motion.div
+                key="artifact-img"
                 className="artifact-preview"
                 whileHover={{ scale: 1.05 }}
               >
                 <img src={artifact.image} alt={artifact.name} />
                 {isNewDiscovery && <div className="new-badge-tag">MỚI</div>}
               </motion.div>,
-              
+
               <div key="stats" className="result-stats">
-                <Text type="secondary" style={{display: "block", marginBottom: 12, fontStyle: "italic"}}>
+                <Text type="secondary" style={{ display: "block", marginBottom: 12, fontStyle: "italic" }}>
                   {artifact.description}
                 </Text>
-                
+
                 <Space size="large">
-                   <motion.div 
+                  <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3 }}
                     className="reward-item"
-                   >
-                     <StarFilled style={{ color: '#faad14' }} />
-                     <Text strong style={{fontSize: 20, color: "#faad14"}}> +{rewards.coins} Xu</Text>
-                   </motion.div>
-                   
-                   <motion.div 
+                  >
+                    <StarFilled style={{ color: '#faad14' }} />
+                    <Text strong style={{ fontSize: 20, color: "#faad14" }}> +{rewards.coins} Xu</Text>
+                  </motion.div>
+
+                  <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5 }}
                     className="reward-item"
-                   >
-                     <div className="petal-icon-mini" />
-                     <Text strong style={{fontSize: 20, color: "#eb2f96"}}> +{rewards.petals} Cánh Sen</Text>
-                   </motion.div>
+                  >
+                    <div className="petal-icon-mini" />
+                    <Text strong style={{ fontSize: 20, color: "#eb2f96" }}> +{rewards.petals} Cánh Sen</Text>
+                  </motion.div>
                 </Space>
 
                 {newBadges && newBadges.length > 0 && (
@@ -204,11 +207,11 @@ const ScanPage: React.FC = () => {
                   </div>
                 )}
               </div>,
-              
-              <Button type="primary" key="collection" onClick={() => navigate("/profile/library")}>
+
+              <Button variant="primary" key="collection" onClick={() => navigate("/profile/library")}>
                 Vào tàng kinh các
               </Button>,
-              <Button key="continue" onClick={handleReset}>
+              <Button key="continue" variant="outline" onClick={handleReset}>
                 Tiếp tục tìm kiếm
               </Button>,
             ]}
@@ -220,7 +223,7 @@ const ScanPage: React.FC = () => {
 
   return (
     <div className="scan-page-wrapper">
-      <div className="nav-back-wrapper" onClick={() => navigate(-1)}>
+      <div className="nav-back-wrapper" onClick={() => { playClick(); navigate(-1); }}>
         <button className="nav-back-btn">
           <ArrowLeftOutlined />
         </button>
@@ -230,14 +233,14 @@ const ScanPage: React.FC = () => {
         className="scan-card"
         title={
           <span>
-            <QrcodeOutlined style={{marginRight: 10}} />
+            <QrcodeOutlined style={{ marginRight: 10 }} />
             Tầm Bảo & Ghi Danh
           </span>
         }
       >
         <AnimatePresence mode="wait">
           {processing ? (
-            <motion.div 
+            <motion.div
               key="processing"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -249,7 +252,7 @@ const ScanPage: React.FC = () => {
           ) : result ? (
             <div key="result">{renderResult()}</div>
           ) : (
-            <motion.div 
+            <motion.div
               key="scanner"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

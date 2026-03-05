@@ -1,11 +1,12 @@
-import React, {useState, useEffect, useRef} from "react";
-import {Card, Typography, message, Modal, Button} from "antd";
-import {CheckCircleFilled, SearchOutlined} from "@ant-design/icons";
-import type {HiddenObjectScreen as HiddenObjectScreenType} from "@/types/game.types";
+import React, { useState, useEffect, useRef } from "react";
+import { Card, Typography, message, Modal, Button } from "antd";
+import { CheckCircleFilled, SearchOutlined } from "@ant-design/icons";
+import type { HiddenObjectScreen as HiddenObjectScreenType } from "@/types/game.types";
+import { useGameSounds } from "@/hooks/useSound";
 import "./styles.less";
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 interface HiddenItem {
   id: string;
@@ -36,20 +37,21 @@ interface HiddenObjectScreenProps {
   data: HiddenObjectScreenType;
   onNext: () => void;
   onCollect: (itemId: string) => Promise<{
-    item: {id: string; name: string; factPopup: string};
-    progress: {collected: number; required: number; allCollected: boolean};
+    item: { id: string; name: string; factPopup: string };
+    progress: { collected: number; required: number; allCollected: boolean };
   }>;
   loading?: boolean;
 }
 
-const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({data, onNext, onCollect, loading}) => {
+const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, onCollect, loading }) => {
   const items: HiddenItem[] = transformItems(data.items);
   const requiredItems = data.requiredItems || items.length;
 
   const [foundItems, setFoundItems] = useState<string[]>([]);
-  const [progress, setProgress] = useState({collected: 0, required: requiredItems});
+  const [progress, setProgress] = useState({ collected: 0, required: requiredItems });
   const [fetchingItem, setFetchingItem] = useState<string | null>(null);
-  const [missMarkers, setMissMarkers] = useState<{x: number; y: number; id: number}[]>([]);
+  const [missMarkers, setMissMarkers] = useState<{ x: number; y: number; id: number }[]>([]);
+  const { playClick, playError } = useGameSounds();
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -57,7 +59,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({data, onNext, on
   // Reset state when data changes
   useEffect(() => {
     setFoundItems([]);
-    setProgress({collected: 0, required: data.requiredItems || data.items?.length || 0});
+    setProgress({ collected: 0, required: data.requiredItems || data.items?.length || 0 });
   }, [data]);
 
   const handleSceneClick = async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -91,8 +93,9 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({data, onNext, on
       handleItemFound(hitItem);
     } else {
       // Miss
+      playError();
       const id = Date.now();
-      setMissMarkers((prev) => [...prev, {x: xPercent, y: yPercent, id}]);
+      setMissMarkers((prev) => [...prev, { x: xPercent, y: yPercent, id }]);
       setTimeout(() => {
         setMissMarkers((prev) => prev.filter((m) => m.id !== id));
       }, 800);
@@ -134,9 +137,9 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({data, onNext, on
 
   if (!items || items.length === 0) {
     return (
-      <Card style={{margin: 20, textAlign: "center"}}>
+      <Card style={{ margin: 20, textAlign: "center" }}>
         <Title level={4}>Dữ liệu không hợp lệ</Title>
-        <Button type="primary" onClick={onNext}>
+        <Button type="primary" onClick={() => { playClick(); onNext(); }}>
           Bỏ qua
         </Button>
       </Card>
@@ -178,7 +181,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({data, onNext, on
 
           {/* Miss Markers */}
           {missMarkers.map((marker) => (
-            <div key={marker.id} className="miss-marker" style={{left: `${marker.x}%`, top: `${marker.y}%`}} />
+            <div key={marker.id} className="miss-marker" style={{ left: `${marker.x}%`, top: `${marker.y}%` }} />
           ))}
         </div>
       </div>

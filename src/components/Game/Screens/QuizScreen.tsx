@@ -1,25 +1,27 @@
-import React, {useState, useEffect} from "react";
-import {Card, Button, Typography, message, Space, Alert} from "antd";
-import {CheckCircleOutlined, CloseCircleOutlined} from "@ant-design/icons";
-import type {QuizScreen as QuizScreenType} from "@/types/game.types";
+import React, { useState, useEffect } from "react";
+import { Card, Button, Typography, message, Space, Alert } from "antd";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import type { QuizScreen as QuizScreenType } from "@/types/game.types";
+import { useGameSounds } from "@/hooks/useSound";
 import "./styles.less";
 
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 interface Props {
   data: QuizScreenType;
   onNext: () => void;
-  onSubmitAnswer: (answerId: string) => Promise<{isCorrect: boolean; explanation?: string}>;
+  onSubmitAnswer: (answerId: string) => Promise<{ isCorrect: boolean; explanation?: string }>;
   fallbackImage?: string;
   loading?: boolean;
 }
 
-const QuizScreen: React.FC<Props> = ({data, onNext, onSubmitAnswer, fallbackImage, loading}) => {
+const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackImage, loading }) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [result, setResult] = useState<{isCorrect: boolean; explanation?: string} | null>(null);
+  const [result, setResult] = useState<{ isCorrect: boolean; explanation?: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { playClick } = useGameSounds();
 
   // Reset state when question changes
   useEffect(() => {
@@ -30,6 +32,7 @@ const QuizScreen: React.FC<Props> = ({data, onNext, onSubmitAnswer, fallbackImag
 
   const handleOptionClick = (index: number) => {
     if (result) return; // Prevent changing after submission
+    playClick();
     setSelectedOption(index);
   };
 
@@ -75,7 +78,7 @@ const QuizScreen: React.FC<Props> = ({data, onNext, onSubmitAnswer, fallbackImag
           </div>
 
           <div className="quiz-options">
-            <Space direction="vertical" style={{width: "100%"}} size="middle">
+            <Space direction="vertical" style={{ width: "100%" }} size="middle">
               {data.options?.map((option, index) => {
                 const isSelected = selectedOption === index;
                 let btnClass = "quiz-option-btn";
@@ -119,16 +122,16 @@ const QuizScreen: React.FC<Props> = ({data, onNext, onSubmitAnswer, fallbackImag
                 description={result.explanation}
                 type={result.isCorrect ? "success" : "error"}
                 showIcon
-                style={{marginTop: 20, marginBottom: 20}}
+                style={{ marginTop: 20, marginBottom: 20 }}
               />
-              <Button type="primary" size="large" onClick={onNext} block disabled={loading}>
+              <Button type="primary" size="large" onClick={() => { playClick(); onNext(); }} block disabled={loading}>
                 Tiếp tục hành trình
               </Button>
             </div>
           )}
 
           {!result && (
-            <div className="quiz-actions" style={{marginTop: 24}}>
+            <div className="quiz-actions" style={{ marginTop: 24 }}>
               <Button
                 type="primary"
                 size="large"

@@ -1,13 +1,14 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 // import { Button } from "antd"; // Unused
-import {Stage} from "@pixi/react";
+import { Stage } from "@pixi/react";
 import SenChibi from "@/components/SenChibi";
-import type {DialogueScreen as DialogueScreenType} from "@/types/game.types";
+import type { DialogueScreen as DialogueScreenType } from "@/types/game.types";
+import { useGameSounds } from "@/hooks/useSound";
 import "./styles.less";
 
 // const { Text, Paragraph } = Typography; // Unused
 
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 
 interface Props {
   data: DialogueScreenType;
@@ -15,12 +16,13 @@ interface Props {
   loading?: boolean;
 }
 
-const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
+const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const { playClick } = useGameSounds();
 
   // Determine current active dialogue
   const currentDialogue = data.content?.[currentIndex];
@@ -77,7 +79,7 @@ const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
 
   // Auto-scroll to bottom whenever text updates
   React.useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [displayedText, currentIndex]);
 
   const handleNextDialogue = () => {
@@ -89,8 +91,10 @@ const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
     }
 
     if (currentIndex < (data.content?.length || 0) - 1) {
+      playClick();
       setCurrentIndex(currentIndex + 1);
     } else if (!loading) {
+      playClick();
       onNext();
     }
   };
@@ -117,7 +121,7 @@ const DialogueScreen: React.FC<Props> = ({data, onNext, loading}) => {
             <Stage
               width={280}
               height={400}
-              options={{backgroundAlpha: 0}}
+              options={{ backgroundAlpha: 0 }}
               style={{
                 position: "absolute",
                 bottom: -100,

@@ -1,22 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {Card, Button, Typography, Spin, Modal, message, Progress} from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, Typography, Spin, Modal, message, Progress } from "antd";
+import Button from "@/components/common/Button";
 import {
   ArrowLeftOutlined,
   TrophyTwoTone,
   RedoOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
-  SoundOutlined,
-  MutedOutlined,
   CommentOutlined,
 } from "@ant-design/icons";
 import gameService from "@/services/game.service";
-import type {Screen, Level} from "@/types/game.types";
-import {SCREEN_TYPES} from "@/types/game.types";
-import {getImageUrl} from "@/utils/image.helper";
-import {useAppDispatch, useAppSelector} from "@/store/hooks";
-import {useAuth} from "@/hooks/useAuth";
+import type { Screen, Level } from "@/types/game.types";
+import { SCREEN_TYPES } from "@/types/game.types";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAuth } from "@/hooks/useAuth";
 import AIChat from "@/components/AIChat";
 
 // Screens
@@ -26,18 +24,24 @@ import HiddenObjectScreen from "@/components/Game/Screens/HiddenObjectScreen";
 import TimelineScreen from "@/components/Game/Screens/TimelineScreen";
 import ImageViewerScreen from "@/components/Game/Screens/ImageViewerScreen";
 import VideoScreen from "@/components/Game/Screens/VideoScreen";
+import {
+  setCurrentLevel,
+} from "@/store/slices/gameSlice";
+import { setOverlayOpen, setActiveContext } from "@/store/slices/aiSlice";
+import { useGameSounds } from "@/hooks/useSound";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
-import {setOverlayOpen, setActiveContext} from "@/store/slices/aiSlice";
+import { SoundOutlined, MutedOutlined } from "@ant-design/icons";
 
 import "./styles.less";
 
-const {Title, Paragraph} = Typography;
+const { Title, Paragraph } = Typography;
 
 const GamePlayPage: React.FC = () => {
-  const {levelId} = useParams<{levelId: string}>();
+  const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const {isOverlayOpen, layoutMode} = useAppSelector((state) => state.ai);
+  const { isOverlayOpen, layoutMode } = useAppSelector((state) => state.ai);
+  const { isMuted } = useAppSelector((state) => state.audio);
   const isChatOpen = isOverlayOpen && layoutMode === "absolute";
 
   // State
@@ -45,69 +49,26 @@ const GamePlayPage: React.FC = () => {
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen | null>(null);
   const [levelInfo, setLevelInfo] = useState<Level | null>(null);
-  const [progress, setProgress] = useState({completed: 0, total: 0});
+  const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [score, setScore] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [gameCompleted, setGameCompleted] = useState(false);
   const [completionData, setCompletionData] = useState<any>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const bgmAudioRef = React.useRef<HTMLAudioElement | null>(null);
 
   const [pointsGained, setPointsGained] = useState<number | null>(null);
 
-  // Audio State
-  const [bgmVolume, setBgmVolume] = useState(0.5);
-  const [sfxVolume, setSfxVolume] = useState(1.0);
+  // Global Audio State
+  const { playClick, playSuccess, playError, playCollect, playWin } = useGameSounds();
 
   useEffect(() => {
     if (levelId) {
       initGame(parseInt(levelId));
     }
     return () => {
-      // Cleanup BGM
-      if (bgmAudioRef.current) {
-        bgmAudioRef.current.pause();
-        bgmAudioRef.current = null;
-      }
+      dispatch(setCurrentLevel(null));
     };
-  }, [levelId]);
-
-  // Handle BGM Playback
-  useEffect(() => {
-    if (!levelInfo?.backgroundMusic) return;
-
-    const bgmUrl = getImageUrl(levelInfo.backgroundMusic);
-
-    if (!bgmAudioRef.current) {
-      bgmAudioRef.current = new Audio(bgmUrl);
-      bgmAudioRef.current.loop = true;
-    } else if (bgmAudioRef.current.src !== bgmUrl) {
-      bgmAudioRef.current.src = bgmUrl;
-    }
-
-    // Update volume
-    bgmAudioRef.current.volume = bgmVolume;
-
-    const isVideoScreen = currentScreen?.type === SCREEN_TYPES.VIDEO;
-
-    if (isMuted || isVideoScreen) {
-      bgmAudioRef.current.pause();
-    } else {
-      // Play only if game is not loading and not completed
-      if (!loading && !gameCompleted) {
-        const playPromise = bgmAudioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.warn("Autoplay prevented:", error);
-            // Interaction needed mainly
-          });
-        }
-      } else {
-        bgmAudioRef.current.pause();
-      }
-    }
-  }, [levelInfo?.backgroundMusic, isMuted, bgmVolume, loading, gameCompleted, currentScreen?.type]);
+  }, [levelId, dispatch]);
 
   const triggerScoreAnimation = (points: number) => {
     if (points > 0) {
@@ -124,7 +85,8 @@ const GamePlayPage: React.FC = () => {
       setSessionId(data.sessionId);
       setCurrentScreen(data.currentScreen);
       setLevelInfo(data.level);
-      setProgress({completed: 0, total: data.level.totalScreens || 10});
+      dispatch(setCurrentLevel(data.level));
+      setProgress({ completed: 0, total: data.level.totalScreens || 10 });
       setStartTime(Date.now());
     } catch (error) {
       message.error("Không thể bắt đầu màn chơi. Vui lòng thử lại.");
@@ -136,6 +98,7 @@ const GamePlayPage: React.FC = () => {
 
   const handleNextScreen = async () => {
     if (!sessionId) return;
+    playClick();
 
     try {
       setLoading(true);
@@ -172,7 +135,10 @@ const GamePlayPage: React.FC = () => {
     if (!sessionId) throw new Error("No session");
     const res = await gameService.submitAnswer(sessionId, answerId);
     if (res.isCorrect) {
+      playSuccess();
       setScore((prev) => prev + res.pointsEarned);
+    } else {
+      playError();
     }
     return res;
   };
@@ -181,7 +147,10 @@ const GamePlayPage: React.FC = () => {
     if (!sessionId) throw new Error("No session");
     const res = await gameService.submitTimeline(sessionId, order);
     if (res.isCorrect) {
+      playSuccess();
       setScore((prev) => prev + (res.pointsEarned || 0));
+    } else {
+      playError();
     }
     return res;
   };
@@ -189,11 +158,14 @@ const GamePlayPage: React.FC = () => {
   const handleCollectItem = async (itemId: string) => {
     if (!levelId) throw new Error("No level ID");
     const res = await gameService.collectClue(parseInt(levelId), itemId);
+    if (res.item) {
+      playCollect();
+    }
     setScore((prev) => prev + res.pointsEarned);
     return res;
   };
 
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const handleFinishLevel = async () => {
     if (!levelId) return;
@@ -207,8 +179,8 @@ const GamePlayPage: React.FC = () => {
         passed: true,
         score: score,
         requiredScore: 0,
-        rewards: {coins: 0, petals: 0},
-        breakdown: {baseScore: score, timeBonus: 0},
+        rewards: { coins: 0, petals: 0 },
+        breakdown: { baseScore: score, timeBonus: 0 },
         isCompleted: true,
         message: "Admin Mode: Completed without saving.",
       };
@@ -223,6 +195,9 @@ const GamePlayPage: React.FC = () => {
 
     try {
       const result = await gameService.completeLevel(parseInt(levelId), score, timeSpent);
+      if (result.passed !== false) {
+        playWin();
+      }
       setCompletionData(result);
       setGameCompleted(true);
     } catch (error: any) {
@@ -273,14 +248,14 @@ const GamePlayPage: React.FC = () => {
         return <VideoScreen data={currentScreen as any} {...commonProps} />;
       default:
         return (
-          <div style={{textAlign: "center", padding: 50, color: "white"}}>
-            <Title level={3} style={{color: "white"}}>
+          <div style={{ textAlign: "center", padding: 50, color: "white" }}>
+            <Title level={3} style={{ color: "white" }}>
               Sắp ra mắt
             </Title>
-            <Paragraph style={{color: "rgba(255,255,255,0.8)"}}>
+            <Paragraph style={{ color: "rgba(255,255,255,0.8)" }}>
               Loại màn hình này ({currentScreen.type}) đang được phát triển.
             </Paragraph>
-            <Button onClick={handleNextScreen}>Bỏ qua</Button>
+            <Button variant="primary" onClick={handleNextScreen}>Bỏ qua</Button>
           </div>
         );
     }
@@ -294,7 +269,7 @@ const GamePlayPage: React.FC = () => {
         <Card className="completion-card">
           <div className="custom-completion-layout">
             <div className="completion-header">
-              <TrophyTwoTone twoToneColor="#faad14" style={{fontSize: 80}} />
+              <TrophyTwoTone twoToneColor="#faad14" style={{ fontSize: 80 }} />
               <Title level={2} className="completion-title">
                 {completionData.passed === false ? "RẤT TIẾC!" : "HOÀN THÀNH MÀN CHƠI!"}
               </Title>
@@ -363,10 +338,10 @@ const GamePlayPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="rewards-summary info-only">
-                    <Title level={4} style={{color: "#faad14"}}>
+                    <Title level={4} style={{ color: "#faad14" }}>
                       🔄 Chế độ ôn tập
                     </Title>
-                    <Paragraph style={{fontSize: 16, marginBottom: 0}}>
+                    <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>
                       Bạn đã hoàn thành màn chơi này rồi! <br /> Lần chơi này không nhận thêm phần thưởng.
                     </Paragraph>
                   </div>
@@ -376,24 +351,28 @@ const GamePlayPage: React.FC = () => {
 
             <div className="completion-footer">
               <Button
-                type="primary"
-                key="console"
-                size="large"
+                variant="primary"
+                buttonSize="large"
                 icon={<ArrowLeftOutlined />}
                 onClick={() => navigate("/game/chapters")}
               >
                 Quay về Sảnh
               </Button>
-              <Button key="buy" size="large" icon={<RedoOutlined />} onClick={() => window.location.reload()}>
+              <Button
+                variant="outline"
+                buttonSize="large"
+                icon={<RedoOutlined />}
+                onClick={() => { playClick(); window.location.reload(); }}
+              >
                 Chơi Lại
               </Button>
               {(completionData.newTotals || completionData.passed || completionData.isCompleted) && (
                 <Button
-                  type="primary"
-                  key="next"
-                  size="large"
+                  variant="primary"
+                  buttonSize="large"
                   className="next-level-btn"
                   onClick={() => {
+                    playClick();
                     const chapterId = levelInfo?.chapterId || 1;
                     navigate(`/game/chapters/${chapterId}/levels`);
                   }}
@@ -414,8 +393,10 @@ const GamePlayPage: React.FC = () => {
       <div className="game-container">
         <div className="game-overlay-ui">
           <Button
+            variant="outline"
             icon={<ArrowLeftOutlined />}
             onClick={() => {
+              playClick();
               Modal.confirm({
                 title: "Thoát màn chơi?",
                 content: "Tiến độ hiện tại của bạn sẽ bị mất.",
@@ -430,16 +411,16 @@ const GamePlayPage: React.FC = () => {
           </Button>
 
           <div className="level-info">
-            <Title level={5} style={{margin: 0, color: "white"}}>
+            <Title level={5} style={{ margin: 0, color: "white" }}>
               {levelInfo?.name}
             </Title>
             <Progress
               percent={Math.round((progress.completed / (progress.total || 1)) * 100)}
               size="small"
               status="active"
-              strokeColor={{"0%": "#108ee9", "100%": "#87d068"}}
+              strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
               showInfo={false}
-              style={{width: 150}}
+              style={{ width: 150 }}
             />
           </div>
 
@@ -453,10 +434,35 @@ const GamePlayPage: React.FC = () => {
             {pointsGained && <div className="score-gained-popup">+{pointsGained}</div>}
           </div>
 
+          <AudioSettingsPopover>
+            <Button
+              variant="outline"
+              className="audio-settings-trigger-btn"
+              icon={
+                isMuted ? (
+                  <MutedOutlined style={{ fontSize: 24, color: "white" }} />
+                ) : (
+                  <SoundOutlined style={{ fontSize: 24, color: "white" }} />
+                )
+              }
+              buttonSize="large"
+              style={{
+                backgroundColor: "rgba(0,0,0,0.5)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                marginLeft: 12,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "auto",
+              }}
+            />
+          </AudioSettingsPopover>
+
           <Button
+            variant="outline"
             className="ai-chat-trigger-btn"
-            icon={<CommentOutlined style={{fontSize: 24, color: "white"}} />}
-            size="large"
+            icon={<CommentOutlined style={{ fontSize: 24, color: "white" }} />}
+            buttonSize="large"
             style={{
               backgroundColor: "rgba(0,0,0,0.5)",
               border: "1px solid rgba(255,255,255,0.3)",
@@ -467,30 +473,14 @@ const GamePlayPage: React.FC = () => {
               pointerEvents: "auto",
             }}
             onClick={() => {
-              dispatch(setActiveContext({levelId: levelInfo?.id}));
-              dispatch(setOverlayOpen({open: true, mode: "absolute"}));
+              playClick();
+              dispatch(setActiveContext({ levelId: levelInfo?.id }));
+              dispatch(setOverlayOpen({ open: true, mode: "absolute" }));
             }}
           />
         </div>
 
         <div className="game-viewport">{renderScreen()}</div>
-
-        <AudioSettingsPopover
-          isMuted={isMuted}
-          onMuteToggle={setIsMuted}
-          bgmVolume={bgmVolume}
-          onBgmVolumeChange={setBgmVolume}
-          sfxVolume={sfxVolume}
-          onSfxVolumeChange={setSfxVolume}
-        >
-          <Button
-            icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
-            className="sound-button"
-            size="large"
-            title="Cài đặt âm thanh"
-            style={{position: "absolute", bottom: 20, right: 80, zIndex: 100}}
-          />
-        </AudioSettingsPopover>
       </div>
     );
   };
@@ -514,10 +504,11 @@ const GamePlayPage: React.FC = () => {
       {renderContent()}
 
       <Button
+        variant="outline"
         icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-        onClick={() => setIsFullscreen(!isFullscreen)}
+        onClick={() => { playClick(); setIsFullscreen(!isFullscreen); }}
         className="fullscreen-button"
-        size="large"
+        buttonSize="large"
         title={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
       />
 

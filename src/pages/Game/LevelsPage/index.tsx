@@ -6,7 +6,9 @@ import {
   fetchLevelsByChapter,
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
-import { Button, Spin, Typography, Progress, Switch, Tooltip, message } from "antd";
+import { Spin, Typography, Progress, Switch, Tooltip, message } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import type { Level } from "@/types";
 import "./styles.less";
@@ -24,7 +26,8 @@ const LevelsPage: React.FC = () => {
   const { levels, levelsLoading, currentChapter } = useAppSelector(
     (state) => state.game,
   );
-  
+  const { playClick } = useGameSounds();
+
   // Controls validity of card "Always On" mode
   const [showDetailCards, setShowDetailCards] = React.useState(true);
 
@@ -39,19 +42,20 @@ const LevelsPage: React.FC = () => {
 
   // ✅ Force refetch when progress changes (level completed)
   const { progress } = useAppSelector((state) => state.game); // Needs to be destructured from state.game
-  
+
   useEffect(() => {
     if (chapterId) {
-       dispatch(fetchLevelsByChapter(Number(chapterId)));
+      dispatch(fetchLevelsByChapter(Number(chapterId)));
     }
   }, [dispatch, chapterId, progress?.completedLevels]); // Re-run when completion status changes
 
   const handleStartLevel = (level: Level) => {
     if (!level.isLocked || user?.role === 'admin') {
+      playClick();
       dispatch(setCurrentLevel(level));
       navigate(`/game/play/${level.id}`);
     } else {
-        message.warning("Màn chơi này đang bị khóa!");
+      message.warning("Màn chơi này đang bị khóa!");
     }
   };
 
@@ -71,24 +75,24 @@ const LevelsPage: React.FC = () => {
     <div className="levels-page-container">
       {/* BACKGROUND DECORATIONS - Kept in Page for now or move to layout */}
       <div className="decorative-background">
-          <div className="bg-lotus-container">
-             <img src={lotus_1} className="bg-lotus lotus-1" alt="Lotus" />
-             <img src={lotus_2} className="bg-lotus lotus-2" alt="Lotus" />
-          </div>
+        <div className="bg-lotus-container">
+          <img src={lotus_1} className="bg-lotus lotus-1" alt="Lotus" />
+          <img src={lotus_2} className="bg-lotus lotus-2" alt="Lotus" />
+        </div>
       </div>
 
       {/* HEADER */}
       <div className="fixed-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
-          type="link"
+          variant="ghost"
           icon={<span>←</span>}
-          onClick={() => navigate("/game/chapters")}
+          onClick={() => { navigate("/game/chapters"); }}
         >
           Trở về
         </Button>
 
         {currentChapter && (
-           <div className="chapter-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="chapter-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Title level={5} style={{ margin: 0 }}>
               {currentChapter.name}
             </Title>
@@ -104,22 +108,22 @@ const LevelsPage: React.FC = () => {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-           <Typography.Text style={{ fontSize: 12 }}>Chi tiết</Typography.Text>
-           <Tooltip title="Bấm vào đây để thêm thẻ màn chơi"><Switch 
-              checkedChildren={<EyeOutlined />}
-              unCheckedChildren={<EyeInvisibleOutlined />}
-              checked={showDetailCards}
-              onChange={(checked) => setShowDetailCards(checked)}
-           /></Tooltip>
+          <Typography.Text style={{ fontSize: 12 }}>Chi tiết</Typography.Text>
+          <Tooltip title="Bấm vào đây để thêm thẻ màn chơi"><Switch
+            checkedChildren={<EyeOutlined />}
+            unCheckedChildren={<EyeInvisibleOutlined />}
+            checked={showDetailCards}
+            onChange={(checked) => { playClick(); setShowDetailCards(checked); }}
+          /></Tooltip>
         </div>
       </div>
 
       {/* MAP AREA */}
-      <ChapterMap 
-          levels={user?.role === 'admin' ? levels.map(l => ({...l, isLocked: false})) : levels} 
-          currentActiveLevelId={currentActiveLevelId} 
-          onLevelClick={handleStartLevel}
-          showDetailCards={showDetailCards}
+      <ChapterMap
+        levels={user?.role === 'admin' ? levels.map(l => ({ ...l, isLocked: false })) : levels}
+        currentActiveLevelId={currentActiveLevelId}
+        onLevelClick={handleStartLevel}
+        showDetailCards={showDetailCards}
       />
     </div>
   );

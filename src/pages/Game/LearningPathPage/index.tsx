@@ -5,19 +5,21 @@ import React, {
   Suspense,
   lazy,
 } from "react";
-import { useNavigate, useParams,
+import {
+  useNavigate, useParams,
 } from "react-router-dom";
 import {
   Row,
   Col,
   Card,
-  Button,
   Spin,
   Empty,
   Typography,
   Tag,
   message,
 } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
 import {
   BookOutlined,
   ClockCircleOutlined,
@@ -38,13 +40,14 @@ const LearningDetail = lazy(() => import("./LearningDetail"));
 const { Title, Paragraph } = Typography;
 
 const LearningPathPage: React.FC = () => {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [learningPath, setLearningPath] = useState<LearningModule[]>([]);
   const [progress, setProgress] = useState<any>(null);
+  const { playClick } = useGameSounds();
 
   useEffect(() => {
     if (!id) {
@@ -86,10 +89,10 @@ const LearningPathPage: React.FC = () => {
       <Suspense
         fallback={
           <div className="loading-overlay">
-             <div className="loading-content">
-                <Spin size="large" />
-                <p>Đang tải bài học...</p>
-             </div>
+            <div className="loading-content">
+              <Spin size="large" />
+              <p>Đang tải bài học...</p>
+            </div>
           </div>
         }
       >
@@ -184,131 +187,140 @@ const LearningPathPage: React.FC = () => {
                 const isLocked = !isAdmin && index > 0 && !learningPath[index - 1].isCompleted;
 
                 return (
-                <Col xs={24} sm={12} lg={8} key={module.id}>
-                  <motion.div
-                    variants={{
-                      hidden: { y: 20, opacity: 0 },
-                      visible: {
-                        y: 0,
-                        opacity: 1,
-                      },
-                    }}
-                    style={{ height: '100%' }}
-                  >
-                    <Card
-                      hoverable={!isLocked}
-                      className={`learning-card ${
-                        module.isCompleted ? "completed" : ""
-                      } ${isLocked ? "locked" : ""}`}
-                      style={{ height: '100%' }}
-                      bodyStyle={{ 
-                          flex: 1, 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          padding: 24 
+                  <Col xs={24} sm={12} lg={8} key={module.id}>
+                    <motion.div
+                      variants={{
+                        hidden: { y: 20, opacity: 0 },
+                        visible: {
+                          y: 0,
+                          opacity: 1,
+                        },
                       }}
-                      cover={
-                          <div className="learning-cover" style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
-                              <img 
-                                  src={module.thumbnail || defaultThumbnail} 
-                                  alt={module.title} 
-                                  onError={(e) => {
-                                      e.currentTarget.src = defaultThumbnail;
-                                  }}
-                                  style={{ 
-                                      width: '100%', 
-                                      height: '100%', 
-                                      objectFit: 'cover',
-                                      filter: isLocked ? "grayscale(100%) contrast(80%)" : "none", 
-                                      opacity: isLocked ? 0.8 : 1,
-                                      transition: 'transform 0.5s ease',
-                                  }}
-                                  className="card-image"
-                              />
-                              {module.isCompleted && (
-                                <div style={{ 
-                                    position: 'absolute', top: 12, right: 12, 
-                                    background: 'rgba(255, 255, 255, 0.95)', color: '#52c41a', 
-                                    padding: '6px 14px', borderRadius: 20, 
-                                    fontSize: 12, fontWeight: 700,
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                    display: 'flex', alignItems: 'center', gap: 6
-                                }}>
-                                  <CheckCircleOutlined /> Hoàn thành
-                                </div>
-                              )}
-                              {isLocked && (
-                                 <div style={{ 
-                                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
-                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                     background: 'rgba(240, 240, 240, 0.6)'
-                                 }}>
-                                    <div style={{ 
-                                        width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.8)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                                    }}>
-                                        <LockOutlined style={{ fontSize: 28, color: '#bfbfbf' }} />
-                                    </div>
-                                 </div>
-                              )}
-                          </div>
-                      }
+                      style={{ height: '100%' }}
                     >
-                      <div className="module-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <div className="tags" style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
-                          <Tag
-                            color={isLocked ? "default" : getDifficultyColor(module.difficulty || 'easy')}
-                            style={{ 
+                      <Card
+                        hoverable={!isLocked}
+                        className={`learning-card ${module.isCompleted ? "completed" : ""
+                          } ${isLocked ? "locked" : ""}`}
+                        style={{ height: '100%' }}
+                        onClick={() => {
+                          if (!isLocked) {
+                            playClick();
+                            handlesNavigate(`/game/learning/${module.id}`);
+                          }
+                        }}
+                        bodyStyle={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          padding: 24
+                        }}
+                        cover={
+                          <div className="learning-cover" style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
+                            <img
+                              src={module.thumbnail || defaultThumbnail}
+                              alt={module.title}
+                              onError={(e) => {
+                                e.currentTarget.src = defaultThumbnail;
+                              }}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                filter: isLocked ? "grayscale(100%) contrast(80%)" : "none",
+                                opacity: isLocked ? 0.8 : 1,
+                                transition: 'transform 0.5s ease',
+                              }}
+                              className="card-image"
+                            />
+                            {module.isCompleted && (
+                              <div style={{
+                                position: 'absolute', top: 12, right: 12,
+                                background: 'rgba(255, 255, 255, 0.95)', color: '#52c41a',
+                                padding: '6px 14px', borderRadius: 20,
+                                fontSize: 12, fontWeight: 700,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                display: 'flex', alignItems: 'center', gap: 6
+                              }}>
+                                <CheckCircleOutlined /> Hoàn thành
+                              </div>
+                            )}
+                            {isLocked && (
+                              <div style={{
+                                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                background: 'rgba(240, 240, 240, 0.6)'
+                              }}>
+                                <div style={{
+                                  width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.8)',
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                }}>
+                                  <LockOutlined style={{ fontSize: 28, color: '#bfbfbf' }} />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        }
+                      >
+                        <div className="module-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <div className="tags" style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
+                            <Tag
+                              color={isLocked ? "default" : getDifficultyColor(module.difficulty || 'easy')}
+                              style={{
                                 borderRadius: 6, margin: 0, padding: '4px 12px', border: 'none',
                                 fontWeight: 600, fontSize: 11
-                            }}
-                          >
-                            {module.difficulty?.toUpperCase() || 'EASY'}
-                          </Tag>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#8c8c8c' }}>
-                             <ClockCircleOutlined /> {module.estimatedDuration} phút
+                              }}
+                            >
+                              {module.difficulty?.toUpperCase() || 'EASY'}
+                            </Tag>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#8c8c8c' }}>
+                              <ClockCircleOutlined /> {module.estimatedDuration} phút
+                            </div>
+                          </div>
+
+                          <Title level={4} ellipsis={{ rows: 2 }} style={{ marginBottom: 12, fontSize: 18, lineHeight: 1.4, flex: 1 }}>
+                            {module.title}
+                          </Title>
+
+                          <div style={{ marginTop: 'auto' }}>
+                            {module.isCompleted ? (
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+                                <Tag color="success" style={{ borderRadius: 6, border: 'none', padding: '2px 10px', background: 'rgba(82, 196, 26, 0.1)', color: '#52c41a' }}>
+                                  Đã nhận thưởng
+                                </Tag>
+                                <div style={{ fontSize: 24, fontWeight: 800, color: module.score && module.score >= 80 ? '#52c41a' : '#faad14', lineHeight: 1 }}>
+                                  {module.score}<span style={{ fontSize: 12, fontWeight: 500, color: '#8c8c8c', marginLeft: 4 }}>/100</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div style={{ height: 28, marginBottom: 20 }}>
+                                {isLocked && <div style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}><LockOutlined /> Yêu cầu hoàn thành bài trước</div>}
+                                {!isLocked && <Tag color="processing" style={{ borderRadius: 6, border: 'none' }}>Chưa học</Tag>}
+                              </div>
+                            )}
+
+                            <Button
+                              fullWidth
+                              buttonSize="large"
+                              disabled={isLocked}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!isLocked) handlesNavigate(`/game/learning/${module.id}`);
+                              }}
+                              variant={module.isCompleted ? "outline" : "primary"}
+                              className="action-button"
+                              icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <BookOutlined /> : <PlayCircleOutlined />)}
+                            >
+                              {isLocked ? "Chưa mở khóa" : (module.isCompleted ? "Ôn lại" : "Học ngay")}
+                            </Button>
                           </div>
                         </div>
-
-                        <Title level={4} ellipsis={{ rows: 2 }} style={{ marginBottom: 12, fontSize: 18, lineHeight: 1.4, flex: 1 }}>
-                          {module.title}
-                        </Title>
-
-                        <div style={{ marginTop: 'auto' }}>
-                            {module.isCompleted ? (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-                                    <Tag color="success" style={{ borderRadius: 6, border: 'none', padding: '2px 10px', background: 'rgba(82, 196, 26, 0.1)', color: '#52c41a' }}>
-                                        Đã nhận thưởng
-                                    </Tag>
-                                    <div style={{ fontSize: 24, fontWeight: 800, color: module.score && module.score >= 80 ? '#52c41a' : '#faad14', lineHeight: 1 }}>
-                                        {module.score}<span style={{ fontSize: 12, fontWeight: 500, color: '#8c8c8c', marginLeft: 4 }}>/100</span>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div style={{ height: 28, marginBottom: 20 }}>
-                                    {isLocked && <div style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}><LockOutlined /> Yêu cầu hoàn thành bài trước</div>}
-                                    {!isLocked && <Tag color="processing" style={{ borderRadius: 6, border: 'none' }}>Chưa học</Tag>}
-                                </div>
-                            )}
-                            
-                            <Button
-                                block
-                                size="large"
-                                disabled={isLocked}
-                                onClick={() => !isLocked && handlesNavigate(`/game/learning/${module.id}`)}
-                                type={module.isCompleted ? "default" : "primary"}
-                                className="action-button"
-                                icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <BookOutlined /> : <PlayCircleOutlined />)}
-                            >
-                                {isLocked ? "Chưa mở khóa" : (module.isCompleted ? "Ôn lại" : "Học ngay")}
-                            </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                </Col>
-              );})}
+                      </Card>
+                    </motion.div>
+                  </Col>
+                );
+              })}
             </Row>
           )}
         </motion.div>

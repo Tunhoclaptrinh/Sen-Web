@@ -1,8 +1,7 @@
-import React, {useState, useEffect, startTransition} from "react";
+import React, { useState, useEffect, startTransition } from "react";
 import {
   Card,
   Typography,
-  Button,
   Radio,
   Spin,
   message,
@@ -15,6 +14,8 @@ import {
   Progress,
   Tooltip,
 } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
 import {
   ArrowLeftOutlined,
   CheckCircleFilled,
@@ -26,15 +27,15 @@ import {
   CheckOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
-import {useNavigate, useParams} from "react-router-dom";
-import learningService, {LearningModule} from "@/services/learning.service";
-import {motion, AnimatePresence} from "framer-motion";
-import {getYouTubeEmbedUrl} from "@/utils/youtube.helper";
+import { useNavigate, useParams } from "react-router-dom";
+import learningService, { LearningModule } from "@/services/learning.service";
+import { motion, AnimatePresence } from "framer-motion";
+import { getYouTubeEmbedUrl } from "@/utils/youtube.helper";
 
-const {Title, Paragraph, Text} = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 const LearningDetail: React.FC = () => {
-  const {id} = useParams<{id: string}>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   // State
@@ -45,10 +46,12 @@ const LearningDetail: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<"content" | "quiz">("content");
   const [timeLeft, setTimeLeft] = useState(0);
   const [warned, setWarned] = useState(false);
+  const { playClick, playSuccess, playError } = useGameSounds();
 
   const handleNavigate = React.useCallback(
     (path: string) => {
       startTransition(() => {
+        playClick();
         navigate(path);
       });
     },
@@ -78,13 +81,15 @@ const LearningDetail: React.FC = () => {
   }, [id, fetchModuleDetail]);
 
   const handleAnswerChange = (questionId: number, optionIndex: number) => {
-    setAnswers((prev) => ({...prev, [questionId]: optionIndex}));
+    playClick();
+    setAnswers((prev) => ({ ...prev, [questionId]: optionIndex }));
   };
 
   const handleNextStep = () => {
+    playClick();
     if (module?.quiz) {
       setCurrentStep("quiz");
-      window.scrollTo({top: 0, behavior: "smooth"});
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       // If no quiz, just complete
       handleNavigate("/game/learning");
@@ -92,8 +97,9 @@ const LearningDetail: React.FC = () => {
   };
 
   const handlePrevStep = () => {
+    playClick();
     setCurrentStep("content");
-    window.scrollTo({top: 0, behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Timer Logic
@@ -168,25 +174,27 @@ const LearningDetail: React.FC = () => {
           const isLevelUp = responseData.isLevelUp;
           const newLevel = responseData.newLevel;
 
+          playSuccess();
+
           Modal.success({
             title: null, // Custom title below
             icon: null,
             width: 500,
             className: "completion-modal",
             content: (
-              <div style={{textAlign: "center", padding: "10px 0"}}>
+              <div style={{ textAlign: "center", padding: "10px 0" }}>
                 <motion.div
-                  initial={{scale: 0}}
-                  animate={{scale: 1}}
-                  transition={{type: "spring", stiffness: 260, damping: 20}}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
                 >
-                  <CheckCircleFilled style={{fontSize: 64, color: "#52c41a", marginBottom: 16}} />
+                  <CheckCircleFilled style={{ fontSize: 64, color: "#52c41a", marginBottom: 16 }} />
                 </motion.div>
 
-                <Title level={2} style={{color: "#52c41a", marginBottom: 8}}>
+                <Title level={2} style={{ color: "#52c41a", marginBottom: 8 }}>
                   Xuất Sắc!
                 </Title>
-                <Text style={{fontSize: 16, color: "#555"}}>Bạn đã hoàn thành bài học</Text>
+                <Text style={{ fontSize: 16, color: "#555" }}>Bạn đã hoàn thành bài học</Text>
 
                 <div
                   style={{
@@ -198,12 +206,12 @@ const LearningDetail: React.FC = () => {
                     marginBottom: 24,
                   }}
                 >
-                  <div style={{fontSize: 36, fontWeight: 800, color: "#52c41a"}}>{response.data.score}</div>
+                  <div style={{ fontSize: 36, fontWeight: 800, color: "#52c41a" }}>{response.data.score}</div>
                   <Text type="secondary">Phần trăm cúp</Text>
                 </div>
 
                 {isLevelUp && (
-                  <motion.div initial={{y: 20, opacity: 0}} animate={{y: 0, opacity: 1}} style={{marginBottom: 24}}>
+                  <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={{ marginBottom: 24 }}>
                     <Tag
                       color="gold"
                       style={{
@@ -220,12 +228,12 @@ const LearningDetail: React.FC = () => {
                   </motion.div>
                 )}
 
-                <div style={{display: "flex", justifyContent: "center", gap: 24}}>
-                  <div style={{textAlign: "center"}}>
-                    <div style={{color: "#faad14", fontSize: 20, fontWeight: "bold"}}>
+                <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ color: "#faad14", fontSize: 20, fontWeight: "bold" }}>
                       +{response.data.pointsEarned}
                     </div>
-                    <Text type="secondary" style={{fontSize: 12}}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
                       CÚP
                     </Text>
                   </div>
@@ -237,32 +245,33 @@ const LearningDetail: React.FC = () => {
             okButtonProps: {
               size: "large",
               shape: "round",
-              style: {background: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)", border: "none"},
+              style: { background: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)", border: "none" },
             },
             onOk: () => {
               handleNavigate("/game/learning");
             },
           });
         } else {
+          playError();
           Modal.warning({
             title: "Cần Cố Gắng Hơn",
-            icon: <CloseCircleFilled style={{color: "#ff4d4f"}} />,
+            icon: <CloseCircleFilled style={{ color: "#ff4d4f" }} />,
             content: (
-              <div style={{textAlign: "center", marginTop: 16}}>
-                <Title level={2} style={{color: "#ff4d4f", margin: 0}}>
+              <div style={{ textAlign: "center", marginTop: 16 }}>
+                <Title level={2} style={{ color: "#ff4d4f", margin: 0 }}>
                   {response.data.score}
                 </Title>
                 <Text type="secondary">Cần đạt: {module.quiz?.passingScore || 70}/100 cúp</Text>
-                <p style={{marginTop: 16}}>Đừng nản chí! Hãy ôn lại kiến thức và thử lại nhé.</p>
+                <p style={{ marginTop: 16 }}>Đừng nản chí! Hãy ôn lại kiến thức và thử lại nhé.</p>
               </div>
             ),
             okText: "Thử lại ngay",
             centered: true,
-            okButtonProps: {size: "large", shape: "round", danger: true},
+            okButtonProps: { size: "large", shape: "round", danger: true },
             onOk: () => {
               setAnswers({});
               const element = document.getElementById("quiz-section");
-              if (element) element.scrollIntoView({behavior: "smooth"});
+              if (element) element.scrollIntoView({ behavior: "smooth" });
             },
           });
         }
@@ -307,19 +316,19 @@ const LearningDetail: React.FC = () => {
           marginBottom: -40,
         }}
       >
-        <div style={{position: "absolute", top: 24, left: 24}}>
+        <div style={{ position: "absolute", top: 24, left: 24 }}>
           <Button
-            type="text"
-            icon={<ArrowLeftOutlined style={{color: "#A31D1D", fontSize: 20}} />}
+            variant="ghost"
+            icon={<ArrowLeftOutlined style={{ color: "#A31D1D", fontSize: 20 }} />}
             onClick={() => (currentStep === "quiz" ? handlePrevStep() : handleNavigate("/game/learning"))}
-            style={{color: "#A31D1D", fontWeight: 600, fontSize: 16}}
+            style={{ color: "#A31D1D", fontWeight: 600, fontSize: 16 }}
           >
             {currentStep === "quiz" ? "Trở về bài học" : "Quay lại"}
           </Button>
         </div>
       </div>
 
-      <div style={{maxWidth: "100%", margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1}}>
+      <div style={{ maxWidth: "100%", margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
         {/* CSS for Article Content */}
         <style>{`
                     .article-content {
@@ -393,10 +402,10 @@ const LearningDetail: React.FC = () => {
               {currentStep === "content" && (
                 <motion.div
                   key="content-step"
-                  initial={{y: 20, opacity: 0}}
-                  animate={{y: 0, opacity: 1}}
-                  exit={{y: -20, opacity: 0}}
-                  transition={{duration: 0.4}}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.4 }}
                 >
                   {/* Main Content Card */}
                   <Card
@@ -406,19 +415,19 @@ const LearningDetail: React.FC = () => {
                       margin: "0 auto 32px auto",
                       overflow: "hidden",
                     }}
-                    bodyStyle={{padding: "40px"}}
+                    bodyStyle={{ padding: "40px" }}
                   >
-                    <div style={{display: "flex", alignItems: "center", gap: 12, marginBottom: 20}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
                       <Tag
                         color="#A31D1D"
-                        style={{padding: "4px 16px", borderRadius: 20, fontWeight: 600, border: "none", color: "white"}}
+                        style={{ padding: "4px 16px", borderRadius: 20, fontWeight: 600, border: "none", color: "white" }}
                       >
                         {module.contentType?.toUpperCase()}
                       </Tag>
                       <Tag
                         icon={<FireFilled />}
                         color="#faad14"
-                        style={{borderRadius: 20, border: "none", color: "#fff", fontWeight: 600, padding: "4px 12px"}}
+                        style={{ borderRadius: 20, border: "none", color: "#fff", fontWeight: 600, padding: "4px 12px" }}
                       >
                         {module.difficulty?.toUpperCase() || "EASY"}
                       </Tag>
@@ -426,19 +435,19 @@ const LearningDetail: React.FC = () => {
 
                     <Title
                       level={1}
-                      style={{marginBottom: 16, fontSize: 36, fontFamily: "serif", color: "#1f1f1f", lineHeight: 1.3}}
+                      style={{ marginBottom: 16, fontSize: 36, fontFamily: "serif", color: "#1f1f1f", lineHeight: 1.3 }}
                     >
                       {module.title}
                     </Title>
 
                     <Paragraph
                       type="secondary"
-                      style={{fontSize: 18, lineHeight: 1.7, marginBottom: 32, maxWidth: "90%"}}
+                      style={{ fontSize: 18, lineHeight: 1.7, marginBottom: 32, maxWidth: "90%" }}
                     >
                       {module.description}
                     </Paragraph>
 
-                    <Divider style={{margin: "24px 0", borderTop: "1px solid #f0f0f0"}} />
+                    <Divider style={{ margin: "24px 0", borderTop: "1px solid #f0f0f0" }} />
 
                     {/* Content Renderer */}
                     {/* Content Renderer */}
@@ -461,8 +470,8 @@ const LearningDetail: React.FC = () => {
                           if (module.contentUrl?.trim().startsWith("<")) {
                             return (
                               <div
-                                dangerouslySetInnerHTML={{__html: module.contentUrl}}
-                                style={{width: "100%", height: "100%"}}
+                                dangerouslySetInnerHTML={{ __html: module.contentUrl }}
+                                style={{ width: "100%", height: "100%" }}
                               />
                             );
                           }
@@ -484,9 +493,9 @@ const LearningDetail: React.FC = () => {
                                   background: "#1f1f1f",
                                 }}
                               >
-                                <CloseCircleFilled style={{fontSize: 32, marginBottom: 8}} />
-                                <Text style={{color: "rgba(255,255,255,0.7)"}}>Video không khả dụng hoặc Link lỗi</Text>
-                                <Text type="secondary" style={{fontSize: 12, marginTop: 4}}>
+                                <CloseCircleFilled style={{ fontSize: 32, marginBottom: 8 }} />
+                                <Text style={{ color: "rgba(255,255,255,0.7)" }}>Video không khả dụng hoặc Link lỗi</Text>
+                                <Text type="secondary" style={{ fontSize: 12, marginTop: 4 }}>
                                   {module.contentUrl}
                                 </Text>
                               </div>
@@ -506,15 +515,15 @@ const LearningDetail: React.FC = () => {
                       </div>
                     ) : (
                       /* Render other types (article, quiz text, etc.) as HTML content */
-                      <div className="article-content" style={{marginTop: 24}}>
-                        <div dangerouslySetInnerHTML={{__html: module.contentUrl || ""}} />
+                      <div className="article-content" style={{ marginTop: 24 }}>
+                        <div dangerouslySetInnerHTML={{ __html: module.contentUrl || "" }} />
                       </div>
                     )}
 
-                    <div style={{marginTop: 60, textAlign: "center"}}>
+                    <div style={{ marginTop: 60, textAlign: "center" }}>
                       <Button
-                        type="primary"
-                        size="large"
+                        variant="primary"
+                        buttonSize="large"
                         onClick={handleNextStep}
                         style={{
                           height: 48,
@@ -533,14 +542,14 @@ const LearningDetail: React.FC = () => {
               {currentStep === "quiz" && module.quiz && (
                 <motion.div
                   key="quiz-step"
-                  initial={{x: 20, opacity: 0}}
-                  animate={{x: 0, opacity: 1}}
-                  exit={{x: 20, opacity: 0}}
-                  transition={{duration: 0.4}}
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 20, opacity: 0 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  <div style={{position: "relative"}}>
+                  <div style={{ position: "relative" }}>
                     {/* Main Content: Strictly Centered */}
-                    <div style={{maxWidth: 880, margin: "0 auto", paddingBottom: 60, position: "relative"}}>
+                    <div style={{ maxWidth: 880, margin: "0 auto", paddingBottom: 60, position: "relative" }}>
                       <Card
                         bordered={false}
                         id="quiz-section"
@@ -549,7 +558,7 @@ const LearningDetail: React.FC = () => {
                           padding: 0,
                           overflow: "hidden",
                         }}
-                        bodyStyle={{padding: 0}}
+                        bodyStyle={{ padding: 0 }}
                       >
                         <div
                           style={{
@@ -560,7 +569,7 @@ const LearningDetail: React.FC = () => {
                             overflow: "hidden",
                           }}
                         >
-                          <div style={{position: "relative", zIndex: 1}}>
+                          <div style={{ position: "relative", zIndex: 1 }}>
                             <div
                               style={{
                                 display: "flex",
@@ -581,10 +590,10 @@ const LearningDetail: React.FC = () => {
                                   gap: 12,
                                 }}
                               >
-                                <QuestionCircleOutlined style={{color: "#ffffff"}} /> <span style={{color: "#ffffff"}}>KIỂM TRA KIẾN THỨC</span>
+                                <QuestionCircleOutlined style={{ color: "#ffffff" }} /> <span style={{ color: "#ffffff" }}>KIỂM TRA KIẾN THỨC</span>
                               </Title>
 
-                              <div style={{display: "flex", gap: 10}}>
+                              <div style={{ display: "flex", gap: 10 }}>
                                 <span
                                   style={{
                                     background: "rgba(255, 255, 255, 0.2)",
@@ -620,7 +629,7 @@ const LearningDetail: React.FC = () => {
                                 </span>
                               </div>
                             </div>
-                            <p style={{color: "rgba(255,255,255,0.9)", marginTop: 0, fontSize: 16}}>
+                            <p style={{ color: "rgba(255,255,255,0.9)", marginTop: 0, fontSize: 16 }}>
                               Hãy trả lời các câu hỏi sau để nhận thêm cúp.
                             </p>
                           </div>
@@ -649,10 +658,10 @@ const LearningDetail: React.FC = () => {
                           />
                         </div>
 
-                        <div style={{padding: "24px 32px"}}>
+                        <div style={{ padding: "24px 32px" }}>
                           {module.quiz?.questions?.map((q, idx) => (
-                            <div key={q.id || idx} style={{marginBottom: 24}}>
-                              <div style={{marginBottom: 12}}>
+                            <div key={q.id || idx} style={{ marginBottom: 24 }}>
+                              <div style={{ marginBottom: 12 }}>
                                 <span
                                   style={{
                                     display: "inline-block",
@@ -684,7 +693,7 @@ const LearningDetail: React.FC = () => {
                               <Radio.Group
                                 onChange={(e) => handleAnswerChange(q.id || idx, e.target.value)}
                                 value={answers[q.id || idx]}
-                                style={{width: "100%"}}
+                                style={{ width: "100%" }}
                               >
                                 <Row gutter={[12, 12]}>
                                   {q.options?.map((opt, optIdx) => (
@@ -706,7 +715,7 @@ const LearningDetail: React.FC = () => {
                                           fontWeight: answers[q.id] === optIdx ? 600 : 400,
                                         }}
                                       >
-                                        <div style={{display: "flex", gap: 12, width: "100%"}}>
+                                        <div style={{ display: "flex", gap: 12, width: "100%" }}>
                                           <div
                                             style={{
                                               minWidth: 24,
@@ -724,7 +733,7 @@ const LearningDetail: React.FC = () => {
                                           >
                                             {String.fromCharCode(65 + optIdx)}
                                           </div>
-                                          <span style={{lineHeight: 1.5}}>{opt}</span>
+                                          <span style={{ lineHeight: 1.5 }}>{opt}</span>
                                         </div>
                                       </Radio>
                                     </Col>
@@ -747,7 +756,7 @@ const LearningDetail: React.FC = () => {
                           zIndex: 100,
                         }}
                       >
-                        <div style={{position: "sticky", top: 140, width: 80}}>
+                        <div style={{ position: "sticky", top: 140, width: 80 }}>
                           <Card
                             bordered={false}
                             style={{
@@ -784,31 +793,31 @@ const LearningDetail: React.FC = () => {
                                   transition: "all 0.3s",
                                 }}
                               >
-                                <ClockCircleOutlined style={{fontSize: 14, marginBottom: 2}} />
-                                <div style={{fontSize: 12, fontWeight: 800, lineHeight: 1}}>{formatTime(timeLeft)}</div>
+                                <ClockCircleOutlined style={{ fontSize: 14, marginBottom: 2 }} />
+                                <div style={{ fontSize: 12, fontWeight: 800, lineHeight: 1 }}>{formatTime(timeLeft)}</div>
                               </div>
                             </Tooltip>
 
-                            <div style={{width: 32, height: 1, background: "#f0f0f0"}} />
+                            <div style={{ width: 32, height: 1, background: "#f0f0f0" }} />
 
                             {/* Progress Circle */}
                             <Tooltip
                               title={`Đã làm: ${Object.keys(answers).length}/${module.quiz.questions.length} câu`}
                             >
-                              <div style={{cursor: "help"}}>
+                              <div style={{ cursor: "help" }}>
                                 <Progress
                                   type="circle"
                                   percent={Math.round(
                                     (Object.keys(answers).length / module.quiz.questions.length) * 100,
                                   )}
                                   width={52}
-                                  strokeColor={{"0%": "#A31D1D", "100%": "#faad14"}}
+                                  strokeColor={{ "0%": "#A31D1D", "100%": "#faad14" }}
                                   strokeWidth={8}
                                   trailColor="#f0f0f0"
                                   format={() => (
-                                    <div style={{fontSize: 12, fontWeight: 800, color: "#A31D1D", lineHeight: 1}}>
+                                    <div style={{ fontSize: 12, fontWeight: 800, color: "#A31D1D", lineHeight: 1 }}>
                                       {Object.keys(answers).length}
-                                      <div style={{fontSize: 10, color: "#bfbfbf", fontWeight: 600}}>
+                                      <div style={{ fontSize: 10, color: "#bfbfbf", fontWeight: 600 }}>
                                         /{module.quiz?.questions?.length || 0}
                                       </div>
                                     </div>
@@ -817,7 +826,7 @@ const LearningDetail: React.FC = () => {
                               </div>
                             </Tooltip>
 
-                            <div style={{width: 32, height: 1, background: "#f0f0f0"}} />
+                            <div style={{ width: 32, height: 1, background: "#f0f0f0" }} />
 
                             {/* Reward Info */}
                             <Tooltip title="Phần thưởng: +50 EXP">
@@ -859,7 +868,7 @@ const LearningDetail: React.FC = () => {
                               </div>
                             </Tooltip>
 
-                            <div style={{width: 32, height: 1, background: "#f0f0f0"}} />
+                            <div style={{ width: 32, height: 1, background: "#f0f0f0" }} />
 
                             {/* Submit Button */}
                             <Tooltip
@@ -870,9 +879,9 @@ const LearningDetail: React.FC = () => {
                               }
                             >
                               <Button
-                                type="primary"
+                                variant="primary"
                                 shape="circle"
-                                size="large"
+                                buttonSize="large"
                                 onClick={handleQuizSubmit}
                                 loading={submitting}
                                 disabled={Object.keys(answers).length < module.quiz.questions.length}
@@ -887,7 +896,7 @@ const LearningDetail: React.FC = () => {
                                   opacity: Object.keys(answers).length < module.quiz.questions.length ? 0.5 : 1,
                                   boxShadow: "0 8px 20px rgba(163, 29, 29, 0.3)",
                                 }}
-                                icon={<CheckOutlined style={{fontSize: 24, fontWeight: "bold"}} />}
+                                icon={<CheckOutlined style={{ fontSize: 24, fontWeight: "bold" }} />}
                               />
                             </Tooltip>
                           </Card>

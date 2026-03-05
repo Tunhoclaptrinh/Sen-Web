@@ -1,70 +1,84 @@
 import React from "react";
-import {Popover, Slider, Switch, Space, Typography, Button} from "antd";
-import {SoundOutlined, MutedOutlined} from "@ant-design/icons";
+import { Popover, Slider, Switch, Space, Typography, Button, Select } from "antd";
+import { SoundOutlined, MutedOutlined } from "@ant-design/icons";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setBgmVolume, setSfxVolume, toggleMute, setSelectedBgmKey } from "@/store/slices/audioSlice";
+import { useGameSounds } from "@/hooks/useSound";
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 interface AudioSettingsProps {
-  isMuted: boolean;
-  onMuteToggle: (muted: boolean) => void;
-  bgmVolume: number;
-  onBgmVolumeChange: (value: number) => void;
-  sfxVolume: number;
-  onSfxVolumeChange: (value: number) => void;
   children?: React.ReactNode;
 }
 
-const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({
-  isMuted,
-  onMuteToggle,
-  bgmVolume,
-  onBgmVolumeChange,
-  sfxVolume,
-  onSfxVolumeChange,
-  children,
-}) => {
+const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
+  const dispatch = useAppDispatch();
+  const { isMuted, bgmVolume, sfxVolume, selectedBgmKey } = useAppSelector((state) => state.audio);
+  const { playClick } = useGameSounds();
+
   const content = (
-    <div style={{width: 250, padding: 8}}>
-      <Space direction="vertical" style={{width: "100%"}} size={16}>
-        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+    <div style={{ width: 250, padding: 8 }}>
+      <Space direction="vertical" style={{ width: "100%" }} size={16}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Text strong>Âm thanh</Text>
           <Switch
             checked={!isMuted}
-            onChange={(checked) => onMuteToggle(!checked)}
+            onChange={() => { playClick(); dispatch(toggleMute()); }}
             checkedChildren={<SoundOutlined />}
             unCheckedChildren={<MutedOutlined />}
           />
         </div>
 
         <div>
-          <div style={{display: "flex", justifyContent: "space-between", marginBottom: 4}}>
-            <Text style={{fontSize: 12}}>Nhạc nền (BGM)</Text>
-            <Text style={{fontSize: 12, color: "var(--text-color-secondary)"}}>{Math.round(bgmVolume * 100)}%</Text>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+            <Text style={{ fontSize: 12 }}>Nhạc nền (BGM)</Text>
+            <Text style={{ fontSize: 12, color: "var(--text-color-secondary)" }}>{Math.round(bgmVolume * 100)}%</Text>
           </div>
           <Slider
             min={0}
             max={1}
             step={0.1}
             value={bgmVolume}
-            onChange={onBgmVolumeChange}
+            onChange={(val) => dispatch(setBgmVolume(val))}
             disabled={isMuted}
-            trackStyle={{backgroundColor: "var(--primary-color)"}}
+            trackStyle={{ backgroundColor: "var(--primary-color)" }}
           />
         </div>
 
         <div>
-          <div style={{display: "flex", justifyContent: "space-between", marginBottom: 4}}>
-            <Text style={{fontSize: 12}}>Hiệu ứng (SFX)</Text>
-            <Text style={{fontSize: 12, color: "var(--text-color-secondary)"}}>{Math.round(sfxVolume * 100)}%</Text>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+            <Text style={{ fontSize: 12 }}>Chọn nhạc nền</Text>
+          </div>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Mặc định theo màn"
+            value={selectedBgmKey}
+            onChange={(val) => { playClick(); dispatch(setSelectedBgmKey(val)); }}
+            allowClear
+            disabled={isMuted}
+            options={[
+              { label: "Mặc định theo màn", value: null },
+              { label: "Thư viện Cổ (Focus)", value: "BGM_HISTORICAL" },
+              { label: "Lễ hội Làng", value: "BGM_VILLAGE" },
+              { label: "Cổ đại Trỗi dậy", value: "BGM_ANCIENT" },
+              { label: "Hầm mộ Đá", value: "BGM_STONE" },
+            ]}
+          />
+        </div>
+
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+            <Text style={{ fontSize: 12 }}>Hiệu ứng (SFX)</Text>
+            <Text style={{ fontSize: 12, color: "var(--text-color-secondary)" }}>{Math.round(sfxVolume * 100)}%</Text>
           </div>
           <Slider
             min={0}
             max={1}
             step={0.1}
             value={sfxVolume}
-            onChange={onSfxVolumeChange}
+            onChange={(val) => dispatch(setSfxVolume(val))}
             disabled={isMuted}
-            trackStyle={{backgroundColor: "var(--primary-color)"}}
+            trackStyle={{ backgroundColor: "var(--primary-color)" }}
           />
         </div>
       </Space>
@@ -78,7 +92,7 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({
           icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
           size="large"
           className="sound-button"
-          style={{position: "absolute", bottom: 20, right: 80, zIndex: 100}}
+          style={{ position: "absolute", bottom: 20, right: 80, zIndex: 100 }}
         />
       )}
     </Popover>

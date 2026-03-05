@@ -42,13 +42,14 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.5.0",
+    "react-ga4": "^2.1.0",
     "react-helmet-async": "^2.0.4",
     "react-leaflet": "^4.2.1",
-    "react-ga4": "^2.1.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.20.0",
     "recharts": "^2.10.3",
-    "tinymce": "^6.8.3"
+    "tinymce": "^6.8.3",
+    "use-sound": "^5.0.0"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.8",

@@ -23,13 +23,16 @@ import VideoScreen from "@/components/Game/Screens/VideoScreen";
 // Styles (reuse game styles)
 import "@/pages/Game/GamePlayPage/styles.less";
 
+import { useAppSelector } from "@/store/hooks";
+import { useGameSounds, SOUND_ASSETS } from "@/hooks/useSound";
+
 interface GameSimulatorProps {
     visible: boolean;
     onClose: () => void;
     screens: Screen[];
     initialScreenIndex?: number;
     title?: string;
-    bgmUrl?: string; // New Prop
+    bgmUrl?: string;
 }
 
 const GameSimulator: React.FC<GameSimulatorProps> = ({
@@ -43,14 +46,22 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     const [currentIndex, setCurrentIndex] = useState(initialScreenIndex);
     const [score, setScore] = useState(0);
     const [replayKey, setReplayKey] = useState(0);
-    const [isMuted, setIsMuted] = useState(false);
-    const [bgmVolume, setBgmVolume] = useState(0.5);
-    const [sfxVolume, setSfxVolume] = useState(1.0);
+
+    // Global Audio State
+    const { isMuted, bgmVolume, selectedBgmKey } = useAppSelector(state => state.audio);
+    const { playClick, playSuccess, playError, playCollect } = useGameSounds();
+
     const bgmAudioRef = React.useRef<HTMLAudioElement | null>(null);
 
     // BGM Logic
     useEffect(() => {
-        if (!bgmUrl || !visible) {
+        let urlRequested = bgmUrl || SOUND_ASSETS.BGM_HISTORICAL;
+
+        if (selectedBgmKey && (SOUND_ASSETS as any)[selectedBgmKey]) {
+            urlRequested = (SOUND_ASSETS as any)[selectedBgmKey];
+        }
+
+        if (!urlRequested || !visible) {
             if (bgmAudioRef.current) {
                 bgmAudioRef.current.pause();
                 bgmAudioRef.current = null;
@@ -58,19 +69,27 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
             return;
         }
 
-        const url = getImageUrl(bgmUrl);
+        const url = getImageUrl(urlRequested);
+        const fullUrl = new URL(url, window.location.origin).href;
+
         if (!bgmAudioRef.current) {
-            bgmAudioRef.current = new Audio(url);
+            bgmAudioRef.current = new Audio(fullUrl);
             bgmAudioRef.current.loop = true;
-        } else if (bgmAudioRef.current.src !== url) {
-            bgmAudioRef.current.src = url;
+        } else {
+            const currentSrc = new URL(bgmAudioRef.current.src, window.location.origin).href;
+            if (currentSrc !== fullUrl) {
+                bgmAudioRef.current.src = fullUrl;
+            }
         }
 
         // Apply volume
         bgmAudioRef.current.volume = bgmVolume;
 
         if (visible && !isMuted) {
-            bgmAudioRef.current.play().catch(e => console.warn("Preview Autoplay blocked:", e));
+            const playPromise = bgmAudioRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => console.warn("Preview Autoplay blocked:", e));
+            }
         } else {
             bgmAudioRef.current.pause();
         }
@@ -80,7 +99,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                 bgmAudioRef.current.pause();
             }
         };
-    }, [bgmUrl, visible, isMuted, bgmVolume]);
+    }, [bgmUrl, visible, isMuted, bgmVolume, selectedBgmKey]);
 
     // Reset when opening
     useEffect(() => {
@@ -95,6 +114,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     // --- Mock Handlers ---
 
     const handleNext = () => {
+        playClick();
         if (currentIndex < screens.length - 1) {
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -104,25 +124,25 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
 
     const handleAnswerSubmit = async (answerId: string) => {
         const screen = currentScreen as any;
-        // QuizScreen sends text as answerId (based on its implementation), so we must check text as well
         const option = screen.options?.find((o: any) => o.id === answerId)
             || screen.options?.find((o: any) => o._id === answerId)
             || screen.options?.find((o: any) => o.text === answerId);
 
         if (option?.isCorrect) {
+            playSuccess();
             message.success("Đúng rồi! (+Điểm)");
             setScore(prev => prev + 10);
             return { isCorrect: true, pointsEarned: 10, explanation: "Chính xác!" };
         } else {
+            playError();
             message.error("Sai rồi!");
             return { isCorrect: false, pointsEarned: 0, explanation: "Sai rồi, hãy thử lại!" };
         }
     };
 
     const handleTimelineSubmit = async (_order: string[]) => {
-        // Mock validation: simple check if sorted by year
-        // In real app, backend validates. Here we assume strict year ordering.
         message.info("Đã gửi thứ tự (Mock validation)");
+        playSuccess();
         return { isCorrect: true, points_earned: 20 };
     };
 
@@ -155,6 +175,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         const isAllCollected = newCollected.length >= required;
 
         if (!currentCollected.includes(itemId)) {
+            playCollect();
             setScore(prev => prev + 5);
             message.success("Đã tìm thấy vật phẩm!");
         }
@@ -289,6 +310,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                         size="small"
                         icon={<RedoOutlined />}
                         onClick={() => {
+                            playClick();
                             setCurrentIndex(initialScreenIndex);
                             setScore(0);
                             setReplayKey(prev => prev + 1);
@@ -300,7 +322,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                         size="small"
                         type="primary"
                         icon={<StepForwardOutlined />}
-                        onClick={handleNext}
+                        onClick={() => { playClick(); handleNext(); }}
                     >
                         Force Next
                     </Button>
@@ -308,6 +330,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                         size="small"
                         icon={<FullscreenOutlined />}
                         onClick={() => {
+                            playClick();
                             const elem = document.querySelector('.game-simulator-modal .ant-modal-content');
                             if (elem) {
                                 if (!document.fullscreenElement) {
@@ -322,14 +345,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
                     />
 
 
-                    <AudioSettingsPopover
-                        isMuted={isMuted}
-                        onMuteToggle={setIsMuted}
-                        bgmVolume={bgmVolume}
-                        onBgmVolumeChange={setBgmVolume}
-                        sfxVolume={sfxVolume}
-                        onSfxVolumeChange={setSfxVolume}
-                    >
+                    <AudioSettingsPopover>
                         <Button
                             size="small"
                             icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}

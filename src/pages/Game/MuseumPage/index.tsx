@@ -1,22 +1,25 @@
-import React, {useEffect, useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/hooks/useRedux";
-import {fetchMuseum, collectMuseumIncome, useItem} from "@/store/slices/gameSlice";
-import {fetchShopData} from "@/store/slices/shopSlice";
-import {Row, Col, Button, Spin, Typography, Empty, Tabs, Tag, Card, Modal} from "antd";
-import {CloudUploadOutlined, TrophyOutlined, RiseOutlined, GoldOutlined} from "@ant-design/icons";
-import {getImageUrl} from "@/utils/image.helper";
-import {StatisticsCard} from "@/components/common";
-import {aiService, AICharacter} from "@/services/ai.service";
-import {ITEM_TYPES} from "@/config/constants";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { fetchMuseum, collectMuseumIncome, useItem } from "@/store/slices/gameSlice";
+import { fetchShopData } from "@/store/slices/shopSlice";
+import { Row, Col, Spin, Typography, Empty, Tabs, Tag, Card, Modal } from "antd";
+import Button from "@/components/common/Button";
+import { useGameSounds } from "@/hooks/useSound";
+import { CloudUploadOutlined, TrophyOutlined, RiseOutlined, GoldOutlined } from "@ant-design/icons";
+import { getImageUrl } from "@/utils/image.helper";
+import { StatisticsCard } from "@/components/common";
+import { aiService, AICharacter } from "@/services/ai.service";
+import { ITEM_TYPES } from "@/config/constants";
 import "./styles.less";
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
 const MuseumPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const {museum, museumLoading} = useAppSelector((state) => state.game);
-  const {inventory = [], items: shopItems = [], loading: shopLoading} = useAppSelector((state) => state.shop);
+  const { museum, museumLoading } = useAppSelector((state) => state.game);
+  const { inventory = [], items: shopItems = [], loading: shopLoading } = useAppSelector((state) => state.shop);
   const [activeTab, setActiveTab] = useState("all");
+  const { playClick } = useGameSounds();
 
   // Modal state
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -46,6 +49,7 @@ const MuseumPage: React.FC = () => {
   };
 
   const handleCollectIncome = () => {
+    playClick();
     dispatch(collectMuseumIncome());
   };
 
@@ -71,7 +75,7 @@ const MuseumPage: React.FC = () => {
     .filter((invItem) => invItem.quantity > 0)
     .map((invItem) => {
       const itemDetail = shopItems.find((s) => s.id === invItem.itemId);
-      return {...invItem, ...itemDetail};
+      return { ...invItem, ...itemDetail };
     });
 
   // Combine all items into a unified list
@@ -110,6 +114,7 @@ const MuseumPage: React.FC = () => {
   const filteredItems = activeTab === "all" ? allItems : allItems.filter((i) => i.type === activeTab);
 
   const handleItemClick = (item: any) => {
+    playClick();
     setSelectedItem(item);
     setDetailModalVisible(true);
   };
@@ -134,7 +139,7 @@ const MuseumPage: React.FC = () => {
             <div className="card-cover">
               {itemImage ? (
                 <>
-                  <div className="blur-background" style={{backgroundImage: `url(${itemImage})`}} />
+                  <div className="blur-background" style={{ backgroundImage: `url(${itemImage})` }} />
                   <img
                     src={itemImage}
                     alt={item.name}
@@ -177,29 +182,29 @@ const MuseumPage: React.FC = () => {
                     text = "ĐỒNG HÀNH";
                   } else if (item.type === "inventory") {
                     // Map shop types
-                      const shopType = item.original?.type || "";
-                      if (["consumable_hint", "hint"].includes(shopType)) {
-                        color = "blue";
-                        text = "GỢI Ý";
-                      } else if (["consumable_shield", "boost"].includes(shopType)) {
-                        color = "green";
-                        text = "BẢO VỆ";
-                      } else if (["permanent_theme", "theme"].includes(shopType)) {
-                        color = "purple";
-                        text = "GIAO DIỆN";
-                      } else if (["permanent_avatar", "avatar"].includes(shopType)) {
-                        color = "magenta";
-                        text = "AVATAR";
-                      } else if (shopType === "decoration") {
-                        color = "volcano";
-                        text = "TRANG TRÍ";
-                      } else if (shopType === "premium_ai") {
-                        color = "gold";
-                        text = "AI VIP";
-                      } else {
-                        color = "cyan";
-                        text = (item.original?.type || "vật phẩm").toUpperCase();
-                      }
+                    const shopType = item.original?.type || "";
+                    if (["consumable_hint", "hint"].includes(shopType)) {
+                      color = "blue";
+                      text = "GỢI Ý";
+                    } else if (["consumable_shield", "boost"].includes(shopType)) {
+                      color = "green";
+                      text = "BẢO VỆ";
+                    } else if (["permanent_theme", "theme"].includes(shopType)) {
+                      color = "purple";
+                      text = "GIAO DIỆN";
+                    } else if (["permanent_avatar", "avatar"].includes(shopType)) {
+                      color = "magenta";
+                      text = "AVATAR";
+                    } else if (shopType === "decoration") {
+                      color = "volcano";
+                      text = "TRANG TRÍ";
+                    } else if (shopType === "premium_ai") {
+                      color = "gold";
+                      text = "AI VIP";
+                    } else {
+                      color = "cyan";
+                      text = (item.original?.type || "vật phẩm").toUpperCase();
+                    }
                   }
 
                   return <Tag color={color}>{text}</Tag>;
@@ -244,7 +249,7 @@ const MuseumPage: React.FC = () => {
 
   if (museumLoading || shopLoading || charactersLoading) {
     return (
-      <div style={{textAlign: "center", padding: "100px 0"}}>
+      <div style={{ textAlign: "center", padding: "100px 0" }}>
         <Spin size="large" tip="Đang tải dữ liệu..." />
       </div>
     );
@@ -277,15 +282,15 @@ const MuseumPage: React.FC = () => {
             {
               title: "Chờ thu",
               value: (
-                <div style={{display: "flex", alignItems: "center", gap: 8}}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span>{museum?.pendingIncome || 0}</span>
                   {museum?.pendingIncome && museum.pendingIncome > 0 ? (
                     <Button
-                      type="primary"
-                      size="small"
+                      variant="primary"
+                      buttonSize="small"
                       onClick={handleCollectIncome}
                       className="collect-btn"
-                      style={{fontSize: "0.8rem", height: 24, padding: "0 8px"}}
+                      style={{ fontSize: "0.8rem", height: 24, padding: "0 8px" }}
                     >
                       Thu hoạch
                     </Button>
@@ -297,20 +302,20 @@ const MuseumPage: React.FC = () => {
             },
           ]}
           hideCard
-          colSpan={{xs: 24, sm: 8, md: 8}}
+          colSpan={{ xs: 24, sm: 8, md: 8 }}
         />
       </div>
 
       <div className="tabs-container">
         <Tabs
           activeKey={activeTab}
-          onChange={setActiveTab}
+          onChange={(key) => { playClick(); setActiveTab(key); }}
           centered
           className="museum-tabs"
           items={[
-            {label: <span>Tất cả</span>, key: "all"},
-            {label: <span>Nhân vật</span>, key: "character"},
-            {label: <span>Hiện vật</span>, key: ITEM_TYPES.ARTIFACT},
+            { label: <span>Tất cả</span>, key: "all" },
+            { label: <span>Nhân vật</span>, key: "character" },
+            { label: <span>Hiện vật</span>, key: ITEM_TYPES.ARTIFACT },
           ]}
         />
       </div>
@@ -325,18 +330,18 @@ const MuseumPage: React.FC = () => {
 
       <Modal
         title={
-          <Title level={4} style={{margin: 0}}>
+          <Title level={4} style={{ margin: 0 }}>
             {selectedItem?.name}
           </Title>
         }
         open={detailModalVisible}
         onCancel={() => setDetailModalVisible(false)}
         footer={[
-          <Button key="close" onClick={() => setDetailModalVisible(false)}>
+          <Button key="close" variant="ghost" onClick={() => { playClick(); setDetailModalVisible(false); }}>
             Đóng
           </Button>,
           selectedItem?.type === "inventory" && (
-            <Button key="use" type="primary" onClick={() => handleUseItem(selectedItem.original.itemId)}>
+            <Button key="use" variant="primary" onClick={() => { playClick(); handleUseItem(selectedItem.original.itemId); }}>
               Sử dụng
             </Button>
           ),
@@ -344,7 +349,7 @@ const MuseumPage: React.FC = () => {
         centered
       >
         {selectedItem && (
-          <div style={{textAlign: "center"}}>
+          <div style={{ textAlign: "center" }}>
             <div
               style={{
                 marginBottom: 16,
@@ -369,22 +374,22 @@ const MuseumPage: React.FC = () => {
                   <img
                     src={img}
                     alt={selectedItem.name}
-                    style={{maxHeight: "100%", maxWidth: "100%", objectFit: "contain"}}
+                    style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
                   />
                 ) : (
-                  <div style={{color: "#bfbfbf", fontSize: 40}}>
+                  <div style={{ color: "#bfbfbf", fontSize: 40 }}>
                     <CloudUploadOutlined />
                   </div>
                 );
               })()}
             </div>
-            <Title level={4} style={{marginBottom: 8}}>
+            <Title level={4} style={{ marginBottom: 8 }}>
               {selectedItem.name}
             </Title>
             <Text type="secondary">{selectedItem.description || "Không có mô tả"}</Text>
 
-            <div style={{marginTop: 24, textAlign: "left", background: "#f5f5f5", padding: 16, borderRadius: 8}}>
-              <div style={{display: "flex", justifyContent: "space-between", marginBottom: 8}}>
+            <div style={{ marginTop: 24, textAlign: "left", background: "#f5f5f5", padding: 16, borderRadius: 8 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <Text strong>Loại:</Text>
                 {(() => {
                   let color = "gold";
@@ -397,35 +402,35 @@ const MuseumPage: React.FC = () => {
                     color = "magenta";
                     text = "ĐỒNG HÀNH";
                   } else if (selectedItem.type === "inventory") {
-                      const shopType = selectedItem.original?.type || "";
-                      if (["consumable_hint", "hint"].includes(shopType)) {
-                        color = "blue";
-                        text = "GỢI Ý";
-                      } else if (["consumable_shield", "boost"].includes(shopType)) {
-                        color = "green";
-                        text = "BẢO VỆ";
-                      } else if (["permanent_theme", "theme"].includes(shopType)) {
-                        color = "purple";
-                        text = "GIAO DIỆN";
-                      } else if (["permanent_avatar", "avatar"].includes(shopType)) {
-                        color = "magenta";
-                        text = "AVATAR";
-                      } else if (shopType === "decoration") {
-                        color = "volcano";
-                        text = "TRANG TRÍ";
-                      } else if (shopType === "premium_ai") {
-                        color = "gold";
-                        text = "AI VIP";
-                      } else {
-                        color = "cyan";
-                        text = (selectedItem.original?.type || "VẬT PHẨM").toUpperCase();
-                      }
+                    const shopType = selectedItem.original?.type || "";
+                    if (["consumable_hint", "hint"].includes(shopType)) {
+                      color = "blue";
+                      text = "GỢI Ý";
+                    } else if (["consumable_shield", "boost"].includes(shopType)) {
+                      color = "green";
+                      text = "BẢO VỆ";
+                    } else if (["permanent_theme", "theme"].includes(shopType)) {
+                      color = "purple";
+                      text = "GIAO DIỆN";
+                    } else if (["permanent_avatar", "avatar"].includes(shopType)) {
+                      color = "magenta";
+                      text = "AVATAR";
+                    } else if (shopType === "decoration") {
+                      color = "volcano";
+                      text = "TRANG TRÍ";
+                    } else if (shopType === "premium_ai") {
+                      color = "gold";
+                      text = "AI VIP";
+                    } else {
+                      color = "cyan";
+                      text = (selectedItem.original?.type || "VẬT PHẨM").toUpperCase();
+                    }
                   }
 
                   return <Tag color={color}>{text}</Tag>;
                 })()}
               </div>
-              <div style={{display: "flex", justifyContent: "space-between"}}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Text strong>Số lượng:</Text>
                 <Text>{selectedItem.quantity}</Text>
               </div>
