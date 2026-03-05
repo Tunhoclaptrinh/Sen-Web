@@ -1,10 +1,10 @@
 import React from "react";
-import {Button} from "antd";
-import {PlayCircleOutlined, ArrowRightOutlined} from "@ant-design/icons";
-import type {Screen} from "@/types/game.types";
+import Button from "@/components/common/Button";
+import { PlayCircleOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import type { Screen } from "@/types/game.types";
 import "./styles.less";
-import {getImageUrl} from "@/utils/image.helper";
-import {getYouTubeEmbedUrl} from "@/utils/youtube.helper";
+import { getImageUrl } from "@/utils/image.helper";
+import { getYouTubeEmbedUrl } from "@/utils/youtube.helper";
 
 // const { Title, Paragraph } = Typography; // Unused
 
@@ -20,7 +20,7 @@ interface Props {
   loading?: boolean;
 }
 
-const VideoScreen: React.FC<Props> = ({data, onNext, loading}) => {
+const VideoScreen: React.FC<Props> = ({ data, onNext, loading }) => {
   const content = data.content || {};
   const videoUrl = (data as any).videoUrl || content.videoUrl || content.contentUrl || "";
   const title = (data as any).caption || content.title || "Video";
@@ -39,7 +39,7 @@ const VideoScreen: React.FC<Props> = ({data, onNext, loading}) => {
               const url = videoUrl.trim();
               // Case 1: Raw Iframe Embed Code
               if (url.startsWith("<iframe")) {
-                return <div className="raw-embed-container" dangerouslySetInnerHTML={{__html: url}} />;
+                return <div className="raw-embed-container" dangerouslySetInnerHTML={{ __html: url }} />;
               }
 
               // Resolve full URL for local files
@@ -61,8 +61,8 @@ const VideoScreen: React.FC<Props> = ({data, onNext, loading}) => {
               );
             })()
           ) : (
-            <div style={{textAlign: "center", color: "rgba(255,255,255,0.5)"}}>
-              <PlayCircleOutlined style={{fontSize: 48, marginBottom: 16, display: "block"}} />
+            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.5)" }}>
+              <PlayCircleOutlined style={{ fontSize: 48, marginBottom: 16, display: "block" }} />
               <span>Không có video</span>
             </div>
           )}
@@ -76,7 +76,8 @@ const VideoScreen: React.FC<Props> = ({data, onNext, loading}) => {
           </div>
 
           <Button
-            type="primary"
+            variant="primary"
+            buttonSize="large"
             className="continue-btn"
             onClick={onNext}
             icon={<ArrowRightOutlined />}

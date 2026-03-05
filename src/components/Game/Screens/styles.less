@@ -5,363 +5,384 @@
 .hidden-object-screen,
 .timeline-screen,
 .image-viewer-screen {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 12px;
-
-  // Background
-  .dialogue-background,
-  .game-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #1a1a1a; // Fallback color
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-    transition: all 0.5s ease;
-  }
-
-  // Blur effect for Quiz & Image Viewer
-  &.quiz-screen .game-background,
-  &.image-viewer-screen .game-background,
-  &.timeline-screen .game-background {
-      filter: blur(15px);
-      transform: scale(1.1);
-  }
-
-  // Keep aspect ratio for Image Viewer and Hidden Object (show full image)
-  &.image-viewer-screen .game-background,
-  &.hidden-object-screen .game-background {
-      background-size: contain;
-      background-repeat: no-repeat;
-  }
-
-  // Dark overlay for Quiz Screen & Image Viewer
-  &.quiz-screen .game-background::after,
-  &.image-viewer-screen .game-background::after,
-  &.timeline-screen .game-background::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  // ============== DIALOGUE SCREEN ==============
-  .dialogue-content {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     height: 100%;
-    z-index: 10;
-    pointer-events: none; 
+    overflow: hidden;
+    border-radius: 12px;
 
-    .story-interface {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 800px;
-      display: flex;
-      align-items: flex-end; 
-      gap: 20px;
-      pointer-events: auto;
+    // Background
+    .dialogue-background,
+    .game-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #1a1a1a; // Fallback color
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+        transition: all 0.5s ease;
+    }
 
-      .sen-portrait-container {
-        width: 0; 
-        height: 0;
-        position: relative;
-        flex-shrink: 0;
-        z-index: 20;
-        margin-left: 36px;
-      }
+    // Blur effect for Quiz & Image Viewer
+    &.quiz-screen .game-background,
+    &.image-viewer-screen .game-background,
+    &.timeline-screen .game-background {
+        filter: blur(15px);
+        transform: scale(1.1);
+    }
 
-      .dialogue-box-story {
-        flex: 1;
+    // Keep aspect ratio for Image Viewer and Hidden Object (show full image)
+    &.image-viewer-screen .game-background,
+    &.hidden-object-screen .game-background {
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    // Dark overlay for Quiz Screen & Image Viewer
+    &.quiz-screen .game-background::after,
+    &.image-viewer-screen .game-background::after,
+    &.timeline-screen .game-background::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    // ============== DIALOGUE SCREEN ==============
+    .dialogue-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        pointer-events: none;
+
+        .story-interface {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            pointer-events: auto;
+
+            .sen-portrait-container {
+                width: 0;
+                height: 0;
+                position: relative;
+                flex-shrink: 0;
+                z-index: 20;
+                margin-left: 36px;
+            }
+
+            .dialogue-box-story {
+                flex: 1;
+                .game-card-style(); // Paper style
+                padding: 32px;
+                position: relative;
+                animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                color: @text-color-primary;
+
+                &.user-turn {
+                    border-color: @seal-red;
+                }
+
+                .dialogue-header {
+                    margin-bottom: 12px;
+
+                    .character-name {
+                        font-family: @font-serif;
+                        font-weight: 800;
+                        font-size: 18px;
+                        color: @seal-red;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        border-bottom: 1px solid @gold-border;
+                        display: inline-block;
+                        padding-bottom: 4px;
+                    }
+                }
+
+                .dialogue-text {
+                    font-family: @font-serif;
+                    font-size: 20px;
+                    line-height: 1.6;
+                    color: @text-color-primary;
+                    min-height: 60px;
+                }
+
+                .next-indicator {
+                    position: absolute;
+                    bottom: 16px;
+                    right: 16px;
+                    color: @gold-border;
+                    animation: bounce 1s infinite;
+                }
+            }
+        }
+    }
+
+    // ============== QUIZ & TIMELINE SCREENS ==============
+    .screen-content-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 800px;
+        z-index: 10;
+        pointer-events: auto;
+    }
+
+    .quiz-card,
+    .timeline-card {
         .game-card-style(); // Paper style
         padding: 32px;
-        position: relative;
-        animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        color: @text-color-primary;
 
-        &.user-turn {
-           border-color: @seal-red; 
+        .ant-card-body {
+            padding: 0;
         }
 
-        .dialogue-header {
-          margin-bottom: 12px;
-          .character-name {
-            font-family: @font-serif;
-            font-weight: 800;
-            font-size: 18px;
-            color: @seal-red;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid @gold-border;
-            display: inline-block;
-            padding-bottom: 4px;
-          }
+        .quiz-header,
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 32px;
+
+            .question-text,
+            h3.ant-typography {
+                .game-title-style(); // Large Serif
+                font-size: 24px;
+                color: @seal-red !important;
+            }
         }
 
-        .dialogue-text {
-          font-family: @font-serif;
-          font-size: 20px;
-          line-height: 1.6;
-          color: @text-color-primary;
-          min-height: 60px;
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .quiz-option-btn {
+                height: auto;
+                min-height: 56px;
+                padding: 12px 24px;
+                white-space: normal;
+                text-align: left;
+                border-radius: 8px;
+                font-family: @font-serif;
+                font-size: 18px;
+                color: @text-color-primary;
+                background: transparent;
+                border: 2px solid @gold-border;
+                transition: all 0.3s ease;
+
+                &:hover:not(:disabled) {
+                    border-color: @seal-red;
+                    background: rgba(139, 29, 29, 0.05);
+                    color: @seal-red;
+                }
+
+                &.selected {
+                    background: @seal-red;
+                    color: white;
+                    border-color: @seal-red;
+                }
+
+                &.correct {
+                    background: #f6ffed;
+                    border-color: #52c41a;
+                    color: #52c41a;
+                }
+
+                &.wrong {
+                    background: #fff1f0;
+                    border-color: #ff4d4f;
+                    color: #ff4d4f;
+                }
+            }
         }
 
-        .next-indicator {
-            position: absolute;
-            bottom: 16px;
-            right: 16px;
-            color: @gold-border;
-            animation: bounce 1s infinite;
+        .quiz-actions,
+        .quiz-feedback {
+            margin-top: 24px;
+
+            .ant-btn-primary {
+                .game-btn-primary();
+                width: 100%;
+            }
         }
-      }
+
+        // Timeline Specifics
+        // Timeline Specifics
+        .timeline-events-container {
+            margin: 32px 0;
+            position: relative;
+            min-height: 400px;
+
+            // Connector Line
+            &::before {
+                content: '';
+                position: absolute;
+                top: 20px;
+                bottom: 20px;
+                left: 21px; // Align midpoint of node
+                width: 2px;
+                background: fade(@gold-border, 50%);
+                z-index: 0;
+            }
+
+            .timeline-drop-zone {
+                background: transparent;
+                padding: 8px 0;
+                min-height: 100px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .timeline-event-item {
+                background: #fff;
+                border: 1px solid @gold-border;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+                cursor: grab;
+                position: relative;
+                user-select: none;
+
+                // Node point on the line
+                &::before {
+                    content: '';
+                    width: 12px;
+                    height: 12px;
+                    background: @seal-red;
+                    border: 2px solid #fff;
+                    border-radius: 50%;
+                    box-shadow: 0 0 0 2px @gold-border;
+                    flex-shrink: 0;
+                }
+
+                &:hover:not(.dragging) {
+                    border-color: @seal-red;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+
+                &.dragging {
+                    background: #fffbf0; // Light gold bg
+                    border-color: @seal-red;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+                    z-index: 100;
+                    cursor: grabbing;
+                    transition: none !important; // Ensure no transition during drag
+                }
+
+                .event-year {
+                    font-family: @font-serif;
+                    font-weight: 800;
+                    font-size: 18px;
+                    color: @seal-red;
+                    min-width: 60px;
+                }
+
+                .event-content {
+                    flex: 1;
+
+                    h4 {
+                        font-family: @font-serif;
+                        font-size: 16px;
+                        margin: 0 0 4px 0;
+                        color: @text-color-primary;
+                    }
+
+                    p {
+                        margin: 0;
+                        font-size: 14px;
+                        color: fade(@text-color-primary, 70%);
+                    }
+                }
+
+                .drag-handle {
+                    color: @gold-border;
+                    cursor: grab;
+                    padding: 4px;
+
+                    &:hover {
+                        color: @seal-red;
+                    }
+                }
+            }
+        }
     }
-  }
 
-  // ============== QUIZ & TIMELINE SCREENS ==============
-  .screen-content-wrapper {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 800px;
-      z-index: 10;
-      pointer-events: auto;
-  }
+    // ============== HIDDEN OBJECT SCREEN ==============
+    .hidden-object-ui {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        .game-card-style();
+        padding: 16px 24px;
+        display: flex;
+        gap: 16px;
+        z-index: 20;
 
-  .quiz-card,
-  .timeline-card {
-      .game-card-style(); // Paper style
-      padding: 32px;
-      
-      .ant-card-body {
-          padding: 0;
-      }
+        .item-to-find {
+            width: 48px;
+            height: 48px;
+            border: 1px solid @gold-border;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.5;
 
-      .quiz-header, .timeline-header {
-          text-align: center;
-          margin-bottom: 32px;
-          
-          .question-text, h3.ant-typography {
-              .game-title-style(); // Large Serif
-              font-size: 24px;
-              color: @seal-red !important;
-          }
-      }
-
-      .quiz-options {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-
-          .quiz-option-btn {
-              height: auto;
-              min-height: 56px;
-              padding: 12px 24px;
-              white-space: normal;
-              text-align: left;
-              border-radius: 8px;
-              font-family: @font-serif;
-              font-size: 18px;
-              color: @text-color-primary;
-              background: transparent;
-              border: 2px solid @gold-border;
-              transition: all 0.3s ease;
-
-              &:hover:not(:disabled) {
-                  border-color: @seal-red;
-                  background: rgba(139, 29, 29, 0.05);
-                  color: @seal-red;
-              }
-
-              &.selected {
-                  background: @seal-red;
-                  color: white;
-                  border-color: @seal-red;
-              }
-
-              &.correct {
-                  background: #f6ffed;
-                  border-color: #52c41a;
-                  color: #52c41a;
-              }
-              
-              &.wrong {
-                  background: #fff1f0;
-                  border-color: #ff4d4f;
-                  color: #ff4d4f;
-              }
-          }
-      }
-      
-      .quiz-actions,
-      .quiz-feedback {
-          margin-top: 24px;
-          .ant-btn-primary {
-              .game-btn-primary();
-              width: 100%;
-          }
-      }
-      
-      // Timeline Specifics
-      // Timeline Specifics
-      .timeline-events-container {
-           margin: 32px 0;
-           position: relative;
-           min-height: 400px;
-
-           // Connector Line
-           &::before {
-               content: '';
-               position: absolute;
-               top: 20px;
-               bottom: 20px;
-               left: 21px; // Align midpoint of node
-               width: 2px;
-               background: fade(@gold-border, 50%);
-               z-index: 0;
-           }
-
-           .timeline-drop-zone {
-               background: transparent;
-               padding: 8px 0;
-               min-height: 100px;
-               position: relative;
-               z-index: 1;
-           }
-           
-           .timeline-event-item {
-               background: #fff;
-               border: 1px solid @gold-border;
-               border-radius: 8px;
-               padding: 16px;
-               margin-bottom: 16px;
-               display: flex;
-               align-items: center;
-               gap: 16px;
-               box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-               transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
-               cursor: grab;
-               position: relative;
-               user-select: none;
-
-               // Node point on the line
-               &::before {
-                   content: '';
-                   width: 12px;
-                   height: 12px;
-                   background: @seal-red;
-                   border: 2px solid #fff;
-                   border-radius: 50%;
-                   box-shadow: 0 0 0 2px @gold-border;
-                   flex-shrink: 0;
-               }
-               
-               &:hover:not(.dragging) {
-                   border-color: @seal-red;
-                   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-               }
-
-               &.dragging {
-                   background: #fffbf0; // Light gold bg
-                   border-color: @seal-red;
-                   box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-                   z-index: 100;
-                   cursor: grabbing;
-                   transition: none !important; // Ensure no transition during drag
-               }
-
-               .event-year {
-                   font-family: @font-serif;
-                   font-weight: 800;
-                   font-size: 18px;
-                   color: @seal-red;
-                   min-width: 60px;
-               }
-
-               .event-content {
-                   flex: 1;
-                   h4 {
-                       font-family: @font-serif;
-                       font-size: 16px;
-                       margin: 0 0 4px 0;
-                       color: @text-color-primary;
-                   }
-                   p {
-                       margin: 0;
-                       font-size: 14px;
-                       color: fade(@text-color-primary, 70%);
-                   }
-               }
-
-               .drag-handle {
-                   color: @gold-border;
-                   cursor: grab;
-                   padding: 4px;
-                   
-                   &:hover {
-                       color: @seal-red;
-                   }
-               }
-           }
-      }
-  }
-
-  // ============== HIDDEN OBJECT SCREEN ==============
-  .hidden-object-ui {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      .game-card-style();
-      padding: 16px 24px;
-      display: flex;
-      gap: 16px;
-      z-index: 20;
-
-      .item-to-find {
-          width: 48px;
-          height: 48px;
-          border: 1px solid @gold-border;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0.5;
-          &.found {
-              opacity: 1;
-              background: @seal-red;
-              color: white;
-              border-color: @seal-red;
-          }
-      }
-  }
+            &.found {
+                opacity: 1;
+                background: @seal-red;
+                color: white;
+                border-color: @seal-red;
+            }
+        }
+    }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
 }
 
 // Video Screen Styles
@@ -388,7 +409,7 @@
         z-index: 10;
         width: 100%;
         height: 100%;
-        
+
         // Video Layer - Full Screen / Maximize
         .video-frame {
             position: absolute;
@@ -421,10 +442,10 @@
             transform: translateX(-50%);
             width: 90%;
             max-width: 800px;
-            
+
             .game-card-style();
             padding: 20px 30px;
-            
+
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -433,134 +454,148 @@
 
             .info-text {
                 flex: 1;
+
                 h2 {
                     .game-title-style();
                     font-size: 20px;
                     margin-bottom: 4px;
                 }
-                
+
                 p {
                     font-family: @font-serif;
                     font-size: 16px;
                 }
             }
+
+            .continue-btn {
+                .game-btn-primary() !important;
+                min-width: 120px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
         }
     }
 }
 
-  // ============== IMAGE VIEWER SCREEN ==============
-  .image-viewer-screen {
-      .viewer-container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10;
-          padding: 24px;
-      }
+// ============== IMAGE VIEWER SCREEN ==============
+.image-viewer-screen {
+    .viewer-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        padding: 24px;
+    }
 
-      .image-card {
-          .game-card-style();
-          padding: 24px;
-          width: 100%;
-          max-width: 900px;
-          max-height: 85%;
-          height: auto;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-      }
+    .image-card {
+        .game-card-style();
+        padding: 24px;
+        width: 100%;
+        max-width: 900px;
+        max-height: 85%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
 
-      .image-display-area {
-          flex: 1;
-          background: rgba(0,0,0,0.03);
-          border: 1px dashed @gold-border;
-          border-radius: 8px;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          padding: 12px;
-          min-height: 300px;
-          max-height: 450px;
+    .image-display-area {
+        flex: 1;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px dashed @gold-border;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 12px;
+        min-height: 300px;
+        max-height: 450px;
 
-          img {
-              max-width: 100%;
-              max-height: 100%;
-              width: auto;
-              height: auto;
-              object-fit: contain;
-              border-radius: 4px;
-              cursor: zoom-in;
-          }
-      }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+            cursor: zoom-in;
+        }
+    }
 
-       .viewer-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 8px;
-            border-top: 1px solid fade(@gold-border, 30%);
+    .viewer-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 8px;
+        border-top: 1px solid fade(@gold-border, 30%);
 
-            .info-content {
-                flex: 1;
-                margin-right: 24px;
-                
-                h3 {
-                    .game-title-style();
-                    font-size: 20px;
-                    color: @seal-red;
-                    margin-bottom: 4px;
-                }
+        .info-content {
+            flex: 1;
+            margin-right: 24px;
 
-                .description-container {
-                    .text-wrapper {
-                        p {
-                            margin: 0;
-                            font-family: @font-serif;
-                            font-size: 16px;
-                            line-height: 1.5;
-                            color: @text-color-primary;
-                            word-break: break-word; /* Handle long URLs */
-                        }
-                        
-                        &.expanded {
-                            max-height: 150px; /* Limit height when expanded */
-                            overflow-y: auto;
-                            padding-right: 8px; /* Space for scrollbar */
-                            
-                            /* Custom Scrollbar */
-                            &::-webkit-scrollbar {
-                                width: 4px;
-                            }
-                            &::-webkit-scrollbar-thumb {
-                                background: @gold-border;
-                                border-radius: 4px;
-                            }
-                        }
-                    }
+            h3 {
+                .game-title-style();
+                font-size: 20px;
+                color: @seal-red;
+                margin-bottom: 4px;
+            }
 
-                    .toggle-btn {
-                        padding: 0;
-                        margin-top: 4px;
+            .description-container {
+                .text-wrapper {
+                    p {
+                        margin: 0;
                         font-family: @font-serif;
-                        color: @seal-red;
-                        &:hover {
-                            color: darken(@seal-red, 10%);
+                        font-size: 16px;
+                        line-height: 1.5;
+                        color: @text-color-primary;
+                        word-break: break-word;
+                        /* Handle long URLs */
+                    }
+
+                    &.expanded {
+                        max-height: 150px;
+                        /* Limit height when expanded */
+                        overflow-y: auto;
+                        padding-right: 8px;
+                        /* Space for scrollbar */
+
+                        /* Custom Scrollbar */
+                        &::-webkit-scrollbar {
+                            width: 4px;
+                        }
+
+                        &::-webkit-scrollbar-thumb {
+                            background: @gold-border;
+                            border-radius: 4px;
                         }
                     }
                 }
-            }
 
-            .ant-btn-primary {
-                .game-btn-primary();
-                min-width: 120px;
+                .toggle-btn {
+                    padding: 0;
+                    margin-top: 4px;
+                    font-family: @font-serif;
+                    color: @seal-red;
+
+                    &:hover {
+                        color: darken(@seal-red, 10%);
+                    }
+                }
             }
-       }
-  }
+        }
+
+        .ant-btn-primary {
+            .game-btn-primary();
+            min-width: 120px;
+        }
+    }
+}
 
 // ============== HIDDEN OBJECT SCREEN ==============
 .hidden-object-screen {
@@ -568,10 +603,10 @@
     flex-direction: column;
     height: 100%;
     position: relative;
-    flex: 1; 
+    flex: 1;
     background: #000;
     overflow: hidden;
-    
+
     .scene-container {
         flex: 1;
         position: relative;
@@ -582,29 +617,30 @@
         width: 100%;
         cursor: crosshair;
         user-select: none;
-        padding: 16px; 
+        padding: 16px;
 
         .interactive-area {
             position: relative;
-            line-height: 0; 
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            display: inline-block; /* Wraps tightly around the image */
+            line-height: 0;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+            display: inline-block;
+            /* Wraps tightly around the image */
             max-width: 100%;
             max-height: 100%;
-            
+
             img.game-scene-image {
-                display: block; 
+                display: block;
                 width: auto;
                 height: auto;
                 max-width: 100%;
                 max-height: 400px;
-                pointer-events: none; 
+                pointer-events: none;
                 border: 2px solid @gold-border;
                 border-radius: 4px;
                 object-fit: contain;
 
                 @media (min-height: 800px) {
-                  max-height: 480px;
+                    max-height: 480px;
                 }
             }
         }
@@ -615,15 +651,16 @@
             border-radius: 50%;
             box-shadow: 0 0 15px @gold-color, inset 0 0 10px rgba(255, 215, 0, 0.3);
             animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            
+
             background: rgba(255, 215, 0, 0.1);
             z-index: 10;
             pointer-events: none;
-            
+
             &::after {
                 content: '';
                 position: absolute;
-                top: -10px; right: -10px; 
+                top: -10px;
+                right: -10px;
                 transform: none;
                 background: @seal-red;
                 color: white;
@@ -635,37 +672,46 @@
                 justify-content: center;
                 font-weight: bold;
                 font-size: 14px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
                 border: 2px solid #fff;
             }
         }
-        
+
         .miss-marker {
-             position: absolute;
-             width: 40px;
-             height: 40px;
-             border: 2px solid #ff4d4f;
-             border-radius: 50%;
-             transform: translate(-50%, -50%);
-             pointer-events: none;
-             animation: fadeOut 0.6s forwards;
-             z-index: 10;
-             box-shadow: 0 0 10px rgba(255, 77, 79, 0.6);
-             
-             &::before, &::after {
-               content: '';
-               position: absolute;
-               top: 50%; left: 50%;
-               width: 24px; height: 3px;
-               background: #ff4d4f;
-             }
-             &::before { transform: translate(-50%, -50%) rotate(45deg); }
-             &::after { transform: translate(-50%, -50%) rotate(-45deg); }
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ff4d4f;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: fadeOut 0.6s forwards;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(255, 77, 79, 0.6);
+
+            &::before,
+            &::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 24px;
+                height: 3px;
+                background: #ff4d4f;
+            }
+
+            &::before {
+                transform: translate(-50%, -50%) rotate(45deg);
+            }
+
+            &::after {
+                transform: translate(-50%, -50%) rotate(-45deg);
+            }
         }
     }
 
     .hidden-object-hud {
-        flex-shrink: 0; 
+        flex-shrink: 0;
         height: auto;
         min-height: 100px;
         background: linear-gradient(to top, #1a1a1a, #2a2a2a);
@@ -675,7 +721,7 @@
         align-items: center;
         gap: 24px;
         z-index: 20;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
 
         .hud-info {
             display: flex;
@@ -684,36 +730,36 @@
             color: @gold-color;
             font-family: @font-serif;
             min-width: 140px;
-            
+
             .label {
                 font-size: 14px;
-                color: rgba(255,255,255,0.7);
+                color: rgba(255, 255, 255, 0.7);
                 text-transform: uppercase;
                 letter-spacing: 1px;
                 margin-bottom: 4px;
             }
-            
+
             .count {
-               font-size: 32px;
-               font-weight: 800;
-               line-height: 1;
-               color: @gold-color;
-               text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                font-size: 32px;
+                font-weight: 800;
+                line-height: 1;
+                color: @gold-color;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             }
         }
 
         .items-list {
             display: flex;
-            flex-wrap: wrap; 
+            flex-wrap: wrap;
             justify-content: center;
             gap: 12px;
             padding: 4px;
             flex: 1;
 
             .target-item {
-                background: rgba(30,30,30, 0.8);
+                background: rgba(30, 30, 30, 0.8);
                 border: 1px solid fade(@gold-border, 30%);
-                border-radius: 50px; 
+                border-radius: 50px;
                 padding: 8px 20px;
                 color: rgba(255, 255, 255, 0.9);
                 display: flex;
@@ -724,7 +770,7 @@
                 cursor: default;
                 font-family: @font-serif;
                 font-size: 16px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
                 &.found {
                     background: #f6ffed;
@@ -744,20 +790,20 @@
 .video-screen {
     .video-frame {
         .raw-embed-container {
-             width: 100%;
-             height: 100%;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             background: #000;
-             border-radius: 8px;
-             overflow: hidden;
-             
-             iframe {
-                 width: 100%;
-                 height: 100%;
-                 border: none;
-             }
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+
+            iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
         }
     }
 }

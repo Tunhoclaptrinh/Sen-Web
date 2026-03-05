@@ -36,7 +36,7 @@ const CustomerLayout: React.FC = () => {
   const { playClick } = useGameSounds();
 
   // BGM Logic
-  const { isMuted, bgmVolume, selectedBgmKey } = useSelector((state: RootState) => state.audio);
+  const { isMuted, bgmVolume, selectedBgmKey, isBgmAutoMuted } = useSelector((state: RootState) => state.audio);
   const { currentLevel } = useSelector((state: RootState) => state.game);
   const bgmAudioRef = React.useRef<HTMLAudioElement | null>(null);
   const fadeRef = React.useRef<{ interval: NodeJS.Timeout | null, targetVolume: number }>({ interval: null, targetVolume: 0 });
@@ -56,7 +56,7 @@ const CustomerLayout: React.FC = () => {
 
     const bgmUrl = getImageUrl(musicPath);
     const fullUrl = new URL(bgmUrl, window.location.origin).href;
-    const targetVolume = isMuted ? 0 : bgmVolume;
+    const targetVolume = (isMuted || isBgmAutoMuted) ? 0 : bgmVolume;
 
     const fadeTo = (audio: HTMLAudioElement, target: number, onComplete?: () => void) => {
       if (fadeRef.current.interval) clearInterval(fadeRef.current.interval);

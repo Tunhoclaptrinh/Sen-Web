@@ -5,6 +5,7 @@ interface AudioState {
   bgmVolume: number;
   sfxVolume: number;
   selectedBgmKey: string | null;
+  isBgmAutoMuted: boolean;
 }
 
 const initialState: AudioState = {
@@ -12,6 +13,7 @@ const initialState: AudioState = {
   bgmVolume: parseFloat(localStorage.getItem('bgmVolume') || '0.5'),
   sfxVolume: parseFloat(localStorage.getItem('sfxVolume') || '1.0'),
   selectedBgmKey: localStorage.getItem('selectedBgmKey') || null,
+  isBgmAutoMuted: false,
 };
 
 const audioSlice = createSlice({
@@ -34,6 +36,9 @@ const audioSlice = createSlice({
       state.isMuted = !state.isMuted;
       localStorage.setItem('isMuted', String(state.isMuted));
     },
+    setBgmAutoMuted: (state, action: PayloadAction<boolean>) => {
+      state.isBgmAutoMuted = action.payload;
+    },
     setSelectedBgmKey: (state, action: PayloadAction<string | null>) => {
       state.selectedBgmKey = action.payload;
       if (action.payload) {
@@ -45,5 +50,5 @@ const audioSlice = createSlice({
   },
 });
 
-export const { setMuted, setBgmVolume, setSfxVolume, toggleMute, setSelectedBgmKey } = audioSlice.actions;
+export const { setMuted, setBgmVolume, setSfxVolume, toggleMute, setSelectedBgmKey, setBgmAutoMuted } = audioSlice.actions;
 export default audioSlice.reducer;

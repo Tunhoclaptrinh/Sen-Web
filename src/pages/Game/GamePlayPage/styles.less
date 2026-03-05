@@ -176,10 +176,12 @@
       opacity: 0;
       transform: translate(-50%, 0);
     }
+
     20% {
       opacity: 1;
       transform: translate(-50%, -20px);
     }
+
     100% {
       opacity: 0;
       transform: translate(-50%, -50px);
@@ -218,11 +220,15 @@
     // If content strictly fits, no scrollbar needed.
     // If it barely overflows, we hide it to satisfy user, but keep auto as fallback logic
     overflow-y: auto;
+
     &::-webkit-scrollbar {
       display: none; // HIDE SCROLLBAR VISUALLY
     }
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 
     // --- CUSTOM COMPACT LAYOUT ---
     .custom-completion-layout {
@@ -235,6 +241,7 @@
 
     .completion-header {
       flex-shrink: 0;
+
       .completion-title.ant-typography {
         .game-title-style();
         font-size: 24px; // Smaller
@@ -309,6 +316,7 @@
           margin-bottom: 0;
         }
       }
+
       .breakdown-divider {
         height: 1px;
         background: rgba(0, 0, 0, 0.05);
@@ -359,6 +367,7 @@
 
           .reward-value {
             color: @bronze-color;
+
             &.coins {
               color: @seal-red;
             }
@@ -375,26 +384,41 @@
       margin-top: 8px;
       flex-shrink: 0;
 
-      .ant-btn-primary {
-        .game-btn-primary();
-        min-width: 140px;
-        height: 44px;
+      .completion-btn-primary {
+        .game-btn-primary() !important;
+        min-width: 140px !important;
+        height: 44px !important;
+        display: inline-flex !important;
       }
 
-      .ant-btn-default {
-        height: 44px;
-        border-radius: 8px;
-        font-family: @font-serif;
-        font-weight: 600;
-        font-size: 1rem;
-        color: @text-color-primary;
-        border: 2px solid @gold-border;
-        background: transparent;
+      .completion-btn-outline {
+        min-width: 140px !important;
+        height: 44px !important;
+        display: inline-flex !important;
+        border-radius: 8px !important;
+        font-family: @font-serif !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        color: @text-color-primary !important;
+        border: 2px solid @gold-border !important;
+        background: transparent !important;
+        box-shadow: 0 4px 0 fade(@gold-border, 80%) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 
-        &:hover {
-          color: @seal-red;
-          border-color: @seal-red;
-          background: rgba(139, 29, 29, 0.05);
+        &:hover,
+        &:focus {
+          color: @seal-red !important;
+          border-color: @seal-red !important;
+          background: rgba(139, 29, 29, 0.05) !important;
+          transform: translateY(2px) !important;
+          box-shadow: 0 2px 0 fade(@seal-red, 50%) !important;
+        }
+
+        &:active {
+          transform: translateY(4px) !important;
+          box-shadow: none !important;
         }
       }
     }

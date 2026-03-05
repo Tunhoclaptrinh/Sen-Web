@@ -28,6 +28,7 @@ import {
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
 import { setOverlayOpen, setActiveContext } from "@/store/slices/aiSlice";
+import { setBgmAutoMuted } from "@/store/slices/audioSlice";
 import { useGameSounds } from "@/hooks/useSound";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
 import { SoundOutlined, MutedOutlined } from "@ant-design/icons";
@@ -67,8 +68,18 @@ const GamePlayPage: React.FC = () => {
     }
     return () => {
       dispatch(setCurrentLevel(null));
+      dispatch(setBgmAutoMuted(false));
     };
   }, [levelId, dispatch]);
+
+  // Audio Control: Mute BGM during video playback
+  useEffect(() => {
+    if (currentScreen?.type === SCREEN_TYPES.VIDEO) {
+      dispatch(setBgmAutoMuted(true));
+    } else {
+      dispatch(setBgmAutoMuted(false));
+    }
+  }, [currentScreen?.type, dispatch]);
 
   const triggerScoreAnimation = (points: number) => {
     if (points > 0) {
@@ -200,6 +211,7 @@ const GamePlayPage: React.FC = () => {
       }
       setCompletionData(result);
       setGameCompleted(true);
+      dispatch(setBgmAutoMuted(false));
     } catch (error: any) {
       if (error?.response?.status !== 409) {
         console.error(error);
@@ -353,6 +365,7 @@ const GamePlayPage: React.FC = () => {
               <Button
                 variant="primary"
                 buttonSize="large"
+                className="completion-btn-primary"
                 icon={<ArrowLeftOutlined />}
                 onClick={() => navigate("/game/chapters")}
               >
@@ -361,6 +374,7 @@ const GamePlayPage: React.FC = () => {
               <Button
                 variant="outline"
                 buttonSize="large"
+                className="completion-btn-outline"
                 icon={<RedoOutlined />}
                 onClick={() => { playClick(); window.location.reload(); }}
               >
@@ -370,7 +384,7 @@ const GamePlayPage: React.FC = () => {
                 <Button
                   variant="primary"
                   buttonSize="large"
-                  className="next-level-btn"
+                  className="next-level-btn completion-btn-primary"
                   onClick={() => {
                     playClick();
                     const chapterId = levelInfo?.chapterId || 1;
