@@ -1,34 +1,37 @@
-import {useState} from "react";
-import {Tag, Tooltip, message} from "antd";
-import {AppstoreOutlined} from "@ant-design/icons";
-import {Button} from "@/components/common";
+import { useState } from "react";
+import { Tag, Tooltip, message } from "antd";
+import { AppstoreOutlined } from "@ant-design/icons";
+import { Button } from "@/components/common";
+import { getImageUrl } from "@/utils/image.helper";
 import DataTable from "@/components/common/DataTable";
 import LevelForm from "../../LevelManagement/components/Form";
 import ScreensDrawer from "../../LevelManagement/components/ScreensDrawer";
-import {Level} from "@/types/game.types";
-import {useCRUD} from "@/hooks/useCRUD";
+import { Level } from "@/types/game.types";
+import { useCRUD } from "@/hooks/useCRUD";
 import adminLevelService from "@/services/admin-level.service";
-import {useMemo} from "react";
+import { useMemo } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LevelsTabProps {
   chapterId: string;
   chapterName: string;
 }
 
-const LevelsTab: React.FC<LevelsTabProps> = ({chapterId, chapterName}) => {
+const LevelsTab: React.FC<LevelsTabProps> = ({ chapterId, chapterName }) => {
   // UI State
   const [formVisible, setFormVisible] = useState(false);
   const [currentLevel, setCurrentLevel] = useState<Level | null>(null);
   const [screensDrawerOpen, setScreensDrawerOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
   const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
+  const { user } = useAuth();
 
   // CRUD Setup - filter by chapter
   const crudOptions = useMemo(
     () => ({
       pageSize: 10,
       autoFetch: true,
-      defaultFilters: {chapterId: chapterId},
+      initialFilters: { chapterId: Number(chapterId) }, // Use initialFilters and ensure Number
       onError: (action: string, error: any) => {
         console.error(`Error ${action} level:`, error);
         message.error(`Thao tác thất bại: ${error.message}`);
@@ -66,17 +69,49 @@ const LevelsTab: React.FC<LevelsTabProps> = ({chapterId, chapterName}) => {
   };
 
   const handleSubmit = async (values: any) => {
-    // Ensure chapterId is set
+    // Auto-set status and createdBy based on role if not provided
+    const status = values.status || (user?.role === "admin" ? "published" : "pending");
+    const createdBy = values.createdBy || user?.id;
+
+    // Ensure chapterId is set and converted to number for API correctness
     const levelData = {
       ...values,
-      chapterId: chapterId,
+      status,
+      createdBy,
+      chapterId: Number(chapterId),
+      // Use thumbnail primarily
+      thumbnail: values.thumbnail,
+      // Default type if missing
+      type: values.type || "story",
+      // Automatically create a default dialogue screen to satisfy "Screens must be a non-empty array"
+      // Sending both camelCase and snake_case for maximum compatibility with various backend versions
+      screens: !currentLevel ? [
+        {
+          id: "intro",
+          type: "DIALOGUE",
+          index: 0,
+          isFirst: true,
+          isLast: true,
+          is_first: true,
+          is_last: true,
+          content: [
+            {
+              speaker: "AI",
+              text: "Chào mừng bạn đến với màn chơi mới! Hãy bắt đầu hành trình khám phá lịch sử.",
+            }
+          ]
+        }
+      ] : undefined,
     };
 
     let success = false;
     if (currentLevel) {
-      success = await crud.update(currentLevel.id, levelData);
+      // When updating, we don't usually send screens unless the API supports it
+      const { screens, id: _, ...updateData } = levelData;
+      success = await crud.update(currentLevel.id, updateData);
     } else {
-      success = await crud.create(levelData);
+      const { id: _, ...createData } = levelData;
+      success = await crud.create(createData);
     }
 
     if (success) {
@@ -85,7 +120,35 @@ const LevelsTab: React.FC<LevelsTabProps> = ({chapterId, chapterName}) => {
     return success;
   };
 
+  const defaultInitialValues = useMemo(() => ({ chapterId: Number(chapterId) }), [chapterId]);
+
   const columns = [
+    {
+      title: "Hình ảnh",
+      key: "backgroundImage",
+      width: 40,
+      align: "center" as const,
+      render: (_: any, record: Level) => {
+        const url = record.thumbnail || record.backgroundImage;
+        return (
+          <div
+            style={{
+              width: 50,
+              height: 30,
+              borderRadius: 4,
+              overflow: "hidden",
+              background: "#f5f5f5",
+            }}
+          >
+            <img
+              src={getImageUrl(url) || "https://placehold.co/60x36?text=No+Img"}
+              alt="thumbnail"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        );
+      },
+    },
     {
       title: "Thứ tự",
       dataIndex: "order",
@@ -140,8 +203,8 @@ const LevelsTab: React.FC<LevelsTabProps> = ({chapterId, chapterName}) => {
 
   return (
     <>
-      <div style={{marginBottom: 16}}>
-        <p style={{color: "#666", marginBottom: 8}}>
+      <div style={{ marginBottom: 16 }}>
+        <p style={{ color: "#666", marginBottom: 8 }}>
           Chương: <strong>{chapterName}</strong>
         </p>
       </div>
@@ -171,7 +234,7 @@ const LevelsTab: React.FC<LevelsTabProps> = ({chapterId, chapterName}) => {
         open={formVisible}
         onCancel={closeForm}
         onSubmit={handleSubmit}
-        initialValues={currentLevel ? currentLevel : {chapterId: chapterId}}
+        initialValues={currentLevel ? currentLevel : defaultInitialValues}
         loading={crud.loading}
       />
 

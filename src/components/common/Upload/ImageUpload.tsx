@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, message, Modal, Input, Button } from "antd";
+import { Upload, message, Modal, Input, Button, Radio, Space } from "antd";
 import { PlusOutlined, LoadingOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
@@ -213,44 +213,33 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   // ─── Single image (maxCount === 1) ───────────────────────────────
   if (maxCount === 1) {
     return (
-      <>
+      <Space direction="vertical" style={{ width: "100%" }} size={8}>
         {/* Mode toggle */}
-        <div style={{ marginBottom: 8, display: "flex", gap: 4 }}>
-          {(["url", "upload"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => handleModeChange(m)}
-              style={{
-                padding: "2px 10px",
-                fontSize: 12,
-                borderRadius: 4,
-                cursor: "pointer",
-                background: mode === m ? "#1677ff" : "#f5f5f5",
-                color: mode === m ? "#fff" : "#555",
-                border: `1px solid ${mode === m ? "#1677ff" : "#d9d9d9"}`,
-                transition: "all 0.2s",
-              }}
-            >
-              {m === "url" ? (
-                <><LinkOutlined style={{ marginRight: 4 }} />Dán liên kết</>
-              ) : (
-                <><UploadOutlined style={{ marginRight: 4 }} />Tải ảnh lên</>
-              )}
-            </button>
-          ))}
-        </div>
+        <Radio.Group
+          size="small"
+          value={mode}
+          onChange={(e) => handleModeChange(e.target.value)}
+          optionType="button"
+          buttonStyle="solid"
+        >
+          <Radio.Button value="upload">
+            <UploadOutlined /> Tải lên
+          </Radio.Button>
+          <Radio.Button value="url">
+            <LinkOutlined /> Link ảnh
+          </Radio.Button>
+        </Radio.Group>
 
         {mode === "url" ? (
           <Input
             value={Array.isArray(value) ? value[0] : value}
             onChange={(e) => onChange?.(e.target.value)}
-            placeholder="https://..."
+            placeholder="Dán link ảnh (https://...)"
             prefix={<LinkOutlined />}
             allowClear
           />
         ) : (
-          <>
+          <div style={{ marginTop: 4 }}>
             <Upload
               listType="picture-card"
               fileList={fileList}
@@ -263,9 +252,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               {fileList.length >= 1 ? null : uploadButton}
             </Upload>
             {previewModal}
-          </>
+          </div>
         )}
-      </>
+      </Space>
     );
   }
 

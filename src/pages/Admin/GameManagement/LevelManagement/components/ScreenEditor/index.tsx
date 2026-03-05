@@ -1,4 +1,4 @@
-import { Form, Select, Button, Input, Space, message, Divider, Alert, Row, Col, Radio } from "antd";
+import { Form, Select, Button, Input, Space, message, Divider, Alert, Row, Col, Switch } from "antd";
 import { useEffect, useState } from "react";
 import { Screen, SCREEN_TYPES, ScreenType } from "@/types/game.types";
 import adminScreenService from "@/services/admin-screen.service";
@@ -6,12 +6,8 @@ import GameSimulator from "../GameSimulator";
 import { FormModal } from "@/components/common";
 import {
     EyeOutlined,
-    CloudUploadOutlined,
-    LinkOutlined,
-    PictureOutlined,
     DoubleRightOutlined
 } from "@ant-design/icons";
-import { Switch } from "antd";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
 
 // Sub-editors
@@ -65,7 +61,6 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
     const [loading, setLoading] = useState(false);
     const [type, setType] = useState<ScreenType>(SCREEN_TYPES.DIALOGUE);
     const [previewVisible, setPreviewVisible] = useState(false);
-    const [bgMode, setBgMode] = useState<'upload' | 'link'>('upload');
 
     // Initialize form
     useEffect(() => {
@@ -73,13 +68,9 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
             if (screen) {
                 form.setFieldsValue(screen);
                 setType(screen.type);
-                if (screen.backgroundImage) {
-                    setBgMode(screen.backgroundImage.startsWith('http') ? 'link' : 'upload');
-                }
             } else {
                 form.resetFields();
                 setType(SCREEN_TYPES.DIALOGUE);
-                setBgMode('upload');
 
                 // Auto-generate ID if metadata is available
                 let generatedId = "";
@@ -301,34 +292,12 @@ const ScreenEditor: React.FC<ScreenEditorProps> = ({
 
                         <Col span={14}>
                             <div style={{ background: '#fff', padding: '16px 20px', borderRadius: 12, border: '1px solid #f0f0f0', height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-                                <Form.Item label={<span style={{ fontWeight: 600, color: '#555' }}>Hình nền riêng (Ghi đè Level)</span>} style={{ marginBottom: 0 }}>
-                                    <Space direction="vertical" style={{ width: '100%' }} size={12}>
-                                        <Radio.Group
-                                            size="middle"
-                                            value={bgMode}
-                                            onChange={(e) => setBgMode(e.target.value)}
-                                            optionType="button"
-                                            buttonStyle="solid"
-                                        >
-                                            <Radio.Button value="upload" style={{ borderRadius: '6px 0 0 6px' }}><CloudUploadOutlined /> Tải lên</Radio.Button>
-                                            <Radio.Button value="link" style={{ borderRadius: '0 6px 6px 0' }}><LinkOutlined /> Link</Radio.Button>
-                                        </Radio.Group>
-
-                                        {bgMode === "upload" ? (
-                                            <Form.Item name="backgroundImage" noStyle>
-                                                <ImageUpload maxCount={1} />
-                                            </Form.Item>
-                                        ) : (
-                                            <Form.Item name="backgroundImage" noStyle>
-                                                <Input
-                                                    prefix={<PictureOutlined style={{ color: '#bfbfbf' }} />}
-                                                    placeholder="Dán đường dẫn ảnh (https://...)"
-                                                    size="large"
-                                                    style={{ borderRadius: 8 }}
-                                                />
-                                            </Form.Item>
-                                        )}
-                                    </Space>
+                                <Form.Item
+                                    name="backgroundImage"
+                                    label={<span style={{ fontWeight: 600, color: '#555' }}>Hình nền riêng (Ghi đè Level)</span>}
+                                    style={{ marginBottom: 0 }}
+                                >
+                                    <ImageUpload maxCount={1} />
                                 </Form.Item>
                             </div>
                         </Col>

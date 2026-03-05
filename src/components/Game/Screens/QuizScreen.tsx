@@ -12,20 +12,23 @@ const { Title } = Typography;
 interface Props {
   data: QuizScreenType;
   onNext: () => void;
-  onSubmitAnswer: (answerId: string) => Promise<{ isCorrect: boolean; explanation?: string }>;
+  onSubmitAnswer: (answerId: string | string[]) => Promise<{ isCorrect: boolean; explanation?: string }>;
   fallbackImage?: string;
   loading?: boolean;
 }
 
 const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackImage, loading }) => {
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [result, setResult] = useState<{ isCorrect: boolean; explanation?: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const { playClick } = useGameSounds();
 
+  const requiredCount = data.requiredItems || 1;
+  const isMultiple = requiredCount > 1;
+
   // Reset state when question changes
   useEffect(() => {
-    setSelectedOption(null);
+    setSelectedOptions([]);
     setResult(null);
     setSubmitting(false);
   }, [data]);
@@ -33,26 +36,46 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
   const handleOptionClick = (index: number) => {
     if (result) return; // Prevent changing after submission
     playClick();
-    setSelectedOption(index);
+
+    if (isMultiple) {
+      setSelectedOptions(prev => {
+        if (prev.includes(index)) {
+          return prev.filter(i => i !== index);
+        }
+        if (prev.length < requiredCount) {
+          return [...prev, index];
+        }
+        // If already reached limit, replace last one or do nothing? 
+        // User said "add number required to find". Let's allow toggling.
+        // If they click a new one and are at limit, we can either block or replace.
+        // Let's block to be explicit about "already selected X".
+        return prev;
+      });
+    } else {
+      setSelectedOptions([index]);
+    }
   };
 
   const handleSubmit = async () => {
-    if (selectedOption === null) {
-      message.warning("Vui lòng chọn một đáp án");
+    if (selectedOptions.length === 0) {
+      message.warning("Vui lòng chọn đáp án");
+      return;
+    }
+
+    if (selectedOptions.length < requiredCount) {
+      message.warning(`Vui lòng chọn đủ ${requiredCount} đáp án`);
       return;
     }
 
     setSubmitting(true);
     try {
-      // Gửi text của đáp án thay vì index
-      const answerText = data.options[selectedOption].text;
-      const response = await onSubmitAnswer(answerText);
+      // Gửi text của đáp án hoặc mảng text
+      const answerPayload = isMultiple
+        ? selectedOptions.map(idx => data.options[idx].text)
+        : data.options[selectedOptions[0]].text;
+
+      const response = await onSubmitAnswer(answerPayload);
       setResult(response);
-      if (response.isCorrect) {
-        message.success("Chính xác! + điểm");
-      } else {
-        message.error("Chưa chính xác");
-      }
     } catch (error) {
       message.error("Có lỗi xảy ra khi gửi câu trả lời");
     } finally {
@@ -75,24 +98,32 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
             <Title level={3} className="question-text">
               {data.question || data.description}
             </Title>
+            {isMultiple && !result && (
+              <div className="quiz-subtitle" style={{ color: '#faad14', fontWeight: 500, marginTop: 8 }}>
+                Chọn đúng {requiredCount} đáp án ({selectedOptions.length}/{requiredCount})
+              </div>
+            )}
           </div>
 
           <div className="quiz-options">
             <Space direction="vertical" style={{ width: "100%" }} size="middle">
               {data.options?.map((option, index) => {
-                const isSelected = selectedOption === index;
+                const isSelected = selectedOptions.includes(index);
                 let btnClass = "quiz-option-btn";
                 let icon = null;
 
                 if (result) {
                   if (isSelected) {
-                    if (result.isCorrect) {
+                    if (option.isCorrect) {
                       btnClass += " correct";
                       icon = <CheckCircleOutlined />;
                     } else {
                       btnClass += " wrong";
                       icon = <CloseCircleOutlined />;
                     }
+                  } else if (option.isCorrect) {
+                    // Hiển thị đáp án đúng nếu người chơi chọn sai
+                    btnClass += " correct-hint";
                   }
                 } else if (isSelected) {
                   btnClass += " selected";
@@ -118,15 +149,34 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
           {result && (
             <div className="quiz-feedback">
               <Alert
-                message={result.isCorrect ? "Chính xác!" : "Sai rồi!"}
-                description={result.explanation}
+                message={result.explanation || (result.isCorrect ? "Chính xác!" : "Chưa chính xác!")}
                 type={result.isCorrect ? "success" : "error"}
                 showIcon
                 style={{ marginTop: 20, marginBottom: 20 }}
               />
-              <Button type="primary" size="large" onClick={() => { playClick(); onNext(); }} block disabled={loading}>
-                Tiếp tục hành trình
-              </Button>
+              {result.isCorrect ? (
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={() => { playClick(); onNext(); }}
+                  block
+                  disabled={loading}
+                  className="bouncy-button" // Ensure bouncy style
+                >
+                  Tiếp tục hành trình
+                </Button>
+              ) : (
+                <Button
+                  type="default"
+                  danger
+                  size="large"
+                  onClick={() => { playClick(); setResult(null); setSelectedOptions([]); }}
+                  block
+                  disabled={loading}
+                >
+                  Thử lại
+                </Button>
+              )}
             </div>
           )}
 
@@ -137,10 +187,10 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                 size="large"
                 onClick={handleSubmit}
                 loading={submitting}
-                disabled={selectedOption === null}
+                disabled={selectedOptions.length === 0}
                 block
               >
-                Trả lời
+                Trả lời {isMultiple && selectedOptions.length > 0 && `(${selectedOptions.length}/${requiredCount})`}
               </Button>
             </div>
           )}

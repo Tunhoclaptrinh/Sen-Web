@@ -117,6 +117,7 @@ export interface QuizScreen extends Screen {
     text: string;
     isCorrect: boolean;
   }>;
+  requiredItems?: number;
   timeLimit?: number;
   points?: number;
 }

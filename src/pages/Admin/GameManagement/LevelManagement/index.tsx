@@ -1,12 +1,12 @@
-import {Space, Tooltip, Button as AntButton, Select, Card, Tag, Tabs, Modal} from "antd";
-import {Button, DataTable} from "@/components/common";
-import {useState, useEffect} from "react";
+import { Space, Tooltip, Button as AntButton, Select, Card, Tag, Tabs, Modal } from "antd";
+import { Button, DataTable } from "@/components/common";
+import { useState, useEffect } from "react";
 import LevelForm from "./components/Form";
 import ScreenList from "./components/ScreenList";
 import ScreenEditor from "./components/ScreenEditor";
 import LevelReorderModal from "./components/LevelReorderModal";
 import GameSimulator from "./components/GameSimulator";
-import {useLevelModel} from "./model";
+import { useLevelModel } from "./model";
 import {
   AppstoreOutlined,
   ArrowLeftOutlined,
@@ -21,12 +21,12 @@ import {
   EyeOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import {Popover, Divider} from "antd";
+import { Popover, Divider } from "antd";
 
 import adminChapterService from "@/services/admin-chapter.service";
 import adminScreenService from "@/services/admin-screen.service";
-import {getImageUrl} from "@/utils/image.helper";
-import {useAuth} from "@/hooks/useAuth";
+import { getImageUrl } from "@/utils/image.helper";
+import { useAuth } from "@/hooks/useAuth";
 
 const LevelManagement = ({
   chapterId,
@@ -73,7 +73,7 @@ const LevelManagement = ({
     exportLoading,
     importData,
     exportData,
-  } = useLevelModel(chapterId ? {chapterId: chapterId} : undefined);
+  } = useLevelModel(chapterId ? { chapterId: chapterId } : undefined);
 
   // Screen Editor State
   const [editorVisible, setEditorVisible] = useState(false);
@@ -93,7 +93,7 @@ const LevelManagement = ({
   const [chapters, setChapters] = useState<any[]>([]);
 
   useEffect(() => {
-    adminChapterService.getAll({_limit: 100}).then((res) => {
+    adminChapterService.getAll({ _limit: 100 }).then((res) => {
       if (res.success) {
         // Handle different response structures
         const list = (res.data as any)?.items || (Array.isArray(res.data) ? res.data : []);
@@ -135,35 +135,37 @@ const LevelManagement = ({
   const columns = [
     {
       title: "Hình ảnh",
-      dataIndex: "thumbnail",
       key: "backgroundImage",
       width: 40,
       align: "center" as const,
-      render: (url: string) => (
-        <div
-          style={{
-            margin: "0 auto",
-            width: 60,
-            height: 36,
-            borderRadius: 4,
-            overflow: "hidden",
-            background: "#f5f5f5",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <img
-            src={getImageUrl(url) || "https://placehold.co/60x36?text=No+Img"}
-            alt="thumbnail"
-            style={{width: "100%", height: "100%", objectFit: "cover"}}
-            onError={(e: any) => {
-              e.target.onerror = null;
-              e.target.src = "https://placehold.co/60x36?text=No+Img";
+      render: (_: any, record: any) => {
+        const url = record.thumbnail || record.backgroundImage;
+        return (
+          <div
+            style={{
+              margin: "0 auto",
+              width: 60,
+              height: 36,
+              borderRadius: 4,
+              overflow: "hidden",
+              background: "#f5f5f5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
-        </div>
-      ),
+          >
+            <img
+              src={getImageUrl(url) || "https://placehold.co/60x36?text=No+Img"}
+              alt="thumbnail"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={(e: any) => {
+                e.target.onerror = null;
+                e.target.src = "https://placehold.co/60x36?text=No+Img";
+              }}
+            />
+          </div>
+        );
+      },
     },
     {
       title: "Tên Màn chơi",
@@ -177,8 +179,8 @@ const LevelManagement = ({
       dataIndex: "difficulty",
       width: 80,
       render: (val: string) => {
-        const colors: any = {easy: "green", medium: "orange", hard: "red"};
-        return <span style={{color: colors[val] || "black"}}>{val?.toUpperCase()}</span>;
+        const colors: any = { easy: "green", medium: "orange", hard: "red" };
+        return <span style={{ color: colors[val] || "black" }}>{val?.toUpperCase()}</span>;
       },
     },
     {
@@ -226,29 +228,29 @@ const LevelManagement = ({
     },
   ];
 
-  const {user} = useAuth(); // Need to import useAuth
+  const { user } = useAuth(); // Need to import useAuth
 
   const tabItems = [
-    {key: "all", label: "Tất cả màn chơi"},
-    ...(user?.role === "researcher" || user?.role === "admin" ? [{key: "my", label: "Màn chơi của tôi"}] : []),
-    {key: "pending", label: "Chờ duyệt Đăng"},
-    {key: "published", label: "Đã xuất bản"},
-    {key: "unpublish_pending", label: "Chờ duyệt Gỡ"},
+    { key: "all", label: "Tất cả màn chơi" },
+    ...(user?.role === "researcher" || user?.role === "admin" ? [{ key: "my", label: "Màn chơi của tôi" }] : []),
+    { key: "pending", label: "Chờ duyệt Đăng" },
+    { key: "published", label: "Đã xuất bản" },
+    { key: "unpublish_pending", label: "Chờ duyệt Gỡ" },
   ];
 
   const handleTabChange = (key: string) => {
     switch (key) {
       case "all":
-        updateFilters({status: undefined, createdBy: undefined});
+        updateFilters({ status: undefined, createdBy: undefined });
         break;
       case "my":
-        updateFilters({createdBy: user?.id, status: undefined});
+        updateFilters({ createdBy: user?.id, status: undefined });
         break;
       case "pending":
-        updateFilters({status: "pending", createdBy: undefined});
+        updateFilters({ status: "pending", createdBy: undefined });
         break;
       case "published":
-        updateFilters({status: "published", createdBy: undefined});
+        updateFilters({ status: "published", createdBy: undefined });
         break;
     }
   };
@@ -276,7 +278,7 @@ const LevelManagement = ({
               >
                 Quay lại
               </AntButton>
-              <span style={{fontSize: 16, fontWeight: 600}}>{currentLevel.name} - Quản lý Screens</span>
+              <span style={{ fontSize: 16, fontWeight: 600 }}>{currentLevel.name} - Quản lý Screens</span>
             </Space>
           }
           extra={
@@ -292,17 +294,17 @@ const LevelManagement = ({
           bordered={!hideCard}
           style={
             hideCard
-              ? {boxShadow: "none", background: "transparent"}
-              : {borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.05)"}
+              ? { boxShadow: "none", background: "transparent" }
+              : { borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }
           }
           styles={{
-            header: {padding: hideCard ? 0 : undefined},
-            body: {padding: "0"},
+            header: { padding: hideCard ? 0 : undefined },
+            body: { padding: "0" },
           }}
         >
-          <div style={{padding: hideCard ? 0 : 24}}>
-            <div style={{display: "flex", gap: 24}}>
-              <div style={{flex: 1}}>
+          <div style={{ padding: hideCard ? 0 : 24 }}>
+            <div style={{ display: "flex", gap: 24 }}>
+              <div style={{ flex: 1 }}>
                 <ScreenList
                   levelId={currentLevel.id}
                   onEdit={handleEditScreen}
@@ -351,26 +353,26 @@ const LevelManagement = ({
     <>
       <DataTable
         title={
-          <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2>Quản lý Màn chơi (Levels)</h2>
             {!chapterId && (
               <Select
                 placeholder="Lọc theo Chương"
-                style={{width: 250}}
+                style={{ width: 250 }}
                 allowClear
                 value={filters.chapterId}
-                onChange={(val) => updateFilters({chapterId: val})}
+                onChange={(val) => updateFilters({ chapterId: val })}
                 showSearch
                 optionFilterProp="label"
-                options={chapters.map((c: any) => ({label: c.name, value: c.id}))}
+                options={chapters.map((c: any) => ({ label: c.name, value: c.id }))}
               />
             )}
           </div>
         }
         headerContent={
-          <div style={{marginBottom: 16}}>
-            <div style={{marginTop: 16, background: "#fff", padding: "0 16px", borderRadius: "8px 8px 0 0"}}>
-              <Tabs activeKey={getActiveTab()} items={tabItems} onChange={handleTabChange} style={{marginBottom: 0}} />
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ marginTop: 16, background: "#fff", padding: "0 16px", borderRadius: "8px 8px 0 0" }}>
+              <Tabs activeKey={getActiveTab()} items={tabItems} onChange={handleTabChange} style={{ marginBottom: 0 }} />
             </div>
           </div>
         }
@@ -426,7 +428,7 @@ const LevelManagement = ({
                   icon={<SendOutlined />}
                   disabled={submitDisabled}
                   onClick={() => !submitDisabled && submitReview?.(record.id)}
-                  style={{color: "var(--primary-color)"}}
+                  style={{ color: "var(--primary-color)" }}
                 />
               </Tooltip>,
             );
@@ -446,7 +448,7 @@ const LevelManagement = ({
                   onClick={() =>
                     record.status === "unpublish_pending" ? revertReview?.(record.id) : approveReview?.(record.id)
                   }
-                  style={{color: "var(--primary-color)"}}
+                  style={{ color: "var(--primary-color)" }}
                 />
               </Tooltip>,
             );
@@ -461,7 +463,7 @@ const LevelManagement = ({
                   buttonSize="small"
                   icon={<CloseCircleOutlined />}
                   onClick={() => handleReject(record)}
-                  style={{color: "#ff4d4f"}}
+                  style={{ color: "#ff4d4f" }}
                 />
               </Tooltip>,
             );
@@ -476,7 +478,7 @@ const LevelManagement = ({
                   buttonSize="small"
                   icon={<UndoOutlined />}
                   onClick={() => approveReview?.(record.id)}
-                  style={{color: "#ff4d4f"}}
+                  style={{ color: "#ff4d4f" }}
                 />
               </Tooltip>,
             );
@@ -490,7 +492,7 @@ const LevelManagement = ({
                 buttonSize="small"
                 icon={<PlayCircleOutlined />}
                 onClick={() => handleRunLevel(record)}
-                style={{color: "var(--primary-color)"}}
+                style={{ color: "var(--primary-color)" }}
               />
             </Tooltip>,
           );
@@ -504,7 +506,7 @@ const LevelManagement = ({
                   buttonSize="small"
                   icon={<AppstoreOutlined />}
                   onClick={() => enterScreenMode(record)}
-                  style={{color: "var(--primary-color)"}}
+                  style={{ color: "var(--primary-color)" }}
                 />
               </Tooltip>,
             );
@@ -518,7 +520,7 @@ const LevelManagement = ({
                 buttonSize="small"
                 icon={<EditOutlined />}
                 onClick={() => openEdit(record)}
-                style={{color: "var(--primary-color)"}}
+                style={{ color: "var(--primary-color)" }}
               />
             </Tooltip>,
           );
@@ -536,15 +538,15 @@ const LevelManagement = ({
                     onOk: () => deleteItem(record.id),
                     okText: "Xóa",
                     cancelText: "Hủy",
-                    okButtonProps: {danger: true},
+                    okButtonProps: { danger: true },
                   });
                 }}
-                style={{color: "#ff4d4f"}}
+                style={{ color: "#ff4d4f" }}
               />
             </Tooltip>,
           );
 
-          const popoverContent = <div style={{display: "flex", alignItems: "center", gap: "4px"}}>{items}</div>;
+          const popoverContent = <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>{items}</div>;
 
           return (
             <Space size={8}>
@@ -555,7 +557,7 @@ const LevelManagement = ({
                   icon={<EyeOutlined />}
                   onClick={() => openEdit(record)}
                   className="action-btn-standard"
-                  style={{color: "var(--primary-color)"}}
+                  style={{ color: "var(--primary-color)" }}
                 />
               </Tooltip>
 
@@ -571,7 +573,7 @@ const LevelManagement = ({
                     buttonSize="small"
                     icon={<MenuOutlined />}
                     className="action-btn-standard"
-                    style={{color: "var(--primary-color)"}}
+                    style={{ color: "var(--primary-color)" }}
                   />
                 </Popover>
               )}

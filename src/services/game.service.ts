@@ -1,5 +1,5 @@
 import BaseService from "./base.service";
-import type {GameProgress, Chapter, Level, Screen, LeaderboardEntry, Badge, Achievement} from "@/types/game.types";
+import type { GameProgress, Chapter, Level, Screen, LeaderboardEntry, Badge, Achievement } from "@/types/game.types";
 
 class GameService extends BaseService {
   constructor() {
@@ -23,7 +23,7 @@ class GameService extends BaseService {
     return response.data;
   }
 
-  async unlockChapter(id: number): Promise<{success: boolean; message: string; data: any}> {
+  async unlockChapter(id: number): Promise<{ success: boolean; message: string; data: any }> {
     const response = await this.post(`/chapters/${id}/unlock`);
     return response;
   }
@@ -39,7 +39,7 @@ class GameService extends BaseService {
     return response.data;
   }
 
-  async startLevel(id: number): Promise<{sessionId: number; level: Level; currentScreen: Screen}> {
+  async startLevel(id: number): Promise<{ sessionId: number; level: Level; currentScreen: Screen }> {
     const response = await this.post(`/levels/${id}/start`);
     return response.data;
   }
@@ -72,7 +72,7 @@ class GameService extends BaseService {
    */
   async submitAnswer(
     sessionId: number,
-    answerId: string,
+    answerId: string | string[],
   ): Promise<{
     isCorrect: boolean;
     pointsEarned: number;
@@ -80,7 +80,7 @@ class GameService extends BaseService {
     explanation?: string;
     correctAnswer?: string;
   }> {
-    const response = await this.post(`/sessions/${sessionId}/submit-answer`, {answerId});
+    const response = await this.post(`/sessions/${sessionId}/submit-answer`, { answerId });
     return response.data;
   }
 
@@ -98,7 +98,7 @@ class GameService extends BaseService {
     totalScore?: number;
     correctOrder?: string[];
   }> {
-    const response = await this.post(`/sessions/${sessionId}/submit-timeline`, {eventOrder});
+    const response = await this.post(`/sessions/${sessionId}/submit-timeline`, { eventOrder });
     return response.data;
   }
 
@@ -124,7 +124,7 @@ class GameService extends BaseService {
       allCollected: boolean;
     };
   }> {
-    const response = await this.post(`/levels/${levelId}/collect-clue`, {clueId});
+    const response = await this.post(`/levels/${levelId}/collect-clue`, { clueId });
     return response.data;
   }
 
@@ -153,7 +153,7 @@ class GameService extends BaseService {
     };
     nextLevelId?: number;
   }> {
-    const response = await this.post(`/levels/${levelId}/complete`, {score, timeSpent});
+    const response = await this.post(`/levels/${levelId}/complete`, { score, timeSpent });
     return response.data;
   }
 
@@ -162,18 +162,18 @@ class GameService extends BaseService {
     type: "global" | "points" | "level" | "checkins" = "points",
     limit: number = 20,
   ): Promise<LeaderboardEntry[]> {
-    const response = await this.get("/leaderboard", {type, limit});
+    const response = await this.get("/leaderboard", { type, limit });
     return response.data;
   }
 
-  async claimDailyReward(): Promise<{coins: number; petals: number}> {
+  async claimDailyReward(): Promise<{ coins: number; petals: number }> {
     const response = await this.get("/daily-reward");
     return response.data;
   }
 
   // ==================== Admin Leaderboard Actions ====================
-  async resetUserScore(userId: number): Promise<{success: boolean; message: string}> {
-    const response = await this.post("/leaderboard/reset", {userId});
+  async resetUserScore(userId: number): Promise<{ success: boolean; message: string }> {
+    const response = await this.post("/leaderboard/reset", { userId });
     return response.data;
   }
 
@@ -209,7 +209,7 @@ class GameService extends BaseService {
     isOpen: boolean;
     incomePerHour: number;
   }> {
-    const response = await this.post("/museum/toggle", {isOpen});
+    const response = await this.post("/museum/toggle", { isOpen });
     return response.data;
   }
 
@@ -261,7 +261,7 @@ class GameService extends BaseService {
     totalCost: number;
     remainingCoins: number;
   }> {
-    const response = await this.post("/shop/purchase", {itemId, quantity});
+    const response = await this.post("/shop/purchase", { itemId, quantity });
     return response.data;
   }
 
@@ -296,7 +296,7 @@ class GameService extends BaseService {
     };
     effect: string;
   }> {
-    const response = await this.post("/inventory/use", {itemId, targetId});
+    const response = await this.post("/inventory/use", { itemId, targetId });
     return response.data;
   }
 
@@ -329,7 +329,7 @@ class GameService extends BaseService {
     };
     isNewDiscovery: boolean;
   }> {
-    const response = await this.post("/scan", {code, latitude, longitude});
+    const response = await this.post("/scan", { code, latitude, longitude });
     return response.data;
   }
 
@@ -341,7 +341,7 @@ class GameService extends BaseService {
     locationName: string;
     totalCheckins: number;
   }> {
-    const response = await this.post("/checkin", {locationId});
+    const response = await this.post("/checkin", { locationId });
     return response.data;
   }
 

@@ -122,21 +122,49 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
         }
     };
 
-    const handleAnswerSubmit = async (answerId: string) => {
+    const handleAnswerSubmit = async (answerId: string | string[]) => {
         const screen = currentScreen as any;
-        const option = screen.options?.find((o: any) => o.id === answerId)
-            || screen.options?.find((o: any) => o._id === answerId)
-            || screen.options?.find((o: any) => o.text === answerId);
+        const answerList = Array.isArray(answerId) ? answerId : [answerId];
 
-        if (option?.isCorrect) {
+        // Find options for all selected answers
+        // To handle duplicate texts, we treat each selection as unique if possible
+        let availableOptions = [...(screen.options || [])];
+        const selectedOptions = answerList.map(ans => {
+            const index = availableOptions.findIndex((o: any) =>
+                o.id === ans || o._id === ans || o.text === ans
+            );
+            if (index !== -1) {
+                const opt = availableOptions[index];
+                // availableOptions.splice(index, 1); // For absolute strictness, but text-matching is fuzzy already
+                return opt;
+            }
+            return null;
+        });
+
+        const requiredCount = screen.requiredItems || 1;
+
+        // Validation logic:
+        // 1. All selected options must be correct
+        // 2. Number of selected options must match required items
+        const isAllCorrect = selectedOptions.length === requiredCount &&
+            selectedOptions.every(opt => opt?.isCorrect);
+
+        // Calculate points
+        const points = isAllCorrect ? 10 : 0;
+
+        if (isAllCorrect) {
             playSuccess();
-            message.success("Đúng rồi! (+Điểm)");
-            setScore(prev => prev + 10);
-            return { isCorrect: true, pointsEarned: 10, explanation: "Chính xác!" };
+            setScore(prev => prev + points);
+            return { isCorrect: true, pointsEarned: points, explanation: "Chúc mừng! Bạn đã tìm đúng tất cả đáp án yêu cầu." };
         } else {
             playError();
-            message.error("Sai rồi!");
-            return { isCorrect: false, pointsEarned: 0, explanation: "Sai rồi, hãy thử lại!" };
+            return {
+                isCorrect: false,
+                pointsEarned: 0,
+                explanation: selectedOptions.length !== requiredCount
+                    ? `Bạn cần chọn đúng ${requiredCount} đáp án.`
+                    : "Có vẻ bạn đã chọn nhầm đáp án."
+            };
         }
     };
 

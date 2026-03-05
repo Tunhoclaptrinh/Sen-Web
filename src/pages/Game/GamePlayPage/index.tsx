@@ -142,7 +142,7 @@ const GamePlayPage: React.FC = () => {
     }
   };
 
-  const handleAnswerSubmit = async (answerId: string) => {
+  const handleAnswerSubmit = async (answerId: string | string[]) => {
     if (!sessionId) throw new Error("No session");
     const res = await gameService.submitAnswer(sessionId, answerId);
     if (res.isCorrect) {

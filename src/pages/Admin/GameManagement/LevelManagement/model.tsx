@@ -1,9 +1,9 @@
-import {useState, useMemo} from "react";
-import {message, Modal, Input} from "antd";
-import {Level} from "@/types";
+import { useState, useMemo } from "react";
+import { message, Modal, Input } from "antd";
+import { Level } from "@/types";
 import adminLevelService from "@/services/admin-level.service";
-import {useAuth} from "@/hooks/useAuth";
-import {useCRUD} from "@/hooks/useCRUD";
+import { useAuth } from "@/hooks/useAuth";
+import { useCRUD } from "@/hooks/useCRUD";
 
 // Default screens for new level
 const getDefaultScreens = () => {
@@ -11,7 +11,7 @@ const getDefaultScreens = () => {
     {
       id: "intro",
       type: "DIALOGUE",
-      content: [{speaker: "AI", text: "Chào mừng bạn đến với màn chơi mới!"}],
+      content: [{ speaker: "AI", text: "Chào mừng bạn đến với màn chơi mới!" }],
       is_first: true,
       is_last: true,
     },
@@ -44,7 +44,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
   // UI Handlers
   const openCreate = () => {
     // Pre-fill with initialFilters (e.g. chapterId) - Clone to avoid mutation
-    const defaults: any = initialFilters ? {...initialFilters} : {};
+    const defaults: any = initialFilters ? { ...initialFilters } : {};
 
     // IMPORTANT: Explicitly remove 'id' to ensure it's a "Create" operation
     if (defaults.id) delete defaults.id;
@@ -72,7 +72,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
   };
 
   const openEdit = (record: Level) => {
-    setCurrentRecord({...record}); // Clone it
+    setCurrentRecord({ ...record }); // Clone it
     setFormVisible(true);
   };
 
@@ -81,7 +81,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     setCurrentRecord(null);
   };
 
-  const {user} = useAuth(); // Need to import useAuth
+  const { user } = useAuth(); // Need to import useAuth
 
   const handleSubmit = async (values: any) => {
     let success = false;
@@ -92,7 +92,11 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     } else if (user?.role === "researcher" && !values.status) {
       values.status = "pending";
     }
-    const submitValues = { ...values };
+    const submitValues = {
+      ...values,
+      // Use thumbnail primarily as per existing list display
+      thumbnail: values.thumbnail,
+    };
     // Determine if it's an update or create based on ID in currentRecord
     const recordId = (currentRecord as any)?.id;
 
@@ -102,7 +106,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     } else {
       // Create new level - add default screens
       // Ensure we don't accidentally send an ID field during creation
-      const {id: _, ...createData} = submitValues;
+      const { id: _, ...createData } = submitValues;
 
       // Ensure status is set for create
       if (user?.role === "admin" && !createData.status) createData.status = "published";
@@ -157,7 +161,7 @@ export const useLevelModel = (initialFilters?: Record<string, any>) => {
     Modal.confirm({
       title: "Từ chối phê duyệt",
       content: (
-        <div style={{marginTop: 16}}>
+        <div style={{ marginTop: 16 }}>
           <p>Lý do từ chối:</p>
           <Input.TextArea rows={4} placeholder="Nhập lý do từ chối nội dung này..." id="reject-comment" />
         </div>
