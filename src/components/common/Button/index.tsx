@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { useGameSounds } from '@/hooks/useSound';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'gold';
 type ButtonSize = 'small' | 'medium' | 'large';
 
 export interface CustomButtonProps extends Omit<AntButtonProps, 'type' | 'size' | 'variant'> {
@@ -43,6 +43,11 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
         backgroundColor: '#22C55E',
         borderColor: '#22C55E',
         color: '#FFFFFF',
+    },
+    gold: {
+        backgroundColor: '#ffd700',
+        borderColor: '#c5a065',
+        color: '#5d4037',
     },
 };
 

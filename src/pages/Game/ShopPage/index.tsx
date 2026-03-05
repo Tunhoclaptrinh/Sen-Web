@@ -265,7 +265,8 @@ const ShopPage: React.FC = () => {
 
             <div className="buy-btn-wrapper">
               <Button
-                variant="primary"
+                variant="gold"
+                fullWidth
                 className={`buy-btn ${isOwned ? "owned" : ""}`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -396,7 +397,8 @@ const ShopPage: React.FC = () => {
 
             <div className="buy-btn-wrapper">
               <Button
-                variant="primary"
+                variant="gold"
+                fullWidth
                 className={`buy-btn ${character.isOwned ? "owned" : ""}`}
                 onClick={(e) => {
                   e.stopPropagation();

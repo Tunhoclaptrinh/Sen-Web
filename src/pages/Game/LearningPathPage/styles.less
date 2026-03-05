@@ -26,6 +26,7 @@
 
     .loading-content {
       text-align: center;
+
       p {
         margin-top: 16px;
         font-weight: 500;
@@ -139,9 +140,6 @@
 
         &.completed {
           border-color: #52c41a;
-          .learning-cover img {
-            // filter: brightness(0.9);
-          }
         }
 
         .learning-cover {
@@ -256,6 +254,7 @@
               &.high {
                 color: #52c41a;
               }
+
               &.normal {
                 color: @seal-red;
               }
@@ -263,169 +262,207 @@
           }
         }
 
-        .ant-btn {
-          .game-btn-primary();
-          width: 100%;
-          margin-top: 16px;
+        .action-btn {
+          height: 44px;
+          border-radius: 6px;
+          font-family: @font-serif;
+          font-weight: 700;
           font-size: 1rem;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          margin-top: 16px;
 
-          // Primary / Default state (Learn Now) - handled by mixin mostly, but specific overrides here
-          &.ant-btn-primary {
-            background: @seal-red; // Deep red
-            box-shadow: 0 6px 0 #5a1212; // Deep dark shadow for 3D effect
-            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
-            font-weight: 800;
-            transition: all 0.1s; // Fast transition for click feel
+          // Common primary style (Learn Now / Học ngay)
+          background: @seal-red;
+          border: 2px solid @seal-border;
+          color: #fff9e6;
+          box-shadow: 0 4px 0 @seal-border;
+
+          &:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 @seal-border;
+            background: @seal-red !important;
+            color: #fff9e6 !important;
+          }
+
+          &:active {
+            transform: translateY(4px);
+            box-shadow: none;
+          }
+
+          &.sen-button--outline {
+            background: transparent !important;
+            border: 2px solid @text-color-primary !important;
+            color: @text-color-primary !important;
+            box-shadow: 0 4px 0 @text-color-primary !important;
 
             &:hover {
-              transform: translateY(2px) !important;
-              box-shadow: 0 4px 0 #5a1212 !important;
-              background: @seal-red-light !important;
+              background: rgba(93, 64, 55, 0.05) !important;
+              color: @text-color-primary !important;
+              box-shadow: 0 2px 0 @text-color-primary !important;
             }
 
             &:active {
-              transform: translateY(6px) !important;
-              box-shadow: 0 0 0 #5a1212 !important;
-            }
-          }
-
-          // Completed state (Default button type)
-          &.ant-btn-default {
-            background: transparent;
-            border: 2px solid rgba(212, 165, 116, 0.5);
-            color: @text-color-primary;
-            box-shadow: none;
-
-            &:hover {
-              color: @seal-red;
-              border-color: @seal-red;
+              box-shadow: none !important;
             }
           }
 
           &:disabled {
-            // Mixin handles this, effectively
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
           }
         }
       }
     }
   }
-}
 
-// Transparent Popover overrides
-.transparent-popover {
-  .ant-popover-inner {
-    background-color: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-  }
-}
-
-// LEARNING DETAIL PAGE STYLES
-.learning-detail-page {
-  background-color: @paper-bg !important;
-  .game-page-background();
-  background-image:
-    radial-gradient(#c5a065 0.5px, transparent 0.5px), radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important; // Override if mixin has specific priorities
-
-  // Override Card Styles
-  .ant-card {
-    background: @paper-bg !important;
-    border: 2px solid @gold-border !important;
-    box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15) !important;
-    border-radius: 8px !important;
-
-    // Remove glass effects if present
-    backdrop-filter: none !important;
-  }
-
-  // Video wrapper might need exclusion from card style overrides if it's special
-  .video-wrapper {
-    border: none !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-    border-radius: 16px !important;
-    background: black !important;
-  }
-
-  // Quiz/Content Title
-  h1.ant-typography,
-  h2.ant-typography {
-    font-family: @font-serif !important;
-    color: @seal-red !important;
-  }
-
-  h1.ant-typography {
-    text-transform: uppercase;
-    border-bottom: 2px solid rgba(212, 165, 116, 0.3);
-    padding-bottom: 16px;
-    margin-bottom: 24px !important;
-  }
-
-  // Submit Button / Next Button
-  .ant-btn-primary {
-    .game-btn-primary();
-    height: 48px !important;
-
-    &:hover {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 @seal-border !important;
-    }
-
-    &:active {
-      transform: translateY(4px);
+  // Transparent Popover overrides
+  .transparent-popover {
+    .ant-popover-inner {
+      background-color: transparent !important;
       box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
     }
   }
 
-  // Back Button
-  .ant-btn-text {
-    font-family: @font-serif;
-    font-weight: 700;
-    color: @seal-red !important;
+  // LEARNING DETAIL PAGE STYLES
+  .learning-detail-page {
+    background-color: @paper-bg !important;
+    .game-page-background();
+    background-image:
+      radial-gradient(#c5a065 0.5px, transparent 0.5px), radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important; // Override if mixin has specific priorities
 
-    &:hover {
-      background: rgba(139, 29, 29, 0.1) !important;
+    // Override Card Styles
+    .ant-card {
+      background: @paper-bg !important;
+      border: 2px solid @gold-border !important;
+      box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15) !important;
+      border-radius: 8px !important;
+
+      // Remove glass effects if present
+      backdrop-filter: none !important;
     }
-  }
 
-  // Tags
-  .ant-tag {
-    font-family: @font-serif;
-    border: 1px solid rgba(212, 165, 116, 0.5) !important;
-  }
+    // Video wrapper might need exclusion from card style overrides if it's special
+    .video-wrapper {
+      border: none !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+      border-radius: 16px !important;
+      background: black !important;
+    }
 
-  // Radio Quiz
-  .custom-radio {
-    .ant-radio-wrapper {
-      span {
-        font-family: @font-serif;
+    // Quiz/Content Title
+    h1.ant-typography,
+    h2.ant-typography {
+      font-family: @font-serif !important;
+      color: @seal-red !important;
+    }
+
+    h1.ant-typography {
+      text-transform: uppercase;
+      border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+      padding-bottom: 16px;
+      margin-bottom: 24px !important;
+    }
+
+    // Submit Button / Next Button
+    .action-btn {
+      height: 48px !important;
+      border-radius: 8px;
+      font-family: @font-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      // Primary style
+      background: @seal-red !important;
+      border: 2px solid @seal-border !important;
+      color: #fff9e6 !important;
+      box-shadow: 0 4px 0 @seal-border !important;
+
+      &:hover {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 @seal-border !important;
+      }
+
+      &:active {
+        transform: translateY(4px);
+        box-shadow: none !important;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+    }
+
+    .ant-btn-primary {
+      // Basic overrides if needed
+    }
+
+    // Back Button
+    .ant-btn-text {
+      font-family: @font-serif;
+      font-weight: 700;
+      color: @seal-red !important;
+
+      &:hover {
+        background: rgba(139, 29, 29, 0.1) !important;
+      }
+    }
+
+    // Tags
+    .ant-tag {
+      font-family: @font-serif;
+      border: 1px solid rgba(212, 165, 116, 0.5) !important;
+    }
+
+    // Radio Quiz
+    .custom-radio {
+      .ant-radio-wrapper {
+        span {
+          font-family: @font-serif;
+        }
       }
     }
   }
-}
 
-// Completion Modal
-.completion-modal {
-  .ant-modal-content {
-    background: @paper-bg !important;
-    border: 2px solid @gold-border;
-    border-radius: 8px !important;
-    box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
-    padding: 0;
-    overflow: hidden;
-  }
+  // Completion Modal
+  .completion-modal {
+    .ant-modal-content {
+      background: @paper-bg !important;
+      border: 2px solid @gold-border;
+      border-radius: 8px !important;
+      box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
+      padding: 0;
+      overflow: hidden;
+    }
 
-  .ant-modal-body {
-    padding: 24px;
-  }
+    .ant-modal-body {
+      padding: 24px;
+    }
 
-  .ant-btn-primary {
-    .game-btn-primary();
-    height: 44px !important;
+    .ant-btn-primary {
+      .game-btn-primary();
+      height: 44px !important;
 
-    &:hover {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 @seal-border !important;
+      &:hover {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 @seal-border !important;
+      }
     }
   }
 }

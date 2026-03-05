@@ -311,7 +311,7 @@ const QuestsPage: React.FC = () => {
                           </Button>
                         ) : quest.progress.status === "completed" ? (
                           <Button
-                            variant="primary"
+                            variant="success"
                             fullWidth
                             className="action-btn claim-btn"
                             icon={<GiftOutlined />}
@@ -320,15 +320,30 @@ const QuestsPage: React.FC = () => {
                             Nhận Thưởng
                           </Button>
                         ) : quest.progress.status === "claimed" ? (
-                          <Button fullWidth disabled className="action-btn claimed-btn">
+                          <Button
+                            variant="success"
+                            fullWidth
+                            disabled
+                            className="action-btn claimed-btn"
+                          >
                             <CheckCircleOutlined /> Đã Hoàn Thành
                           </Button>
                         ) : (
                           <div style={{ display: "flex", gap: 8 }}>
-                            <Button variant="outline" onClick={() => handleViewDetail(quest)} style={{ flex: 1 }}>
+                            <Button
+                              variant="outline"
+                              className="action-btn detail-btn"
+                              onClick={() => handleViewDetail(quest)}
+                              style={{ flex: 1 }}
+                            >
                               Chi tiết
                             </Button>
-                            <Button variant="primary" onClick={() => handleNavigate(quest)} style={{ flex: 1 }}>
+                            <Button
+                              variant="primary"
+                              className="action-btn"
+                              onClick={() => handleNavigate(quest)}
+                              style={{ flex: 1 }}
+                            >
                               Thực hiện
                             </Button>
                           </div>
@@ -389,7 +404,7 @@ const QuestsPage: React.FC = () => {
               buttonSize="large"
               fullWidth
               onClick={() => { playClick(); setDetailModalVisible(false); }}
-              className="modal-close-btn"
+              className="action-btn modal-close-btn"
             >
               Đã hiểu
             </Button>

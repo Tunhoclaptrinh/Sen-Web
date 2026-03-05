@@ -51,6 +51,8 @@ const DashboardPage: React.FC = () => {
   const [loadingQuests, setLoadingQuests] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [heroPressed, setHeroPressed] = useState(false);
+  const [heroHovered, setHeroHovered] = useState(false);
 
   useEffect(() => {
     fetchActiveQuests();
@@ -133,10 +135,44 @@ const DashboardPage: React.FC = () => {
                   icon={<RocketOutlined />}
                   onClick={() => navigate("/game/chapters")}
                   className="hero-btn"
+                  onMouseEnter={() => setHeroHovered(true)}
+                  onMouseLeave={() => { setHeroHovered(false); setHeroPressed(false); }}
+                  onMouseDown={() => setHeroPressed(true)}
+                  onMouseUp={() => setHeroPressed(false)}
+                  style={{
+                    backgroundColor: heroHovered ? "#ffeb3b" : "#ffd700",
+                    borderColor: "#b8860b",
+                    color: "#3f1e1e",
+                    boxShadow: heroPressed ? "none" : heroHovered ? "0 2px 0 #8b6508" : "0 4px 0 #8b6508",
+                    transform: heroPressed ? "translateY(4px)" : heroHovered ? "translateY(2px)" : "translateY(0)",
+                    fontFamily: "'Playfair Display', serif",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                    borderRadius: 8,
+                    border: "2px solid #b8860b",
+                    transition: "all 0.15s ease",
+                  }}
                 >
                   Tiếp tục chơi
                 </Button>
-                <Button variant="outline" buttonSize="large" className="hero-btn-ghost" onClick={() => navigate("/game/quests")}>
+                <Button
+                  variant="outline"
+                  buttonSize="large"
+                  className="hero-btn-ghost"
+                  onClick={() => navigate("/game/quests")}
+                  style={{
+                    backgroundColor: "transparent",
+                    borderColor: "rgba(255, 249, 230, 0.7)",
+                    color: "#fff9e6",
+                    fontFamily: "'Playfair Display', serif",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                    borderRadius: 8,
+                    border: "2px solid rgba(255, 249, 230, 0.7)",
+                  }}
+                >
                   Xem nhiệm vụ
                 </Button>
               </div>

@@ -182,6 +182,7 @@
         background-color: rgba(255, 255, 255, 0.5);
         border: 1px solid rgba(0, 0, 0, 0.1);
       }
+
       .ant-progress-bg {
         background: @seal-red !important;
       }
@@ -212,69 +213,82 @@
       }
     }
 
-    .quest-actions {
-      .action-btn {
-        height: 44px;
-        border-radius: 6px;
-        font-family: @font-serif;
-        font-weight: 700;
-        font-size: 1rem;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .action-btn {
+      height: 44px;
+      border-radius: 6px;
+      font-family: @font-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-        // Common seal-like style
-        background: @seal-red;
-        border: 2px solid @seal-border;
-        color: #fff9e6;
-        box-shadow: 0 4px 0 @seal-border;
+      // Common seal-like style
+      background: @seal-red !important;
+      border: 2px solid @seal-border !important;
+      color: #fff9e6 !important;
+      box-shadow: 0 4px 0 @seal-border;
 
-        &.start-btn {
-          // Default style
-          &:hover {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 @seal-border;
-          }
+      &:hover {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 @seal-border;
+        background: @seal-red-light !important;
+      }
+
+      &:active {
+        transform: translateY(4px);
+        box-shadow: none;
+      }
+
+      &.claim-btn {
+        background: #22c55e !important;
+        border-color: #15803d !important;
+        color: white !important;
+        box-shadow: 0 4px 0 #15803d !important;
+
+        &:hover {
+          transform: translateY(2px);
+          box-shadow: 0 2px 0 #15803d !important;
+          background: #16a34a !important;
+        }
+      }
+
+      &.claimed-btn {
+        background: transparent !important;
+        border: 2px solid #22c55e !important;
+        color: #22c55e !important;
+        box-shadow: none !important;
+        cursor: default;
+        pointer-events: none;
+
+        &:hover {
+          transform: none !important;
+        }
+      }
+
+      &.detail-btn {
+        background: transparent !important;
+        color: @text-color-primary !important;
+        border: 2px solid @text-color-primary !important;
+        box-shadow: 0 4px 0 @text-color-primary !important;
+
+        &:hover {
+          background: rgba(93, 64, 55, 0.05) !important;
+          color: @text-color-primary !important;
+          transform: translateY(2px);
+          box-shadow: 0 2px 0 @text-color-primary !important;
         }
 
-        &.claim-btn {
-          background: @gold-color;
-          border-color: #ccac00;
-          color: #5d4037;
-          box-shadow: 0 4px 0 #ccac00;
-
-          &:hover {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #ccac00;
-          }
-        }
-
-        &.claimed-btn {
-          background: transparent;
-          border: 2px solid #52c41a; // success color inline or variable
-          color: #52c41a;
-          box-shadow: none;
-          cursor: default;
-          &:hover {
-            transform: none;
-          }
-        }
-
-        &.detail-btn {
-          background: transparent;
-          color: @text-color-primary;
-          border: 2px solid @text-color-primary;
-          box-shadow: none;
-          &:hover {
-            background: @text-color-primary;
-            color: white;
-          }
+        &:active {
+          transform: translateY(4px);
+          box-shadow: none !important;
         }
       }
     }
+
 
     &.completed {
       border: 2px solid #52c41a; // success color
@@ -300,6 +314,38 @@
       font-size: 1.5rem;
       font-weight: 800;
       color: var(--text-color-primary);
+    }
+  }
+
+  // Ensure action-btn styles are available inside the modal portal
+  .action-btn {
+    height: 44px;
+    border-radius: 6px;
+    font-family: @font-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Common seal-like style
+    background: @seal-red;
+    border: 2px solid @seal-border;
+    color: #fff9e6;
+    box-shadow: 0 4px 0 @seal-border;
+
+    &:hover {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 @seal-border;
+      background: @seal-red-light !important;
+    }
+
+    &:active {
+      transform: translateY(4px);
+      box-shadow: none !important;
     }
   }
 
@@ -353,12 +399,10 @@
 
     .modal-close-btn {
       height: 54px;
-      border-radius: 16px;
+      border-radius: 12px;
       font-weight: 700;
       font-size: 1.1rem;
       margin-top: 24px;
-      background: linear-gradient(45deg, @primary-color, #40a9ff);
-      border: none;
     }
   }
 }

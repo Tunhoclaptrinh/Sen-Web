@@ -525,6 +525,7 @@ const LearningDetail: React.FC = () => {
                         variant="primary"
                         buttonSize="large"
                         onClick={handleNextStep}
+                        className="action-btn"
                         style={{
                           height: 48,
                           padding: "0 48px",
@@ -885,6 +886,7 @@ const LearningDetail: React.FC = () => {
                                 onClick={handleQuizSubmit}
                                 loading={submitting}
                                 disabled={Object.keys(answers).length < module.quiz.questions.length}
+                                className="action-btn"
                                 style={{
                                   width: 56,
                                   height: 56,

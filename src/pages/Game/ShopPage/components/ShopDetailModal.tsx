@@ -1,9 +1,10 @@
 import React from "react";
-import { Modal, Typography, Button, Tag, Divider, Row, Col } from "antd";
-import { 
-    ShoppingCartOutlined, 
-    MinusOutlined, 
-    PlusOutlined, 
+import { Modal, Typography, Button as AntButton, Tag, Divider, Row, Col } from "antd";
+import Button from "@/components/common/Button";
+import {
+    ShoppingCartOutlined,
+    MinusOutlined,
+    PlusOutlined,
     DollarOutlined
 } from "@ant-design/icons";
 import { ShopItem } from "@/types/game.types";
@@ -61,9 +62,9 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
             <div style={{ padding: "12px 0" }}>
                 <Row gutter={[24, 24]}>
                     <Col xs={24} md={10}>
-                        <div style={{ 
-                            borderRadius: 12, 
-                            overflow: 'hidden', 
+                        <div style={{
+                            borderRadius: 12,
+                            overflow: 'hidden',
                             border: '2px solid var(--gold-border)',
                             background: 'var(--paper-bg)',
                             display: 'flex',
@@ -73,8 +74,8 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                             boxShadow: '4px 4px 0 rgba(0,0,0,0.05)'
                         }}>
                             {itemImage ? (
-                                <img 
-                                    src={itemImage} 
+                                <img
+                                    src={itemImage}
                                     alt={item.name}
                                     style={{ width: '100%', maxHeight: 250, objectFit: 'contain', padding: 16 }}
                                 />
@@ -87,7 +88,7 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         <Title level={3} style={{ margin: '0 0 8px', fontFamily: 'var(--font-serif)', color: 'var(--seal-red)' }}>
                             {item.name}
                         </Title>
-                        
+
                         <div style={{ marginBottom: 16 }}>
                             {(() => {
                                 let color = "gold";
@@ -105,10 +106,10 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         </Paragraph>
 
                         {inventoryQuantity !== undefined && item.isConsumable && (
-                            <div style={{ 
-                                marginBottom: 16, 
-                                padding: '8px 12px', 
-                                background: 'rgba(139, 29, 29, 0.05)', 
+                            <div style={{
+                                marginBottom: 16,
+                                padding: '8px 12px',
+                                background: 'rgba(139, 29, 29, 0.05)',
                                 border: '1px solid rgba(139, 29, 29, 0.1)',
                                 borderRadius: 8,
                                 color: 'var(--seal-red)',
@@ -133,17 +134,17 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                                         <Text strong>Số lượng mua:</Text>
                                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                            <Button 
-                                                shape="circle" 
-                                                icon={<MinusOutlined />} 
+                                            <AntButton
+                                                shape="circle"
+                                                icon={<MinusOutlined />}
                                                 size="small"
                                                 onClick={() => onQuantityChange(-1)}
                                                 disabled={quantity <= 1}
                                             />
                                             <span style={{ fontSize: 18, fontWeight: "bold", minWidth: 30, textAlign: 'center' }}>{quantity}</span>
-                                            <Button 
-                                                shape="circle" 
-                                                icon={<PlusOutlined />} 
+                                            <AntButton
+                                                shape="circle"
+                                                icon={<PlusOutlined />}
                                                 size="small"
                                                 onClick={() => onQuantityChange(1)}
                                             />
@@ -160,16 +161,16 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         </div>
 
                         <div style={{ marginTop: 24 }}>
-                            <Button 
-                                type="primary" 
-                                block 
-                                size="large"
+                            <Button
+                                variant="gold"
+                                fullWidth
+                                buttonSize="large"
                                 onClick={onConfirmPurchase}
                                 loading={purchaseLoading}
                                 disabled={isOwned || !canAfford}
-                                style={{ 
-                                    height: 50, 
-                                    fontSize: '1.1rem', 
+                                style={{
+                                    height: 50,
+                                    fontSize: '1.1rem',
                                     fontWeight: 700,
                                     borderRadius: 10,
                                     boxShadow: '0 4px 0 #a68654'

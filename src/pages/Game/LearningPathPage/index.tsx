@@ -309,7 +309,7 @@ const LearningPathPage: React.FC = () => {
                                 if (!isLocked) handlesNavigate(`/game/learning/${module.id}`);
                               }}
                               variant={module.isCompleted ? "outline" : "primary"}
-                              className="action-button"
+                              className="action-button action-btn"
                               icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <BookOutlined /> : <PlayCircleOutlined />)}
                             >
                               {isLocked ? "Chưa mở khóa" : (module.isCompleted ? "Ôn lại" : "Học ngay")}
