@@ -47,17 +47,15 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
 
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-            <Text style={{ fontSize: 12 }}>Chọn nhạc nền</Text>
+            <Text style={{ fontSize: 12 }}>Nhạc nền chung</Text>
           </div>
           <Select
             style={{ width: "100%" }}
-            placeholder="Mặc định theo màn"
-            value={selectedBgmKey}
+            placeholder="Chọn nhạc nền"
+            value={selectedBgmKey || "BGM_HISTORICAL"}
             onChange={(val) => { playClick(); dispatch(setSelectedBgmKey(val)); }}
-            allowClear
             disabled={isMuted}
             options={[
-              { label: "Mặc định theo màn", value: null },
               { label: "Thư viện Cổ (Focus)", value: "BGM_HISTORICAL" },
               { label: "Lễ hội Làng", value: "BGM_VILLAGE" },
               { label: "Cổ đại Trỗi dậy", value: "BGM_ANCIENT" },

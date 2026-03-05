@@ -36,21 +36,32 @@ const CustomerLayout: React.FC = () => {
   const { playClick } = useGameSounds();
 
   // BGM Logic
-  const { isMuted, bgmVolume, selectedBgmKey, isBgmAutoMuted } = useSelector((state: RootState) => state.audio);
+  const { isMuted, bgmVolume, selectedBgmKey, isBgmAutoMuted, userInteracted } = useSelector((state: RootState) => state.audio);
   const { currentLevel } = useSelector((state: RootState) => state.game);
   const bgmAudioRef = React.useRef<HTMLAudioElement | null>(null);
   const fadeRef = React.useRef<{ interval: NodeJS.Timeout | null, targetVolume: number }>({ interval: null, targetVolume: 0 });
 
+  // Handle User Interaction for Autoplay
   React.useEffect(() => {
-    // Determine music path: Priority Level BGM > Selected BGM > Default BGM
-    let musicPath = SOUND_ASSETS.BGM_HISTORICAL;
+    const handleInteraction = () => {
+      if (!userInteracted) {
+        dispatch({ type: 'audio/setUserInteracted' });
+      }
+    };
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+    };
+  }, [userInteracted, dispatch]);
 
-    // If a specific level has its own music, it takes top priority for atmosphere
-    if (currentLevel?.backgroundMusic) {
-      musicPath = currentLevel.backgroundMusic;
-    } else if (selectedBgmKey && (SOUND_ASSETS as any)[selectedBgmKey]) {
-      musicPath = (SOUND_ASSETS as any)[selectedBgmKey];
-    }
+  React.useEffect(() => {
+    // Determine music path: Level BGM > User Selected BGM > Default BGM
+    const musicPath =
+      currentLevel?.backgroundMusic ||
+      (selectedBgmKey && (SOUND_ASSETS as any)[selectedBgmKey]) ||
+      SOUND_ASSETS.BGM_HISTORICAL;
 
     if (!musicPath) return;
 
@@ -61,48 +72,67 @@ const CustomerLayout: React.FC = () => {
     const fadeTo = (audio: HTMLAudioElement, target: number, onComplete?: () => void) => {
       if (fadeRef.current.interval) clearInterval(fadeRef.current.interval);
 
+      const safeTarget = Math.max(0, Math.min(1, target));
       const step = 0.05;
       const intervalTime = 50;
 
       fadeRef.current.interval = setInterval(() => {
-        if (Math.abs(audio.volume - target) < step) {
-          audio.volume = target;
+        if (!audio) {
+          clearInterval(fadeRef.current.interval!);
+          return;
+        }
+
+        const diff = safeTarget - audio.volume;
+        if (Math.abs(diff) < step) {
+          audio.volume = safeTarget;
           clearInterval(fadeRef.current.interval!);
           fadeRef.current.interval = null;
           if (onComplete) onComplete();
         } else {
-          audio.volume += audio.volume < target ? step : -step;
+          audio.volume += diff > 0 ? step : -step;
         }
       }, intervalTime);
+    };
+
+    const startPlayback = (audio: HTMLAudioElement) => {
+      if (!userInteracted) return;
+
+      audio.play().then(() => {
+        fadeTo(audio, targetVolume);
+      }).catch(e => {
+        console.warn("BGM Play failed:", e);
+        // Retry once on interaction if it failed due to some transient issue
+      });
     };
 
     if (!bgmAudioRef.current) {
       bgmAudioRef.current = new Audio(fullUrl);
       bgmAudioRef.current.loop = true;
       bgmAudioRef.current.volume = 0;
-      if (!isMuted) {
-        bgmAudioRef.current.play().then(() => fadeTo(bgmAudioRef.current!, targetVolume)).catch(e => console.warn(e));
-      }
+      startPlayback(bgmAudioRef.current);
     } else {
       const currentSrc = new URL(bgmAudioRef.current.src, window.location.origin).href;
 
       if (currentSrc !== fullUrl) {
-        // Transition to new track: Fade Out -> Change Src -> Fade In
+        // Transition: Fade Out -> Load New -> Play & Fade In
         fadeTo(bgmAudioRef.current, 0, () => {
           if (!bgmAudioRef.current) return;
           bgmAudioRef.current.src = fullUrl;
-          if (!isMuted) {
-            bgmAudioRef.current.play().then(() => fadeTo(bgmAudioRef.current!, targetVolume)).catch(e => console.warn(e));
-          }
+          bgmAudioRef.current.load(); // Explicitly load new source
+          startPlayback(bgmAudioRef.current);
         });
       } else {
-        // Same track, just adjust volume (with fade for smoothness)
-        fadeTo(bgmAudioRef.current, targetVolume);
+        // Same track: just sync volume or start if interaction just happened
+        if (userInteracted && (bgmAudioRef.current.paused || bgmAudioRef.current.volume === 0)) {
+          startPlayback(bgmAudioRef.current);
+        } else {
+          fadeTo(bgmAudioRef.current, targetVolume);
+        }
       }
     }
 
     return () => { };
-  }, [currentLevel?.id, currentLevel?.backgroundMusic, isMuted, bgmVolume, selectedBgmKey]);
+  }, [currentLevel?.id, currentLevel?.backgroundMusic, isMuted, bgmVolume, selectedBgmKey, isBgmAutoMuted, userInteracted]);
 
   // Stop BGM when unmounting layout
   React.useEffect(() => {
