@@ -5,7 +5,7 @@ import {
 } from "antd";
 import {
   SoundOutlined, MutedOutlined, PlusOutlined, DeleteOutlined,
-  CheckOutlined, CloseOutlined, InfoCircleOutlined,
+  CheckOutlined, CloseOutlined,
 } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
