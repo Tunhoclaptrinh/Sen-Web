@@ -3,6 +3,11 @@
 // CULTURAL THEME VARIABLES
 @paper-bg: #fffcf5; // Màu giấy gió/giấy điệp
 @paper-texture: radial-gradient(circle, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+
+@media (max-width: 1200px) {
+  @paper-texture: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+
 @gold-border: #c5a065; // Màu vàng đồng
 @text-color-primary: #5d4037; // Nâu đất
 @text-color-secondary: #886a64; // Nâu nhạt
@@ -33,6 +38,10 @@
     background-size: 24px 24px;
     z-index: 0;
     pointer-events: none;
+
+    @media (min-width: 1200px) {
+      background-image: radial-gradient(circle, rgba(197, 160, 101, 0.5) 1px, transparent 1px);
+    }
   }
 
   // Ensure children are above the pattern

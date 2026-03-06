@@ -45,7 +45,11 @@ body {
     background-size: 24px 24px;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.3;
+    opacity: 0.3; // Subtle on large screens
+
+    @media (max-width: 1200px) {
+      background-image: radial-gradient(circle, #c5a065 0.5px, transparent 0.5px);
+    }
   }
 }
 
