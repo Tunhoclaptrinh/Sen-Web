@@ -12,6 +12,7 @@ import { ToastProvider } from "./components/common/Toast";
 import { GlobalCharacterProvider } from "./contexts/GlobalCharacterContext";
 import GlobalCharacterOverlay from "./components/GlobalCharacterOverlay";
 import CustomBgmPlayer from "./components/Game/CustomBgmPlayer";
+import MobileAppPromotion from "./components/common/MobileAppPromotion";
 import { initGA, sendPageView } from "./utils/analytics";
 import { useLocation } from "react-router-dom";
 
@@ -118,6 +119,7 @@ const App: React.FC = () => {
             <GlobalCharacterProvider>
               <GlobalCharacterOverlay />
               <CustomBgmPlayer />
+              <MobileAppPromotion />
               {routing}
             </GlobalCharacterProvider>
           </ToastProvider>

@@ -1,5 +1,5 @@
-import {USER_ROLES} from "../config/constants";
-import type {User, UserRole} from "../types";
+import { USER_ROLES } from "../config/constants";
+import type { User, UserRole } from "../types";
 
 export const getInitials = (name: string | null | undefined): string => {
   if (!name) return "";
@@ -103,4 +103,17 @@ export const buildQueryString = (params: Record<string, any>): string => {
 export const normalizeVietnamese = (text: string | null | undefined): string => {
   if (!text) return "";
   return text.normalize("NFC");
+};
+export const isMobile = (): boolean => {
+  const userAgent = navigator.userAgent || "";
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+
+  // Check for iPadOS (which often identifies as Macintosh but with touch points)
+  const isIPadOS = /Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
+
+  // Also check screen width for "mobile view" in devtools or very small responsive screens
+  const isSmallScreen = window.innerWidth <= 1024; // Standard tablet portrait width
+
+  return isMobileUA || isIPadOS || (isTouchDevice && isSmallScreen);
 };
