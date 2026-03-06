@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Typography, message, Space, Alert } from "antd";
+import { Card, Button, Typography, message } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { motion, AnimatePresence } from "framer-motion";
 import type { QuizScreen as QuizScreenType } from "@/types/game.types";
 import { useGameSounds } from "@/hooks/useSound";
 import "./styles.less";
@@ -45,10 +46,6 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
         if (prev.length < requiredCount) {
           return [...prev, index];
         }
-        // If already reached limit, replace last one or do nothing? 
-        // User said "add number required to find". Let's allow toggling.
-        // If they click a new one and are at limit, we can either block or replace.
-        // Let's block to be explicit about "already selected X".
         return prev;
       });
     } else {
@@ -69,7 +66,6 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
 
     setSubmitting(true);
     try {
-      // Gửi text của đáp án hoặc mảng text
       const answerPayload = isMultiple
         ? selectedOptions.map(idx => data.options[idx].text)
         : data.options[selectedOptions[0]].text;
@@ -93,20 +89,24 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
       />
 
       <div className="screen-content-wrapper">
-        <Card className="quiz-card">
-          <div className="quiz-header">
-            <Title level={3} className="question-text">
-              {data.question || data.description}
-            </Title>
-            {isMultiple && !result && (
-              <div className="quiz-subtitle" style={{ color: '#faad14', fontWeight: 500, marginTop: 8 }}>
-                Chọn đúng {requiredCount} đáp án ({selectedOptions.length}/{requiredCount})
-              </div>
-            )}
-          </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="quiz-card">
+            <div className="quiz-header">
+              <Title level={3} className="question-text">
+                {data.question || data.description}
+              </Title>
+              {isMultiple && !result && (
+                <div className="quiz-subtitle" style={{ color: '#d48806', fontWeight: 600, marginTop: 12, fontFamily: "'Playfair Display', serif" }}>
+                  Hãy chọn đúng {requiredCount} đáp án ({selectedOptions.length}/{requiredCount})
+                </div>
+              )}
+            </div>
 
-          <div className="quiz-options">
-            <Space direction="vertical" style={{ width: "100%" }} size="middle">
+            <div className={`quiz-options ${data.options.length > 3 ? 'grid-layout' : ''}`}>
               {data.options?.map((option, index) => {
                 const isSelected = selectedOptions.includes(index);
                 let btnClass = "quiz-option-btn";
@@ -116,13 +116,12 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                   if (isSelected) {
                     if (option.isCorrect) {
                       btnClass += " correct";
-                      icon = <CheckCircleOutlined />;
+                      icon = <CheckCircleOutlined style={{ marginRight: 8 }} />;
                     } else {
                       btnClass += " wrong";
-                      icon = <CloseCircleOutlined />;
+                      icon = <CloseCircleOutlined style={{ marginRight: 8 }} />;
                     }
                   } else if (option.isCorrect) {
-                    // Hiển thị đáp án đúng nếu người chơi chọn sai
                     btnClass += " correct-hint";
                   }
                 } else if (isSelected) {
@@ -130,71 +129,93 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                 }
 
                 return (
-                  <Button
+                  <motion.div
                     key={index}
-                    size="large"
-                    block
-                    className={btnClass}
-                    onClick={() => handleOptionClick(index)}
-                    disabled={!!result}
-                    icon={icon}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
+                    style={{ width: '100%' }}
                   >
-                    {option.text}
-                  </Button>
+                    <Button
+                      size="large"
+                      block
+                      className={btnClass}
+                      onClick={() => handleOptionClick(index)}
+                      disabled={!!result || submitting}
+                    >
+                      {icon}
+                      {option.text}
+                    </Button>
+                  </motion.div>
                 );
               })}
-            </Space>
-          </div>
+            </div>
 
-          {result && (
-            <div className="quiz-feedback">
-              <Alert
-                message={result.explanation || (result.isCorrect ? "Chính xác!" : "Chưa chính xác!")}
-                type={result.isCorrect ? "success" : "error"}
-                showIcon
-                style={{ marginTop: 20, marginBottom: 20 }}
-              />
-              {result.isCorrect ? (
+            <AnimatePresence>
+              {result && (
+                <motion.div
+                  className="quiz-feedback"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.4, type: "spring" }}
+                >
+                  <div className="quiz-feedback-box">
+                    <div className={`feedback-header ${result.isCorrect ? 'correct' : 'wrong'}`}>
+                      {result.isCorrect ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+                      {result.isCorrect ? "Câu trả lời chính xác!" : "Câu trả lời chưa đúng!"}
+                    </div>
+                    {result.explanation && (
+                      <div className="feedback-text">
+                        {result.explanation}
+                      </div>
+                    )}
+                  </div>
+
+                  {result.isCorrect ? (
+                    <Button
+                      type="primary"
+                      size="large"
+                      onClick={() => { playClick(); onNext(); }}
+                      block
+                      disabled={loading}
+                      className="seal-button"
+                    >
+                      Tiếp tục hành trình
+                    </Button>
+                  ) : (
+                    <Button
+                      type="default"
+                      danger
+                      size="large"
+                      onClick={() => { playClick(); setResult(null); setSelectedOptions([]); }}
+                      block
+                      disabled={loading}
+                    >
+                      Thử lại câu hỏi này
+                    </Button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {!result && (
+              <div className="quiz-actions" style={{ marginTop: 24 }}>
                 <Button
                   type="primary"
                   size="large"
-                  onClick={() => { playClick(); onNext(); }}
+                  onClick={handleSubmit}
+                  loading={submitting}
+                  disabled={selectedOptions.length === 0}
                   block
-                  disabled={loading}
-                  className="bouncy-button" // Ensure bouncy style
+                  className="seal-button"
                 >
-                  Tiếp tục hành trình
+                  Trả lời {isMultiple && selectedOptions.length > 0 && `(${selectedOptions.length}/{requiredCount})`}
                 </Button>
-              ) : (
-                <Button
-                  type="default"
-                  danger
-                  size="large"
-                  onClick={() => { playClick(); setResult(null); setSelectedOptions([]); }}
-                  block
-                  disabled={loading}
-                >
-                  Thử lại
-                </Button>
-              )}
-            </div>
-          )}
-
-          {!result && (
-            <div className="quiz-actions" style={{ marginTop: 24 }}>
-              <Button
-                type="primary"
-                size="large"
-                onClick={handleSubmit}
-                loading={submitting}
-                disabled={selectedOptions.length === 0}
-                block
-              >
-                Trả lời {isMultiple && selectedOptions.length > 0 && `(${selectedOptions.length}/${requiredCount})`}
-              </Button>
-            </div>
-          )}
-        </Card>
+              </div>
+            )}
+          </Card>
+        </motion.div>
       </div>
     </div>
   );

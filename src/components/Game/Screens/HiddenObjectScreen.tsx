@@ -62,6 +62,8 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
     setProgress({ collected: 0, required: data.requiredItems || data.items?.length || 0 });
   }, [data]);
 
+  const HIT_TOLERANCE = 3; // 3% extra padding for easier clicking
+
   const handleSceneClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageRef.current || fetchingItem || loading) return;
 
@@ -74,16 +76,23 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
     const xPercent = ((clientX - rect.left) / rect.width) * 100;
     const yPercent = ((clientY - rect.top) / rect.height) * 100;
 
-    // Check for hits (Rectangular Collision)
+    // Check for hits
     let hitItem: HiddenItem | null = null;
     const candidates = items.filter((item) => !foundItems.includes(item.id));
 
     for (const item of candidates) {
-      // Check bounding box
-      const isHitX = xPercent >= item.x && xPercent <= item.x + item.width;
-      const isHitY = yPercent >= item.y && yPercent <= item.y + item.height;
+      // Data check: If width/height are very small or 0, treat (x,y) as center with a default size
+      const effectiveWidth = Math.max(item.width, 5);
+      const effectiveHeight = Math.max(item.height, 5);
 
-      if (isHitX && isHitY) {
+      // We assume (item.x, item.y) from backend might be the CENTER if width/height are small
+      // or TOP-LEFT if they are provided. To be "chặt chẽ", we calculate bounds:
+      const minX = item.x - HIT_TOLERANCE;
+      const maxX = item.x + effectiveWidth + HIT_TOLERANCE;
+      const minY = item.y - HIT_TOLERANCE;
+      const maxY = item.y + effectiveHeight + HIT_TOLERANCE;
+
+      if (xPercent >= minX && xPercent <= maxX && yPercent >= minY && yPercent <= maxY) {
         hitItem = item;
         break;
       }
@@ -172,8 +181,9 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
                   style={{
                     left: `${item.x}%`,
                     top: `${item.y}%`,
-                    width: `${item.width}%`,
-                    height: `${item.height}%`,
+                    width: `${Math.max(item.width, 8)}%`,
+                    height: `${Math.max(item.height, 8)}%`,
+                    transform: 'translate(-10%, -10%)', // Slight offset adjustment if x,y is top-left
                   }}
                 />
               ),

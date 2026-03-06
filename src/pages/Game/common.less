@@ -2,6 +2,7 @@
 
 // CULTURAL THEME VARIABLES
 @paper-bg: #fffcf5; // Màu giấy gió/giấy điệp
+@paper-texture: radial-gradient(circle, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
 @gold-border: #c5a065; // Màu vàng đồng
 @text-color-primary: #5d4037; // Nâu đất
 @text-color-secondary: #886a64; // Nâu nhạt
@@ -35,7 +36,7 @@
   }
 
   // Ensure children are above the pattern
-  > * {
+  >* {
     position: relative;
     z-index: 1;
   }
@@ -122,6 +123,7 @@
 .transparent-card-override() {
   background: transparent !important;
   box-shadow: none !important;
+
   .ant-card-body {
     padding: 0 !important;
   }

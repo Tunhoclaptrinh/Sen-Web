@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-// import { Button } from "antd"; // Unused
 import { Stage } from "@pixi/react";
+import { motion, AnimatePresence } from "framer-motion";
 import SenChibi from "@/components/SenChibi";
 import type { DialogueScreen as DialogueScreenType } from "@/types/game.types";
 import { useGameSounds } from "@/hooks/useSound";
 import "./styles.less";
-
-// const { Text, Paragraph } = Typography; // Unused
 
 import { getImageUrl } from "@/utils/image.helper";
 
@@ -101,8 +99,6 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
 
   if (!currentDialogue) return null;
 
-  // Storyteller Layout: No history visible, just current message.
-
   return (
     <div className="dialogue-screen" onClick={handleNextDialogue}>
       <div
@@ -113,43 +109,53 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
       />
 
       <div className="dialogue-content">
-        {/* Story Interface Container */}
         <div className="story-interface">
-          {/* SEN PORTRAIT (LEFT OF BOX or INSIDE) - Reference shows it on right of text, but let's put it next to it */}
-          {/* IF SEN IS SPEAKING/ACTIVE */}
-          <div className={`sen-portrait-container ${isSenSpeaking ? "active" : ""}`}>
-            <Stage
-              width={280}
-              height={400}
-              options={{ backgroundAlpha: 0 }}
-              style={{
-                position: "absolute",
-                bottom: -100,
-                right: -100,
-                pointerEvents: "none",
-              }}
+          {/* Transition wrapper for portrait to animate on speaker change */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentDialogue.speaker}
+              className={`sen-portrait-container ${isSenSpeaking ? "active" : ""}`}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5 }}
             >
-              <SenChibi
-                x={140}
-                y={200}
-                scale={0.16}
-                visible={true}
-                mouthState={isSenSpeaking && isTyping ? "open" : "smile"}
-                isTalking={isSenSpeaking && isTyping}
-                eyeState="normal"
-                gesture="normal"
-                showCoat={true}
-                showHat={true}
-              />
-            </Stage>
-          </div>
+              <Stage
+                width={280}
+                height={400}
+                options={{ backgroundAlpha: 0 }}
+                style={{
+                  position: "absolute",
+                  bottom: -100,
+                  right: -100,
+                  pointerEvents: "none",
+                }}
+              >
+                <SenChibi
+                  x={140}
+                  y={200}
+                  scale={0.16}
+                  visible={true}
+                  mouthState={isSenSpeaking && isTyping ? "open" : "smile"}
+                  isTalking={isSenSpeaking && isTyping}
+                  eyeState="normal"
+                  gesture="normal"
+                  showCoat={true}
+                  showHat={true}
+                />
+              </Stage>
+            </motion.div>
+          </AnimatePresence>
 
-          <div
+          <motion.div
             className={`dialogue-box-story ${isUserSpeaking ? "user-turn" : ""}`}
             onClick={(e) => {
               e.stopPropagation();
               handleNextDialogue();
             }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            key={currentIndex}
           >
             <div className="dialogue-header">
               <span className="character-name">
@@ -161,8 +167,16 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
               {isTyping && <span className="typing-cursor">|</span>}
             </div>
 
-            {!isTyping && <div className="next-indicator">Chạm để tiếp tục ▼</div>}
-          </div>
+            {!isTyping && (
+              <motion.div
+                className="next-indicator"
+                animate={{ y: [0, 5, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                Chạm để tiếp tục ▼
+              </motion.div>
+            )}
+          </motion.div>
         </div>
       </div>
     </div>

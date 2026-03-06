@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Spin, message, Progress, Result } from "antd";
+import { Card, Button, Spin, message, Typography, Space } from "antd";
 import {
   CloseOutlined,
   ArrowRightOutlined,
@@ -8,11 +8,15 @@ import {
   RocketOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
+  PlayCircleOutlined,
+  CheckCircleFilled,
+  StarFilled,
 } from "@ant-design/icons";
+import { motion, AnimatePresence } from "framer-motion";
 import gameService from "@/services/game.service";
 import { SCREEN_TYPES } from "@/types/game.types";
 import type { Screen, Level } from "@/types/game.types";
-
+import { getImageUrl } from "@/utils/image.helper";
 
 // Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -22,7 +26,25 @@ import TimelineScreen from "@/components/Game/Screens/TimelineScreen";
 import ImageViewerScreen from "@/components/Game/Screens/ImageViewerScreen";
 import VideoScreen from "@/components/Game/Screens/VideoScreen";
 
+import { createPortal } from "react-dom";
+import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
 import "./EmbeddedGameZone.less";
+
+const { Title, Text, Paragraph } = Typography;
+
+const GamepadIcon = (props: any) => (
+  <span role="img" aria-label="gamepad" className="anticon" {...props}>
+    <svg viewBox="0 0 1024 1024" focusable="false" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+      <path d="M784 316.3c-44-32.8-111.4-44.3-157.9-24.3l-114.1 49.3-114.1-49.3c-46.5-20-113.9-8.5-157.9 24.3-51.1 38.1-66.6 112.9-34.9 167.9l75.4 130.6c31.1 53.9 96.5 76.5 152.9 53.4l114.1-49.3 114.1 49.3c56.4 23.1 121.8 0.5 152.9-53.4l75.4-130.6c31.7-55 16.2-129.8-34.9-167.9zM384 512h-32v32h-32v-32h-32v-32h32v-32h32v32h32v32zm224-24c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm48-48c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24z" />
+    </svg>
+  </span>
+);
+
+enum GAME_STATE {
+  START = "START",
+  PLAYING = "PLAYING",
+  COMPLETED = "COMPLETED",
+}
 
 interface EmbeddedGameZoneProps {
   levelId: string | number;
@@ -30,35 +52,88 @@ interface EmbeddedGameZoneProps {
   onNavigateToFullGame?: () => void;
 }
 
-const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({ levelId, onClose, onNavigateToFullGame }) => {
+const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
+  levelId,
+  onClose,
+  onNavigateToFullGame,
+}) => {
   // State
   const [loading, setLoading] = useState(true);
+  const [gameState, setGameState] = useState<GAME_STATE>(GAME_STATE.START);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen | null>(null);
   const [levelInfo, setLevelInfo] = useState<Level | null>(null);
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [score, setScore] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
-  const [gameCompleted, setGameCompleted] = useState(false);
   const [completionData, setCompletionData] = useState<any>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const globalChar = useGlobalCharacter();
+
+  // Sync Global Character visibility with fullscreen
+  useEffect(() => {
+    if (isFullscreen) {
+      globalChar?.setIsVisible(false);
+    } else {
+      globalChar?.setIsVisible(true);
+    }
+  }, [isFullscreen, globalChar]);
+
+  // Handle body scroll locking
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isFullscreen]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      globalChar?.setIsVisible(true);
+    };
+  }, [globalChar]);
 
   useEffect(() => {
     if (levelId) {
-      initGame(Number(levelId));
+      loadLevelInfo(Number(levelId));
     }
   }, [levelId]);
 
-  const initGame = async (id: number) => {
+  const loadLevelInfo = async (id: number) => {
     try {
       setLoading(true);
-      setGameCompleted(false);
+      const data = await gameService.getLevelDetail(id);
+      if (data) {
+        setLevelInfo(data);
+        // Ensure we reset to START if a new level is loaded
+        setGameState(GAME_STATE.START);
+        setCurrentScreen(null);
+      }
+    } catch (error) {
+      console.error("Failed to load level info", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const initGame = async () => {
+    try {
+      setLoading(true);
+      const id = Number(levelId);
       const data = await gameService.startLevel(id);
+
+      // Batch state updates
       setSessionId(data.sessionId);
       setCurrentScreen(data.currentScreen);
-      setLevelInfo(data.level);
       setProgress({ completed: 0, total: data.level.totalScreens || 1 });
       setStartTime(Date.now());
+      setScore(0);
+      setGameState(GAME_STATE.PLAYING);
     } catch (error) {
       console.error("Failed to start level", error);
       message.error("Không thể bắt đầu màn chơi. Vui lòng thử lại.");
@@ -129,16 +204,15 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({ levelId, onClose, o
     try {
       const result = await gameService.completeLevel(Number(levelId), score, timeSpent);
       setCompletionData(result);
-      setGameCompleted(true);
+      setGameState(GAME_STATE.COMPLETED);
     } catch (error) {
       console.error("Failed to finish level", error);
-      // Fallback for demo/guest mode if API fails due to auth or other reasons
       setCompletionData({
         passed: true,
         score: score,
         rewards: { coins: 0, petals: 0 },
       });
-      setGameCompleted(true);
+      setGameState(GAME_STATE.COMPLETED);
     } finally {
       setLoading(false);
     }
@@ -147,139 +221,355 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({ levelId, onClose, o
   const renderScreen = () => {
     if (!currentScreen) return null;
 
-    const commonProps = {
-      onNext: handleNextScreen,
-      loading,
-    };
+    try {
+      const commonProps = {
+        onNext: handleNextScreen,
+        loading,
+      };
 
-    switch (currentScreen.type) {
-      case SCREEN_TYPES.DIALOGUE:
-        return <DialogueScreen data={currentScreen as any} {...commonProps} />;
-      case SCREEN_TYPES.QUIZ:
-        return (
-          <QuizScreen
-            data={currentScreen as any}
-            {...commonProps}
-            onSubmitAnswer={handleAnswerSubmit}
-            fallbackImage={levelInfo?.thumbnail || levelInfo?.backgroundImage}
-          />
-        );
-      case SCREEN_TYPES.HIDDEN_OBJECT:
-        return <HiddenObjectScreen data={currentScreen as any} {...commonProps} onCollect={handleCollectItem} />;
-      case SCREEN_TYPES.TIMELINE:
-        return (
-          <TimelineScreen
-            data={currentScreen as any}
-            {...commonProps}
-            onSubmit={handleTimelineSubmit}
-            fallbackImage={levelInfo?.thumbnail || levelInfo?.backgroundImage}
-          />
-        );
-      case SCREEN_TYPES.IMAGE_VIEWER:
-        return <ImageViewerScreen data={currentScreen as any} {...commonProps} />;
-      case SCREEN_TYPES.VIDEO:
-        return <VideoScreen data={currentScreen as any} {...commonProps} />;
-      default:
-        return (
-          <div className="unsupported-screen">
-            <h3>Sắp ra mắt</h3>
-            <p>Loại màn hình này ({currentScreen.type}) đang được phát triển.</p>
-            <Button onClick={handleNextScreen}>Bỏ qua</Button>
-          </div>
-        );
+      switch (currentScreen.type) {
+        case SCREEN_TYPES.DIALOGUE:
+          return <DialogueScreen data={currentScreen as any} {...commonProps} />;
+        case SCREEN_TYPES.QUIZ:
+          return (
+            <QuizScreen
+              data={currentScreen as any}
+              {...commonProps}
+              onSubmitAnswer={handleAnswerSubmit}
+              fallbackImage={levelInfo?.thumbnail || levelInfo?.backgroundImage}
+            />
+          );
+        case SCREEN_TYPES.HIDDEN_OBJECT:
+          return (
+            <HiddenObjectScreen
+              data={currentScreen as any}
+              {...commonProps}
+              onCollect={handleCollectItem}
+            />
+          );
+        case SCREEN_TYPES.TIMELINE:
+          return (
+            <TimelineScreen
+              data={currentScreen as any}
+              {...commonProps}
+              onSubmit={handleTimelineSubmit}
+              fallbackImage={levelInfo?.thumbnail || levelInfo?.backgroundImage}
+            />
+          );
+        case SCREEN_TYPES.IMAGE_VIEWER:
+          return <ImageViewerScreen data={currentScreen as any} {...commonProps} />;
+        case SCREEN_TYPES.VIDEO:
+          return <VideoScreen data={currentScreen as any} {...commonProps} />;
+        default:
+          return (
+            <div className="unsupported-screen">
+              <h3>Sắp ra mắt</h3>
+              <p>Loại màn hình này ({currentScreen.type}) đang được phát triển.</p>
+              <Button onClick={handleNextScreen}>Bỏ qua</Button>
+            </div>
+          );
+      }
+    } catch (err) {
+      console.error("Screen transition/render error:", err);
+      return (
+        <div className="screen-error-fallback">
+          <Paragraph>Đã xảy ra lỗi khi hiển thị thử thách này.</Paragraph>
+          <Button icon={<RedoOutlined />} onClick={loadLevelInfo.bind(null, Number(levelId))}>
+            Tải lại màn chơi
+          </Button>
+        </div>
+      );
     }
   };
 
-  if (gameCompleted && completionData) {
-    return (
-      <div className={`embedded-game-wrapper ${isFullscreen ? "fullscreen-mode" : ""}`}>
-        <Card className="embedded-game-container completion-view">
-          <Result
-            status={completionData.passed ? "success" : "info"}
-            icon={<TrophyTwoTone twoToneColor="#faad14" />}
-            title={completionData.passed ? "Hoàn thành!" : "Rất tiếc!"}
-            subTitle={`Bạn đã đạt được ${completionData.score} cúp.`}
-            extra={[
-              <Button type="primary" key="retry" icon={<RedoOutlined />} onClick={() => initGame(Number(levelId))}>
-                Chơi lại
-              </Button>,
-              <Button key="close" onClick={onClose}>
-                Đóng
-              </Button>,
-            ]}
-          />
-          {onNavigateToFullGame && (
-            <div className="full-game-link">
-              <Button type="link" onClick={onNavigateToFullGame}>
-                Thử sức trong không gian Game chính <ArrowRightOutlined />
-              </Button>
-            </div>
-          )}
-        </Card>
-      </div>
-    );
-  }
-
-  return (
+  const gameContent = (
     <div className={`embedded-game-wrapper ${isFullscreen ? "fullscreen-mode" : ""}`}>
       <Card
-        className="embedded-game-container"
+        className={`embedded-game-container ${gameState}`}
         title={
-          <div className="game-header">
-            <div className="level-title">
-              <RocketOutlined style={{ marginRight: 8, color: "var(--primary-color)" }} />
-              {levelInfo?.name || "Đang tải..."}
+          <div className="game-header-glass">
+            <div className="level-info-mini">
+              <RocketOutlined className="header-icon" />
+              <div className="text-info">
+                <span className="name">{levelInfo?.name || "Game Zone"}</span>
+                {gameState === GAME_STATE.PLAYING && (
+                  <span className="steps">Thử thách {progress.completed + 1}/{progress.total}</span>
+                )}
+              </div>
             </div>
             <div className="game-actions">
-              {onNavigateToFullGame && (
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={onNavigateToFullGame}
-                  className="desktop-only"
-                >
-                  Vào không gian game
-                </Button>
+              {gameState === GAME_STATE.PLAYING && (
+                <div className="score-pill">
+                  <StarFilled style={{ color: "#faad14" }} />
+                  <span>{score}</span>
+                </div>
               )}
               <Button
                 type="text"
                 icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                 onClick={() => setIsFullscreen(!isFullscreen)}
-                className="fullscreen-btn"
-                title={isFullscreen ? "Thu nhỏ" : "Toàn màn hình"}
+                className="action-btn"
               />
+              {onNavigateToFullGame && (
+                <Button
+                  type="text"
+                  icon={<GamepadIcon />}
+                  onClick={onNavigateToFullGame}
+                  className="action-btn"
+                  title="Vào không gian game"
+                />
+              )}
               <Button
                 type="text"
                 icon={<CloseOutlined />}
                 onClick={onClose}
-                className="close-btn"
+                className="action-btn close"
               />
             </div>
           </div>
         }
       >
-        <div className="game-progress-bar">
-          <Progress
-            percent={Math.round((progress.completed / (progress.total || 1)) * 100)}
-            size="small"
-            showInfo={false}
-            strokeColor="var(--primary-color)"
-          />
-          <div className="score-badge">Cúp: {score}</div>
-        </div>
+        {gameState === GAME_STATE.PLAYING && (
+          <div className="modern-progress-bar">
+            <motion.div
+              className="progress-fill"
+              initial={{ width: 0 }}
+              animate={{ width: `${(progress.total > 0 ? (progress.completed / progress.total) : 0) * 100}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+        )}
 
-        <div className="game-content-viewport">
-          {loading && !currentScreen ? (
-            <div className="game-loading">
-              <Spin tip="Đang khởi tạo game..." />
+        <div className="game-viewport">
+          <AnimatePresence>
+            {gameState === GAME_STATE.START && (
+              <motion.div
+                key="start"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="screen-transition-wrapper"
+              >
+                <StartScreen
+                  levelInfo={levelInfo}
+                  onStart={initGame}
+                  loading={loading}
+                  onNavigateToFullGame={onNavigateToFullGame}
+                />
+              </motion.div>
+            )}
+
+            {gameState === GAME_STATE.PLAYING && (
+              <motion.div
+                key={`playing-${currentScreen?.id || "loading"}`}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}
+                className="screen-transition-wrapper"
+              >
+                {renderScreen() || (
+                  <div className="game-screen-loading">
+                    <Spin size="large" tip="Đang khởi tạo thử thách..." />
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {gameState === GAME_STATE.COMPLETED && (
+              <motion.div
+                key="completed"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="screen-transition-wrapper"
+              >
+                <CompletionView
+                  completionData={completionData}
+                  score={score}
+                  startTime={startTime}
+                  onRetry={initGame}
+                  onClose={onClose}
+                  onNavigateToFullGame={onNavigateToFullGame}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {loading && gameState === GAME_STATE.PLAYING && (
+            <div className="game-spinner-overlay">
+              <Spin size="large" tip="Đang tải..." />
             </div>
-          ) : (
-            renderScreen()
           )}
         </div>
       </Card>
     </div>
   );
+
+  if (isFullscreen) {
+    return createPortal(gameContent, document.body);
+  }
+
+  return gameContent;
 };
+
+// --- Sub-components (Moved outside to prevent re-mounting) ---
+
+interface StartScreenProps {
+  levelInfo: Level | null;
+  onStart: () => void;
+  loading: boolean;
+  onNavigateToFullGame?: () => void;
+}
+
+const StartScreen: React.FC<StartScreenProps> = ({ levelInfo, onStart, loading, onNavigateToFullGame }) => (
+  <div className="game-start-screen">
+    <div
+      className="start-bg"
+      style={{ backgroundImage: `url(${getImageUrl(levelInfo?.thumbnail)})` }}
+    />
+    <div className="start-overlay" />
+    <motion.div
+      className="start-content"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
+      <div className="level-badge">LEVEL {levelInfo?.order || 1}</div>
+      <Title level={2} className="level-name">
+        {levelInfo?.name || (loading ? "Đang tải bài học..." : "Không có thông tin")}
+      </Title>
+      <Paragraph className="level-desc">
+        {levelInfo?.description || "Hãy cùng khám phá những kiến thức di sản thú vị qua các thử thách tương tác!"}
+      </Paragraph>
+      <div className="level-meta">
+        <Space size="large">
+          <div className="meta-item">
+            <StarFilled style={{ color: "#faad14" }} />
+            <span>{levelInfo?.difficulty || "Dễ"}</span>
+          </div>
+          <div className="meta-item">
+            <RocketOutlined style={{ color: "var(--primary-color)" }} />
+            <span>{levelInfo?.totalScreens || 5} Thử thách</span>
+          </div>
+        </Space>
+      </div>
+      <div className="completion-actions">
+        <Button
+          type="primary"
+          icon={<PlayCircleOutlined />}
+          onClick={onStart}
+          loading={loading}
+          className="start-btn-large seal-button"
+        >
+          BẮT ĐẦU NGAY
+        </Button>
+
+        {onNavigateToFullGame && (
+          <Button
+            type="default"
+            size="large"
+            icon={<GamepadIcon />}
+            onClick={onNavigateToFullGame}
+            className="game-space-btn"
+          >
+            VÀO KHÔNG GIAN GAME
+          </Button>
+        )}
+      </div>
+    </motion.div>
+  </div>
+);
+
+interface CompletionViewProps {
+  completionData: any;
+  score: number;
+  startTime: number;
+  onRetry: () => void;
+  onClose: () => void;
+  onNavigateToFullGame?: () => void;
+}
+
+const CompletionView: React.FC<CompletionViewProps> = ({
+  completionData,
+  score,
+  startTime,
+  onRetry,
+  onClose,
+  onNavigateToFullGame,
+}) => (
+  <div className="game-completion-screen">
+    <div className="confetti-container" />
+    <motion.div
+      className="completion-card"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: "spring", damping: 15 }}
+    >
+      <div className="trophy-wrapper">
+        <TrophyTwoTone twoToneColor="#faad14" className="big-trophy" />
+        <motion.div
+          className="glow-effect"
+          animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+      </div>
+
+      <Title level={2}>{completionData?.passed ? "XUẤT SẮC!" : "HOÀN THÀNH!"}</Title>
+      <Text className="completion-subtitle">Bạn đã chinh phục thử thách thành công</Text>
+
+      <div className="stats-grid">
+        <div className="stat-box">
+          <div className="label">CÚP ĐẠT ĐƯỢC</div>
+          <div className="value">{score}</div>
+        </div>
+        <div className="stat-box">
+          <div className="label">THỜI GIAN</div>
+          <div className="value">{Math.floor((Date.now() - startTime) / 1000)}s</div>
+        </div>
+      </div>
+
+      {completionData?.rewards && (completionData.rewards.coins > 0 || completionData.rewards.petals > 0) && (
+        <div className="rewards-section">
+          <div className="section-label">PHẦN THƯỞNG NHẬN ĐƯỢC</div>
+          <div className="reward-badges">
+            {completionData.rewards.coins > 0 && (
+              <div className="reward-badge coin">
+                <StarFilled style={{ color: "#faad14" }} /> {completionData.rewards.coins} Xu
+              </div>
+            )}
+            {completionData.rewards.petals > 0 && (
+              <div className="reward-badge petal">
+                <CheckCircleFilled /> {completionData.rewards.petals} Cánh sen
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="completion-actions">
+        <Button
+          type="primary"
+          icon={<RedoOutlined />}
+          onClick={onRetry}
+          className="seal-button"
+        >
+          CHƠI LẠI
+        </Button>
+        <Button icon={<CloseOutlined />} onClick={onClose}>
+          ĐÓNG
+        </Button>
+      </div>
+
+      {onNavigateToFullGame && (
+        <div className="promo-footer">
+          <Button type="link" onClick={onNavigateToFullGame}>
+            Khám phá thêm trong không gian Game chính <ArrowRightOutlined />
+          </Button>
+        </div>
+      )}
+    </motion.div>
+  </div>
+);
 
 export default EmbeddedGameZone;
