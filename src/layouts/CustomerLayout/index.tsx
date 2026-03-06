@@ -57,9 +57,30 @@ const CustomerLayout: React.FC = () => {
   }, [userInteracted, dispatch]);
 
   React.useEffect(() => {
-    // Determine music path: Level BGM > User Selected BGM > Default BGM
+    // 1. Resolve level music if it exists (check keys first, then assume path)
+    const levelBgmRaw = currentLevel?.backgroundMusic;
+    const levelBgmResolved = levelBgmRaw ? ((SOUND_ASSETS as any)[levelBgmRaw] || levelBgmRaw) : null;
+    const hasLevelMusic = !!levelBgmResolved;
+
+    // 2. Synchronize auto-mute state for CustomBgmPlayer
+    // We only set it to true if there's actual level music playing
+    if (isBgmAutoMuted !== hasLevelMusic) {
+      dispatch({ type: 'audio/setBgmAutoMuted', payload: hasLevelMusic });
+    }
+
+    // 3. Determine if we should let CustomBgmPlayer take control
+    // If we have a custom track and NO level music is forcing priority
+    if (selectedBgmKey?.startsWith("CUSTOM_") && !hasLevelMusic) {
+      if (bgmAudioRef.current) {
+        bgmAudioRef.current.pause();
+        bgmAudioRef.current.volume = 0;
+      }
+      return;
+    }
+
+    // 4. Fallback chain for built-in audio
     const musicPath =
-      currentLevel?.backgroundMusic ||
+      levelBgmResolved ||
       (selectedBgmKey && (SOUND_ASSETS as any)[selectedBgmKey]) ||
       SOUND_ASSETS.BGM_HISTORICAL;
 
@@ -67,7 +88,7 @@ const CustomerLayout: React.FC = () => {
 
     const bgmUrl = getImageUrl(musicPath);
     const fullUrl = new URL(bgmUrl, window.location.origin).href;
-    const targetVolume = (isMuted || isBgmAutoMuted) ? 0 : bgmVolume;
+    const targetVolume = (isMuted || (hasLevelMusic ? false : isBgmAutoMuted)) ? 0 : bgmVolume;
 
     const fadeTo = (audio: HTMLAudioElement, target: number, onComplete?: () => void) => {
       if (fadeRef.current.interval) clearInterval(fadeRef.current.interval);

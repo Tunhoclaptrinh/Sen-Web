@@ -32,14 +32,6 @@ import "./EmbeddedGameZone.less";
 
 const { Title, Text, Paragraph } = Typography;
 
-const GamepadIcon = (props: any) => (
-  <span role="img" aria-label="gamepad" className="anticon" {...props}>
-    <svg viewBox="0 0 1024 1024" focusable="false" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-      <path d="M784 316.3c-44-32.8-111.4-44.3-157.9-24.3l-114.1 49.3-114.1-49.3c-46.5-20-113.9-8.5-157.9 24.3-51.1 38.1-66.6 112.9-34.9 167.9l75.4 130.6c31.1 53.9 96.5 76.5 152.9 53.4l114.1-49.3 114.1 49.3c56.4 23.1 121.8 0.5 152.9-53.4l75.4-130.6c31.7-55 16.2-129.8-34.9-167.9zM384 512h-32v32h-32v-32h-32v-32h32v-32h32v32h32v32zm224-24c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm48-48c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24z" />
-    </svg>
-  </span>
-);
-
 enum GAME_STATE {
   START = "START",
   PLAYING = "PLAYING",
@@ -313,7 +305,7 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
               {onNavigateToFullGame && (
                 <Button
                   type="text"
-                  icon={<GamepadIcon />}
+                  icon={<RocketOutlined />}
                   onClick={onNavigateToFullGame}
                   className="action-btn"
                   title="Vào không gian game"
@@ -469,7 +461,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ levelInfo, onStart, loading, 
           <Button
             type="default"
             size="large"
-            icon={<GamepadIcon />}
+            icon={<RocketOutlined />}
             onClick={onNavigateToFullGame}
             className="game-space-btn"
           >

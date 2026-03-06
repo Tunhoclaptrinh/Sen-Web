@@ -1,225 +1,164 @@
 import React from "react";
-import {
-  Slider,
-  Row,
-  Col,
-  Switch,
-  Select,
-  Typography,
-  Divider,
-} from "antd";
-import {
-  DragOutlined,
-  SkinOutlined,
-  SmileOutlined,
-} from "@ant-design/icons";
+import { Slider, Row, Col, Switch, Select, Typography } from "antd";
+import { DragOutlined, SkinOutlined, SmileOutlined, RobotOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { 
-    updateSenSettings, 
-    toggleSenAccessory,
-    SenSettings 
-} from "@/store/slices/aiSlice";
+import { updateSenSettings, toggleSenAccessory, SenSettings } from "@/store/slices/aiSlice";
 import { useGlobalCharacter } from "@/contexts/GlobalCharacterContext";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
-interface SenCustomizationSettingsProps {
-    compact?: boolean;
-}
+// Compact label for settings rows
+const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Text style={{ fontSize: 13, color: "#5d4037", fontWeight: 500 }}>{children}</Text>
+);
 
-const SenCustomizationSettings: React.FC<SenCustomizationSettingsProps> = ({ 
-    compact = false 
-}) => {
+// Section title
+const SectionTitle: React.FC<{ icon: React.ReactNode; label: string }> = ({ icon, label }) => (
+  <div style={{
+    display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
+    fontFamily: "'Playfair Display', serif", fontSize: "0.88rem",
+    fontWeight: 700, color: "#a8071a",
+  }}>
+    <span style={{ color: "#faad14" }}>{icon}</span>
+    {label}
+  </div>
+);
+
+// Thin divider line between sections
+const SectionDivider = () => (
+  <div style={{ borderBottom: "1px dashed rgba(197,160,101,0.35)", margin: "10px 0" }} />
+);
+
+// Accessory toggle: compact label + switch in one row
+const AccessoryRow: React.FC<{ label: string; checked: boolean; onChange: () => void }> = ({ label, checked, onChange }) => (
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0" }}>
+    <Label>{label}</Label>
+    <Switch size="small" checked={checked} onChange={onChange} style={{ backgroundColor: checked ? "#a8071a" : undefined }} />
+  </div>
+);
+
+const SenCustomizationSettings: React.FC = () => {
   const dispatch = useAppDispatch();
   const { senSettings } = useAppSelector((state) => state.ai);
   const globalChar = useGlobalCharacter();
-
   const isTalking = globalChar?.isTalking || false;
 
-  const {
-      isChibi,
-      scale,
-      accessories,
-      mouthState,
-      eyeState,
-      gesture,
-      isBlinking
-  } = senSettings;
+  const { isChibi, scale, accessories, mouthState, eyeState, gesture, isBlinking } = senSettings;
 
-  const handleUpdate = (updates: Partial<SenSettings>) => {
-      dispatch(updateSenSettings(updates));
-  };
-
-  const handleToggleAccessory = (key: keyof SenSettings['accessories']) => {
-      dispatch(toggleSenAccessory(key));
-  };
+  const handleUpdate = (updates: Partial<SenSettings>) => dispatch(updateSenSettings(updates));
+  const handleToggle = (key: keyof SenSettings["accessories"]) => dispatch(toggleSenAccessory(key));
 
   return (
-    <div className="sen-customization-settings">
-        {!compact && <Title level={5}>Chế độ nhân vật</Title>}
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-          <span style={{ marginRight: 10 }}>Dạng Chibi (Mới)</span>
-          <Switch 
-            checked={isChibi} 
-            onChange={(checked) => handleUpdate({ isChibi: checked })} 
-          />
+    <div style={{ fontSize: 13 }}>
+
+      {/* --- Chế độ nhân vật --- */}
+      <SectionTitle icon={<RobotOutlined />} label="Chế độ nhân vật" />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
+        <div>
+          <Label>Chibi (Phiên bản mới)</Label>
+          <Text type="secondary" style={{ display: "block", fontSize: 11, lineHeight: "1.3" }}>
+            Bật để dùng chibi đáng yêu hơn
+          </Text>
         </div>
-        {!compact && <Divider />}
+        <Switch checked={isChibi} onChange={(v) => handleUpdate({ isChibi: v })} style={{ backgroundColor: isChibi ? "#a8071a" : undefined }} />
+      </div>
 
-        <Title level={compact ? 5 : 5}>
-          <DragOutlined /> Kích Thước
-        </Title>
-        <Text>Độ lớn (Scale)</Text>
-        <Slider
-          min={0.1}
-          max={1.0}
-          step={0.05}
-          value={scale}
-          onChange={(val) => handleUpdate({ scale: val })}
-          style={{ marginBottom: 16 }}
-        />
+      <SectionDivider />
 
-        {!compact && <Divider />}
-        <Title level={5}>
-          <SkinOutlined /> Trang Phục & Phụ Kiện
-        </Title>
-        <Row gutter={[16, 16]}>
-          <Col span={12}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ minWidth: '60px' }}>Hat:</span>
-              <Switch
-                checked={accessories.hat}
-                onChange={() => handleToggleAccessory('hat')}
-              />
+      {/* --- Kích thước --- */}
+      <SectionTitle icon={<DragOutlined />} label="Kích thước" />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+        <Label>Tỉ lệ (Scale)</Label>
+        <Text strong style={{ color: "#a8071a", fontSize: 13 }}>{Math.round(scale * 100)}%</Text>
+      </div>
+      <Slider
+        min={0.1} max={1.0} step={0.05} value={scale}
+        onChange={(v) => handleUpdate({ scale: v })}
+        trackStyle={{ backgroundColor: "#a8071a" }}
+        handleStyle={{ borderColor: "#a8071a" }}
+        style={{ marginBottom: 0 }}
+      />
+
+      <SectionDivider />
+
+      {/* --- Trang phục & Phụ kiện --- */}
+      <SectionTitle icon={<SkinOutlined />} label="Trang phục & Phụ kiện" />
+      <Row gutter={[24, 4]}>
+        <Col span={12}><AccessoryRow label="🎩 Mũ" checked={accessories.hat} onChange={() => handleToggle("hat")} /></Col>
+        <Col span={12}><AccessoryRow label="👓 Kính" checked={accessories.glasses} onChange={() => handleToggle("glasses")} /></Col>
+        <Col span={12}><AccessoryRow label="🧥 Áo khoác" checked={accessories.coat} onChange={() => handleToggle("coat")} /></Col>
+        {!isChibi && (
+          <Col span={12}><AccessoryRow label="👜 Túi xách" checked={accessories.bag} onChange={() => handleToggle("bag")} /></Col>
+        )}
+      </Row>
+
+      <SectionDivider />
+
+      {/* --- Biểu cảm --- */}
+      <SectionTitle icon={<SmileOutlined />} label="Biểu cảm" />
+      <Row gutter={[12, 8]}>
+
+        {/* Mắt + Auto blink */}
+        <Col span={24}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ flex: 1 }}>
+              <Label>👀 Mắt:</Label>
+              <Select value={eyeState} onChange={(v) => handleUpdate({ eyeState: v })} style={{ width: "100%", marginTop: 4 }} size="small">
+                <Option value="normal">Bình thường</Option>
+                <Option value="blink">Nháy mắt</Option>
+                <Option value="close">Cười tít</Option>
+                <Option value="like">( &gt; &lt; )</Option>
+                <Option value="half">Lờ đờ</Option>
+                <Option value="sleep">Ngủ</Option>
+              </Select>
             </div>
-          </Col>
-          <Col span={12}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ minWidth: '60px' }}>Glasses:</span>
-              <Switch
-                checked={accessories.glasses}
-                onChange={() => handleToggleAccessory('glasses')}
-              />
+            <div style={{ textAlign: "center", paddingTop: 20, minWidth: 60 }}>
+              <Text style={{ fontSize: 11, display: "block", color: "#888" }}>Tự nháy</Text>
+              <Switch size="small" checked={isBlinking} onChange={(v) => handleUpdate({ isBlinking: v })}
+                style={{ backgroundColor: isBlinking ? "#a8071a" : undefined }} />
             </div>
-          </Col>
-          <Col span={12}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ minWidth: '60px' }}>Coat:</span>
-              <Switch
-                checked={accessories.coat}
-                onChange={() => handleToggleAccessory('coat')}
-              />
-            </div>
-          </Col>
-          {!isChibi && (
-            <Col span={12} key="bag">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ minWidth: '60px' }}>Bag:</span>
-                <Switch
-                  checked={accessories.bag}
-                  onChange={() => handleToggleAccessory('bag')}
-                />
-              </div>
-            </Col>
-          )}
-        </Row>
-
-        {!compact && <Divider />}
-        <Title level={5}>
-          <SmileOutlined /> Biểu Cảm (Expressions)
-        </Title>
-
-        {/* Eye Control */}
-        <Text style={{ display: 'block', marginBottom: 8 }}>Mắt (Eyes):</Text>
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Select 
-            value={eyeState} 
-            onChange={(val) => handleUpdate({ eyeState: val })} 
-            style={{ flex: 1 }}
-          >
-            <Option value="normal">Bình thường (Normal)</Option>
-            <Option value="blink">Nháy mắt (Wink)</Option>
-            <Option value="close">Cười tít (Happy)</Option>
-            <Option value="like">Mắt Like (&gt; &lt;)</Option>
-            <Option value="half">Mắt lờ đờ (Half)</Option>
-            <Option value="sleep">Mắt ngủ (Sleep)</Option>
-          </Select>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              minWidth: 80,
-            }}
-          >
-            <span style={{ fontSize: 12 }}>Auto Blink</span>
-            <Switch
-              size="small"
-              checked={isBlinking}
-              onChange={(val) => handleUpdate({ isBlinking: val })}
-            />
           </div>
-        </div>
+        </Col>
 
+        {/* Cử chỉ + Miệng side by side */}
         {isChibi && (
-          <div style={{ marginBottom: 16 }}>
-            {/* Gesture Control - CHIBI ONLY */}
-            <Text style={{ display: "block", marginBottom: 8 }}>
-              Cử chỉ tay (Gestures):
-            </Text>
+          <Col span={12}>
+            <Label>🤚 Cử chỉ:</Label>
             <Select
               value={gesture}
-              onChange={(val) => {
-                const updates: Partial<SenSettings> = { gesture: val };
-                // "Mắt - hành động like": Automatically switch eyes when Like gesture is chosen
-                if (val === "like") {
-                  updates.eyeState = "like";
-                } else if (eyeState === ("like" as any)) {
-                  updates.eyeState = "normal";
-                }
-                handleUpdate(updates);
+              onChange={(v) => {
+                const u: Partial<SenSettings> = { gesture: v };
+                if (v === "like") u.eyeState = "like";
+                else if (eyeState === ("like" as any)) u.eyeState = "normal";
+                handleUpdate(u);
               }}
-              style={{ width: "100%" }}
+              style={{ width: "100%", marginTop: 4 }} size="small"
             >
               <Option value="normal">Bình thường</Option>
-              <Option value="hello">Xin chào (Hello)</Option>
-              <Option value="point">Chỉ tay (Point)</Option>
-              <Option value="like">Thích (Like)</Option>
-              <Option value="flag">Cầm cờ (Flag)</Option>
+              <Option value="hello">Xin chào 👋</Option>
+              <Option value="point">Chỉ tay 👉</Option>
+              <Option value="like">Thích 👍</Option>
+              <Option value="flag">Cầm cờ 🚩</Option>
             </Select>
-          </div>
+          </Col>
         )}
 
-        <Text style={{ display: 'block', marginBottom: 8 }}>
-          Trạng thái miệng (khi im lặng):
-        </Text>
-        <Select
-          value={mouthState}
-          onChange={(val) => handleUpdate({ mouthState: val })}
-          style={{ width: "100%" }}
-          disabled={isTalking}
-        >
-          <Option value="smile">Cười nhẹ (Smile)</Option>
-          <Option value="smile_2">
-            Cười tươi (Smile 2) {isChibi ? "" : "(Chibi)"}
-          </Option>
-          {isChibi && <Option value="half">Mở hé (Half)</Option>}
-          <Option value="open">Mở to (Open)</Option>
-          <Option value="close">Đóng (Close)</Option>
-          <Option value="sad">Buồn (Sad)</Option>
-          {!isChibi && <Option value="angry">Giận (Angry)</Option>}
-          <Option value="tongue">
-            Lè lưỡi (Tongue) {isChibi ? "" : "(Chibi)"}
-          </Option>
-        </Select>
+        <Col span={isChibi ? 12 : 24}>
+          <Label>😊 Miệng:</Label>
+          <Select value={mouthState} onChange={(v) => handleUpdate({ mouthState: v })}
+            style={{ width: "100%", marginTop: 4 }} size="small" disabled={isTalking}>
+            <Option value="smile">Cười nhẹ 🙂</Option>
+            <Option value="smile_2">Cười tươi 😊</Option>
+            {isChibi && <Option value="half">Mở hé</Option>}
+            <Option value="open">Mở to 😮</Option>
+            <Option value="close">Khép miệng 😐</Option>
+            <Option value="sad">Buồn 😢</Option>
+            {!isChibi && <Option value="angry">Giận 😤</Option>}
+            <Option value="tongue">Lè lưỡi 😛</Option>
+          </Select>
+        </Col>
+      </Row>
     </div>
   );
 };

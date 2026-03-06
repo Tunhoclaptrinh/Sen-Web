@@ -5,6 +5,8 @@
   padding-bottom: 24px;
 
   .dashboard-hero {
+    margin-top: -16px;
+
     background-color: @seal-red; // Fallback
     background-image:
       url("../../../assets/images/background/background-red.png"), linear-gradient(135deg, @seal-red 0%, #6a1616 100%);
@@ -322,6 +324,39 @@
     }
   }
 
+  .equal-height-card {
+    height: 100%;
+
+    .ant-card-body {
+      // The internal inline styles set flex: 1 on bodyStyle, but we can reinforce it here
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 !important;
+
+      // Custom Scrollbar for overflow content inside the card
+      >div[style*="overflow-y"] {
+        &::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.02);
+          border-radius: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: rgba(93, 64, 55, 0.2);
+          border-radius: 4px;
+
+          &:hover {
+            background-color: rgba(93, 64, 55, 0.4);
+          }
+        }
+      }
+    }
+  }
+
   .shortcut-card {
     .game-card-style();
     text-align: center;
@@ -354,6 +389,19 @@
     // margin-top: 24px; // Removed as layout handles spacing now
     background: radial-gradient(circle at center, @seal-red-light, @seal-red) !important;
     border: 2px solid @gold-border !important;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -20%;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.25), transparent 70%);
+      pointer-events: none;
+    }
 
     .ant-statistic-title,
     .ant-typography {
@@ -362,28 +410,34 @@
     }
 
     h4.ant-typography {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       text-transform: uppercase;
-      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
       margin-bottom: 8px !important;
+      letter-spacing: 0.5px;
     }
 
     .promo-btn {
-      margin-top: 16px;
-      background: @gold-color !important;
-      color: @seal-red !important;
+      margin-top: 10px;
+      background: linear-gradient(180deg, #fff1b8, @gold-color) !important;
+      color: #5d4037 !important;
       border: 1px solid #fff !important;
       font-weight: 700;
-      font-family: @font-serif;
-      height: 40px;
-      transition: all 0.3s ease;
+      font-family: @font-sans;
+      height: 38px;
+      padding: 0 24px;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
       &:hover {
-        background: #fff !important;
+        background: linear-gradient(180deg, #fff, #ffe58f) !important;
         color: @seal-red !important;
-        border-color: @gold-color !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 16px rgba(255, 215, 0, 0.6);
+      }
+
+      &:active {
+        transform: translateY(1px) scale(0.98);
       }
     }
   }

@@ -116,83 +116,183 @@
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
     pointer-events: none;
 
-    .back-button {
+    .header-left,
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       pointer-events: auto;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
+      flex: 1;
+    }
+
+    .header-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 4; // Give even more space to center cluster
+      pointer-events: auto;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 215, 0, 0.4);
+      border-radius: 28px;
+      padding: 6px 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      gap: 20px;
+
+      .title-section {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        min-width: 140px;
+
+        h5 {
+          font-family: @font-serif;
+          font-size: 16px;
+          color: white;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          margin: 0 !important;
+          line-height: 1.2;
+          white-space: nowrap;
+        }
+      }
+
+      .stats-section {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 180px;
+
+        .ant-progress {
+          flex: 1;
+          min-width: 80px;
+        }
+
+        .score-display {
+          font-size: 18px;
+          font-weight: 800;
+          color: #ffd700;
+          position: relative;
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          font-family: @font-serif;
+          padding: 0;
+          border: none;
+          background: transparent;
+          box-shadow: none;
+          backdrop-filter: none;
+          flex-shrink: 0;
+
+          .potential-score {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+          }
+
+          .score-gained-popup {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: 900;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+            animation: floatUpFade 1.5s forwards;
+            pointer-events: none;
+            white-space: nowrap;
+          }
+        }
+      }
+
+      .status-divider {
+        width: 1px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+      }
+    }
+
+    .header-right {
+      justify-content: flex-end;
+    }
+
+    .back-button {
+      background: rgba(139, 29, 29, 0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      color: white !important;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
-    }
-
-    .level-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .score-display {
-      font-size: 18px;
-      font-weight: 700;
-      color: @gold-color;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-      background: rgba(0, 0, 0, 0.5);
-      padding: 4px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      position: relative;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-
-      .potential-score {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.7);
-        font-weight: 500;
-      }
-
-      .score-gained-popup {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        color: @gold-color;
-        font-size: 20px;
-        font-weight: 800;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        animation: floatUpFade 1.5s forwards;
-        pointer-events: none;
-        white-space: nowrap;
+        background: rgba(139, 29, 29, 0.7) !important;
+        border-color: white !important;
       }
     }
   }
 
-  // Animation for score popup
-  @keyframes floatUpFade {
-    0% {
-      opacity: 0;
-      transform: translate(-50%, 0);
+  // Unified circular function buttons
+  .game-action-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease !important;
+
+    // Adjust icon size inside the button if needed (though 16px from inline styles should be fine)
+    .anticon {
+      font-size: 16px !important;
     }
 
-    20% {
-      opacity: 1;
-      transform: translate(-50%, -20px);
+    &:hover {
+      background: rgba(255, 255, 255, 0.15) !important;
+      border-color: rgba(255, 255, 255, 0.6) !important;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    100% {
-      opacity: 0;
-      transform: translate(-50%, -50px);
+    &:active {
+      transform: scale(0.95);
     }
   }
+}
 
-  .game-viewport {
-    width: 100%;
-    height: 100%;
-    position: relative;
+// Animation for score popup
+@keyframes floatUpFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0);
   }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -20px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50px);
+  }
+}
+
+.game-viewport {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 // Completion screen contained within the layout

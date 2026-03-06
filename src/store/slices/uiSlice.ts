@@ -12,6 +12,7 @@ interface UiState {
   theme: string;
   loading: boolean;
   notifications: Notification[];
+  globalUnreadCount: number;
 }
 
 const initialState: UiState = {
@@ -19,6 +20,7 @@ const initialState: UiState = {
   theme: localStorage.getItem('theme') || 'light',
   loading: false,
   notifications: [],
+  globalUnreadCount: 0,
 };
 
 const uiSlice = createSlice({
@@ -51,6 +53,17 @@ const uiSlice = createSlice({
         (n) => n.id !== action.payload
       );
     },
+    setGlobalUnreadCount: (state, action: PayloadAction<number>) => {
+      state.globalUnreadCount = action.payload;
+    },
+    decrementGlobalUnreadCount: (state) => {
+      if (state.globalUnreadCount > 0) {
+        state.globalUnreadCount -= 1;
+      }
+    },
+    clearGlobalUnreadCount: (state) => {
+      state.globalUnreadCount = 0;
+    },
   },
 });
 
@@ -61,6 +74,9 @@ export const {
   setLoading,
   addNotification,
   removeNotification,
+  setGlobalUnreadCount,
+  decrementGlobalUnreadCount,
+  clearGlobalUnreadCount,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

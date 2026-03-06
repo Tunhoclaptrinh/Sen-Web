@@ -5,6 +5,7 @@ import {
   Switch,
   Divider,
 } from "antd";
+import { StarFilled } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import SenCharacter from "@/components/SenCharacter";
 import SenChibi from "@/components/SenChibi"; // New Chibi
@@ -25,13 +26,13 @@ const GlobalCharacterOverlay = () => {
   const { isOverlayOpen, layoutMode, senSettings } = useAppSelector((state) => state.ai);
 
   const {
-      isChibi,
-      scale,
-      accessories,
-      mouthState,
-      eyeState,
-      gesture,
-      isBlinking
+    isChibi,
+    scale,
+    accessories,
+    mouthState,
+    eyeState,
+    gesture,
+    isBlinking
   } = senSettings;
 
   // Safe access to context
@@ -90,9 +91,9 @@ const GlobalCharacterOverlay = () => {
     <>
       {/* Global AI Chat Overlay (Fixed Position) */}
       {isOverlayOpen && layoutMode === 'fixed' && (
-        <AIChat 
-          open={true} 
-          onClose={() => dispatch(setOverlayOpen(false))} 
+        <AIChat
+          open={true}
+          onClose={() => dispatch(setOverlayOpen(false))}
           position="fixed"
         />
       )}
@@ -164,18 +165,55 @@ const GlobalCharacterOverlay = () => {
 
           {/* 3. Settings Modal */}
           <Modal
-            title="Tùy chỉnh SEN"
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={null}
-            width={600}
+            width={560}
+            closable
+            destroyOnClose
+            title={
+              <span style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "1.1rem",
+                color: "var(--seal-red, #a8071a)",
+              }}>
+                <StarFilled style={{ color: "#faad14", fontSize: 14, marginRight: 8 }} />
+                Tùy chỉnh nhân vật SEN
+                <StarFilled style={{ color: "#faad14", fontSize: 14, marginLeft: 8 }} />
+              </span>
+            }
+            styles={{
+              content: {
+                border: "2px solid #c5a065",
+                borderRadius: 12,
+                overflow: "hidden",
+                padding: 0,
+                background: "var(--paper-bg, #fdf8ef)",
+              },
+              header: {
+                background: "transparent",
+                padding: "20px 28px 14px",
+                borderBottom: "1px dashed rgba(197,160,101,0.4)",
+                marginBottom: 0,
+              },
+              body: {
+                padding: "20px 28px 24px",
+              },
+            }}
           >
             <SenCustomizationSettings />
-            
-            <Divider />
-            <div className="visibility-control" style={{ marginTop: 16 }}>
-              <span>Thu nhỏ Sen</span>
-              <Switch checked={isMinimized} onChange={setIsMinimized} />
+
+            <Divider style={{ borderColor: "rgba(197,160,101,0.3)", margin: "12px 0" }} />
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}>
+              <span style={{ fontWeight: 600, color: "var(--text-color-primary, #3d1a02)" }}>Ẩn/Hiện Sen</span>
+              <Switch
+                checked={isMinimized}
+                onChange={setIsMinimized}
+              />
             </div>
           </Modal>
         </>

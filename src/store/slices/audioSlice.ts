@@ -1,4 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { AudioPlatform } from '@/utils/audioUrlUtils';
+
+export interface CustomBgmTrack {
+  id: string;
+  label: string;
+  url: string;         // embed URL (already converted)
+  type: AudioPlatform;
+  isIframe: boolean;
+}
+
+const MAX_CUSTOM_TRACKS = 10;
+
+const loadCustomTracks = (): CustomBgmTrack[] => {
+  try {
+    return JSON.parse(localStorage.getItem('customBgmTracks') || '[]');
+  } catch {
+    return [];
+  }
+};
 
 interface AudioState {
   isMuted: boolean;
@@ -7,6 +26,7 @@ interface AudioState {
   selectedBgmKey: string | null;
   isBgmAutoMuted: boolean;
   userInteracted: boolean;
+  customBgmTracks: CustomBgmTrack[];
 }
 
 const initialState: AudioState = {
@@ -16,6 +36,7 @@ const initialState: AudioState = {
   selectedBgmKey: localStorage.getItem('selectedBgmKey') || null,
   isBgmAutoMuted: false,
   userInteracted: false,
+  customBgmTracks: loadCustomTracks(),
 };
 
 const audioSlice = createSlice({
@@ -52,6 +73,23 @@ const audioSlice = createSlice({
         localStorage.removeItem('selectedBgmKey');
       }
     },
+    addCustomBgmTrack: (state, action: PayloadAction<CustomBgmTrack>) => {
+      if (state.customBgmTracks.length >= MAX_CUSTOM_TRACKS) {
+        // Remove oldest to stay within limit
+        state.customBgmTracks.shift();
+      }
+      state.customBgmTracks.push(action.payload);
+      localStorage.setItem('customBgmTracks', JSON.stringify(state.customBgmTracks));
+    },
+    removeCustomBgmTrack: (state, action: PayloadAction<string>) => {
+      state.customBgmTracks = state.customBgmTracks.filter(t => t.id !== action.payload);
+      localStorage.setItem('customBgmTracks', JSON.stringify(state.customBgmTracks));
+      // Deselect if currently selected
+      if (state.selectedBgmKey === `CUSTOM_${action.payload}`) {
+        state.selectedBgmKey = null;
+        localStorage.removeItem('selectedBgmKey');
+      }
+    },
   },
 });
 
@@ -62,7 +100,9 @@ export const {
   toggleMute,
   setSelectedBgmKey,
   setBgmAutoMuted,
-  setUserInteracted
+  setUserInteracted,
+  addCustomBgmTrack,
+  removeCustomBgmTrack,
 } = audioSlice.actions;
 
 export default audioSlice.reducer;

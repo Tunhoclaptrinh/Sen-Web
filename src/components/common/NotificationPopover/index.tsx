@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Badge} from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, List, Popover, Typography, Empty, Spin, Avatar, Tabs, Tooltip, Badge } from "antd";
 import {
   BellOutlined,
   CheckCircleOutlined,
@@ -13,25 +13,29 @@ import {
   GoldOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NotificationDetailModal from "@/components/common/NotificationDetailModal";
-import {notificationService} from "@/services/notification.service";
-import type {Notification} from "@/types/notification.types";
-import {formatRelativeTime} from "@/utils/formatters";
-import {ITEM_TYPES} from "@/config/constants";
+import { notificationService } from "@/services/notification.service";
+import type { Notification } from "@/types/notification.types";
+import { formatRelativeTime } from "@/utils/formatters";
+import { ITEM_TYPES } from "@/config/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { setGlobalUnreadCount, decrementGlobalUnreadCount, clearGlobalUnreadCount } from "@/store/slices/uiSlice";
 
-const {Text, Title, Paragraph} = Typography;
+const { Text, Title, Paragraph } = Typography;
 
 interface Props {
   isMobile?: boolean;
 }
 
-const NotificationPopover: React.FC<Props> = ({isMobile}) => {
+const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const globalUnreadCount = useSelector((state: RootState) => state.ui.globalUnreadCount);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
   const [detailVisible, setDetailVisible] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
@@ -40,13 +44,10 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
     setLoading(true);
     try {
       // If activeTab is 'unread', filter by is_read=false
-      const filter = activeTab === "unread" ? {isRead: false} : {};
+      const filter = activeTab === "unread" ? { isRead: false } : {};
       const data = await notificationService.getNotifications(1, 10, filter);
       setNotifications(data.items);
-      // Always update global unread count from the response (it usually comes with the envelope)
-      // Ideally backend returns total unread count regardless of filter,
-      // but relying on the "unread_count" property from service which maps to backend "unreadCount"
-      setUnreadCount(data.unreadCount);
+      dispatch(setGlobalUnreadCount(data.unreadCount));
     } catch (error) {
       console.error("Failed to fetch notifications", error);
     } finally {
@@ -65,8 +66,8 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
     const pollUnread = async () => {
       try {
         const data = await notificationService.getNotifications(1, 1);
-        setUnreadCount(data.unreadCount);
-      } catch (e) {}
+        dispatch(setGlobalUnreadCount(data.unreadCount));
+      } catch (e) { }
     };
 
     pollUnread();
@@ -82,13 +83,13 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
     e?.stopPropagation();
     setSelectedNotification(item);
     setDetailVisible(true);
-    
+
     if (!item.isRead) {
       try {
         await notificationService.markAsRead(item.id);
         // Optimistic update
-        setNotifications((prev) => prev.map((n) => (n.id === item.id ? {...n, isRead: true} : n)));
-        setUnreadCount((prev) => Math.max(0, prev - 1));
+        setNotifications((prev) => prev.map((n) => (n.id === item.id ? { ...n, isRead: true } : n)));
+        dispatch(decrementGlobalUnreadCount());
       } catch (error) {
         console.error("Failed to mark notification as read:", error);
       }
@@ -98,8 +99,8 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
   const handleMarkAllRead = async () => {
     setLoading(true);
     await notificationService.markAllAsRead();
-    setNotifications((prev) => prev.map((n) => ({...n, isRead: true})));
-    setUnreadCount(0);
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    dispatch(clearGlobalUnreadCount());
     setLoading(false);
     // If unread tab, list becomes empty?
     if (activeTab === "unread") {
@@ -108,29 +109,29 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
   };
 
   const getIcon = (type: string) => {
-    const style = {fontSize: 18};
+    const style = { fontSize: 18 };
     switch (type) {
       case "reward":
-        return <GiftOutlined style={{...style, color: "#f5222d"}} />;
+        return <GiftOutlined style={{ ...style, color: "#f5222d" }} />;
       case "achievement":
-        return <TrophyOutlined style={{...style, color: "#faad14"}} />;
+        return <TrophyOutlined style={{ ...style, color: "#faad14" }} />;
       case "social":
-        return <MessageOutlined style={{...style, color: "#52c41a"}} />;
+        return <MessageOutlined style={{ ...style, color: "#52c41a" }} />;
       case "quest":
-        return <RocketOutlined style={{...style, color: "#13c2c2"}} />;
+        return <RocketOutlined style={{ ...style, color: "#13c2c2" }} />;
       case "learning":
-        return <BookOutlined style={{...style, color: "#eb2f96"}} />;
+        return <BookOutlined style={{ ...style, color: "#eb2f96" }} />;
       case "history":
-        return <HistoryOutlined style={{...style, color: "#722ed1"}} />;
+        return <HistoryOutlined style={{ ...style, color: "#722ed1" }} />;
       case ITEM_TYPES.ARTIFACT:
-        return <GoldOutlined style={{...style, color: "#fa8c16"}} />;
+        return <GoldOutlined style={{ ...style, color: "#fa8c16" }} />;
       case ITEM_TYPES.HERITAGE:
-        return <EnvironmentOutlined style={{...style, color: "#1890ff"}} />;
+        return <EnvironmentOutlined style={{ ...style, color: "#1890ff" }} />;
       case "review":
-        return <CheckCircleOutlined style={{...style, color: "#52c41a"}} />;
+        return <CheckCircleOutlined style={{ ...style, color: "#52c41a" }} />;
       case "system":
       default:
-        return <InfoCircleOutlined style={{...style, color: "#1890ff"}} />;
+        return <InfoCircleOutlined style={{ ...style, color: "#1890ff" }} />;
     }
   };
 
@@ -183,27 +184,27 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
           zIndex: 10,
         }}
       >
-        <div style={{display: "flex", alignItems: "center", gap: 8}}>
-          <Title level={5} style={{margin: 0, fontFamily: "var(--font-serif)", color: "var(--seal-red)"}}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Title level={5} style={{ margin: 0, fontFamily: "var(--font-serif)", color: "var(--seal-red)" }}>
             Thông báo
           </Title>
-          {unreadCount > 0 && <Badge count={unreadCount} size="small" />}
+          {globalUnreadCount > 0 && <Badge count={globalUnreadCount} overflowCount={10} size="small" />}
         </div>
         <Tooltip title="Đánh dấu tất cả đã đọc">
           <Button
             type="text"
             size="small"
-            icon={<CheckCircleOutlined style={{fontSize: 14}} />}
+            icon={<CheckCircleOutlined style={{ fontSize: 14 }} />}
             onClick={(e) => {
               e.stopPropagation();
               handleMarkAllRead();
             }}
-            disabled={unreadCount === 0}
+            disabled={globalUnreadCount === 0}
             className="btn-premium-nhun"
             style={{
-              color: unreadCount > 0 ? "white" : "#bfbfbf",
-              background: unreadCount > 0 ? "var(--seal-red)" : "#f5f5f5",
-              border: unreadCount > 0 ? "1px solid var(--seal-border)" : "1px solid #d9d9d9",
+              color: globalUnreadCount > 0 ? "white" : "#bfbfbf",
+              background: globalUnreadCount > 0 ? "var(--seal-red)" : "#f5f5f5",
+              border: globalUnreadCount > 0 ? "1px solid var(--seal-border)" : "1px solid #d9d9d9",
               borderRadius: "4px",
               width: "28px",
               height: "28px",
@@ -218,16 +219,16 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
       </div>
 
       {/* Tabs */}
-      <div style={{padding: "0 20px", borderBottom: "1px solid #f0f0f0"}}>
+      <div style={{ padding: "0 20px", borderBottom: "1px solid #f0f0f0" }}>
         <Tabs
           activeKey={activeTab}
           onChange={(k) => setActiveTab(k as any)}
           items={[
-            {key: "all", label: "Tất cả"},
-            {key: "unread", label: "Chưa đọc"},
+            { key: "all", label: "Tất cả" },
+            { key: "unread", label: "Chưa đọc" },
           ]}
-          style={{marginBottom: -1}}
-          tabBarStyle={{margin: 0}}
+          style={{ marginBottom: -1 }}
+          tabBarStyle={{ margin: 0 }}
         />
       </div>
 
@@ -242,7 +243,7 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
         }}
       >
         {loading ? (
-          <div style={{textAlign: "center", padding: "40px 0"}}>
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
             <Spin tip="Đang tải..." />
           </div>
         ) : notifications.length > 0 ? (
@@ -262,7 +263,7 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
                   borderBottom: "1px solid rgba(197, 160, 101, 0.1)",
                 }}
               >
-                <div style={{display: "flex", width: "100%", gap: 16}}>
+                <div style={{ display: "flex", width: "100%", gap: 16 }}>
                   {/* Unread Indicator Dot */}
                   {!item.isRead && (
                     <div
@@ -296,18 +297,18 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
                     }}
                   />
 
-                  <div style={{flex: 1, overflow: "hidden"}}>
-                    <div style={{display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2}}>
-                      <Text strong={!item.isRead} style={{fontSize: 15, color: "var(--text-color-primary)", fontFamily: "var(--font-serif)"}}>
+                  <div style={{ flex: 1, overflow: "hidden" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                      <Text strong={!item.isRead} style={{ fontSize: 15, color: "var(--text-color-primary)", fontFamily: "var(--font-serif)" }}>
                         {item.title}
                       </Text>
-                      <Text type="secondary" style={{fontSize: 11, whiteSpace: "nowrap", marginLeft: 8, opacity: 0.7}}>
+                      <Text type="secondary" style={{ fontSize: 11, whiteSpace: "nowrap", marginLeft: 8, opacity: 0.7 }}>
                         {formatRelativeTime(item.createdAt)}
                       </Text>
                     </div>
                     <Paragraph
-                      ellipsis={{rows: 2}}
-                      style={{margin: 0, fontSize: 13, color: "#595959", lineHeight: 1.5}}
+                      ellipsis={{ rows: 2 }}
+                      style={{ margin: 0, fontSize: 13, color: "#595959", lineHeight: 1.5 }}
                     >
                       {item.message}
                     </Paragraph>
@@ -315,12 +316,12 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
 
                   {/* Actions for individual item */}
                   {!item.isRead && (
-                    <div style={{display: "flex", alignItems: "center", marginLeft: 8, height: "100%"}}>
+                    <div style={{ display: "flex", alignItems: "center", marginLeft: 8, height: "100%" }}>
                       <Tooltip title="Đánh dấu đã đọc">
                         <Button
                           type="text"
                           size="small"
-                          icon={<CheckCircleOutlined style={{fontSize: 12}} />}
+                          icon={<CheckCircleOutlined style={{ fontSize: 12 }} />}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleMarkAsRead(item);
@@ -381,7 +382,7 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
             setVisible?.(false);
           }}
           className="btn-premium-nhun"
-          style={{fontFamily: "var(--font-serif)", color: "var(--seal-red)"}}
+          style={{ fontFamily: "var(--font-serif)", color: "var(--seal-red)" }}
         >
           Xem tất cả thông báo
         </Button>
@@ -411,10 +412,10 @@ const NotificationPopover: React.FC<Props> = ({isMobile}) => {
       placement="bottomRight"
       arrow={false}
     >
-      <Badge count={unreadCount} offset={[-2, 2]} size="small">
+      <Badge count={globalUnreadCount} overflowCount={10} offset={[-2, 2]} size="small">
         <Button
           type="text"
-          icon={<BellOutlined style={{fontSize: 20}} />}
+          icon={<BellOutlined style={{ fontSize: 20 }} />}
           className={`header-action-btn ${visible ? "active" : ""}`}
         />
       </Badge>

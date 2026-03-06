@@ -18,6 +18,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const typingTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
   const { playClick } = useGameSounds();
@@ -57,17 +58,20 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
       let index = 0;
       const text = currentDialogue.text;
 
-      const timer = setInterval(() => {
+      if (typingTimerRef.current) clearInterval(typingTimerRef.current);
+      typingTimerRef.current = setInterval(() => {
         setDisplayedText(text.slice(0, index + 1));
         index++;
         if (index >= text.length) {
-          clearInterval(timer);
+          if (typingTimerRef.current) clearInterval(typingTimerRef.current);
+          typingTimerRef.current = null; // Clear ref after interval is done
           setIsTyping(false);
         }
       }, 30); // Speed: 30ms
 
       return () => {
-        clearInterval(timer);
+        if (typingTimerRef.current) clearInterval(typingTimerRef.current);
+        typingTimerRef.current = null; // Clear ref on unmount or re-run
         if (audioRef.current) {
           audioRef.current.pause();
         }
@@ -83,6 +87,10 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
   const handleNextDialogue = () => {
     if (isTyping) {
       // Finish typing immediately
+      if (typingTimerRef.current) {
+        clearInterval(typingTimerRef.current);
+        typingTimerRef.current = null;
+      }
       setDisplayedText(currentDialogue?.text || "");
       setIsTyping(false);
       return;

@@ -68,7 +68,6 @@ const GamePlayPage: React.FC = () => {
     }
     return () => {
       dispatch(setCurrentLevel(null));
-      dispatch(setBgmAutoMuted(false));
     };
   }, [levelId, dispatch]);
 
@@ -76,9 +75,8 @@ const GamePlayPage: React.FC = () => {
   useEffect(() => {
     if (currentScreen?.type === SCREEN_TYPES.VIDEO) {
       dispatch(setBgmAutoMuted(true));
-    } else {
-      dispatch(setBgmAutoMuted(false));
     }
+    // We don't set it to false here because CustomerLayout handles level-BGM priority
   }, [currentScreen?.type, dispatch]);
 
   const triggerScoreAnimation = (points: number) => {
@@ -105,6 +103,16 @@ const GamePlayPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReplay = () => {
+    if (!levelId) return;
+    playClick();
+    setScore(0);
+    setProgress({ completed: 0, total: levelInfo?.totalScreens || 10 });
+    setGameCompleted(false);
+    setCompletionData(null);
+    initGame(parseInt(levelId));
   };
 
   const handleNextScreen = async () => {
@@ -376,7 +384,7 @@ const GamePlayPage: React.FC = () => {
                 buttonSize="large"
                 className="completion-btn-outline"
                 icon={<RedoOutlined />}
-                onClick={() => { playClick(); window.location.reload(); }}
+                onClick={handleReplay}
               >
                 Chơi Lại
               </Button>
@@ -396,8 +404,8 @@ const GamePlayPage: React.FC = () => {
               )}
             </div>
           </div>
-        </Card>
-      </div>
+        </Card >
+      </div >
     );
   };
 
@@ -406,92 +414,87 @@ const GamePlayPage: React.FC = () => {
     return (
       <div className="game-container">
         <div className="game-overlay-ui">
-          <Button
-            variant="outline"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => {
-              playClick();
-              Modal.confirm({
-                title: "Thoát màn chơi?",
-                content: "Tiến độ hiện tại của bạn sẽ bị mất.",
-                okText: "Thoát",
-                cancelText: "Ở lại",
-                onOk: () => navigate("/game/chapters"),
-              });
-            }}
-            className="back-button"
-          >
-            Thoát
-          </Button>
-
-          <div className="level-info">
-            <Title level={5} style={{ margin: 0, color: "white" }}>
-              {levelInfo?.name}
-            </Title>
-            <Progress
-              percent={Math.round((progress.completed / (progress.total || 1)) * 100)}
-              size="small"
-              status="active"
-              strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
-              showInfo={false}
-              style={{ width: 150 }}
-            />
-          </div>
-
-          <div className="score-display">
-            <span className="current-score">Cúp: {score}</span>
-            {currentScreen?.potentialScore && !currentScreen.isCompleted && (
-              <span className="potential-score" title="Cúp có thể đạt được">
-                (+{currentScreen.potentialScore})
-              </span>
-            )}
-            {pointsGained && <div className="score-gained-popup">+{pointsGained}</div>}
-          </div>
-
-          <AudioSettingsPopover>
+          <div className="header-left">
             <Button
               variant="outline"
-              className="audio-settings-trigger-btn"
-              icon={
-                isMuted ? (
-                  <MutedOutlined style={{ fontSize: 24, color: "white" }} />
-                ) : (
-                  <SoundOutlined style={{ fontSize: 24, color: "white" }} />
-                )
-              }
-              buttonSize="large"
-              style={{
-                backgroundColor: "rgba(0,0,0,0.5)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                marginLeft: 12,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                pointerEvents: "auto",
+              icon={<ArrowLeftOutlined />}
+              onClick={() => {
+                playClick();
+                Modal.confirm({
+                  title: "Thoát màn chơi?",
+                  content: "Tiến độ hiện tại của bạn sẽ bị mất.",
+                  okText: "Thoát",
+                  cancelText: "Ở lại",
+                  onOk: () => navigate("/game/chapters"),
+                });
+              }}
+              className="back-button game-action-btn"
+              title="Thoát màn chơi"
+            />
+          </div>
+
+          <div className="header-center">
+            <div className="status-pill">
+              <div className="title-section">
+                <Title level={5} style={{ margin: 0, color: "white" }}>
+                  {levelInfo?.name}
+                </Title>
+              </div>
+
+              <div className="status-divider"></div>
+
+              <div className="stats-section">
+                <Progress
+                  percent={Math.round(((progress.completed + 0.2) / (progress.total || 1)) * 100)}
+                  size="small"
+                  status="active"
+                  strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
+                  showInfo={false}
+                  style={{ width: 100 }}
+                />
+
+                <div className="score-display">
+                  <span className="current-score">Cúp: {score}</span>
+                  {currentScreen?.potentialScore && !currentScreen.isCompleted && (
+                    <span className="potential-score" title="Cúp có thể đạt được">
+                      (+{currentScreen.potentialScore})
+                    </span>
+                  )}
+                  {pointsGained && <div className="score-gained-popup">+{pointsGained}</div>}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="header-right">
+            <AudioSettingsPopover>
+              <Button
+                variant="outline"
+                className="game-action-btn"
+                icon={
+                  isMuted ? (
+                    <MutedOutlined />
+                  ) : (
+                    <SoundOutlined />
+                  )
+                }
+                title="Âm thanh"
+              />
+            </AudioSettingsPopover>
+
+            <Button
+              variant="outline"
+              className="game-action-btn"
+              style={{ marginLeft: 8 }}
+              icon={<CommentOutlined />}
+              title="AI Chat"
+              onClick={() => {
+                playClick();
+                dispatch(setActiveContext({ levelId: levelInfo?.id }));
+                dispatch(setOverlayOpen({ open: true, mode: "absolute" }));
               }}
             />
-          </AudioSettingsPopover>
-
-          <Button
-            variant="outline"
-            className="ai-chat-trigger-btn"
-            icon={<CommentOutlined style={{ fontSize: 24, color: "white" }} />}
-            buttonSize="large"
-            style={{
-              backgroundColor: "rgba(0,0,0,0.5)",
-              border: "1px solid rgba(255,255,255,0.3)",
-              marginLeft: 12,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              pointerEvents: "auto",
-            }}
-            onClick={() => {
-              playClick();
-              dispatch(setActiveContext({ levelId: levelInfo?.id }));
-              dispatch(setOverlayOpen({ open: true, mode: "absolute" }));
-            }}
-          />
+          </div>
         </div>
 
         <div className="game-viewport">{renderScreen()}</div>
@@ -521,8 +524,7 @@ const GamePlayPage: React.FC = () => {
         variant="outline"
         icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
         onClick={() => { playClick(); setIsFullscreen(!isFullscreen); }}
-        className="fullscreen-button"
-        buttonSize="large"
+        className="fullscreen-button game-action-btn"
         title={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
       />
 

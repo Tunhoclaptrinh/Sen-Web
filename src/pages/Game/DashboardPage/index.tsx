@@ -26,6 +26,9 @@ import {
   BellOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  CompassOutlined,
+  QrcodeOutlined,
+  GiftOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -36,6 +39,7 @@ import { Quest } from "@/types/quest.types";
 import "./styles.less";
 import { getImageUrl } from "@/utils/image.helper";
 import { notificationService } from "@/services/notification.service";
+import { decrementGlobalUnreadCount } from "@/store/slices/uiSlice";
 import { Notification } from "@/types/notification.types";
 import { formatRelativeTime } from "@/utils/formatters";
 
@@ -46,11 +50,15 @@ const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
   const { progress } = useSelector((state: RootState) => state.game);
+  const globalUnreadCount = useSelector((state: RootState) => state.ui.globalUnreadCount);
   const { playClick } = useGameSounds();
   const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
   const [loadingQuests, setLoadingQuests] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [loadingMoreNotifications, setLoadingMoreNotifications] = useState(false);
+  const [notificationPage, setNotificationPage] = useState(1);
+  const [hasMoreNotifications, setHasMoreNotifications] = useState(false);
   const [heroPressed, setHeroPressed] = useState(false);
   const [heroHovered, setHeroHovered] = useState(false);
 
@@ -78,7 +86,9 @@ const DashboardPage: React.FC = () => {
     try {
       setLoadingNotifications(true);
       const data = await notificationService.getNotifications(1, 5);
-      setNotifications(data.items);
+      setNotifications(data.items || []);
+      setNotificationPage(1);
+      setHasMoreNotifications((data.items || []).length === 5);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     } finally {
@@ -86,10 +96,27 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const loadMoreNotifications = async () => {
+    if (!hasMoreNotifications || loadingMoreNotifications) return;
+    try {
+      setLoadingMoreNotifications(true);
+      const nextPage = notificationPage + 1;
+      const data = await notificationService.getNotifications(nextPage, 5);
+      setNotifications((prev) => [...prev, ...(data.items || [])]);
+      setNotificationPage(nextPage);
+      setHasMoreNotifications((data.items || []).length === 5);
+    } catch (error) {
+      message.error("Không thể tải thêm thông báo");
+    } finally {
+      setLoadingMoreNotifications(false);
+    }
+  };
+
   const handleMarkAsRead = async (id: number) => {
     try {
       await notificationService.markAsRead(id);
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+      dispatch(decrementGlobalUnreadCount());
     } catch (error) {
       message.error("Thao tác thất bại");
     }
@@ -123,7 +150,11 @@ const DashboardPage: React.FC = () => {
           <Col xs={24} md={16}>
             <div className="hero-content">
               <Title level={2} style={{ color: "#fff", marginBottom: 8 }}>
-                Xin chào, {user?.name || "Nhà thám hiểm"}!
+                Xin chào,{" "}
+                <span style={{ color: "#ffd700", textShadow: "0 2px 8px rgba(255, 215, 0, 0.4)" }}>
+                  {user?.name || "Nhà thám hiểm"}
+                </span>
+                !
               </Title>
               <Text style={{ color: "rgba(255,255,255,0.9)", fontSize: 16 }}>
                 Hành trình khám phá di sản của bạn đang chờ đợi. Hãy tiếp tục chinh phục các thử thách!
@@ -401,72 +432,95 @@ const DashboardPage: React.FC = () => {
         </Row>
 
         {/* Notifications & Recent Activity or similar */}
-        <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-          <Col xs={24} lg={12}>
+        <Row gutter={[24, 24]} style={{ marginTop: 24 }} align="stretch">
+          <Col xs={24} lg={12} style={{ display: "flex" }}>
             <Card
               title={
-                <span>
-                  <BellOutlined style={{ color: "#f5222d", marginRight: 8 }} />
-                  Thông báo mới
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>
+                    <BellOutlined style={{ color: "#f5222d", marginRight: 8 }} />
+                    Thông báo mới
+                  </span>
+                  {globalUnreadCount > 0 && (
+                    <Badge count={globalUnreadCount} overflowCount={10} style={{ backgroundColor: "#f5222d" }} />
+                  )}
+                </div>
               }
               bordered={false}
-              className="content-card"
+              className="content-card equal-height-card"
+              style={{ width: "100%", display: "flex", flexDirection: "column" }}
+              bodyStyle={{ flex: 1, padding: 0, display: "flex", flexDirection: "column" }}
               extra={
                 <Button variant="ghost" buttonSize="small" onClick={() => navigate("/notifications")}>
                   Tất cả
                 </Button>
               }
             >
-              <List
-                loading={loadingNotifications}
-                dataSource={notifications}
-                locale={{
-                  emptyText: <Empty description="Không có thông báo mới" image={Empty.PRESENTED_IMAGE_SIMPLE} />,
-                }}
-                renderItem={(item) => (
-                  <List.Item
-                    actions={[
-                      !item.isRead && (
+              <div style={{ flex: 1, overflowY: "auto", maxHeight: "400px", padding: "24px" }}>
+                <List
+                  loading={loadingNotifications}
+                  dataSource={notifications}
+                  loadMore={
+                    hasMoreNotifications && !loadingNotifications ? (
+                      <div style={{ textAlign: "center", marginTop: 12, paddingBottom: 12 }}>
                         <Button
                           variant="ghost"
-                          icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-                          onClick={() => handleMarkAsRead(item.id)}
-                        />
-                      ),
-                    ]}
-                  >
-                    <List.Item.Meta
-                      avatar={
-                        <Badge dot={!item.isRead} offset={[-2, 32]}>
-                          <Avatar
-                            icon={<BellOutlined />}
-                            style={{
-                              backgroundColor: item.isRead ? "#f5f5f5" : "#e6f7ff",
-                              color: item.isRead ? "#bfbfbf" : "#1890ff",
-                            }}
+                          buttonSize="small"
+                          onClick={loadMoreNotifications}
+                          disabled={loadingMoreNotifications}
+                        >
+                          {loadingMoreNotifications ? "Đang tải..." : "Xem thêm"}
+                        </Button>
+                      </div>
+                    ) : null
+                  }
+                  locale={{
+                    emptyText: <Empty description="Không có thông báo mới" image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+                  }}
+                  renderItem={(item) => (
+                    <List.Item
+                      actions={[
+                        !item.isRead && (
+                          <Button
+                            variant="ghost"
+                            icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+                            onClick={() => handleMarkAsRead(item.id)}
                           />
-                        </Badge>
-                      }
-                      title={<Text strong={!item.isRead}>{item.title}</Text>}
-                      description={
-                        <Space direction="vertical" size={0}>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            {item.message}
-                          </Text>
-                          <Text type="secondary" style={{ fontSize: 11, opacity: 0.7 }}>
-                            <ClockCircleOutlined style={{ marginRight: 4 }} />
-                            {formatRelativeTime(item.createdAt)}
-                          </Text>
-                        </Space>
-                      }
-                    />
-                  </List.Item>
-                )}
-              />
+                        ),
+                      ]}
+                    >
+                      <List.Item.Meta
+                        avatar={
+                          <Badge dot={!item.isRead} offset={[-2, 32]}>
+                            <Avatar
+                              icon={<BellOutlined />}
+                              style={{
+                                backgroundColor: item.isRead ? "#f5f5f5" : "#e6f7ff",
+                                color: item.isRead ? "#bfbfbf" : "#1890ff",
+                              }}
+                            />
+                          </Badge>
+                        }
+                        title={<Text strong={!item.isRead}>{item.title}</Text>}
+                        description={
+                          <Space direction="vertical" size={0}>
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                              {item.message}
+                            </Text>
+                            <Text type="secondary" style={{ fontSize: 11, opacity: 0.7 }}>
+                              <ClockCircleOutlined style={{ marginRight: 4 }} />
+                              {formatRelativeTime(item.createdAt)}
+                            </Text>
+                          </Space>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              </div>
             </Card>
           </Col>
-          <Col xs={24} lg={12}>
+          <Col xs={24} lg={12} style={{ display: "flex" }}>
             <Card
               title={
                 <span>
@@ -475,42 +529,64 @@ const DashboardPage: React.FC = () => {
                 </span>
               }
               bordered={false}
-              className="content-card"
+              className="content-card equal-height-card"
+              style={{ width: "100%", display: "flex", flexDirection: "column" }}
+              bodyStyle={{ flex: 1, padding: 0, display: "flex", flexDirection: "column" }}
             >
-              <Empty description="Tính năng đang cập nhật" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <div style={{ flex: 1, overflowY: "auto", maxHeight: "400px", padding: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Empty description="Tính năng đang cập nhật, Vui lòng đợi nhé" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
             </Card>
           </Col>
         </Row>
 
         {/* Lower Section: Shortcuts & Promo */}
-        <Title level={4} style={{ marginTop: 24, marginBottom: 16 }}>
+        <Title level={4} style={{ marginTop: 24, marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>
           Khám phá nhanh
         </Title>
         <Row gutter={[24, 24]}>
           <Col xs={24} lg={16}>
             <Row gutter={[16, 16]}>
-              <Col xs={12} sm={6} lg={6}>
+              <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/learning"); }}>
                   <BookOutlined style={{ fontSize: 32, color: "#1890ff" }} />
                   <div className="shortcut-title">Ôn tập</div>
                 </Card>
               </Col>
-              <Col xs={12} sm={6} lg={6}>
+              <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/museum"); }}>
                   <HistoryOutlined style={{ fontSize: 32, color: "#722ed1" }} />
                   <div className="shortcut-title">Bảo tàng</div>
                 </Card>
               </Col>
-              <Col xs={12} sm={6} lg={6}>
+              <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/shop"); }}>
                   <ShopOutlined style={{ fontSize: 32, color: "#eb2f96" }} />
                   <div className="shortcut-title">Cửa hàng</div>
                 </Card>
               </Col>
-              <Col xs={12} sm={6} lg={6}>
+              <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/leaderboard"); }}>
                   <TrophyOutlined style={{ fontSize: 32, color: "#faad14" }} />
                   <div className="shortcut-title">Xếp hạng</div>
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={6}>
+                <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/map"); }}>
+                  <CompassOutlined style={{ fontSize: 32, color: "#52c41a" }} />
+                  <div className="shortcut-title">Bản đồ</div>
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={6}>
+                <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/scan"); }}>
+                  <QrcodeOutlined style={{ fontSize: 32, color: "#13c2c2" }} />
+                  <div className="shortcut-title">Tầm Bảo</div>
+                </Card>
+              </Col>
+              <Col xs={12} sm={8} lg={6}>
+                <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/welfare"); }}>
+                  <GiftOutlined style={{ fontSize: 32, color: "#f5222d" }} />
+                  <div className="shortcut-title">Đổi thưởng</div>
                 </Card>
               </Col>
             </Row>
@@ -518,11 +594,21 @@ const DashboardPage: React.FC = () => {
 
           <Col xs={24} lg={8}>
             <Card className="promo-card" bordered={false} style={{ height: "100%" }}>
-              <div style={{ textAlign: "center", padding: "12px 0" }}>
-                <Title level={4}>Gói Ưu Đãi</Title>
-                <Text>Nhận ngay 500 xu khi hoàn thành khảo sát.</Text>
-                <Button variant="primary" shape="round" className="promo-btn">
-                  Tham gia ngay
+              <div style={{ textAlign: "center", padding: "12px 0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <Title level={4} style={{ marginBottom: 4 }}>Góp ý cho SEN 💌</Title>
+                <Text style={{ fontSize: 13, marginBottom: 16, display: "block", color: "rgba(255,215,0,0.85)", lineHeight: "1.5" }}>
+                  SEN đang trong giai đoạn thử nghiệm. Mỗi ý kiến của bạn đều giúp chúng mình trở nên tốt hơn mỗi ngày!
+                </Text>
+                <Button
+                  variant="primary"
+                  shape="round"
+                  className="promo-btn"
+                  onClick={() => {
+                    playClick();
+                    window.open("https://forms.gle/GM3N96UnPY2XmfYXA", "_blank");
+                  }}
+                >
+                  Điền khảo sát ngay
                 </Button>
               </div>
             </Card>
