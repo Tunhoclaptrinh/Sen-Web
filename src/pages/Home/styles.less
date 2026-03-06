@@ -43,7 +43,7 @@
     background-size: cover;
     margin-bottom: 0;
 
-    
+
     .hero-content {
       position: relative;
       z-index: 2;
@@ -91,6 +91,7 @@
       left: 0;
       width: 100%;
       z-index: 3;
+
       img {
         width: 100%;
         height: auto;
@@ -103,6 +104,7 @@
     padding: 120px 0; // Slightly tighter padding for better flow
     background: transparent;
     z-index: 10;
+
     // Fading border at the bottom
     &::after {
       content: "";
@@ -127,6 +129,12 @@
       opacity: 0.1;
       animation: spin 60s linear infinite;
       z-index: -1;
+
+      @media (max-width: 1024px) {
+        width: 400px;
+        height: 400px;
+        left: -100px;
+      }
     }
 
     .mission-container {
@@ -280,15 +288,20 @@
     0% {
       transform: rotate(0deg);
     }
+
     25% {
       transform: rotate(3deg);
-    } // Slightly more visible rotation
+    }
+
+    // Slightly more visible rotation
     50% {
       transform: rotate(0deg);
     }
+
     75% {
       transform: rotate(-3deg);
     }
+
     100% {
       transform: rotate(0deg);
     }
@@ -329,6 +342,7 @@
         border-radius: 16px;
         overflow: hidden;
         border: 2px solid @gold-border;
+
         img {
           height: 300px;
           object-fit: cover;
@@ -667,6 +681,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

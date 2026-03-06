@@ -31,8 +31,10 @@ interface Props {
 
 const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const globalUnreadCount = useSelector((state: RootState) => state.ui.globalUnreadCount);
+
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -41,6 +43,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   const fetchNotifications = async () => {
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
       // If activeTab is 'unread', filter by is_read=false
@@ -56,13 +59,14 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
   };
 
   useEffect(() => {
-    if (visible) {
+    if (visible && isAuthenticated) {
       fetchNotifications();
     }
-  }, [visible, activeTab]);
+  }, [visible, activeTab, isAuthenticated]);
 
   // Poll for unread count only (optimization)
   useEffect(() => {
+    if (!isAuthenticated) return;
     const pollUnread = async () => {
       try {
         const data = await notificationService.getNotifications(1, 1);
@@ -73,7 +77,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
     pollUnread();
     const interval = setInterval(pollUnread, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isAuthenticated]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setVisible(newOpen);

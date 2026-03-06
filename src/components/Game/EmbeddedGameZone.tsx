@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Spin, message, Typography, Space } from "antd";
+import { Card, Button, Spin, message, Typography, Space, Popover, Slider } from "antd";
 import {
   CloseOutlined,
   ArrowRightOutlined,
@@ -11,12 +11,18 @@ import {
   PlayCircleOutlined,
   CheckCircleFilled,
   StarFilled,
+  SoundOutlined,
+  MutedOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import gameService from "@/services/game.service";
 import { SCREEN_TYPES } from "@/types/game.types";
 import type { Screen, Level } from "@/types/game.types";
 import { getImageUrl } from "@/utils/image.helper";
+import { setBgmVolume, toggleMute } from "@/store/slices/audioSlice";
+import { useAppDispatch } from "@/store/hooks";
 
 // Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -61,6 +67,58 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
   const [completionData, setCompletionData] = useState<any>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const globalChar = useGlobalCharacter();
+  const dispatch = useAppDispatch();
+
+  // BGM Logic for Embedded Zone
+  const { isMuted, bgmVolume, isBgmAutoMuted } = useSelector((state: RootState) => state.audio);
+  const bgmRef = React.useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const isPlaying = gameState === GAME_STATE.PLAYING && !!levelInfo?.backgroundMusic;
+
+    if (isPlaying) {
+      const bgmUrl = getImageUrl(levelInfo!.backgroundMusic!);
+
+      // 1. Manage Audio Instance (Source & Loop)
+      if (!bgmRef.current || bgmRef.current.src !== new URL(bgmUrl, window.location.origin).href) {
+        if (bgmRef.current) bgmRef.current.pause();
+        bgmRef.current = new Audio(bgmUrl);
+        bgmRef.current.loop = true;
+      }
+
+      // 2. Sync Volume (Gentle sync)
+      const targetVolume = (isMuted || isBgmAutoMuted) ? 0 : bgmVolume;
+      if (bgmRef.current.volume !== targetVolume) {
+        bgmRef.current.volume = targetVolume;
+      }
+
+      // 3. Manage Playback State (Only call play/pause if state changes)
+      if (targetVolume > 0 && bgmRef.current.paused) {
+        bgmRef.current.play().catch(e => console.warn("Embed BGM failed to play:", e));
+      } else if (targetVolume === 0 && !bgmRef.current.paused) {
+        bgmRef.current.pause();
+      }
+    } else {
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current = null;
+      }
+    }
+
+    return () => {
+      // Logic moved to the unmount-only useEffect below to avoid glitches during volume changes
+    };
+  }, [gameState, levelInfo?.backgroundMusic, isMuted, bgmVolume, isBgmAutoMuted]);
+
+  // Once-only cleanup for component unmount
+  useEffect(() => {
+    return () => {
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current = null;
+      }
+    };
+  }, []);
 
   // Sync Global Character visibility with fullscreen
   useEffect(() => {
@@ -210,6 +268,46 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
     }
   };
 
+  const VolumeControl = () => (
+    <Popover
+      trigger="click"
+      placement="bottomRight"
+      overlayClassName="embedded-volume-popover"
+      content={
+        <div style={{ width: 150, padding: '8px 4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
+            <Text strong style={{ fontSize: 12 }}>Âm lượng</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{Math.round(bgmVolume * 100)}%</Text>
+          </div>
+          <Slider
+            min={0}
+            max={1}
+            step={0.05}
+            value={bgmVolume}
+            onChange={(v) => dispatch(setBgmVolume(v))}
+            tooltip={{ open: false }}
+          />
+          <Button
+            type="text"
+            size="small"
+            block
+            icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
+            onClick={() => dispatch(toggleMute())}
+            style={{ marginTop: 8, fontSize: 12 }}
+          >
+            {isMuted ? "Bật âm" : "Tắt âm"}
+          </Button>
+        </div>
+      }
+    >
+      <Button
+        type="text"
+        icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
+        className="action-btn"
+      />
+    </Popover>
+  );
+
   const renderScreen = () => {
     if (!currentScreen) return null;
 
@@ -302,6 +400,7 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
                 onClick={() => setIsFullscreen(!isFullscreen)}
                 className="action-btn"
               />
+              <VolumeControl />
               {onNavigateToFullGame && (
                 <Button
                   type="text"

@@ -572,3 +572,25 @@
 .seal-button {
   .game-btn-primary();
 }
+
+.embedded-volume-popover {
+  .ant-popover-inner {
+    background: @paper-bg !important;
+    border: 1.5px solid fade(@gold-border, 50%) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    padding: 12px !important;
+  }
+
+  .ant-popover-arrow::before {
+    background: @paper-bg !important;
+  }
+
+  .ant-slider-track {
+    background-color: @seal-red !important;
+  }
+
+  .ant-slider-handle::after {
+    box-shadow: 0 0 0 2px fade(@seal-red, 20%) !important;
+  }
+}

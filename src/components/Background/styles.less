@@ -31,18 +31,12 @@
 
 /* Drum (center) */
 .drum {
-  top: 66%;
-  left: 50%;
-  width: 94%;
-  transform: translate(-50%, -50%);
-  opacity: 0.7;
-}
-
-.drum {
   top: 58%;
   left: 50%;
   width: 94%;
   opacity: 0.7;
+  transform: translate(-50%, -50%);
+  /* Ensure it stays centered */
   transform-origin: center;
   animation: drumRotate 3s ease-in-out infinite;
 }
@@ -52,9 +46,12 @@
   0% {
     transform: translate(-50%, -50%) rotate(0deg);
   }
+
   50% {
     transform: translate(-50%, -50%) rotate(3deg);
-  } /* xoay nhẹ */
+  }
+
+  /* xoay nhẹ */
   100% {
     transform: translate(-50%, -50%) rotate(0deg);
   }
@@ -71,7 +68,8 @@
   margin-bottom: -8px;
 
   /* opacity: 0.9; */
-  z-index: 3; /* dưới lotus (4), trên background (2) */
+  z-index: 3;
+  /* dưới lotus (4), trên background (2) */
   animation: leafFloat 4s ease-in-out infinite;
 }
 
@@ -80,10 +78,12 @@
     transform: translateY(0) rotate(0deg);
     opacity: 1;
   }
+
   50% {
     transform: translateY(-8px) translateX(4px) rotate(-0.1deg);
     opacity: 0.8;
   }
+
   100% {
     transform: translateY(0) rotate(0deg);
     opacity: 1;
@@ -102,10 +102,12 @@
   left: 0;
   animation: float 2s ease-in-out infinite;
 }
+
 .lotus-2 {
   left: 30%;
   animation: float 3s ease-in-out infinite;
 }
+
 .lotus-3 {
   right: 0;
   animation: float 2s ease-in-out infinite;
@@ -132,9 +134,11 @@
   0% {
     transform: translateX(0) scale(1);
   }
+
   50% {
     transform: translateX(20px) scale(1.02);
   }
+
   100% {
     transform: translateX(0) scale(1);
   }
@@ -144,9 +148,11 @@
   0% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-8px) translateX(4px) rotate(-0.1deg);
   }
+
   100% {
     transform: translateY(0) rotate(0deg);
   }

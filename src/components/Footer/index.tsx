@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
             <div className="footer-logo-section">
               <img src={logo} className="footer-logo" alt="SEN Logo" />
               <Paragraph className="footer-contact">
-                Email: <span className="highlight">support@sen.com</span>
+                Email: <span className="highlight">sen.culture.contact@gmail.com</span>
               </Paragraph>
             </div>
           </Col>

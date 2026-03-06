@@ -783,12 +783,12 @@ This project is licensed under the MIT License.
 ## 👥 Team
 
 - **Development Team**: Sen Development Team
-- **Contact**: support@sen-game.com
+- **Contact**: sen.culture.contact@gmail.com
 - **GitHub**: [Tunhoclaptrinh](https://github.com/Tunhoclaptrinh)
 
 ## 📞 Support
 
-- 📧 Email: support@sen.com
+- 📧 Email: sen.culture.contact@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/Tunhoclaptrinh/Sen-Web/issues)
 - 📖 Docs: [Documentation](https://docs.sen-game.com)
 

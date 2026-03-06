@@ -79,7 +79,7 @@ const Header: React.FC = () => {
   const getActiveKey = () => {
     if (location.pathname === '/') return 'home';
     if (location.pathname.startsWith('/heritage')) return 'heritage';
-    if (location.pathname.startsWith('/artifacts')) return 'artifacts'; 
+    if (location.pathname.startsWith('/artifacts')) return 'artifacts';
     if (location.pathname.startsWith('/history')) return 'history';
     if (location.pathname.startsWith('/exhibitions')) return 'exhibitions';
     if (location.pathname.startsWith('/learn')) return 'learn';
@@ -126,20 +126,20 @@ const Header: React.FC = () => {
       label: <Link to="/heritage-sites">Di sản</Link>,
     },
     {
-        key: 'artifacts',
-        label: <Link to="/artifacts">Hiện vật</Link>,
+      key: 'artifacts',
+      label: <Link to="/artifacts">Hiện vật</Link>,
     },
     {
-        key: 'map',
-        label: <Link to="/map">Bản đồ</Link>,
+      key: 'map',
+      label: <Link to="/map">Bản đồ</Link>,
     },
     {
-        key: 'history',
-        label: <Link to="/history">Bài viết</Link>,
+      key: 'history',
+      label: <Link to="/history">Bài viết</Link>,
     },
     {
-        key: 'exhibitions',
-        label: <Link to="/exhibitions">Triển lãm</Link>,
+      key: 'exhibitions',
+      label: <Link to="/exhibitions">Triển lãm</Link>,
     },
     {
       key: 'learn',
@@ -163,7 +163,7 @@ const Header: React.FC = () => {
           {/* LEFT: Contact & Slogan */}
           {!isMobile && (
             <Space split={<span className="divider">|</span>} className="util-left">
-              <Text className="util-item"><MailOutlined /> support@sen.com</Text>
+              <Text className="util-item"><MailOutlined /> sen.culture.contact@gmail.com</Text>
               <Text className="util-item">Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ</Text>
             </Space>
           )}
@@ -250,12 +250,12 @@ const Header: React.FC = () => {
               trigger={['click']}
             >
               <div className="user-profile-trigger-simple">
-                 <Avatar 
-                    src={user?.avatar ? getImageUrl(user.avatar) : undefined} 
-                    icon={!user?.avatar && <UserOutlined />} 
-                    size={32}
-                  />
-                 <span className="user-text">{user?.name || 'Tài khoản'}</span>
+                <Avatar
+                  src={user?.avatar ? getImageUrl(user.avatar) : undefined}
+                  icon={!user?.avatar && <UserOutlined />}
+                  size={32}
+                />
+                <span className="user-text">{user?.name || 'Tài khoản'}</span>
               </div>
             </Dropdown>
           ) : (

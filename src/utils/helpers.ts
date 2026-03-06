@@ -107,13 +107,14 @@ export const normalizeVietnamese = (text: string | null | undefined): string => 
 export const isMobile = (): boolean => {
   const userAgent = navigator.userAgent || "";
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 
   // Check for iPadOS (which often identifies as Macintosh but with touch points)
   const isIPadOS = /Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
 
-  // Also check screen width for "mobile view" in devtools or very small responsive screens
-  const isSmallScreen = window.innerWidth <= 1024; // Standard tablet portrait width
+  // To ensure tablets (like iPad) can still access the web version, 
+  // we restrict "mobile" to screens typically associated with phones.
+  const isSmallScreen = window.innerWidth < 768;
+  const isPhoneUA = /iPhone|iPod|Android.*Mobile|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 
-  return isMobileUA || isIPadOS || (isTouchDevice && isSmallScreen);
+  return isPhoneUA || (isTouchDevice && isSmallScreen && !isIPadOS);
 };

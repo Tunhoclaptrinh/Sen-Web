@@ -1,10 +1,10 @@
 import React from "react";
-import {Row, Col, Collapse, Form, Input, Button, Typography} from "antd";
-import {MailOutlined, PhoneOutlined, SendOutlined} from "@ant-design/icons";
+import { Row, Col, Collapse, Form, Input, Button, Typography } from "antd";
+import { MailOutlined, PhoneOutlined, SendOutlined } from "@ant-design/icons";
 import "./styles.less";
 
-const {Title, Paragraph, Text} = Typography;
-const {Panel} = Collapse;
+const { Title, Paragraph, Text } = Typography;
+const { Panel } = Collapse;
 
 const SupportPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -38,7 +38,7 @@ const SupportPage: React.FC = () => {
     {
       question: "Làm cách nào để liên hệ với ban quản trị?",
       answer:
-        "Bạn có thể liên hệ với chúng tôi qua form bên dưới, hoặc gửi email đến support@sen.com. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.",
+        "Bạn có thể liên hệ với chúng tôi qua form bên dưới, hoặc gửi email đến sen.culture.contact@gmail.com. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.",
     },
   ];
 
@@ -67,7 +67,7 @@ const SupportPage: React.FC = () => {
           <Collapse accordion defaultActiveKey={["0"]} expandIconPosition="end" ghost>
             {faqData.map((item, index) => (
               <Panel header={item.question} key={index}>
-                <Paragraph style={{color: "#666", lineHeight: 1.8, margin: 0}}>{item.answer}</Paragraph>
+                <Paragraph style={{ color: "#666", lineHeight: 1.8, margin: 0 }}>{item.answer}</Paragraph>
               </Panel>
             ))}
           </Collapse>
@@ -87,8 +87,8 @@ const SupportPage: React.FC = () => {
                 <div className="contact-method">
                   <MailOutlined className="icon" />
                   <h4>Email</h4>
-                  <p>support@sen.com</p>
-                  <Text type="secondary" style={{fontSize: 13}}>
+                  <p>sen.culture.contact@gmail.com</p>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
                     Chúng tôi sẽ phản hồi trong vòng 24 giờ
                   </Text>
                 </div>
@@ -96,7 +96,7 @@ const SupportPage: React.FC = () => {
                   <PhoneOutlined className="icon" />
                   <h4>Hotline</h4>
                   <p>1900 1234 56</p>
-                  <Text type="secondary" style={{fontSize: 13}}>
+                  <Text type="secondary" style={{ fontSize: 13 }}>
                     Hỗ trợ từ 8:00 - 22:00 hàng ngày
                   </Text>
                 </div>
@@ -111,7 +111,7 @@ const SupportPage: React.FC = () => {
                     <Form.Item
                       name="name"
                       label="Họ và tên"
-                      rules={[{required: true, message: "Vui lòng nhập họ tên"}]}
+                      rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
                     >
                       <Input placeholder="Nhập họ tên của bạn" />
                     </Form.Item>
@@ -121,8 +121,8 @@ const SupportPage: React.FC = () => {
                       name="email"
                       label="Email"
                       rules={[
-                        {required: true, message: "Vui lòng nhập email"},
-                        {type: "email", message: "Email không hợp lệ"},
+                        { required: true, message: "Vui lòng nhập email" },
+                        { type: "email", message: "Email không hợp lệ" },
                       ]}
                     >
                       <Input placeholder="Nhập địa chỉ email" />
@@ -133,13 +133,13 @@ const SupportPage: React.FC = () => {
                   name="message"
                   label="Nội dung cần hỗ trợ"
                   rules={[
-                    {required: true, message: "Vui lòng nhập nội dung"},
-                    {min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự"},
+                    { required: true, message: "Vui lòng nhập nội dung" },
+                    { min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự" },
                   ]}
                 >
                   <Input.TextArea rows={5} placeholder="Mô tả vấn đề bạn đang gặp phải..." />
                 </Form.Item>
-                <Form.Item style={{marginBottom: 0}}>
+                <Form.Item style={{ marginBottom: 0 }}>
                   <Button htmlType="submit" className="submit-button">
                     <SendOutlined /> Gửi yêu cầu
                   </Button>
