@@ -62,7 +62,7 @@ const Home: React.FC = () => {
             </div>
             <p className="hero-subtitle">Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ</p>
             <Button className="cta-button" onClick={() => navigate("/game/chapters")}>
-              Khám phả ngay
+              Khám phá ngay
             </Button>
           </div>
           {/* Optional decorative bottom elements can go here if provided */}

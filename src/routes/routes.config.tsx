@@ -1,5 +1,5 @@
-import React, {lazy, Suspense} from "react";
-import {RouteObject, Navigate} from "react-router-dom";
+import React, { lazy, Suspense } from "react";
+import { RouteObject, Navigate } from "react-router-dom";
 
 // Layouts
 import MainLayout from "@/layouts/MainLayout";
@@ -9,7 +9,7 @@ import ResearcherLayout from "@/layouts/ResearcherLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import Loading from "@/components/common/Loading";
 import AuthGuard from "@/components/common/guards/AuthGuard";
-import {RoleGuard} from "./RouteGuards";
+import { RoleGuard } from "./RouteGuards";
 import ArtifactManagement from "@/pages/Admin/ArtifactManagement";
 import HeritageSiteManagement from "@/pages/Admin/HeritageSiteManagement";
 
@@ -82,7 +82,7 @@ const ScanPage = lazy(() => import("@/pages/Game/ScanPage"));
 const WelfarePage = lazy(() => import("@/pages/Game/WelfarePage"));
 
 // Wrapper component for Suspense
-const LazyLoadWrapper: React.FC<{children: React.ReactNode}> = ({children}) => (
+const LazyLoadWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <Suspense fallback={<Loading fullScreen />}>{children}</Suspense>
 );
 
@@ -187,7 +187,7 @@ const routes: RouteObject[] = [
   {
     path: "/game",
     element: (
-      <RoleGuard allowedRoles={["customer", "admin"]} redirectTo="/">
+      <RoleGuard allowedRoles={["customer", "admin", "researcher"]} redirectTo="/">
         <LazyLoadWrapper>
           <CustomerLayout />
         </LazyLoadWrapper>

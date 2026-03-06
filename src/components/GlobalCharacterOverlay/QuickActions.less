@@ -1,54 +1,183 @@
-/* Quick Action Buttons Styles */
-.quick-actions {
+/* Improved Layout with Labels */
+.speed-dial-item {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
     gap: 12px;
-    z-index: 9998;
-    /* Below Sen toggle (9999) */
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+
+    .speed-dial-label {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translateX(10px);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
 }
 
-.quick-action-btn {
-    width: 56px;
-    height: 56px;
+.quick-actions-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+    transition: all 0.3s ease;
+
+    .speed-dial-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+        visibility: hidden;
+    }
+
+    &.expanded {
+        .speed-dial-actions {
+            visibility: visible;
+        }
+
+        /* Staggered Animations */
+        .speed-dial-item {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+
+            &:nth-last-child(1) {
+                transition-delay: 0.05s;
+            }
+
+            &:nth-last-child(2) {
+                transition-delay: 0.1s;
+            }
+
+            &:nth-last-child(3) {
+                transition-delay: 0.15s;
+            }
+
+            &:nth-last-child(4) {
+                transition-delay: 0.2s;
+            }
+
+            &:nth-last-child(5) {
+                transition-delay: 0.25s;
+            }
+
+            &:hover .speed-dial-label {
+                opacity: 1;
+                transform: translateX(0);
+                background: rgba(0, 0, 0, 0.85);
+            }
+        }
+
+        .main-fab-trigger {
+            transform: scale(0.9);
+            background: #222;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+
+            .trigger-icon.default {
+                opacity: 0;
+                transform: rotate(180deg) scale(0);
+            }
+
+            .trigger-icon.close {
+                opacity: 1;
+                transform: rotate(0) scale(1);
+            }
+        }
+    }
+}
+
+/* Main FAB Button Perfection */
+.main-fab-trigger {
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     border: none;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10000;
     position: relative;
     overflow: hidden;
 
-    &::before {
+    &::after {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
     }
 
     &:hover {
-        transform: translateY(-4px) scale(1.05);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-
-        &::before {
-            opacity: 1;
-        }
+        transform: scale(1.08) translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 6px rgba(255, 255, 255, 0.15);
     }
 
-    &:active {
-        transform: translateY(-2px) scale(1.02);
+    .trigger-icon-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    /* Icon animation */
+    .trigger-icon {
+        position: absolute;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .trigger-icon.close {
+        opacity: 0;
+        font-size: 30px;
+        transform: rotate(-180deg) scale(0);
+    }
+}
+
+/* Glassmorphism Quick Action Buttons */
+.quick-action-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        transform: translateY(-4px) scale(1.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
     .anticon {
         transition: transform 0.3s ease;
     }
@@ -58,122 +187,94 @@
     }
 }
 
-/* Game button - Lotus Pink */
+/* Specific Colors */
 .quick-action-btn--game {
     background: var(--primary-color);
-
-    &:hover {
-        background: #E11D48;
-    }
 }
 
-/* Learn button - Blue */
-.quick-action-btn--learn {
-    background: #3B82F6;
-
-    &:hover {
-        background: #2563EB;
-    }
-}
-
-/* Admin button - Purple */
-.quick-action-btn--admin {
-    background: #A855F7;
-
-    &:hover {
-        background: #9333EA;
-    }
-}
-
-/* Dashboard button - Orange */
 .quick-action-btn--dashboard {
-    background: #F97316;
-
-    &:hover {
-        background: #EA580C;
-    }
+    background: #f97316;
 }
 
-/* Home button - Green */
-.quick-action-btn--home {
-    background: #22C55E;
-
-    &:hover {
-        background: #16A34A;
-    }
-}
-
-/* Research button - Teal */
 .quick-action-btn--research {
-    background: #14B8A6;
-
-    &:hover {
-        background: #0D9488;
-    }
+    background: #14b8a6;
 }
 
-/* Create button - Indigo */
-.quick-action-btn--create {
-    background: #6366F1;
-
-    &:hover {
-        background: #4F46E5;
-    }
-}
-
-/* Collection button - Pink */
 .quick-action-btn--collection {
-    background: #EC4899;
-
-    &:hover {
-        background: #DB2777;
-    }
+    background: #ec4899;
 }
 
-/* Explore button - Cyan */
 .quick-action-btn--explore {
-    background: #06B6D4;
+    background: #06b6d4;
+}
+
+.quick-action-btn--ai {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
 
     &:hover {
-        background: #0891B2;
+        background: var(--primary-color);
+        color: white;
     }
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-    .quick-actions {
-        right: 80px;
-        bottom: 20px;
+.quick-action-btn--toggle-sen {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #faad14;
+
+    img {
+        transition: transform 0.3s ease;
     }
 
-    .quick-action-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 20px;
+    &:hover img {
+        transform: scale(1.15);
+    }
+
+    &.active {
+        background: #faad14;
+        border-color: #d4a017;
     }
 }
 
 /* Animation on mount */
-@keyframes slideInRight {
+@keyframes slideInUpMenu {
     from {
         opacity: 0;
-        transform: translateX(100px);
+        transform: translateY(40px) scale(0.8);
     }
 
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0) scale(1);
     }
 }
 
-.quick-actions {
-    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.quick-actions-container {
+    animation: slideInUpMenu 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.quick-action-btn:nth-child(1) {
-    animation-delay: 0.1s;
-}
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .quick-actions-container {
+        right: 16px;
+        bottom: 16px;
+    }
 
-.quick-action-btn:nth-child(2) {
-    animation-delay: 0.2s;
+    .main-fab-trigger {
+        width: 56px;
+        height: 56px;
+        font-size: 22px;
+    }
+
+    .quick-action-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+
+    .speed-dial-label {
+        display: none;
+        /* Hide labels on mobile to save space */
+    }
 }
