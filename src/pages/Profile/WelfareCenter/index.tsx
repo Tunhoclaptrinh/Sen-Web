@@ -32,6 +32,7 @@ import { StatisticsCard } from '@/components/common';
 import { getImageUrl } from '@/utils/image.helper';
 import welfareService from '@/services/welfare.service';
 import { Voucher, UserVoucher, CurrencyType } from '@/types/welfare.types';
+import { useTranslation } from 'react-i18next';
 import './style.less';
 
 const { Text, Title } = Typography;
@@ -80,6 +81,7 @@ const WelfareCenter: React.FC = () => {
   const [redeemModalVisible, setRedeemModalVisible] = useState(false);
   const [redeemLoading, setRedeemLoading] = useState(false);
   const [exchangeForm] = Form.useForm();
+  const { t } = useTranslation('translation', { keyPrefix: 'profile' });
 
   // Fetch user balance
   const fetchUserBalance = useCallback(async () => {
@@ -116,7 +118,7 @@ const WelfareCenter: React.FC = () => {
 
       await fetchUserBalance();
     } catch (_error) {
-      message.error('Không thể tải dữ liệu trung tâm phúc lợi');
+      message.error(t("welfareCenter.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -144,15 +146,15 @@ const WelfareCenter: React.FC = () => {
         });
 
         if (response) {
-          message.success('Quy đổi thành công!');
+          message.success(t("welfareCenter.exchangeSuccess"));
           setExchangeModalVisible(false);
           exchangeForm.resetFields();
           await fetchAllData();
         } else {
-          message.error('Quy đổi thất bại');
+          message.error(t("welfareCenter.exchangeFailed"));
         }
       } catch (_error) {
-        message.error('Lỗi khi quy đổi tiền tệ');
+        message.error(t("welfareCenter.exchangeError"));
       } finally {
         setExchangeLoading(false);
       }
@@ -168,17 +170,15 @@ const WelfareCenter: React.FC = () => {
       const response = await welfareService.redeemVoucher(selectedVoucher.id);
 
       if (response) {
-        message.success(
-          'Đổi voucher thành công! Kiểm tra mã quà tặng trong mục "Voucher của tôi"'
-        );
+        message.success(t("welfareCenter.redeemSuccess"));
         setRedeemModalVisible(false);
         setSelectedVoucher(null);
         await fetchAllData();
       } else {
-        message.error('Đổi voucher thất bại');
+        message.error(t("welfareCenter.redeemFailed"));
       }
     } catch (_error) {
-      message.error('Lỗi khi đổi voucher');
+      message.error(t("welfareCenter.redeemError"));
     } finally {
       setRedeemLoading(false);
     }
@@ -187,25 +187,17 @@ const WelfareCenter: React.FC = () => {
   const handleUseVoucher = useCallback(
     async (_userVoucherId: number) => {
       Modal.confirm({
-        title: 'Sử dụng Voucher',
+        title: t("welfareCenter.useVoucherTitle"),
         icon: <ExclamationCircleOutlined />,
-        content: 'Bạn có chắc chắn muốn sử dụng voucher này?',
-        okText: 'Sử dụng',
-        cancelText: 'Hủy',
+        content: t("welfareCenter.useVoucherConfirm"),
+        okText: t("welfareCenter.useVoucherBtn"),
+        cancelText: t("welfareCenter.cancelBtn"),
         onOk: async () => {
           try {
-            message.info('Tính năng sử dụng Voucher đang được cập nhật...');
-            // const response = (await welfareService.useVoucher(
-            //   _userVoucherId
-            // )) as ApiResponse<unknown>;
-            // if (response.success) {
-            //   message.success('Sử dụng voucher thành công!');
-            //   await fetchAllData();
-            // } else {
-            //   message.error(response.message || 'Không thể sử dụng voucher');
-            // }
+            message.info(t("welfareCenter.useVoucherInfo"));
+            // ... API call disabled ...
           } catch (_error) {
-            message.error('Lỗi khi sử dụng voucher');
+            message.error(t("welfareCenter.useVoucherError"));
           }
         },
       });
@@ -213,7 +205,6 @@ const WelfareCenter: React.FC = () => {
     []
   );
 
-  // Balance panel with StatisticsCard
   const renderBalancePanel = () => (
     <StatisticsCard
       loading={loading}
@@ -222,25 +213,25 @@ const WelfareCenter: React.FC = () => {
       rowGutter={24}
       data={[
         {
-          title: 'Tiền Vàng',
+          title: t("welfareCenter.balanceCoins"),
           value: balances.coins,
           icon: <DollarOutlined />,
           valueColor: '#faad14',
         },
         {
-          title: 'Cánh Sen',
+          title: t("welfareCenter.balancePetals"),
           value: balances.petals,
           icon: <GiftOutlined />,
           valueColor: '#eb2f96',
         },
         {
-          title: 'P-Coin',
+          title: t("welfareCenter.balancePCoin"),
           value: balances.pcoin,
           icon: <BarChartOutlined />,
           valueColor: '#c5a065',
         },
         {
-          title: 'Voucher Khả Dụng',
+          title: t("welfareCenter.balanceAvailableVouchers"),
           value: (vouchers || []).filter((v: Voucher) => v.isActive).length,
           icon: <TeamOutlined />,
           valueColor: '#52c41a',
@@ -253,7 +244,7 @@ const WelfareCenter: React.FC = () => {
   const renderAvailableVouchersTab = () => (
     <Spin spinning={loading}>
       {(!vouchers || vouchers.length === 0) ? (
-        <Empty description="Không có voucher khả dụng" />
+        <Empty description={t("welfareCenter.emptyAvailableVouchers")} />
       ) : (
         <Row gutter={[16, 16]}>
           {vouchers.map((v) => {
@@ -296,7 +287,7 @@ const WelfareCenter: React.FC = () => {
                       }
                       style={{ marginTop: 8, display: 'block' }}
                     >
-                      {String(v.type) === 'external' ? 'Dịch vụ' : String(v.type) === 'shop' ? 'Cửa hàng' : 'Vật phẩm'}
+                      {String(v.type) === 'external' ? t("welfareCenter.typeExternal") : String(v.type) === 'shop' ? t("welfareCenter.typeShop") : t("welfareCenter.typeItem")}
                     </Tag>
                     <div style={{ marginTop: 12, minHeight: 40 }}>
                       <Text
@@ -320,7 +311,7 @@ const WelfareCenter: React.FC = () => {
                     <Row justify="space-between" align="middle">
                       <Col>
                         <Text strong style={{ fontSize: 14 }}>
-                          Giá: {v.price}{' '}
+                          {t("welfareCenter.price")} {v.price}{' '}
                           {v.currencyType === 'coins'
                             ? '💰'
                             : v.currencyType === 'petals'
@@ -332,7 +323,7 @@ const WelfareCenter: React.FC = () => {
                     <Row justify="space-between" align="middle" style={{ marginTop: 4 }}>
                       <Col>
                         <Text type="secondary" style={{ fontSize: 12 }}>
-                          Còn: {v.remainingQuantity ?? 0}/{v.totalQuantity ?? 0}
+                          {t("welfareCenter.remaining")} {v.remainingQuantity ?? 0}/{v.totalQuantity ?? 0}
                         </Text>
                       </Col>
                     </Row>
@@ -347,7 +338,7 @@ const WelfareCenter: React.FC = () => {
                     }}
                     disabled={!canRedeem}
                   >
-                    Đổi Ngay
+                    {t("welfareCenter.redeemNowBtn")}
                   </Button>
                 </Card>
               </Col>
@@ -362,7 +353,7 @@ const WelfareCenter: React.FC = () => {
   const renderMyVouchersTab = () => {
     const columns = [
       {
-        title: 'Tên Voucher',
+        title: t("welfareCenter.colVoucherName"),
         dataIndex: ['voucher', 'title'],
         key: 'title',
         render: (text: string, _record: UserVoucher) => (
@@ -386,29 +377,29 @@ const WelfareCenter: React.FC = () => {
         ),
       },
       {
-        title: 'Mã Code',
+        title: t("welfareCenter.colVoucherCode"),
         dataIndex: 'code',
         key: 'code',
         render: (code: string) => <Tag color="blue">{code}</Tag>,
       },
       {
-        title: 'Trạng thái',
+        title: t("welfareCenter.colStatus"),
         dataIndex: 'isUsed',
         key: 'isUsed',
         render: (isUsed: boolean) => (
           <Tag color={isUsed ? 'red' : 'green'}>
-            {isUsed ? '❌ Đã dùng' : '✅ Có sẵn'}
+            {isUsed ? `❌ ${t("welfareCenter.statusUsed")}` : `✅ ${t("welfareCenter.statusAvailable")}`}
           </Tag>
         ),
       },
       {
-        title: 'Ngày Đổi',
+        title: t("welfareCenter.colRedeemedAt"),
         dataIndex: 'redeemedAt',
         key: 'redeemedAt',
         render: (date: string) => dayjs(date).format('DD/MM/YYYY HH:mm'),
       },
       {
-        title: 'Hành động',
+        title: t("welfareCenter.colAction"),
         key: 'action',
         render: (_: unknown, record: UserVoucher) => (
           <Button
@@ -417,7 +408,7 @@ const WelfareCenter: React.FC = () => {
             disabled={record.isUsed}
             onClick={() => handleUseVoucher(record.id)}
           >
-            {record.isUsed ? 'Đã dùng' : 'Sử dụng'}
+            {record.isUsed ? t("welfareCenter.btnUsed") : t("welfareCenter.useVoucherBtn")}
           </Button>
         ),
       },
@@ -426,7 +417,7 @@ const WelfareCenter: React.FC = () => {
     return (
       <Spin spinning={loading}>
         {(!userVouchers || userVouchers.length === 0) ? (
-          <Empty description="Bạn chưa có voucher nào" />
+          <Empty description={t("welfareCenter.emptyMyVouchers")} />
         ) : (
           <Table
             columns={columns}
@@ -444,17 +435,17 @@ const WelfareCenter: React.FC = () => {
   const renderExchangeHistoryTab = () => {
     const columns = [
       {
-        title: 'Loại Giao Dịch',
+        title: t("welfareCenter.colTransactionType"),
         dataIndex: 'type',
         key: 'type',
         render: (type: string) => (
           <Tag color={type === 'exchange' ? 'blue' : 'green'}>
-            {type === 'exchange' ? 'Quy Đổi' : 'Nhận'}
+            {type === 'exchange' ? t("welfareCenter.txExchange") : t("welfareCenter.txReceive")}
           </Tag>
         ),
       },
       {
-        title: 'Chi Tiết',
+        title: t("welfareCenter.colDetails"),
         dataIndex: 'details',
         key: 'details',
         render: (details: ExchangeHistoryRecord['details']) => (
@@ -469,7 +460,7 @@ const WelfareCenter: React.FC = () => {
         ),
       },
       {
-        title: 'Ngày Giao Dịch',
+        title: t("welfareCenter.colTransactionDate"),
         dataIndex: 'createdAt',
         key: 'createdAt',
         render: (date: string) => dayjs(date).format('DD/MM/YYYY HH:mm'),
@@ -479,7 +470,7 @@ const WelfareCenter: React.FC = () => {
     return (
       <Spin spinning={loading}>
         {(!_exchangeHistory || _exchangeHistory.length === 0) ? (
-          <Empty description="Chưa có lịch sử giao dịch" />
+          <Empty description={t("welfareCenter.emptyHistory")} />
         ) : (
           <Table
             columns={columns}
@@ -498,16 +489,16 @@ const WelfareCenter: React.FC = () => {
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div>
           <Title level={2} style={{ marginBottom: 8 }}>
-            <GiftOutlined /> Trung Tâm Phúc Lợi
+            <GiftOutlined /> {t("welfareCenter.title")}
           </Title>
-          <Text type="secondary">Quy đổi tiền tệ, đổi voucher và quản lý phúc lợi của bạn</Text>
+          <Text type="secondary">{t("welfareCenter.subtitle")}</Text>
         </div>
 
         <Alert
-          message={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>Lưu ý quan trọng</span>}
+          message={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>{t("welfareCenter.importantNoteTitle")}</span>}
           description={
             <span style={{ fontSize: '16px' }}>
-              Tính năng này đang được phát triển và dự kiến phát triển hiện tại chưa hoạt động được thực tế. Chúng tôi sẽ sớm cập nhật trong thời gian tới.
+              {t("welfareCenter.importantNoteDesc")}
             </span>
           }
           type="warning"
@@ -523,7 +514,7 @@ const WelfareCenter: React.FC = () => {
               icon={<SwapOutlined />}
               onClick={() => setExchangeModalVisible(true)}
             >
-              Quy Đổi Tiền Tệ
+              {t("welfareCenter.exchangeBtn")}
             </Button>
           </Col>
           <Col>
@@ -532,7 +523,7 @@ const WelfareCenter: React.FC = () => {
               onClick={() => fetchAllData()}
               loading={loading}
             >
-              Làm mới
+              {t("welfareCenter.refreshBtn")}
             </Button>
           </Col>
         </Row>
@@ -541,17 +532,17 @@ const WelfareCenter: React.FC = () => {
           items={[
             {
               key: 'available',
-              label: `📦 Voucher Khả Dụng (${vouchers?.length || 0})`,
+              label: `📦 ${t("welfareCenter.tabAvailableVouchers")} (${vouchers?.length || 0})`,
               children: renderAvailableVouchersTab(),
             },
             {
               key: 'my-vouchers',
-              label: `🎁 Voucher Của Tôi (${userVouchers?.length || 0})`,
+              label: `🎁 ${t("welfareCenter.tabMyVouchers")} (${userVouchers?.length || 0})`,
               children: renderMyVouchersTab(),
             },
             {
               key: 'history',
-              label: `📋 Lịch Sử Giao Dịch`,
+              label: `📋 ${t("welfareCenter.tabExchangeHistory")}`,
               children: renderExchangeHistoryTab(),
             },
           ]}
@@ -560,7 +551,7 @@ const WelfareCenter: React.FC = () => {
 
       {/* Exchange Currency Modal */}
       <Modal
-        title="Quy Đổi Tiền Tệ"
+        title={t("welfareCenter.modalExchangeTitle")}
         open={exchangeModalVisible}
         onCancel={() => setExchangeModalVisible(false)}
         onOk={() => exchangeForm.submit()}
@@ -570,8 +561,8 @@ const WelfareCenter: React.FC = () => {
         <Form form={exchangeForm} layout="vertical" onFinish={handleExchange}>
           <Form.Item
             name="currency"
-            label="Chọn Tiền Tệ"
-            rules={[{ required: true, message: 'Vui lòng chọn tiền tệ' }]}
+            label={t("welfareCenter.modalSelectCurrency")}
+            rules={[{ required: true, message: t("welfareCenter.modalCurrencyRequired") }]}
           >
             <div style={{ display: 'flex', gap: 12 }}>
               <Card
@@ -579,7 +570,7 @@ const WelfareCenter: React.FC = () => {
                 style={{ flex: 1, cursor: 'pointer' }}
                 onClick={() => exchangeForm.setFieldValue('currency', 'coins')}
               >
-                <Text>💰 Tiền Vàng</Text>
+                <Text>💰 {t("welfareCenter.balanceCoins")}</Text>
                 <div style={{ marginTop: 4, fontSize: 12, color: '#999' }}>
                   {balances.coins}/100
                 </div>
@@ -589,7 +580,7 @@ const WelfareCenter: React.FC = () => {
                 style={{ flex: 1, cursor: 'pointer' }}
                 onClick={() => exchangeForm.setFieldValue('currency', 'petals')}
               >
-                <Text>🌸 Cánh Sen</Text>
+                <Text>🌸 {t("welfareCenter.balancePetals")}</Text>
                 <div style={{ marginTop: 4, fontSize: 12, color: '#999' }}>
                   {balances.petals}/10
                 </div>
@@ -599,10 +590,10 @@ const WelfareCenter: React.FC = () => {
 
           <Form.Item
             name="amount"
-            label="Số Lượng"
+            label={t("welfareCenter.modalAmount")}
             rules={[
-              { required: true, message: 'Vui lòng nhập số lượng' },
-              { type: 'number', min: 1, message: 'Số lượng phải lớn hơn 0' },
+              { required: true, message: t("welfareCenter.modalAmountRequired") },
+              { type: 'number', min: 1, message: t("welfareCenter.modalAmountMin") },
             ]}
           >
             <InputNumber style={{ width: '100%' }} placeholder="Nhập số lượng" />
@@ -618,7 +609,7 @@ const WelfareCenter: React.FC = () => {
               return (
                 <Card size="small" style={{ background: '#f5f5f5' }}>
                   <Row justify="space-between">
-                    <Text>Sẽ nhận:</Text>
+                    <Text>{t("welfareCenter.modalReceiveAmount")}</Text>
                     <Text strong>{resultAmount} P-Coin</Text>
                   </Row>
                 </Card>
@@ -630,7 +621,7 @@ const WelfareCenter: React.FC = () => {
 
       {/* Redeem Voucher Confirmation Modal */}
       <Modal
-        title="Xác Nhận Đổi Voucher"
+        title={t("welfareCenter.modalRedeemTitle")}
         open={redeemModalVisible}
         onCancel={() => setRedeemModalVisible(false)}
         onOk={handleRedeemVoucher}
@@ -662,7 +653,7 @@ const WelfareCenter: React.FC = () => {
             <Card size="small" style={{ background: '#f5f5f5' }}>
               <Row gutter={16}>
                 <Col span={12}>
-                  <Text type="secondary">Giá:</Text>
+                  <Text type="secondary">{t("welfareCenter.price")}</Text>
                   <div style={{ fontSize: 16, fontWeight: 'bold' }}>
                     {selectedVoucher.price}{' '}
                     {selectedVoucher.currencyType === 'coins'
@@ -673,7 +664,7 @@ const WelfareCenter: React.FC = () => {
                   </div>
                 </Col>
                 <Col span={12}>
-                  <Text type="secondary">Bạn có:</Text>
+                  <Text type="secondary">{t("welfareCenter.modalYouHave")}</Text>
                   <div style={{ fontSize: 16, fontWeight: 'bold', color: '#52c41a' }}>
                     {balances[selectedVoucher.currencyType as keyof CurrencyBalance]}{' '}
                     {selectedVoucher.currencyType === 'coins'

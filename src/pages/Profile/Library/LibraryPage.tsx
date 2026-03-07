@@ -9,11 +9,13 @@ import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import ProfileHeader from "../ProfileHeader";
+import { useTranslation } from "react-i18next";
 import "../Profile/styles.less";
 
 
 
 const LibraryPage = () => {
+  const { t } = useTranslation('translation', { keyPrefix: 'profile' });
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "collections";
   const { user } = useSelector((state: RootState) => state.auth);
@@ -24,35 +26,35 @@ const LibraryPage = () => {
 
   return (
     <div className="library-page profile-page">
-       <ProfileHeader user={user} activeTab="library" showTabs={true} />
+      <ProfileHeader user={user} activeTab="library" showTabs={true} />
 
-       <div className="profile-content">
-         <div className="profile-container">
-           <Tabs
-              activeKey={activeTab}
-              onChange={onTabChange}
-              size="large"
-              type="card"
-              items={[
-                  {
-                      key: "collections",
-                      label: <span><AppstoreOutlined /> Bộ Sưu Tập</span>,
-                      children: <CollectionsPage />
-                  },
-                   {
-                       key: "history",
-                       label: <span><HistoryOutlined /> Tầm Bảo & Check-in</span>,
-                       children: <ScanHistoryTab />
-                   },
-                  {
-                      key: "favorites",
-                      label: <span><HeartOutlined /> Yêu Thích</span>,
-                      children: <FavoritesPage />
-                  }
-              ]}
-           />
-         </div>
-       </div>
+      <div className="profile-content">
+        <div className="profile-container">
+          <Tabs
+            activeKey={activeTab}
+            onChange={onTabChange}
+            size="large"
+            type="card"
+            items={[
+              {
+                key: "collections",
+                label: <span><AppstoreOutlined /> {t("library.collections")}</span>,
+                children: <CollectionsPage />
+              },
+              {
+                key: "history",
+                label: <span><HistoryOutlined /> {t("library.treasureHunt")}</span>,
+                children: <ScanHistoryTab />
+              },
+              {
+                key: "favorites",
+                label: <span><HeartOutlined /> {t("library.favorites")}</span>,
+                children: <FavoritesPage />
+              }
+            ]}
+          />
+        </div>
+      </div>
     </div>
   );
 };

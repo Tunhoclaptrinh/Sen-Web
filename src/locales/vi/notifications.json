@@ -1,0 +1,47 @@
+{
+  "title": "Thông báo",
+  "markAllReadBtn": "Đánh dấu tất cả đã đọc",
+  "tabs": {
+    "all": "Tất cả",
+    "unread": "Chưa đọc"
+  },
+  "loading": "Đang tải...",
+  "itemActions": {
+    "markRead": "Đánh dấu đã đọc"
+  },
+  "emptyState": {
+    "all": "Bạn chưa có thông báo nào",
+    "unread": "Không có thông báo mới"
+  },
+  "viewAll": "Xem tất cả thông báo",
+  "page": {
+    "title": "Thông báo",
+    "subtitle": "Cập nhật hoạt động của bạn",
+    "readAllBtn": "Đọc tất cả",
+    "deleteAllConfirm": "Xóa tất cả thông báo?",
+    "deleteAllOk": "Xóa hết",
+    "deleteAllCancel": "Hủy",
+    "tabs": {
+      "all": "Tất cả thông báo",
+      "unread": "Chưa đọc"
+    },
+    "loading": "Đang tìm kiếm tin mới...",
+    "item": {
+      "markRead": "Đánh dấu đã đọc",
+      "deleteConfirm": "Xóa thông báo này?"
+    },
+    "empty": {
+      "unread": "Tuyệt vời! Bạn đã đọc sạch thông báo.",
+      "all": "Hòm thư đang trống."
+    }
+  },
+  "messages": {
+    "fetchFailed": "Không thể tải thông báo",
+    "markReadSuccess": "Đã đánh dấu đã đọc",
+    "markReadAllSuccess": "Đã đánh dấu tất cả là đã đọc",
+    "actionFailed": "Thao tác thất bại",
+    "deleteSuccess": "Đã xóa thông báo",
+    "deleteFailed": "Xóa thất bại",
+    "deleteAllSuccess": "Đã xóa tất cả thông báo"
+  }
+}

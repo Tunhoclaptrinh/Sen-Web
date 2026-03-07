@@ -11,12 +11,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
-    
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 20px;
-      
+
       .icon-seal {
         width: 48px;
         height: 48px;
@@ -27,13 +27,13 @@
         align-items: center;
         justify-content: center;
         box-shadow: 3px 3px 0 rgba(93, 64, 55, 0.2);
-        
+
         .anticon {
           font-size: 22px;
           color: #fff9e6;
         }
       }
-      
+
       .title-group {
         h2 {
           .game-title-style();
@@ -43,16 +43,17 @@
           text-transform: uppercase;
           letter-spacing: 1px;
         }
-        
+
         .subtitle {
           margin-top: 2px;
+
           span {
             .game-subtitle-style();
             font-size: 0.95rem;
             opacity: 0.8;
           }
         }
-        
+
         .unread-badge {
           .ant-badge-count {
             background: @seal-red !important;
@@ -70,7 +71,7 @@
     .header-actions {
       display: flex;
       gap: 12px;
-      
+
       .btn-heritage-ghost {
         .game-btn-primary();
         background: transparent;
@@ -79,13 +80,13 @@
         box-shadow: none;
         height: 40px;
         font-size: 14px;
-        
+
         &:hover {
           background: rgba(139, 29, 29, 0.05);
           color: @seal-red !important;
         }
       }
-      
+
       .btn-heritage-danger {
         .game-btn-primary();
         background: #fff1f0;
@@ -98,7 +99,7 @@
         align-items: center;
         justify-content: center;
         padding: 0;
-        
+
         &:hover {
           background: #ff4d4f;
           color: white !important;
@@ -109,28 +110,29 @@
 
   .notifications-main-card {
     .game-card-style();
-    
+
     .ant-tabs-nav {
       margin-bottom: 0;
       padding: 0 24px;
       border-bottom: 1px dashed @gold-border;
-      
+
       .ant-tabs-tab {
         font-family: @font-serif;
         font-weight: 700;
         font-size: 16px;
-        
+
         &-active .ant-tabs-tab-btn {
           color: @seal-red !important;
         }
       }
-      
+
       .ant-tabs-ink-bar {
         background: @seal-red;
       }
     }
 
-    .loading-wrapper, .empty-wrapper {
+    .loading-wrapper,
+    .empty-wrapper {
       padding: 80px 0;
       text-align: center;
     }
@@ -140,24 +142,14 @@
       border-bottom: 1px solid rgba(197, 160, 101, 0.12);
       transition: all 0.3s;
       position: relative;
-      
+
       &:hover {
         background: rgba(197, 160, 101, 0.05) !important;
       }
-      
+
       &.unread {
         background: rgba(139, 29, 29, 0.04);
-        
-        &::before {
-          content: "";
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 5px;
-          background: @seal-red;
-        }
-        
+
         &::after {
           content: "";
           position: absolute;
@@ -178,13 +170,13 @@
         justify-content: space-between;
         align-items: baseline;
         margin-bottom: 8px;
-        
+
         span {
           font-family: @font-serif;
           font-size: 18px;
           color: @text-color-primary;
         }
-        
+
         .time-text {
           font-family: @font-sans;
           font-size: 12px;
@@ -214,7 +206,8 @@
         border-radius: 8px;
       }
 
-      .mark-read-btn, .delete-btn {
+      .mark-read-btn,
+      .delete-btn {
         width: 36px;
         height: 36px;
         display: flex;
@@ -222,7 +215,7 @@
         justify-content: center;
         border-radius: 50%;
         transition: all 0.2s;
-        
+
         &:hover {
           background: rgba(0, 0, 0, 0.05);
         }

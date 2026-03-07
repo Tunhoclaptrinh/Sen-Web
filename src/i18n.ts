@@ -24,6 +24,8 @@ import viGameLeaderboard from './locales/vi/game_leaderboard.json';
 import viGameScan from './locales/vi/game_scan.json';
 import viGameLearning from './locales/vi/game_learning.json';
 import viGamePlay from './locales/vi/game_play.json';
+import viProfile from './locales/vi/profile.json';
+import viNotifications from './locales/vi/notifications.json';
 
 import enNav from './locales/en/nav.json';
 import enHome from './locales/en/home.json';
@@ -47,6 +49,8 @@ import enGameLeaderboard from './locales/en/game_leaderboard.json';
 import enGameScan from './locales/en/game_scan.json';
 import enGameLearning from './locales/en/game_learning.json';
 import enGamePlay from './locales/en/game_play.json';
+import enProfile from './locales/en/profile.json';
+import enNotifications from './locales/en/notifications.json';
 
 i18n
   .use(LanguageDetector)
@@ -77,6 +81,8 @@ i18n
           gameScan: viGameScan,
           gameLearning: viGameLearning,
           gamePlay: viGamePlay,
+          profile: viProfile,
+          notifications: viNotifications,
         },
       },
       en: {
@@ -103,6 +109,8 @@ i18n
           gameScan: enGameScan,
           gameLearning: enGameLearning,
           gamePlay: enGamePlay,
+          profile: enProfile,
+          notifications: enNotifications,
         },
       },
     },

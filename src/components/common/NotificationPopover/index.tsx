@@ -22,6 +22,7 @@ import { ITEM_TYPES } from "@/config/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { setGlobalUnreadCount, decrementGlobalUnreadCount, clearGlobalUnreadCount } from "@/store/slices/uiSlice";
+import { useTranslation } from "react-i18next";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -34,6 +35,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const globalUnreadCount = useSelector((state: RootState) => state.ui.globalUnreadCount);
+  const { t } = useTranslation("translation", { keyPrefix: "notifications" });
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -190,11 +192,11 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Title level={5} style={{ margin: 0, fontFamily: "var(--font-serif)", color: "var(--seal-red)" }}>
-            Thông báo
+            {t("title")}
           </Title>
           {globalUnreadCount > 0 && <Badge count={globalUnreadCount} overflowCount={10} size="small" />}
         </div>
-        <Tooltip title="Đánh dấu tất cả đã đọc">
+        <Tooltip title={t("markAllReadBtn")}>
           <Button
             type="text"
             size="small"
@@ -228,8 +230,8 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
           activeKey={activeTab}
           onChange={(k) => setActiveTab(k as any)}
           items={[
-            { key: "all", label: "Tất cả" },
-            { key: "unread", label: "Chưa đọc" },
+            { key: "all", label: t("tabs.all") },
+            { key: "unread", label: t("tabs.unread") },
           ]}
           style={{ marginBottom: -1 }}
           tabBarStyle={{ margin: 0 }}
@@ -248,7 +250,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
       >
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <Spin tip="Đang tải..." />
+            <Spin tip={t("loading")} />
           </div>
         ) : notifications.length > 0 ? (
           <List
@@ -321,7 +323,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
                   {/* Actions for individual item */}
                   {!item.isRead && (
                     <div style={{ display: "flex", alignItems: "center", marginLeft: 8, height: "100%" }}>
-                      <Tooltip title="Đánh dấu đã đọc">
+                      <Tooltip title={t("itemActions.markRead")}>
                         <Button
                           type="text"
                           size="small"
@@ -363,7 +365,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
             }}
           >
             <Empty
-              description={activeTab === "all" ? "Bạn chưa có thông báo nào" : "Không có thông báo mới"}
+              description={activeTab === "all" ? t("emptyState.all") : t("emptyState.unread")}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
           </div>
@@ -388,7 +390,7 @@ const NotificationPopover: React.FC<Props> = ({ isMobile }) => {
           className="btn-premium-nhun"
           style={{ fontFamily: "var(--font-serif)", color: "var(--seal-red)" }}
         >
-          Xem tất cả thông báo
+          {t("viewAll")}
         </Button>
       </div>
 

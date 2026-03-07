@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Checkbox } from 'antd';
 import { CollectionDTO, Collection } from '@/types/collection.types';
+import { useTranslation } from 'react-i18next';
 
 interface CollectionModalProps {
     visible: boolean;
@@ -11,13 +12,14 @@ interface CollectionModalProps {
     loading?: boolean;
 }
 
-const CollectionModal: React.FC<CollectionModalProps> = ({ 
-    visible, 
-    onCancel, 
-    onOk, 
-    initialValues, 
-    loading 
+const CollectionModal: React.FC<CollectionModalProps> = ({
+    visible,
+    onCancel,
+    onOk,
+    initialValues,
+    loading
 }) => {
+    const { t } = useTranslation('translation', { keyPrefix: 'profile' });
     const [form] = Form.useForm();
     const isEdit = !!initialValues;
 
@@ -42,7 +44,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
             await onOk(values);
             // Form reset is handled by effect or parent logic usually, 
             // but resetting here for create mode safety
-            if (!isEdit) form.resetFields(); 
+            if (!isEdit) form.resetFields();
         } catch (error) {
             console.error("Validation failed:", error);
         }
@@ -50,35 +52,35 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
 
     return (
         <Modal
-            title={isEdit ? "Chỉnh sửa Bộ Sưu Tập" : "Tạo Bộ Sưu Tập Mới"}
+            title={isEdit ? t("collectionsPage.modalEditTitle") : t("collectionsPage.modalCreateTitle")}
             open={visible}
             onCancel={onCancel}
             onOk={handleOk}
             confirmLoading={loading}
-            okText={isEdit ? "Lưu thay đổi" : "Tạo mới"}
-            cancelText="Hủy"
+            okText={isEdit ? t("collectionsPage.modalSaveBtn") : t("collectionsPage.modalCreateBtn")}
+            cancelText={t("collectionsPage.cancelBtn")}
         >
             <Form form={form} layout="vertical">
                 <Form.Item
                     name="name"
-                    label="Tên bộ sưu tập"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên bộ sưu tập' }]}
+                    label={t("collectionsPage.nameLabel")}
+                    rules={[{ required: true, message: t("collectionsPage.nameRequired") }]}
                 >
-                    <Input placeholder="Ví dụ: Cổ vật triều Nguyễn..." />
+                    <Input placeholder={t("collectionsPage.namePlaceholder")} />
                 </Form.Item>
 
                 <Form.Item
                     name="description"
-                    label="Mô tả ngắn"
+                    label={t("collectionsPage.descLabel")}
                 >
-                    <Input.TextArea rows={4} placeholder="Mô tả về bộ sưu tập này..." />
+                    <Input.TextArea rows={4} placeholder={t("collectionsPage.descPlaceholder")} />
                 </Form.Item>
 
                 <Form.Item
                     name="isPublic"
                     valuePropName="checked"
                 >
-                    <Checkbox>Công khai (Mọi người có thể nhìn thấy)</Checkbox>
+                    <Checkbox>{t("collectionsPage.isPublicLabel")}</Checkbox>
                 </Form.Item>
             </Form>
         </Modal>

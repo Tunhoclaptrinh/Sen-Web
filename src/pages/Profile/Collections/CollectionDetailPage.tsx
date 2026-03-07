@@ -1,22 +1,24 @@
-import {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {Row, Col, Typography, Button, Spin, message, Empty, Modal} from "antd";
-import {ArrowLeftOutlined, EditOutlined, DeleteOutlined, ShareAltOutlined} from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Row, Col, Typography, Button, Spin, message, Empty, Modal } from "antd";
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, ShareAltOutlined } from "@ant-design/icons";
 import collectionService from "@/services/collection.service";
-import {Collection, CollectionItem, CollectionDTO} from "@/types/collection.types";
+import { Collection, CollectionItem, CollectionDTO } from "@/types/collection.types";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import ProfileHeader from "../ProfileHeader";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import CollectionModal from "./CollectionModal";
 import "../Profile/styles.less"; // Reuse profile styles
+import { useTranslation } from "react-i18next";
 
-const {Title, Paragraph} = Typography;
+const { Title, Paragraph } = Typography;
 
 const CollectionDetailPage = () => {
-  const {id} = useParams<{id: string}>();
+  const { t } = useTranslation('translation', { keyPrefix: 'profile' });
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const {user} = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,11 +33,11 @@ const CollectionDetailPage = () => {
       if (res.success && res.data) {
         setCollection(res.data);
       } else {
-        message.error("Không tìm thấy bộ sưu tập");
+        message.error(t("collectionsPage.detailNotFound"));
         navigate("/profile/library");
       }
     } catch (error) {
-      message.error("Lỗi khi tải bộ sưu tập");
+      message.error(t("collectionsPage.detailLoadFailed"));
     } finally {
       setLoading(false);
     }
@@ -49,28 +51,28 @@ const CollectionDetailPage = () => {
     if (!id) return;
     try {
       await collectionService.removeItem(id, itemId, type);
-      message.success("Đã xóa khỏi bộ sưu tập");
+      message.success(t("collectionsPage.removeItemSuccess"));
       fetchDetail(); // Refresh
     } catch (error) {
-      message.error("Xóa thất bại");
+      message.error(t("collectionsPage.deleteFailed"));
     }
   };
 
   const handleDeleteCollection = () => {
     if (!id) return;
     Modal.confirm({
-      title: "Xóa bộ sưu tập?",
-      content: "Bạn có chắc muốn xóa bộ sưu tập này không?",
-      okText: "Xóa",
-      cancelText: "Hủy",
+      title: t("collectionsPage.deleteTitle"),
+      content: t("collectionsPage.deleteConfirm"),
+      okText: t("collectionsPage.deleteBtn"),
+      cancelText: t("collectionsPage.cancelBtn"),
       okType: "danger",
       onOk: async () => {
         try {
           await collectionService.delete(id);
-          message.success("Đã xóa bộ sưu tập");
+          message.success(t("collectionsPage.deleteSuccess"));
           navigate("/profile/library");
         } catch (error) {
-          message.error("Xóa thất bại");
+          message.error(t("collectionsPage.deleteFailed"));
         }
       },
     });
@@ -82,14 +84,14 @@ const CollectionDetailPage = () => {
     try {
       const res = await collectionService.update(collection.id, values);
       if (res.success) {
-        message.success("Cập nhật thành công");
+        message.success(t("collectionsPage.updateSuccess"));
         fetchDetail();
         setShowEditModal(false);
       } else {
-        message.error(res.message || "Cập nhật thất bại");
+        message.error(res.message || t("collectionsPage.errorOccurred"));
       }
     } catch (error) {
-      message.error("Đã có lỗi xảy ra");
+      message.error(t("collectionsPage.errorOccurred"));
     } finally {
       setUpdating(false);
     }
@@ -97,7 +99,7 @@ const CollectionDetailPage = () => {
 
   if (loading)
     return (
-      <div style={{textAlign: "center", padding: 80}}>
+      <div style={{ textAlign: "center", padding: 80 }}>
         <Spin size="large" />
       </div>
     );
@@ -107,36 +109,36 @@ const CollectionDetailPage = () => {
     <div className="profile-page collection-detail-page">
       <ProfileHeader user={user} activeTab="library" showTabs={true} />
 
-      <div className="profile-content" style={{marginTop: -20, padding: "24px"}}>
+      <div className="profile-content" style={{ marginTop: -20, padding: "24px" }}>
         <div className="profile-container">
           <Button
             type="link"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/profile/library")}
-            style={{marginBottom: 16, paddingLeft: 0, color: "#666"}}
+            style={{ marginBottom: 16, paddingLeft: 0, color: "#666" }}
           >
-            Quay lại Thư viện
+            {t("collectionsPage.backBtn")}
           </Button>
 
-          <div style={{display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 32}}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 32 }}>
             <div>
-              <Title level={2} style={{marginBottom: 8}}>
+              <Title level={2} style={{ marginBottom: 8 }}>
                 {collection.name}
               </Title>
               {collection.description && <Paragraph type="secondary">{collection.description}</Paragraph>}
-              <div style={{color: "#888"}}>
-                <span>{collection.totalItems || 0} mục</span>
-                <span style={{margin: "0 8px"}}>•</span>
-                <span>{collection.isPublic ? "Công khai" : "Riêng tư"}</span>
+              <div style={{ color: "#888" }}>
+                <span>{collection.totalItems || 0} {t("collectionsPage.itemsCount")}</span>
+                <span style={{ margin: "0 8px" }}>•</span>
+                <span>{collection.isPublic ? t("collectionsPage.public") : t("collectionsPage.private")}</span>
               </div>
             </div>
-            <div style={{display: "flex", gap: 8}}>
-              <Button icon={<ShareAltOutlined />}>Chia sẻ</Button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Button icon={<ShareAltOutlined />}>{t("collectionsPage.shareBtn")}</Button>
               <Button icon={<EditOutlined />} onClick={() => setShowEditModal(true)}>
-                Sửa
+                {t("collectionsPage.editBtn")}
               </Button>
               <Button danger icon={<DeleteOutlined />} onClick={handleDeleteCollection}>
-                Xóa
+                {t("collectionsPage.deleteBtn")}
               </Button>
             </div>
           </div>
@@ -183,7 +185,7 @@ const CollectionDetailPage = () => {
               })}
             </Row>
           ) : (
-            <Empty description="Bộ sưu tập trống" />
+            <Empty description={t("collectionsPage.emptyCollection")} />
           )}
         </div>
       </div>

@@ -33,21 +33,23 @@ import StatisticsCard from '@/components/common/StatisticsCard';
 import ArticleCard from '@/components/common/cards/ArticleCard';
 import FilterBuilder from '@/components/common/DataTable/FilterBuilder';
 import { FilterConfig } from '@/components/common/DataTable/types';
+import { useTranslation } from 'react-i18next';
 import './styles.less';
 
 const { Option } = Select;
 
 const FavoritesPage: React.FC = () => {
+    const { t } = useTranslation('translation', { keyPrefix: 'profile' });
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [favorites, setFavorites] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('all');
-    
+
     // Pagination & Sort state
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(12);
     const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
-    
+
     // Stats state
     const [stats, setStats] = useState({
         total: 0,
@@ -59,7 +61,7 @@ const FavoritesPage: React.FC = () => {
 
     // Filter Modal State
     const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-    
+
     // FilterBuilder State
     const [activeFilters, setActiveFilters] = useState<FilterConfig[]>([]);
     const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -68,30 +70,30 @@ const FavoritesPage: React.FC = () => {
     const [appliedFilterCount, setAppliedFilterCount] = useState(0);
 
     const filterOptions: FilterConfig[] = [
-        { 
+        {
             key: 'created_at_gte', // Direct key for "From Date"
-            label: 'Đã thích từ ngày', 
-            type: 'date', 
+            label: t("favoritesPage.filterDateFrom"),
+            type: 'date',
             defaultOperator: 'gte',
             operators: ['gte'] // Hidden operator, fixed to gte
         },
-        { 
+        {
             key: 'created_at_lte', // Direct key for "To Date"
-            label: 'Đến ngày', 
-            type: 'date', 
+            label: t("favoritesPage.filterDateTo"),
+            type: 'date',
             defaultOperator: 'lte',
             operators: ['lte'] // Hidden operator, fixed to lte
         },
-        { 
-            key: 'type', 
-            label: 'Loại nội dung', 
-            type: 'select', 
+        {
+            key: 'type',
+            label: t("favoritesPage.contentType"),
+            type: 'select',
             operators: ['eq', 'ne'],
             options: [
-                { label: 'Di Tích', value: 'heritage_site' },
-                { label: 'Hiện Vật', value: 'artifact' },
-                { label: 'Bài Viết', value: 'article' },
-                { label: 'Triển Lãm', value: 'exhibition' }
+                { label: t("favoritesPage.types.heritage_site"), value: 'heritage_site' },
+                { label: t("favoritesPage.types.artifact"), value: 'artifact' },
+                { label: t("favoritesPage.types.article"), value: 'article' },
+                { label: t("favoritesPage.types.exhibition"), value: 'exhibition' }
             ]
         }
     ];
@@ -130,7 +132,7 @@ const FavoritesPage: React.FC = () => {
                 sort: 'createdAt',
                 order: sortOrder
             };
-            
+
             // Base Filter from Tab (sent as flat param)
             if (activeTab !== 'all') {
                 params.type = activeTab;
@@ -138,11 +140,11 @@ const FavoritesPage: React.FC = () => {
 
             // Apply Advanced Filters (sent as flat params)
             if (appliedFilterCount > 0) {
-                 activeFilters.forEach(f => {
+                activeFilters.forEach(f => {
                     if (enabledFilters[f.key] !== false) {
                         const op = filterOperators[f.key] || f.defaultOperator || 'eq';
                         // Calculate where FilterBuilder stored the value
-                        const filterBuilderKey = op === 'eq' ? f.key : `${f.key}_${op}`; 
+                        const filterBuilderKey = op === 'eq' ? f.key : `${f.key}_${op}`;
                         const val = filterValues[filterBuilderKey];
 
                         if (val !== undefined && val !== null && val !== '') {
@@ -163,7 +165,7 @@ const FavoritesPage: React.FC = () => {
             const response = await favoriteService.getAll(params);
             setFavorites(response.data || []);
         } catch (error) {
-            message.error('Không thể tải danh sách yêu thích');
+            message.error(t("favoritesPage.loadFailed"));
         } finally {
             setLoading(false);
         }
@@ -172,11 +174,11 @@ const FavoritesPage: React.FC = () => {
     const handleRemoveFavorite = async (type: string, id: number) => {
         try {
             await favoriteService.remove(type as any, id.toString());
-            message.success('Đã xóa khỏi yêu thích');
+            message.success(t("favoritesPage.removeSuccess"));
             fetchFavorites(); // Reload list
             fetchStats(); // Reload stats
         } catch (error) {
-            message.error('Không thể xóa khỏi yêu thích');
+            message.error(t("favoritesPage.removeFailed"));
         }
     };
 
@@ -188,7 +190,7 @@ const FavoritesPage: React.FC = () => {
         } else if (type === 'exhibition') {
             navigate(`/exhibitions/${id}`);
         } else if (type === 'article') {
-             navigate(`/history/${id}`);
+            navigate(`/history/${id}`);
         }
     };
 
@@ -204,10 +206,10 @@ const FavoritesPage: React.FC = () => {
 
     const getTypeLabel = (type: string) => {
         switch (type) {
-            case 'heritage_site': return 'Di Tích';
-            case 'artifact': return 'Hiện Vật';
-            case 'exhibition': return 'Triển Lãm';
-            case 'article': return 'Bài Viết';
+            case 'heritage_site': return t('favoritesPage.types.heritage_site');
+            case 'artifact': return t('favoritesPage.types.artifact');
+            case 'exhibition': return t('favoritesPage.types.exhibition');
+            case 'article': return t('favoritesPage.types.article');
             default: return type;
         }
     };
@@ -243,33 +245,33 @@ const FavoritesPage: React.FC = () => {
         setIsFilterModalVisible(false);
         setPage(1);
     };
-    
+
     // Corrected filter options with 'eq' operator to map directly to backend suffix keys
     const correctedFilterOptions: FilterConfig[] = [
-        { 
-            key: 'created_at_gte', 
-            label: 'Từ ngày', 
-            type: 'date', 
+        {
+            key: 'created_at_gte',
+            label: t("favoritesPage.filterDateFrom"),
+            type: 'date',
             operators: ['eq'], // Use eq so FilterBuilder saves to 'created_at_gte', matching backend param
             defaultOperator: 'eq'
         },
-        { 
-            key: 'created_at_lte', 
-            label: 'Đến ngày', 
-            type: 'date', 
-            operators: ['eq'], 
+        {
+            key: 'created_at_lte',
+            label: t("favoritesPage.filterDateTo"),
+            type: 'date',
+            operators: ['eq'],
             defaultOperator: 'eq'
         },
-        { 
-            key: 'type', 
-            label: 'Loại nội dung', 
-            type: 'select', 
+        {
+            key: 'type',
+            label: t("favoritesPage.contentType"),
+            type: 'select',
             operators: ['eq', 'ne'],
             options: [
-                { label: 'Di Tích', value: 'heritage_site' },
-                { label: 'Hiện Vật', value: 'artifact' },
-                { label: 'Bài Viết', value: 'article' },
-                { label: 'Triển Lãm', value: 'exhibition' }
+                { label: t("favoritesPage.types.heritage_site"), value: 'heritage_site' },
+                { label: t("favoritesPage.types.artifact"), value: 'artifact' },
+                { label: t("favoritesPage.types.article"), value: 'article' },
+                { label: t("favoritesPage.types.exhibition"), value: 'exhibition' }
             ]
         }
     ];
@@ -278,47 +280,47 @@ const FavoritesPage: React.FC = () => {
         <div className="favorites-page">
             <div className="page-header">
                 <div>
-                     {/* User removed title, keeping description only as per previous edit */}
+                    {/* User removed title, keeping description only as per previous edit */}
                     <p className="page-description">
-                        Quản lý các nội dung bạn đã lưu
+                        {t("favoritesPage.description")}
                     </p>
                 </div>
             </div>
 
             <div className="favorites-stats" style={{ marginBottom: 24 }}>
                 <StatisticsCard
-                    title="Thống Kê Tổng Quan"
+                    title={t("favoritesPage.statsTitle")}
                     loading={loading && favorites.length === 0}
                     colSpan={{ xs: 12, sm: 8, md: 8, lg: 4, xl: 4 }}
                     data={[
                         {
-                            title: "Tổng Yêu Thích",
+                            title: t("favoritesPage.totalFavorites"),
                             value: stats.total,
                             icon: <HeartFilled />,
                             valueColor: "#cf1322",
-                             // User removed suffix
+                            // User removed suffix
                             colSpan: { xs: 24, sm: 16, md: 16, lg: 8, xl: 8 }
                         },
                         {
-                            title: "Di Tích",
+                            title: t("favoritesPage.types.heritage_site"),
                             value: stats.heritageSites,
                             icon: <HomeOutlined />,
                             valueColor: "#d48806",
                         },
                         {
-                            title: "Hiện Vật",
+                            title: t("favoritesPage.types.artifact"),
                             value: stats.artifacts,
                             icon: <PictureOutlined />,
                             valueColor: "#1890ff",
                         },
                         {
-                            title: "Bài Viết",
+                            title: t("favoritesPage.types.article"),
                             value: stats.articles,
                             icon: <ReadOutlined />,
                             valueColor: "#722ed1",
                         },
                         {
-                            title: "Triển Lãm",
+                            title: t("favoritesPage.types.exhibition"),
                             value: stats.exhibitions,
                             icon: <CalendarOutlined />,
                             valueColor: "#52c41a",
@@ -337,34 +339,34 @@ const FavoritesPage: React.FC = () => {
                         }}
                         style={{ marginBottom: 0, flex: 1 }}
                         items={[
-                            { key: 'all', label: `Tất cả (${stats.total})` },
-                            { key: 'heritage_site', label: `Di Tích (${stats.heritageSites})` },
-                            { key: 'artifact', label: `Hiện Vật (${stats.artifacts})` },
-                            { key: 'article', label: `Bài Viết (${stats.articles})` },
-                            { key: 'exhibition', label: `Triển Lãm (${stats.exhibitions})` },
+                            { key: 'all', label: `${t('favoritesPage.allTab')} (${stats.total})` },
+                            { key: 'heritage_site', label: `${t('favoritesPage.types.heritage_site')} (${stats.heritageSites})` },
+                            { key: 'artifact', label: `${t('favoritesPage.types.artifact')} (${stats.artifacts})` },
+                            { key: 'article', label: `${t('favoritesPage.types.article')} (${stats.articles})` },
+                            { key: 'exhibition', label: `${t('favoritesPage.types.exhibition')} (${stats.exhibitions})` },
                         ]}
                     />
-                    
+
                     <Space>
-                        <Button 
-                            icon={<FilterOutlined />} 
+                        <Button
+                            icon={<FilterOutlined />}
                             onClick={() => setIsFilterModalVisible(true)}
                         >
-                            Bộ lọc
+                            {t("favoritesPage.filterBtn")}
                             {appliedFilterCount > 0 && <Badge count={appliedFilterCount} style={{ marginLeft: 8, backgroundColor: '#52c41a' }} />}
                         </Button>
 
-                        <span style={{ color: '#888', marginLeft: 8 }}>Sắp xếp:</span>
-                        <Select 
-                            defaultValue="desc" 
+                        <span style={{ color: '#888', marginLeft: 8 }}>{t("favoritesPage.sortBy")}</span>
+                        <Select
+                            defaultValue="desc"
                             value={sortOrder}
-                            style={{ width: 140 }} 
+                            style={{ width: 140 }}
                             onChange={(val) => setSortOrder(val as 'asc' | 'desc')}
                         >
-                            <Option value="desc">Mới nhất</Option>
-                            <Option value="asc">Cũ nhất</Option>
+                            <Option value="desc">{t("favoritesPage.sortNewest")}</Option>
+                            <Option value="asc">{t("favoritesPage.sortOldest")}</Option>
                         </Select>
-                        
+
                         <Button icon={<ReloadOutlined />} onClick={fetchFavorites} />
                     </Space>
                 </div>
@@ -376,21 +378,21 @@ const FavoritesPage: React.FC = () => {
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
                         description={
                             <div>
-                                <h3>Không tìm thấy kết quả</h3>
-                                <p>Thử thay đổi bộ lọc hoặc thêm mục yêu thích mới</p>
+                                <h3>{t("favoritesPage.emptyTitle")}</h3>
+                                <p>{t("favoritesPage.emptyDesc")}</p>
                             </div>
                         }
                     >
-                         {activeTab === 'all' && appliedFilterCount === 0 && (
-                             <Button type="primary" onClick={() => navigate('/')}>
-                                 Khám Phá Ngay
-                             </Button>
-                         )}
-                         {appliedFilterCount > 0 && (
-                             <Button onClick={handleClearFilter}>
-                                 Xóa bộ lọc
-                             </Button>
-                         )}
+                        {activeTab === 'all' && appliedFilterCount === 0 && (
+                            <Button type="primary" onClick={() => navigate('/')}>
+                                {t("favoritesPage.exploreBtn")}
+                            </Button>
+                        )}
+                        {appliedFilterCount > 0 && (
+                            <Button onClick={handleClearFilter}>
+                                {t("favoritesPage.clearFilterBtn")}
+                            </Button>
+                        )}
                     </Empty>
                 ) : (
                     <>
@@ -424,7 +426,7 @@ const FavoritesPage: React.FC = () => {
                                                     </div>
                                                 }
                                                 actions={[
-                                                    <Tooltip title="Xóa khỏi yêu thích">
+                                                    <Tooltip title={t("favoritesPage.removeTooltip")}>
                                                         <Button
                                                             type="text"
                                                             danger
@@ -452,20 +454,20 @@ const FavoritesPage: React.FC = () => {
                                 let cardType: 'heritage' | 'artifact' | 'history' = 'history';
                                 if (favorite.type === 'heritage_site') cardType = 'heritage';
                                 else if (favorite.type === 'artifact') cardType = 'artifact';
-                                
+
                                 return (
                                     <Col xs={24} sm={12} lg={8} xl={6} key={favorite.id}>
-                                        <ArticleCard 
+                                        <ArticleCard
                                             data={favorite.item} // Pass the enriched item data
                                             type={cardType}
                                             variant="default"
                                             secondaryAction={
-                                                <Tooltip title="Bỏ thích">
-                                                    <Button 
-                                                        type="text" 
-                                                        danger 
+                                                <Tooltip title={t("favoritesPage.unlikeTooltip")}>
+                                                    <Button
+                                                        type="text"
+                                                        danger
                                                         shape="circle"
-                                                        icon={<DeleteOutlined />} 
+                                                        icon={<DeleteOutlined />}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleRemoveFavorite(favorite.type, favorite.referenceId);
@@ -473,13 +475,13 @@ const FavoritesPage: React.FC = () => {
                                                     />
                                                 </Tooltip>
                                             }
-                                            // Removed actions prop to let default 'Khám phá' button render
+                                        // Removed actions prop to let default 'Khám phá' button render
                                         />
                                     </Col>
                                 );
                             })}
                         </Row>
-                        
+
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
                             <Pagination
                                 current={page}
@@ -491,7 +493,7 @@ const FavoritesPage: React.FC = () => {
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
                                 showSizeChanger
-                                showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} mục`}
+                                showTotal={(total, range) => t("favoritesPage.paginationInfo").replace("{{range0}}", range[0].toString()).replace("{{range1}}", range[1].toString()).replace("{{total}}", total.toString())}
                             />
                         </div>
                     </>
@@ -499,13 +501,13 @@ const FavoritesPage: React.FC = () => {
             </Card>
 
             <Modal
-                title="Bộ lọc nâng cao"
+                title={t("favoritesPage.filterModalTitle")}
                 open={isFilterModalVisible}
                 onCancel={() => setIsFilterModalVisible(false)}
                 footer={null}
                 width={700}
             >
-                <FilterBuilder 
+                <FilterBuilder
                     filters={correctedFilterOptions}
                     activeFilters={activeFilters}
                     filterValues={filterValues}

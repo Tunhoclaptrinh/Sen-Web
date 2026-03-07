@@ -1,6 +1,6 @@
 // import React, { useState, useEffect } from "react";
-import {useState, useEffect} from "react"; // React unused but imports kept for hook usage
-import {useSearchParams} from "react-router-dom";
+import { useState, useEffect } from "react"; // React unused but imports kept for hook usage
+import { useSearchParams } from "react-router-dom";
 import {
   Form,
   Input,
@@ -29,21 +29,23 @@ import {
   CheckCircleOutlined,
   TrophyOutlined,
 } from "@ant-design/icons";
-import {useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import userService from "@services/user.service";
 import collectionService from "@services/collection.service";
 import gameService from "@services/game.service"; // Import GameService
-import {Collection} from "@/types/collection.types";
-import favoriteService, {FavoriteStats} from "@services/favorite.service";
+import { Collection } from "@/types/collection.types";
+import favoriteService, { FavoriteStats } from "@services/favorite.service";
 // import apiClient from "@config/axios.config";
-import {getMe} from "@store/slices/authSlice";
-import {RootState, AppDispatch} from "@/store";
+import { getMe } from "@store/slices/authSlice";
+import { RootState, AppDispatch } from "@/store";
 import StatisticsCard from "@/components/common/StatisticsCard"; // Core Component
 import ProfileHeader from "../ProfileHeader";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 
 const Profile = () => {
-  const {user} = useSelector((state: RootState) => state.auth);
+  const { t } = useTranslation('translation', { keyPrefix: 'profile' });
+  const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
 
   const [form] = Form.useForm();
@@ -137,10 +139,10 @@ const Profile = () => {
     try {
       setLoading(true);
       await userService.updateProfile(values);
-      message.success("✅ Cập nhật hồ sơ thành công!");
+      message.success(t("personal.messages.updateSuccess"));
       dispatch(getMe());
     } catch (error) {
-      message.error("❌ Cập nhật thất bại");
+      message.error(t("personal.messages.updateFailed"));
     } finally {
       setLoading(false);
     }
@@ -148,7 +150,7 @@ const Profile = () => {
 
   const onChangePassword = async (values: any) => {
     if (values.newPassword !== values.confirmPassword) {
-      message.error("Mật khẩu xác nhận không khớp");
+      message.error(t("security.passwordsMismatch"));
       return;
     }
 
@@ -159,10 +161,10 @@ const Profile = () => {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      message.success("✅ Đổi mật khẩu thành công!");
+      message.success(t("security.messages.changeSuccess"));
       passwordForm.resetFields();
     } catch (error) {
-      message.error("❌ Đổi mật khẩu thất bại");
+      message.error(t("security.messages.changeFailed"));
     } finally {
       setLoading(false);
     }
@@ -193,7 +195,7 @@ const Profile = () => {
   }, [activeTab]);
 
   const handleTabChange = (key: string) => {
-    setSearchParams({tab: key});
+    setSearchParams({ tab: key });
   };
 
   const renderProfileTab = () => (
@@ -201,44 +203,44 @@ const Profile = () => {
       <Col xs={24} md={16}>
         <div className="profile-card">
           <div className="card-title">
-            <UserOutlined /> Thông tin Cá nhân
+            <UserOutlined /> {t("personal.title")}
           </div>
           <Form form={form} layout="vertical" onFinish={onUpdateProfile} requiredMark={false}>
             <Row gutter={24}>
               <Col xs={24} sm={12}>
-                <Form.Item name="name" label="Họ và tên" rules={[{required: true, message: "Vui lòng nhập tên"}]}>
-                  <Input prefix={<UserOutlined />} placeholder="Nhập tên hiển thị" />
+                <Form.Item name="name" label={t("personal.fullName")} rules={[{ required: true, message: t("personal.fullNameRequired") }]}>
+                  <Input prefix={<UserOutlined />} placeholder={t("personal.fullNamePlaceholder")} />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="phone"
-                  label="Số điện thoại"
-                  rules={[{pattern: /^0[0-9]{9,10}$/, message: "Số điện thoại không hợp lệ"}]}
+                  label={t("personal.phone")}
+                  rules={[{ pattern: /^0[0-9]{9,10}$/, message: t("personal.phoneInvalid") }]}
                 >
-                  <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại" />
+                  <Input prefix={<PhoneOutlined />} placeholder={t("personal.phonePlaceholder")} />
                 </Form.Item>
               </Col>
               <Col xs={24}>
-                <Form.Item name="email" label="Email đăng nhập">
+                <Form.Item name="email" label={t("personal.email")}>
                   <Input prefix={<MailOutlined />} disabled className="bg-gray-50" />
                 </Form.Item>
               </Col>
               <Col xs={24}>
-                <Form.Item label="Giới thiệu bản thân" name="bio">
-                  <Input.TextArea rows={4} placeholder="Chia sẻ đôi điều về bạn..." />
+                <Form.Item label={t("personal.bio")} name="bio">
+                  <Input.TextArea rows={4} placeholder={t("personal.bioPlaceholder")} />
                 </Form.Item>
               </Col>
             </Row>
-            <Form.Item style={{textAlign: "center", marginTop: 16}}>
+            <Form.Item style={{ textAlign: "center", marginTop: 16 }}>
               <Button
                 variant="primary"
                 htmlType="submit"
                 icon={<SaveOutlined />}
                 loading={loading}
-                style={{height: 40, padding: "0 48px"}}
+                style={{ height: 40, padding: "0 48px" }}
               >
-                Lưu thay đổi
+                {t("personal.saveChanges")}
               </Button>
             </Form.Item>
           </Form>
@@ -246,18 +248,18 @@ const Profile = () => {
       </Col>
       <Col xs={24} md={8}>
         <StatisticsCard
-          title="Thống Kê"
+          title={t("statistics.title")}
           loading={favoritesLoading || collectionsLoading}
-          colSpan={{span: 24} as any}
+          colSpan={{ span: 24 } as any}
           data={[
             {
-              title: "Bộ sưu tập",
+              title: t("statistics.collections"),
               value: collections?.length || 0,
               icon: <AppstoreOutlined />,
               valueColor: "#c5a065", // Gold
             },
             {
-              title: "Đã yêu thích",
+              title: t("statistics.favorites"),
               value: favoriteStats?.total || 0,
               icon: <HeartOutlined />,
               valueColor: "#8b1d1d", // Seal Red
@@ -273,36 +275,36 @@ const Profile = () => {
       <Col xs={24} md={14}>
         <div className="profile-card">
           <div className="card-title">
-            <LockOutlined /> Đổi mật khẩu
+            <LockOutlined /> {t("security.changePassword")}
           </div>
           <Alert
-            message="Lưu ý quan trọng"
-            description="Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường và số để đảm bảo an toàn."
+            message={t("security.importantNote")}
+            description={t("security.importantNoteDesc")}
             type="warning"
             showIcon
-            style={{marginBottom: 24}}
+            style={{ marginBottom: 24 }}
           />
 
           <Form form={passwordForm} layout="vertical" onFinish={onChangePassword}>
             <Form.Item
               name="currentPassword"
-              label="Mật khẩu hiện tại"
-              rules={[{required: true, message: "Vui lòng nhập mật khẩu hiện tại"}]}
+              label={t("security.currentPassword")}
+              rules={[{ required: true, message: t("security.currentPasswordRequired") }]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="Nhập mật khẩu hiện tại" size="large" />
+              <Input.Password prefix={<LockOutlined />} placeholder={t("security.currentPasswordPlaceholder")} size="large" />
             </Form.Item>
 
             <Form.Item
               name="newPassword"
-              label="Mật khẩu mới"
+              label={t("security.newPassword")}
               rules={[
-                {required: true, message: "Vui lòng nhập mật khẩu mới"},
-                {min: 6, message: "Mật khẩu phải ít nhất 6 ký tự"},
+                { required: true, message: t("security.newPasswordRequired") },
+                { min: 6, message: t("security.passwordMinLength") },
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder="Nhập mật khẩu mới"
+                placeholder={t("security.newPasswordPlaceholder")}
                 size="large"
                 onChange={(e) => checkPasswordStrength(e.target.value)}
               />
@@ -319,17 +321,23 @@ const Profile = () => {
                 <div
                   className={`strength-text ${["", "weak", "medium", "strong", "strong"][passwordStrength] || "weak"}`}
                 >
-                  Độ mạnh: {["", "Yếu", "Trung bình", "Mạnh", "Rất mạnh"][passwordStrength]}
+                  {t("security.strength.label")} {[
+                    "",
+                    t("security.strength.weak"),
+                    t("security.strength.medium"),
+                    t("security.strength.strong"),
+                    t("security.strength.veryStrong"),
+                  ][passwordStrength]}
                 </div>
               </div>
             )}
 
             <Form.Item
               name="confirmPassword"
-              label="Xác nhận mật khẩu mới"
-              rules={[{required: true, message: "Vui lòng xác nhận mật khẩu"}]}
+              label={t("security.confirmPassword")}
+              rules={[{ required: true, message: t("security.confirmPasswordRequired") }]}
             >
-              <Input.Password prefix={<CheckCircleOutlined />} placeholder="Nhập lại mật khẩu mới" size="large" />
+              <Input.Password prefix={<CheckCircleOutlined />} placeholder={t("security.confirmPasswordPlaceholder")} size="large" />
             </Form.Item>
 
             <Form.Item>
@@ -339,9 +347,9 @@ const Profile = () => {
                 fullWidth
                 buttonSize="large"
                 loading={loading}
-                style={{height: 48, background: "var(--primary-color)", borderColor: "var(--primary-color)"}}
+                style={{ height: 48, background: "var(--primary-color)", borderColor: "var(--primary-color)" }}
               >
-                Cập nhật Mật khẩu
+                {t("security.updatePasswordBtn")}
               </Button>
             </Form.Item>
           </Form>
@@ -350,30 +358,30 @@ const Profile = () => {
       <Col xs={24} md={10}>
         <div className="security-tips">
           <h4>
-            <SafetyCertificateOutlined /> Bảo mật Tài khoản
+            <SafetyCertificateOutlined /> {t("security.tips.title")}
           </h4>
-          <p style={{color: "#8c6e1f", marginBottom: 16}}>
-            Giữ an toàn cho tài khoản của bạn là ưu tiên hàng đầu của chúng tôi.
+          <p style={{ color: "#8c6e1f", marginBottom: 16 }}>
+            {t("security.tips.desc")}
           </p>
           <ul>
-            <li>Sử dụng mật khẩu mạnh bao gồm chữ hoa, thường, số và ký tự đặc biệt.</li>
-            <li>Không chia sẻ mật khẩu của bạn với bất kỳ ai, kể cả nhân viên hỗ trợ.</li>
-            <li>Đổi mật khẩu định kỳ 3 tháng một lần.</li>
-            <li>Kích hoạt xác thực 2 lớp (2FA) để tăng cường bảo mật (Sắp ra mắt).</li>
+            <li>{t("security.tips.tip1")}</li>
+            <li>{t("security.tips.tip2")}</li>
+            <li>{t("security.tips.tip3")}</li>
+            <li>{t("security.tips.tip4")}</li>
           </ul>
-          <div style={{marginTop: 24, padding: 16, background: "rgba(255,255,255,0.6)", borderRadius: 12}}>
-            <div style={{fontSize: 13, color: "#666", marginBottom: 4}}>Lần đăng nhập cuối cùng</div>
-            <div style={{fontWeight: 600, color: "#333"}}>
+          <div style={{ marginTop: 24, padding: 16, background: "rgba(255,255,255,0.6)", borderRadius: 12 }}>
+            <div style={{ fontSize: 13, color: "#666", marginBottom: 4 }}>{t("security.tips.lastLogin")}</div>
+            <div style={{ fontWeight: 600, color: "#333" }}>
               {user?.lastLogin
                 ? new Date(user.lastLogin).toLocaleString("vi-VN", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "Chưa có thông tin"}
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+                : t("security.tips.noInfo")}
             </div>
           </div>
         </div>
@@ -384,13 +392,13 @@ const Profile = () => {
   const renderActivityTab = () => (
     <div className="profile-card">
       <div className="card-title">
-        <HistoryOutlined /> Lịch sử Hoạt động
+        <HistoryOutlined /> {t("activity.title")}
       </div>
-      <p style={{color: "#666", marginBottom: 32}}>Theo dõi các hoạt động gần đây của bạn trên hệ thống.</p>
+      <p style={{ color: "#666", marginBottom: 32 }}>{t("activity.desc")}</p>
 
       <div className="activity-timeline">
         {activityLoading ? (
-          <div style={{padding: 40, textAlign: "center"}}>
+          <div style={{ padding: 40, textAlign: "center" }}>
             <Spin />
           </div>
         ) : (
@@ -398,7 +406,7 @@ const Profile = () => {
             {/* Mock activities layout */}
             <Timeline.Item
               color="green"
-              label={new Date().toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"})}
+              label={new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
             >
               <div className="timeline-content">
                 <div className="activity-title">Đăng nhập thành công</div>
@@ -433,8 +441,8 @@ const Profile = () => {
             </Timeline.Item>
           </Timeline>
         )}
-        <div style={{textAlign: "center", marginTop: 20}}>
-          <Button variant="outline">Xem thêm hoạt động cũ hơn</Button>
+        <div style={{ textAlign: "center", marginTop: 20 }}>
+          <Button variant="outline">{t("activity.viewMore")}</Button>
         </div>
       </div>
     </div>
@@ -447,14 +455,14 @@ const Profile = () => {
     const normalizedEarned = userBadges
       .map((b: any) => {
         if (typeof b === "object" && b !== null) return b;
-        return {id: b};
+        return { id: b };
       })
       .filter((b: any) => b.id !== undefined && b.id !== null);
 
     // Map earned status to all badges
     const displayedBadges = allBadges.map((badge: any) => {
       const earned = normalizedEarned.find((b: any) => String(b.id) === String(badge.id));
-      return {...badge, earned: !!earned, earnedAt: earned?.earnedAt};
+      return { ...badge, earned: !!earned, earnedAt: earned?.earnedAt };
     });
 
     const validEarnedBadges = displayedBadges.filter((b) => b.earned);
@@ -462,16 +470,16 @@ const Profile = () => {
     return (
       <div className="profile-card">
         <div className="card-title">
-          <TrophyOutlined /> Huy hiệu & Thành tích
+          <TrophyOutlined /> {t("badges.title")}
         </div>
         <div className="badge-progress-box">
           <div className="progress-info">
-            <div className="progress-label">Tiến độ sưu tập</div>
+            <div className="progress-label">{t("badges.progressLabel")}</div>
             <div className="progress-sub">
-              Bạn đã mở khóa {validEarnedBadges?.length || 0}/{allBadges?.length || 0} huy hiệu
+              {t("badges.unlocked")} {validEarnedBadges?.length || 0}/{allBadges?.length || 0} {t("badges.badgesCount")}
             </div>
           </div>
-            {Math.round(((validEarnedBadges?.length || 0) / (allBadges?.length || 1)) * 100)}%
+          {Math.round(((validEarnedBadges?.length || 0) / (allBadges?.length || 1)) * 100)}%
         </div>
 
         {badgesLoading ? (
@@ -487,7 +495,7 @@ const Profile = () => {
                 <div className="badge-description">{badge.description}</div>
                 {badge.earned && (
                   <Tag color="gold" className="badge-tag">
-                    Đã đạt: {new Date(badge.earnedAt).toLocaleDateString("vi-VN")}
+                    {t("badges.earned")} {new Date(badge.earnedAt).toLocaleDateString("vi-VN")}
                   </Tag>
                 )}
               </div>

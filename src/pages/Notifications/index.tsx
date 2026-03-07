@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   List,
@@ -25,16 +25,18 @@ import {
 } from "@ant-design/icons";
 
 import NotificationDetailModal from "@/components/common/NotificationDetailModal";
-import {notificationService} from "@/services/notification.service";
-import type {Notification} from "@/types/notification.types";
-import {formatRelativeTime} from "@/utils/formatters";
-import {ITEM_TYPES} from "@/config/constants";
+import { notificationService } from "@/services/notification.service";
+import type { Notification } from "@/types/notification.types";
+import { formatRelativeTime } from "@/utils/formatters";
+import { ITEM_TYPES } from "@/config/constants";
+import { useTranslation } from "react-i18next";
 
-const {Title, Text, Paragraph} = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 import "./styles.less";
 
 const NotificationsPage: React.FC = () => {
+  const { t } = useTranslation('translation', { keyPrefix: 'notifications' });
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
@@ -48,14 +50,14 @@ const NotificationsPage: React.FC = () => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const filter = activeTab === "unread" ? {isRead: false} : {};
+      const filter = activeTab === "unread" ? { isRead: false } : {};
       const data = await notificationService.getNotifications(page, limit, filter);
       setNotifications(data.items);
       setTotal(data.total);
       setUnreadTotal(data.unreadCount);
     } catch (error) {
       console.error("Failed to fetch notifications", error);
-      message.error("Không thể tải thông báo");
+      message.error(t("messages.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -69,29 +71,29 @@ const NotificationsPage: React.FC = () => {
     if (item.isRead) return;
     try {
       await notificationService.markAsRead(item.id);
-      setNotifications((prev) => prev.map((n) => (n.id === item.id ? {...n, isRead: true} : n)));
+      setNotifications((prev) => prev.map((n) => (n.id === item.id ? { ...n, isRead: true } : n)));
       setUnreadTotal((prev) => Math.max(0, prev - 1));
-      message.success("Đã đánh dấu đã đọc");
+      message.success(t("messages.markReadSuccess"));
       if (activeTab === "unread") {
         // If in unread tab, maybe refresh after a small delay or remove locally
         setTimeout(() => fetchNotifications(), 1000);
       }
     } catch (error) {
-      message.error("Thao tác thất bại");
+      message.error(t("messages.actionFailed"));
     }
   };
 
   const handleMarkAllRead = async () => {
     try {
       await notificationService.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({...n, isRead: true})));
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadTotal(0);
-      message.success("Đã đánh dấu tất cả là đã đọc");
+      message.success(t("messages.markReadAllSuccess"));
       if (activeTab === "unread") {
         fetchNotifications();
       }
     } catch (error) {
-      message.error("Thao tác thất bại");
+      message.error(t("messages.actionFailed"));
     }
   };
 
@@ -100,9 +102,9 @@ const NotificationsPage: React.FC = () => {
       await notificationService.deleteNotification(id);
       setNotifications((prev) => prev.filter((n) => n.id !== id));
       setTotal((prev) => prev - 1);
-      message.success("Đã xóa thông báo");
+      message.success(t("messages.deleteSuccess"));
     } catch (error) {
-      message.error("Xóa thất bại");
+      message.error(t("messages.deleteFailed"));
     }
   };
 
@@ -112,25 +114,25 @@ const NotificationsPage: React.FC = () => {
       setNotifications([]);
       setTotal(0);
       setUnreadTotal(0);
-      message.success("Đã xóa tất cả thông báo");
+      message.success(t("messages.deleteAllSuccess"));
     } catch (error) {
-      message.error("Xóa thất bại");
+      message.error(t("messages.deleteFailed"));
     }
   };
 
   const getIcon = (type: string) => {
-    const style = {fontSize: 20};
+    const style = { fontSize: 20 };
     switch (type) {
       case "reward":
-        return <GiftOutlined style={{...style, color: "#8b1d1d"}} />;
+        return <GiftOutlined style={{ ...style, color: "#8b1d1d" }} />;
       case "achievement":
-        return <TrophyOutlined style={{...style, color: "#c5a065"}} />;
+        return <TrophyOutlined style={{ ...style, color: "#c5a065" }} />;
       case ITEM_TYPES.HERITAGE:
-        return <EnvironmentOutlined style={{...style, color: "#5d4037"}} />;
+        return <EnvironmentOutlined style={{ ...style, color: "#5d4037" }} />;
       case ITEM_TYPES.ARTIFACT:
-        return <GoldOutlined style={{...style, color: "#8b1d1d"}} />;
+        return <GoldOutlined style={{ ...style, color: "#8b1d1d" }} />;
       default:
-        return <BellOutlined style={{...style, color: "#886a64"}} />;
+        return <BellOutlined style={{ ...style, color: "#886a64" }} />;
     }
   };
 
@@ -143,12 +145,12 @@ const NotificationsPage: React.FC = () => {
             <BellOutlined />
           </div>
           <div className="title-group">
-            <div style={{display: "flex", alignItems: "center", gap: 12}}>
-              <Title level={2} style={{margin: 0}}>Thông báo</Title>
-              {unreadTotal > 0 && <Badge count={unreadTotal} className="unread-badge" style={{backgroundColor: "var(--seal-red)"}} />}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <Title level={2} style={{ margin: 0 }}>{t("page.title")}</Title>
+              {unreadTotal > 0 && <Badge count={unreadTotal} className="unread-badge" style={{ backgroundColor: "var(--seal-red)" }} />}
             </div>
             <div className="subtitle">
-              <Text>Cập nhật hoạt động của bạn</Text>
+              <Text>{t("page.subtitle")}</Text>
             </div>
           </div>
         </div>
@@ -167,21 +169,21 @@ const NotificationsPage: React.FC = () => {
               gap: 8,
             }}
           >
-            Đọc tất cả
+            {t("page.readAllBtn")}
           </Button>
 
           <Popconfirm
-            title="Xóa tất cả thông báo?"
+            title={t("page.deleteAllConfirm")}
             onConfirm={handleDeleteAll}
-            okText="Xóa hết"
-            cancelText="Hủy"
-            okButtonProps={{danger: true}}
+            okText={t("page.deleteAllOk")}
+            cancelText={t("page.deleteAllCancel")}
+            okButtonProps={{ danger: true }}
           >
-            <Button 
-              danger 
-              icon={<DeleteOutlined />} 
-              disabled={notifications.length === 0} 
-              className="btn-heritage-danger btn-premium-nhun" 
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              disabled={notifications.length === 0}
+              className="btn-heritage-danger btn-premium-nhun"
             />
           </Popconfirm>
         </div>
@@ -198,18 +200,18 @@ const NotificationsPage: React.FC = () => {
           items={[
             {
               key: "all",
-              label: "Tất cả thông báo",
+              label: t("page.tabs.all"),
             },
             {
               key: "unread",
-              label: `Chưa đọc ${unreadTotal > 0 ? `(${unreadTotal})` : ""}`,
+              label: `${t("page.tabs.unread")} ${unreadTotal > 0 ? `(${unreadTotal})` : ""}`,
             },
           ]}
         />
 
         {loading ? (
           <div className="loading-wrapper">
-            <Spin size="large" tip="Đang tìm kiếm tin mới..." />
+            <Spin size="large" tip={t("page.loading")} />
           </div>
         ) : notifications.length > 0 ? (
           <List
@@ -233,37 +235,17 @@ const NotificationsPage: React.FC = () => {
                 }}
                 style={{ cursor: "pointer" }}
                 actions={[
-                    !item.isRead && (
-                      <Tooltip title="Đánh dấu đã đọc">
-                        <Button
-                          type="text"
-                          icon={<CheckCircleOutlined style={{fontSize: 14}} />}
-                          onClick={() => handleMarkAsRead(item)}
-                          className="mark-read-btn btn-premium-nhun"
-                          style={{
-                            color: "white",
-                            background: "var(--seal-red)",
-                            border: "1px solid var(--seal-border)",
-                            borderRadius: "4px",
-                            width: "32px",
-                            height: "32px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            padding: 0,
-                          }}
-                        />
-                      </Tooltip>
-                    ),
-                    <Popconfirm title="Xóa thông báo này?" onConfirm={() => handleDelete(item.id)}>
-                      <Button 
-                        type="text" 
-                        danger 
-                        icon={<DeleteOutlined style={{fontSize: 14}} />} 
-                        className="delete-btn btn-premium-nhun" 
+                  !item.isRead && (
+                    <Tooltip title={t("page.item.markRead")}>
+                      <Button
+                        type="text"
+                        icon={<CheckCircleOutlined style={{ fontSize: 14 }} />}
+                        onClick={() => handleMarkAsRead(item)}
+                        className="mark-read-btn btn-premium-nhun"
                         style={{
-                          background: "#fff1f0",
-                          border: "1px solid #ffa39e",
+                          color: "white",
+                          background: "var(--seal-red)",
+                          border: "1px solid var(--seal-border)",
                           borderRadius: "4px",
                           width: "32px",
                           height: "32px",
@@ -273,7 +255,27 @@ const NotificationsPage: React.FC = () => {
                           padding: 0,
                         }}
                       />
-                    </Popconfirm>,
+                    </Tooltip>
+                  ),
+                  <Popconfirm title={t("page.item.deleteConfirm")} onConfirm={() => handleDelete(item.id)}>
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined style={{ fontSize: 14 }} />}
+                      className="delete-btn btn-premium-nhun"
+                      style={{
+                        background: "#fff1f0",
+                        border: "1px solid #ffa39e",
+                        borderRadius: "4px",
+                        width: "32px",
+                        height: "32px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: 0,
+                      }}
+                    />
+                  </Popconfirm>,
                 ]}
               >
                 <List.Item.Meta
@@ -299,12 +301,12 @@ const NotificationsPage: React.FC = () => {
           <div className="empty-wrapper">
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={activeTab === "unread" ? "Tuyệt vời! Bạn đã đọc sạch thông báo." : "Hòm thư đang trống."}
+              description={activeTab === "unread" ? t("page.empty.unread") : t("page.empty.all")}
             />
           </div>
         )}
       </Card>
-      <NotificationDetailModal 
+      <NotificationDetailModal
         visible={detailVisible}
         onClose={() => setDetailVisible(false)}
         notification={selectedNotification}

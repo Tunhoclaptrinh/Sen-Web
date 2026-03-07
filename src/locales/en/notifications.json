@@ -1,0 +1,47 @@
+{
+  "title": "Notifications",
+  "markAllReadBtn": "Mark all as read",
+  "tabs": {
+    "all": "All",
+    "unread": "Unread"
+  },
+  "loading": "Loading...",
+  "itemActions": {
+    "markRead": "Mark as read"
+  },
+  "emptyState": {
+    "all": "You have no notifications",
+    "unread": "No new notifications"
+  },
+  "viewAll": "View all notifications",
+  "page": {
+    "title": "Notifications",
+    "subtitle": "Stay updated with your activities",
+    "readAllBtn": "Read all",
+    "deleteAllConfirm": "Delete all notifications?",
+    "deleteAllOk": "Clear all",
+    "deleteAllCancel": "Cancel",
+    "tabs": {
+      "all": "All notifications",
+      "unread": "Unread"
+    },
+    "loading": "Searching for new updates...",
+    "item": {
+      "markRead": "Mark as read",
+      "deleteConfirm": "Delete this notification?"
+    },
+    "empty": {
+      "unread": "Great! You have cleared all unread notifications.",
+      "all": "Your inbox is empty."
+    }
+  },
+  "messages": {
+    "fetchFailed": "Failed to load notifications",
+    "markReadSuccess": "Marked as read",
+    "markReadAllSuccess": "Marked all as read",
+    "actionFailed": "Action failed",
+    "deleteSuccess": "Notification deleted",
+    "deleteFailed": "Delete failed",
+    "deleteAllSuccess": "All notifications have been deleted"
+  }
+}

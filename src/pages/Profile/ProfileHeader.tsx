@@ -1,12 +1,13 @@
 import React from "react";
-import {Avatar, Tabs, Upload, message} from "antd";
-import {UserOutlined, CameraOutlined, EditOutlined} from "@ant-design/icons";
-import {useDispatch} from "react-redux";
-import {useNavigate, useLocation} from "react-router-dom";
+import { Avatar, Tabs, Upload, message } from "antd";
+import { UserOutlined, CameraOutlined, EditOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import apiClient from "@config/axios.config";
 import userService from "@services/user.service";
-import {getMe} from "@store/slices/authSlice";
-import {AppDispatch} from "@/store";
+import { getMe } from "@store/slices/authSlice";
+import { AppDispatch } from "@/store";
+import { useTranslation } from "react-i18next";
 import "./styles.less"; // Reuse existing styles or we should move styles to a common place?
 // For now, assume styles are global or imported in parent.
 // Actually, I should probably copy the necessary styles or import the less file.
@@ -21,7 +22,8 @@ interface ProfileHeaderProps {
   showTabs?: boolean;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChange, showTabs = true}) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, onTabChange, showTabs = true }) => {
+  const { t } = useTranslation('translation', { keyPrefix: 'profile' });
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,18 +34,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChan
     formData.append("file", file);
     try {
       const res: any = await apiClient.post("/upload", formData, {
-        headers: {"Content-Type": "multipart/form-data"},
+        headers: { "Content-Type": "multipart/form-data" },
       });
       onSuccess && onSuccess(res);
       const url = res?.url || res?.data?.url || (res?.data && res.data[0] && res.data[0].url);
       if (url) {
-        await userService.updateProfile({...user, avatar: url} as any);
+        await userService.updateProfile({ ...user, avatar: url } as any);
         dispatch(getMe());
-        message.success("Đã cập nhật ảnh đại diện");
+        message.success(t("header.messages.avatarUpdated"));
       }
     } catch (err: any) {
       onError && onError(err);
-      message.error("Upload thất bại");
+      message.error(t("header.messages.uploadFailed"));
     }
   };
 
@@ -75,7 +77,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChan
                 <Upload
                   name="avatar"
                   showUploadList={false}
-                  customRequest={async ({file, onSuccess, onError}) =>
+                  customRequest={async ({ file, onSuccess, onError }) =>
                     handleAvatarUpload(file as File, onSuccess, onError)
                   }
                 >
@@ -93,12 +95,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChan
                   {user?.role && user.role !== "customer" && (
                     <span className="user-role-badge">
                       {user.role === "admin"
-                        ? "🛡️ Quản trị viên"
+                        ? `🛡️ ${t("header.roles.admin")}`
                         : user.role === "researcher"
-                          ? "🔍 Nhà nghiên cứu"
+                          ? `🔍 ${t("header.roles.researcher")}`
                           : user.role === "curator"
-                            ? "🏛️ Quản lý nội dung"
-                            : "Thành viên"}
+                            ? `🏛️ ${t("header.roles.curator")}`
+                            : t("header.roles.member")}
                     </span>
                   )}
                   {/* Edit Button - Only show if not on profile page, or always show? 
@@ -127,13 +129,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChan
                         transition: "all 0.2s",
                       }}
                     >
-                      <EditOutlined /> <span>CHỈNH SỬA</span>
+                      <EditOutlined /> <span>{t("header.edit")}</span>
                     </div>
                   )}
                 </div>
                 <p className="join-date">
-                  Tham gia từ:{" "}
-                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("vi-VN") : "Thành viên mới"}
+                  {t("header.joinedFrom")}{" "}
+                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("vi-VN") : t("header.newMember")}
                 </p>
               </div>
 
@@ -153,11 +155,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({user, activeTab, onTabChan
                     }
                   }}
                   items={[
-                    {label: "Hồ sơ", key: "profile"},
-                    {label: "Huy hiệu", key: "badges"},
-                    {label: "Hoạt động", key: "activity"},
-                    {label: "Bảo mật", key: "security"},
-                    {label: "Kho lưu Trữ", key: "library"},
+                    { label: t("tabs.profile"), key: "profile" },
+                    { label: t("tabs.badges"), key: "badges" },
+                    { label: t("tabs.activity"), key: "activity" },
+                    { label: t("tabs.security"), key: "security" },
+                    { label: t("tabs.library"), key: "library" },
                   ]}
                 />
               )}

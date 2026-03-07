@@ -8,13 +8,15 @@ import ArticleCard from '@/components/common/cards/ArticleCard';
 import collectionService from '@/services/collection.service';
 import { Collection, CollectionDTO } from '@/types/collection.types';
 import CollectionModal from './CollectionModal';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Paragraph } = Typography;
 
 const CollectionsPage = () => {
+    const { t } = useTranslation('translation', { keyPrefix: 'profile' });
     const [loading, setLoading] = useState(false);
     const [collections, setCollections] = useState<Collection[]>([]);
-    
+
     // Modal State
     const [modalVisible, setModalVisible] = useState(false);
     const [modalLoading, setModalLoading] = useState(false);
@@ -28,7 +30,7 @@ const CollectionsPage = () => {
                 setCollections(res.data || []);
             }
         } catch (error) {
-            message.error("Không thể tải danh sách bộ sưu tập");
+            message.error(t("collectionsPage.loadFailed"));
         } finally {
             setLoading(false);
         }
@@ -53,15 +55,15 @@ const CollectionsPage = () => {
         try {
             if (editingCollection) {
                 await collectionService.update(editingCollection.id, values);
-                message.success("Cập nhật thành công!");
+                message.success(t("collectionsPage.updateSuccess"));
             } else {
                 await collectionService.create(values);
-                message.success("Tạo bộ sưu tập thành công!");
+                message.success(t("collectionsPage.createSuccess"));
             }
             setModalVisible(false);
             fetchCollections();
         } catch (error) {
-            message.error("Có lỗi xảy ra, vui lòng thử lại.");
+            message.error(t("collectionsPage.errorOccurred"));
         } finally {
             setModalLoading(false);
         }
@@ -69,18 +71,18 @@ const CollectionsPage = () => {
 
     const handleDelete = (id: number) => {
         Modal.confirm({
-            title: "Xóa bộ sưu tập",
-            content: "Bạn có chắc chắn muốn xóa? Hành động này không thể hoàn tác.",
-            okText: "Xóa",
+            title: t("collectionsPage.deleteTitle"),
+            content: t("collectionsPage.deleteConfirm"),
+            okText: t("collectionsPage.deleteBtn"),
             okType: "danger",
-            cancelText: "Hủy",
+            cancelText: t("collectionsPage.cancelBtn"),
             onOk: async () => {
                 try {
                     await collectionService.delete(id);
-                    message.success("Đã xóa bộ sưu tập");
+                    message.success(t("collectionsPage.deleteSuccess"));
                     fetchCollections();
                 } catch (error) {
-                    message.error("Xóa thất bại");
+                    message.error(t("collectionsPage.deleteFailed"));
                 }
             }
         });
@@ -91,84 +93,84 @@ const CollectionsPage = () => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
                 <div>
-                   <Title level={2} style={{ margin: 0 }}>Bộ Sưu Tập Của Tôi</Title>
-                   <Paragraph type="secondary" style={{ margin: 0 }}>Quản lý và tổ chức các di sản yêu thích của bạn</Paragraph>
+                    <Title level={2} style={{ margin: 0 }}>{t("collectionsPage.title")}</Title>
+                    <Paragraph type="secondary" style={{ margin: 0 }}>{t("collectionsPage.description")}</Paragraph>
                 </div>
-                <Button 
-                    variant="primary" 
-                    buttonSize="medium" 
-                    icon={<PlusOutlined />} 
+                <Button
+                    variant="primary"
+                    buttonSize="medium"
+                    icon={<PlusOutlined />}
                     onClick={handleCreate}
                 >
-                    Tạo Mới
+                    {t("collectionsPage.createNewBtn")}
                 </Button>
             </div>
 
             {/* List */}
-             {loading ? (
-                 <div style={{ textAlign: "center", padding: 80 }}><Spin size="large" tip="Đang tải..." /></div> 
-             ) : (
-                 collections.length > 0 ? (
+            {loading ? (
+                <div style={{ textAlign: "center", padding: 80 }}><Spin size="large" tip={t("collectionsPage.loading")} /></div>
+            ) : (
+                collections.length > 0 ? (
                     <Row gutter={[24, 24]}>
                         {collections.map(col => (
                             <Col key={col.id} xs={24} sm={12} lg={8} xl={6}>
-                                    <ArticleCard
-                                        type="collection"
-                                        data={{
-                                            id: col.id,
-                                            name: col.name,
-                                            shortDescription: col.description,
-                                            createdAt: col.createdAt,
-                                            totalItems: col.totalItems,
-                                            thumbnail: "/images/collection-placeholder.jpg"
-                                        }}
-                                        actions={
-                                            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', width: '100%' }}>
-                                                <Button 
-                                                    variant="ghost" 
-                                                    icon={<EditOutlined />} 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleEdit(col);
-                                                    }} 
-                                                />
-                                                <Button 
-                                                    variant="ghost" 
-                                                    danger 
-                                                    icon={<DeleteOutlined />} 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDelete(col.id);
-                                                    }} 
-                                                />
-                                            </div>
-                                        }
-                                    />
+                                <ArticleCard
+                                    type="collection"
+                                    data={{
+                                        id: col.id,
+                                        name: col.name,
+                                        shortDescription: col.description,
+                                        createdAt: col.createdAt,
+                                        totalItems: col.totalItems,
+                                        thumbnail: "/images/collection-placeholder.jpg"
+                                    }}
+                                    actions={
+                                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', width: '100%' }}>
+                                            <Button
+                                                variant="ghost"
+                                                icon={<EditOutlined />}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEdit(col);
+                                                }}
+                                            />
+                                            <Button
+                                                variant="ghost"
+                                                danger
+                                                icon={<DeleteOutlined />}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(col.id);
+                                                }}
+                                            />
+                                        </div>
+                                    }
+                                />
                             </Col>
                         ))}
                     </Row>
-                 ) : (
+                ) : (
                     <Empty
                         image={<div style={{ fontSize: 64, color: '#e0e0e0', marginBottom: 16 }}><AppstoreOutlined /></div>}
                         description={
                             <span>
-                                Bạn chưa có bộ sưu tập nào. <br/>
-                                <span style={{ color: '#888' }}>Hãy tạo ngay một bộ sưu tập để lưu giữ những di sản bạn yêu thích!</span>
+                                {t("collectionsPage.emptyMessage1")} <br />
+                                <span style={{ color: '#888' }}>{t("collectionsPage.emptyMessage2")}</span>
                             </span>
                         }
                     >
-                        <Button variant="primary" onClick={handleCreate}>Tạo Ngay</Button>
+                        <Button variant="primary" onClick={handleCreate}>{t("collectionsPage.createNowBtn")}</Button>
                     </Empty>
-                 )
-             )}
+                )
+            )}
 
-             <CollectionModal 
+            <CollectionModal
                 visible={modalVisible}
                 onCancel={() => setModalVisible(false)}
                 onOk={handleSave}
                 loading={modalLoading}
                 initialValues={editingCollection}
-             />
+            />
         </div>
     );
 };
