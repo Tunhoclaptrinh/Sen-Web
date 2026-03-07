@@ -1,0 +1,33 @@
+.poster-only-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #fff;
+  overflow: auto;
+}
+
+.poster-only-page .poster-page-wrapper {
+  --poster-safe-width: calc(100vw - 40px);
+  --poster-width: min(841px, var(--poster-safe-width));
+  min-height: auto;
+  width: auto;
+  padding: 0;
+  background: #fff;
+  background-image: none;
+  overflow: visible;
+}
+
+.poster-only-page .poster-page-wrapper .poster-container-inner {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 992px) {
+  .poster-only-page {
+    padding: 10px;
+  }
+
+  .poster-only-page .poster-page-wrapper {
+    --poster-safe-width: calc(100vw - 20px);
+  }
+}
