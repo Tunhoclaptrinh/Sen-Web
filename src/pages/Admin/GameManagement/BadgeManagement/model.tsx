@@ -1,6 +1,6 @@
-import {useMemo, useState} from "react";
-import {message} from "antd";
-import {useCRUD} from "@/hooks/useCRUD";
+import { useMemo, useState } from "react";
+import { message } from "antd";
+import { useCRUD } from "@/hooks/useCRUD";
 import badgeService from "@/services/badge.service";
 
 export const useBadgeModel = () => {

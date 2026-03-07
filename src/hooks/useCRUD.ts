@@ -1,5 +1,5 @@
-import {useState, useCallback, useEffect, useRef} from "react";
-import {message} from "antd";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { message } from "antd";
 
 /**
  * ECRUD Hook
@@ -39,7 +39,7 @@ export const useCRUD = (service: any, options: any = {}) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Memoize options to prevent de-structuring from creating new object references
-  const {autoFetch = false, onSuccess, onError} = options;
+  const { autoFetch = false, onSuccess, onError } = options;
 
   const fetchErrorMessage = options.errorMessage?.fetch || "Lỗi khi tải dữ liệu";
   const createSuccessMessage = options.successMessage?.create || "Tạo thành công";
@@ -77,7 +77,7 @@ export const useCRUD = (service: any, options: any = {}) => {
     });
     setPagination((prev) => {
       if (prev.current === 1) return prev;
-      return {...prev, current: 1};
+      return { ...prev, current: 1 };
     });
   }, [initialFiltersStr]);
 
@@ -140,14 +140,14 @@ export const useCRUD = (service: any, options: any = {}) => {
         setLoading(true);
         setError(null);
 
-        const params = {...buildQueryParams(), ...customParams};
+        const params = { ...buildQueryParams(), ...customParams };
         const response = await service.getAll(params);
 
         setData(response.data || []);
 
         // Update pagination từ backend response
         if (response.pagination) {
-          const {page, limit, total, totalPages, hasNext, hasPrev} = response.pagination;
+          const { page, limit, total, totalPages, hasNext, hasPrev } = response.pagination;
           setPagination((prev) => {
             // Use backend values or fall back to current values to determine if an actual change occurred
             const nextCurrent = page !== undefined ? page : prev.current;
@@ -217,13 +217,31 @@ export const useCRUD = (service: any, options: any = {}) => {
   );
 
   /**
+   * Helper to process values before sending to backend.
+   * Converts undefined to null so that they are not stripped by JSON.stringify,
+   * allowing the backend to clear the fields.
+   */
+  const processValuesForSubmit = useCallback((values: any) => {
+    if (!values || typeof values !== "object") return values;
+
+    const processed = { ...values };
+    Object.keys(processed).forEach((key) => {
+      if (processed[key] === undefined) {
+        processed[key] = null;
+      }
+    });
+    return processed;
+  }, []);
+
+  /**
    * Create new item
    */
   const create = useCallback(
     async (values: any) => {
       try {
         setLoading(true);
-        const response = await service.create(values);
+        const processedValues = processValuesForSubmit(values);
+        const response = await service.create(processedValues);
         message.success(createSuccessMessage);
         await fetchAll();
         if (onSuccess) onSuccess("create", response);
@@ -236,7 +254,7 @@ export const useCRUD = (service: any, options: any = {}) => {
         setLoading(false);
       }
     },
-    [service, fetchAll, createSuccessMessage, createErrorMessage, onSuccess, onError],
+    [service, fetchAll, createSuccessMessage, createErrorMessage, onSuccess, onError, processValuesForSubmit],
   );
 
   /**
@@ -246,7 +264,8 @@ export const useCRUD = (service: any, options: any = {}) => {
     async (id: any, values: any) => {
       try {
         setLoading(true);
-        const response = await service.update(id, values);
+        const processedValues = processValuesForSubmit(values);
+        const response = await service.update(id, processedValues);
         message.success(updateSuccessMessage);
         await fetchAll();
         if (onSuccess) onSuccess("update", response);
@@ -259,7 +278,7 @@ export const useCRUD = (service: any, options: any = {}) => {
         setLoading(false);
       }
     },
-    [service, fetchAll, updateSuccessMessage, updateErrorMessage, onSuccess, onError],
+    [service, fetchAll, updateSuccessMessage, updateErrorMessage, onSuccess, onError, processValuesForSubmit],
   );
 
   /**
@@ -272,7 +291,7 @@ export const useCRUD = (service: any, options: any = {}) => {
         await service.delete(id);
         message.success(deleteSuccessMessage);
         await fetchAll();
-        if (onSuccess) onSuccess("delete", {id});
+        if (onSuccess) onSuccess("delete", { id });
         return true;
       } catch (err) {
         message.error(deleteErrorMessage);
@@ -290,7 +309,7 @@ export const useCRUD = (service: any, options: any = {}) => {
    */
   const search = useCallback(async (query: string) => {
     setSearchTerm(query);
-    setPagination((prev) => ({...prev, current: 1})); // Reset to page 1
+    setPagination((prev) => ({ ...prev, current: 1 })); // Reset to page 1
   }, []);
 
   /**
@@ -307,11 +326,11 @@ export const useCRUD = (service: any, options: any = {}) => {
     setFilters((prev: any) => {
       const hasChange = Object.keys(newFilters).some((key) => prev[key] !== newFilters[key]);
       if (!hasChange) return prev;
-      return {...prev, ...newFilters};
+      return { ...prev, ...newFilters };
     });
     setPagination((prev) => {
       if (prev.current === 1) return prev;
-      return {...prev, current: 1};
+      return { ...prev, current: 1 };
     });
   }, []);
 
@@ -320,15 +339,15 @@ export const useCRUD = (service: any, options: any = {}) => {
    */
   const clearFilters = useCallback(() => {
     setFilters(options.initialFilters || {});
-    setPagination((prev) => ({...prev, current: 1}));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   }, [initialFiltersStr, options.initialFilters]);
 
   /**
    * Update sorter
    */
   const updateSorter = useCallback((field: string, order: string) => {
-    setSorter({field, order});
-    setPagination((prev) => ({...prev, current: 1})); // Reset to page 1
+    setSorter({ field, order });
+    setPagination((prev) => ({ ...prev, current: 1 })); // Reset to page 1
   }, []);
 
   /**
@@ -351,7 +370,7 @@ export const useCRUD = (service: any, options: any = {}) => {
     // Update filters
     if (newFilters) {
       setFilters((prev: any) => {
-        const updated = {...prev};
+        const updated = { ...prev };
         let hasChanged = false;
 
         Object.keys(newFilters).forEach((key) => {
@@ -459,7 +478,7 @@ export const useCRUD = (service: any, options: any = {}) => {
           let baseParams = {};
           if (options.filters) {
             // Build params manually from options.filters object if provided
-            baseParams = {...options.filters};
+            baseParams = { ...options.filters };
           } else {
             // Fallback to current table filters
             baseParams = buildQueryParams();
@@ -468,17 +487,17 @@ export const useCRUD = (service: any, options: any = {}) => {
           // Otherwise construct params based on scope
           if (scope === "all") {
             // Export ALL: use filter params but REMOVE pagination
-            const {_page, _limit, ...rest} = baseParams as any;
-            params = {...rest, format};
+            const { _page, _limit, ...rest } = baseParams as any;
+            params = { ...rest, format };
             params._limit = -1;
           } else if (scope === "custom") {
             // Custom Limit: use filters but override limit
-            const {_page, ...rest} = baseParams as any;
-            params = {...rest, _limit: limit, _page: 1, format};
+            const { _page, ...rest } = baseParams as any;
+            params = { ...rest, _limit: limit, _page: 1, format };
           } else {
             // scope === 'page'
             // Current Page: use exactly what's provided (including pagination if it came from buildQueryParams, or default if ad-hoc)
-            params = {...baseParams, format};
+            params = { ...baseParams, format };
             // If ad-hoc filters were used, they don't have pagination params, so we might need defaults?
             // Actually 'page' scope implies "Current visible page".
             // If we changed filters ad-hoc, "Current Page" concept is vague.

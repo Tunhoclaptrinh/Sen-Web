@@ -66,25 +66,6 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   }
 
   /**
-   * Preprocess data before sending to API
-   * Converts undefined to null to ensure they aren't stripped by JSON.stringify
-   * and can explicitly clear values in the backend (PATCH behavior)
-   */
-  protected preprocessData(data: any): any {
-    if (!data || typeof data !== "object") return data;
-
-    // Shallow copy for top-level transformation
-    const processed = { ...data };
-    Object.keys(processed).forEach((key) => {
-      if (processed[key] === undefined) {
-        processed[key] = null;
-      }
-    });
-
-    return processed;
-  }
-
-  /**
    * Protected HTTP helper methods for child services
    * These allow child services to make custom API calls while maintaining consistency
    */
@@ -223,8 +204,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async update(id: number | string, data: UpdateDTO): Promise<BaseApiResponse<T>> {
     try {
-      const processedData = this.preprocessData(data);
-      const response = await apiClient.put<BaseApiResponse<T>>(`${this.endpoint}/${id}`, processedData);
+      const response = await apiClient.put<BaseApiResponse<T>>(`${this.endpoint}/${id}`, data);
 
       return {
         success: response.success ?? true,
@@ -242,8 +222,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async patch(id: number | string, data: Partial<UpdateDTO>): Promise<BaseApiResponse<T>> {
     try {
-      const processedData = this.preprocessData(data);
-      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}`, processedData);
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}`, data);
 
       return {
         success: response.success ?? true,

@@ -1,14 +1,14 @@
-import {Input, Switch, Row, Col, Form, Tabs, message, DatePicker, Select} from "antd";
-import {FormModal, TinyEditor, Button as StyledButton, DebounceSelect} from "@/components/common";
+import { Input, Switch, Row, Col, Form, Tabs, message, DatePicker, Select } from "antd";
+import { FormModal, TinyEditor, Button as StyledButton, DebounceSelect } from "@/components/common";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
-import {useEffect, useState, useMemo} from "react";
-import {useAuth} from "@/hooks/useAuth";
+import { useEffect, useState, useMemo } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
 import adminLevelService from "@/services/admin-level.service";
-import categoryService, {Category} from "@/services/category.service";
+import categoryService, { Category } from "@/services/category.service";
 
 interface HistoryFormProps {
   open: boolean;
@@ -28,7 +28,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   loading = false,
   isEdit = false,
 }) => {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [form] = Form.useForm();
   const [activeTab, setActiveTab] = useState("1");
   const isEditMode = isEdit || (initialValues && initialValues.id);
@@ -57,7 +57,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await categoryService.getAll({limit: 100});
+      const res = await categoryService.getAll({ limit: 100 });
       if (res.success && Array.isArray(res.data)) {
         setCategories(res.data);
       }
@@ -73,17 +73,17 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
           // Fetch labels for related IDs
           const [relHeritageRes, relArtifactRes, relHistoryRes, relLevelsRes] = await Promise.all([
             initialValues.relatedHeritageIds?.length > 0
-              ? heritageService.getAll({ids: initialValues.relatedHeritageIds.join(",")})
-              : Promise.resolve({success: true, data: []}),
+              ? heritageService.getAll({ ids: initialValues.relatedHeritageIds.join(",") })
+              : Promise.resolve({ success: true, data: [] }),
             initialValues.relatedArtifactIds?.length > 0
-              ? artifactService.getAll({ids: initialValues.relatedArtifactIds.join(",")})
-              : Promise.resolve({success: true, data: []}),
+              ? artifactService.getAll({ ids: initialValues.relatedArtifactIds.join(",") })
+              : Promise.resolve({ success: true, data: [] }),
             initialValues.relatedHistoryIds?.length > 0
-              ? historyService.getAll({ids: initialValues.relatedHistoryIds.join(",")})
-              : Promise.resolve({success: true, data: []}),
+              ? historyService.getAll({ ids: initialValues.relatedHistoryIds.join(",") })
+              : Promise.resolve({ success: true, data: [] }),
             initialValues.relatedLevelIds?.length > 0
-              ? adminLevelService.getAll({ids: initialValues.relatedLevelIds.join(",")})
-              : Promise.resolve({success: true, data: []}),
+              ? adminLevelService.getAll({ ids: initialValues.relatedLevelIds.join(",") })
+              : Promise.resolve({ success: true, data: [] }),
           ]);
 
           // Map related heritage to {label, value}
@@ -93,10 +93,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 ? relHeritageRes.data.find((h: any) => h.id === (typeof id === "object" ? id.value : id))
                 : null;
             return heri
-              ? {label: heri.name, value: heri.id}
+              ? { label: heri.name, value: heri.id }
               : typeof id === "object"
                 ? id
-                : {label: `ID: ${id}`, value: id};
+                : { label: `ID: ${id}`, value: id };
           });
 
           // Map related artifacts to {label, value}
@@ -106,10 +106,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 ? relArtifactRes.data.find((a: any) => a.id === (typeof id === "object" ? id.value : id))
                 : null;
             return art
-              ? {label: art.name, value: art.id}
+              ? { label: art.name, value: art.id }
               : typeof id === "object"
                 ? id
-                : {label: `ID: ${id}`, value: id};
+                : { label: `ID: ${id}`, value: id };
           });
 
           // Map related history to {label, value}
@@ -119,10 +119,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 ? relHistoryRes.data.find((h: any) => h.id === (typeof id === "object" ? id.value : id))
                 : null;
             return hist
-              ? {label: hist.title, value: hist.id}
+              ? { label: hist.title, value: hist.id }
               : typeof id === "object"
                 ? id
-                : {label: `ID: ${id}`, value: id};
+                : { label: `ID: ${id}`, value: id };
           });
 
           // Map related levels to {label, value}
@@ -132,10 +132,10 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 ? relLevelsRes.data.find((l: any) => l.id === (typeof id === "object" ? id.value : id))
                 : null;
             return lvl
-              ? {label: lvl.name, value: lvl.id}
+              ? { label: lvl.name, value: lvl.id }
               : typeof id === "object"
                 ? id
-                : {label: `ID: ${id}`, value: id};
+                : { label: `ID: ${id}`, value: id };
           });
 
           const formattedValues = {
@@ -231,12 +231,12 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   // Fetch functions for Search
   const fetchHeritageList = async (search: string) => {
     try {
-      const response = await heritageService.getAll({q: search, _limit: 10});
+      const response = await heritageService.getAll({ q: search, _limit: 10 });
       return response.success && response.data
         ? response.data.map((item: any) => ({
-            label: item.name,
-            value: item.id,
-          }))
+          label: item.name,
+          value: item.id,
+        }))
         : [];
     } catch (error) {
       return [];
@@ -245,12 +245,12 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
   const fetchArtifactList = async (search: string) => {
     try {
-      const response = await artifactService.getAll({q: search, _limit: 10});
+      const response = await artifactService.getAll({ q: search, _limit: 10 });
       return response.success && response.data
         ? response.data.map((item: any) => ({
-            label: item.name,
-            value: item.id,
-          }))
+          label: item.name,
+          value: item.id,
+        }))
         : [];
     } catch (error) {
       return [];
@@ -258,12 +258,12 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   };
   const fetchHistoryList = async (search: string) => {
     try {
-      const response = await historyService.getAll({q: search, _limit: 10});
+      const response = await historyService.getAll({ q: search, _limit: 10 });
       return response.success && response.data
         ? response.data.map((item: any) => ({
-            label: item.title,
-            value: item.id,
-          }))
+          label: item.title,
+          value: item.id,
+        }))
         : [];
     } catch (error) {
       return [];
@@ -272,12 +272,12 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
 
   const fetchLevelList = async (search: string) => {
     try {
-      const response = await adminLevelService.getAll({q: search, _limit: 10});
+      const response = await adminLevelService.getAll({ q: search, _limit: 10 });
       return response.success && response.data
         ? response.data.map((item: any) => ({
-            label: item.name,
-            value: item.id,
-          }))
+          label: item.name,
+          value: item.id,
+        }))
         : [];
     } catch (error) {
       return [];
@@ -295,11 +295,11 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       loading={loading}
       initialValues={memoizedInitialValues}
       footer={
-        <div style={{display: "flex", justifyContent: "center", gap: "8px"}}>
-          <StyledButton variant="outline" onClick={onCancel} style={{minWidth: "120px"}}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+          <StyledButton variant="outline" onClick={onCancel} style={{ minWidth: "120px" }}>
             Hủy
           </StyledButton>
-          <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{minWidth: "120px"}}>
+          <StyledButton variant="primary" loading={loading} onClick={handleSubmitClick} style={{ minWidth: "120px" }}>
             Lưu lại
           </StyledButton>
         </div>
@@ -332,7 +332,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     <Form.Item
                       name="categoryId"
                       label="Danh mục Văn hóa"
-                      rules={[{required: true, message: "Vui lòng chọn danh mục"}]}
+                      rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
                     >
                       <Select placeholder="Chọn danh mục" allowClear>
                         {categories.map((cat) => (
@@ -351,8 +351,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                       name="title"
                       label="Tiêu đề bài viết"
                       rules={[
-                        {required: true, message: "Vui lòng nhập tiêu đề"},
-                        {min: 5, message: "Tiêu đề yêu cầu tối thiểu 5 ký tự"},
+                        { required: true, message: "Vui lòng nhập tiêu đề" },
+                        { min: 5, message: "Tiêu đề yêu cầu tối thiểu 5 ký tự" },
                       ]}
                     >
                       <Input placeholder="Nhập tiêu đề bài viết lịch sử..." />
@@ -366,8 +366,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                       name="shortDescription"
                       label="Mô tả ngắn"
                       rules={[
-                        {required: true, message: "Vui lòng nhập mô tả ngắn"},
-                        {min: 20, message: "Mô tả ngắn yêu cầu tối thiểu 20 ký tự"},
+                        { required: true, message: "Vui lòng nhập mô tả ngắn" },
+                        { min: 20, message: "Mô tả ngắn yêu cầu tối thiểu 20 ký tự" },
                       ]}
                     >
                       <Input.TextArea rows={3} placeholder="Mô tả tóm tắt nội dung..." />
@@ -383,7 +383,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                   </Col>
                   <Col span={8}>
                     <Form.Item name="publishDate" label="Ngày đăng">
-                      <DatePicker style={{width: "100%"}} disabled />
+                      <DatePicker style={{ width: "100%" }} disabled />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
@@ -404,8 +404,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                   name="content"
                   label="Nội dung bài viết"
                   rules={[
-                    {required: true, message: "Vui lòng nhập nội dung"},
-                    {min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự"},
+                    { required: true, message: "Vui lòng nhập nội dung" },
+                    { min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự" },
                   ]}
                 >
                   <TinyEditor
@@ -432,7 +432,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm di sản..."
                     fetchOptions={fetchHeritageList}
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
 
@@ -441,7 +441,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm hiện vật..."
                     fetchOptions={fetchArtifactList}
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
                 <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds">
@@ -449,7 +449,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm bài viết..."
                     fetchOptions={fetchHistoryList}
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
                 <Form.Item label="Màn chơi liên quan" name="relatedLevelIds">
@@ -457,7 +457,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm màn chơi..."
                     fetchOptions={fetchLevelList}
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
               </>
