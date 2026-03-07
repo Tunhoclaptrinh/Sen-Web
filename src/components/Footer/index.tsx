@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Typography, Input, Button } from "antd";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 
 import logo from "@/assets/images/logo2.png";
@@ -12,6 +13,8 @@ import smoke_right from "@/assets/images/background/smoke-right.png";
 const { Title, Text, Paragraph } = Typography;
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="footer">
       <div className="footer-decorations">
@@ -52,34 +55,34 @@ const Footer: React.FC = () => {
           {/* Address */}
           <Col xs={24} md={6}>
             <Title level={4} className="footer-title">
-              Địa chỉ
+              {t('common.footer.address')}
             </Title>
             <Paragraph className="footer-text">
-              Học viện Công nghệ Bưu chính Viễn thông
+              {t('common.footer.academy')}
               <br />
-              Km10, Đường Nguyễn Trãi, Q. Hà Đông, Hà Nội
+              {t('common.footer.addressDetail')}
             </Paragraph>
           </Col>
 
           {/* Navigation */}
           <Col xs={24} md={5}>
             <Title level={4} className="footer-title">
-              Khám phá
+              {t('common.footer.explore')}
             </Title>
             <nav className="footer-links">
-              <Link to="/">Trang chủ</Link>
-              <Link to="/heritage-sites">Di sản</Link>
-              <Link to="/artifacts">Hiện vật</Link>
+              <Link to="/">{t('nav.home')}</Link>
+              <Link to="/heritage-sites">{t('nav.heritage')}</Link>
+              <Link to="/artifacts">{t('nav.artifacts')}</Link>
             </nav>
           </Col>
 
           {/* About */}
           <Col xs={24} md={5}>
             <Title level={4} className="footer-title">
-              Về chúng tôi
+              {t('common.footer.aboutUs')}
             </Title>
             <Paragraph className="footer-text">
-              Sen - Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ
+              {t('header.slogan')}
             </Paragraph>
             <Paragraph className="footer-text team-name">
               Sen Development Team
@@ -90,16 +93,16 @@ const Footer: React.FC = () => {
         <div className="footer-newsletter">
           <Input.Group compact className="newsletter-group">
             <Input
-              placeholder="Nhập email của bạn..."
+              placeholder={t('common.footer.newsletterPlaceholder')}
               className="newsletter-input"
             />
-            <Button className="newsletter-button">Nhập</Button>
+            <Button className="newsletter-button">{t('common.footer.newsletterBtn')}</Button>
           </Input.Group>
         </div>
 
         <div className="footer-bottom">
           <Text className="copyright">
-            © 2026 Sen. Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ.
+            {t('common.footer.copyright')}
           </Text>
         </div>
       </div>

@@ -221,6 +221,16 @@
       "MANUSCRIPT": "Manuscript",
       "PHOTOGRAPH": "Photograph",
       "OTHER": "Other"
+    },
+    "footer": {
+      "address": "Address",
+      "academy": "Posts and Telecommunications Institute of Technology",
+      "addressDetail": "Km10, Nguyen Trai St., Ha Dong Dist., Hanoi",
+      "explore": "Explore",
+      "aboutUs": "About Us",
+      "newsletterPlaceholder": "Enter your email...",
+      "newsletterBtn": "Submit",
+      "copyright": "© 2026 Sen. Creating history and culture experiences with technology."
     }
   },
   "heritage": {
