@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Bài viết văn hóa lịch sử",
+    "subtitle": "Hào hùng ngàn năm văn hiến - Kết nối quá khứ và hiện tại.",
+    "searchPlaceholder": "Tìm kiếm sự kiện, nhân vật...",
+    "filters": {
+      "category": "Danh mục",
+      "reset": "Xóa Lọc"
+    },
+    "sections": {
+      "featured": "Tiêu điểm",
+      "explore": "Khám phá lịch sử"
+    },
+    "messages": {
+      "loading": "Đang tải dữ liệu...",
+      "empty": "Không tìm thấy bài viết nào"
+    },
+    "pagination": {
+      "total": "Tổng số: {{count}}"
+    }
+  },
+  "detail": {
+    "navigation": {
+      "back": "Quay lại"
+    },
+    "hero": {
+      "tag": "BÀI VIẾT VĂN HÓA LỊCH SỬ",
+      "views": "{{count}} lượt xem"
+    },
+    "tabs": {
+      "content": "Nội dung",
+      "timeline": "Dòng thời gian",
+      "discovery": "Khám phá & Trải nghiệm"
+    },
+    "content": {
+      "articleDetail": "Bài viết chi tiết",
+      "references": "Nguồn tham khảo",
+      "noContent": "Chưa có nội dung chi tiết.",
+      "actions": {
+        "save": "Lưu bài viết",
+        "saved": "Đã lưu",
+        "share": "Chia sẻ",
+        "saveToCollection": "Lưu vào BST"
+      }
+    },
+    "timeline": {
+      "title": "Các Mốc Sự Kiện Quan Trọng",
+      "empty": "Chưa có dữ liệu dòng thời gian"
+    },
+    "discovery": {
+      "virtualTour": {
+        "title": "Tham quan Không gian 3D",
+        "cardTitle": "Triển lãm Thực tế ảo",
+        "subtitle": "Khám phá không gian di tích được tái hiện chân thực trong môi trường 3D.",
+        "button": "Trải nghiệm ngay",
+        "comingSoon": "SẮP RA MẮT"
+      },
+      "game": {
+        "title": "Trải nghiệm Lịch sử",
+        "subtitle": "Tham gia các màn chơi tương tác để hiểu rõ hơn về sự kiện này.",
+        "playNow": "Chơi ngay",
+        "ctaTitle": "Khám phá thế giới game lịch sử",
+        "ctaSubtitle": "Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!",
+        "ctaButton": "Khám phá ngay"
+      },
+      "related": {
+        "title": "Di sản & Hiện vật liên quan"
+      },
+      "products": {
+        "title": "Sản phẩm Văn hóa",
+        "subtitle": "Quà lưu niệm và các tác phẩm văn hóa đặc sắc từ sự kiện này.",
+        "viewDetails": "Xem chi tiết"
+      },
+      "empty": "Đang cập nhật thêm các nội dung khám phá..."
+    },
+    "messages": {
+      "notFound": "Không tìm thấy bài viết",
+      "loadError": "Lỗi tải dữ liệu",
+      "favoriteError": "Lỗi khi cập nhật yêu thích"
+    },
+    "relatedBottom": {
+      "title": "Bài viết lịch sử khác"
+    }
+  }
+}

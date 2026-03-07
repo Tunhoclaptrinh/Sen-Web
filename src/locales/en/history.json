@@ -1,0 +1,85 @@
+{
+  "list": {
+    "title": "Historical & Cultural Articles",
+    "subtitle": "Glorious millennia of civilization - Connecting past and present.",
+    "searchPlaceholder": "Search events, characters...",
+    "filters": {
+      "category": "Category",
+      "reset": "Reset Filters"
+    },
+    "sections": {
+      "featured": "Featured",
+      "explore": "Explore History"
+    },
+    "messages": {
+      "loading": "Loading data...",
+      "empty": "No articles found"
+    },
+    "pagination": {
+      "total": "Total: {{count}}"
+    }
+  },
+  "detail": {
+    "navigation": {
+      "back": "Back"
+    },
+    "hero": {
+      "tag": "HISTORICAL & CULTURAL ARTICLES",
+      "views": "{{count}} views"
+    },
+    "tabs": {
+      "content": "Content",
+      "timeline": "Timeline",
+      "discovery": "Explore & Experience"
+    },
+    "content": {
+      "articleDetail": "Detailed Article",
+      "references": "References",
+      "noContent": "No detailed content available.",
+      "actions": {
+        "save": "Save Article",
+        "saved": "Saved",
+        "share": "Share",
+        "saveToCollection": "Save to Collection"
+      }
+    },
+    "timeline": {
+      "title": "Important Milestones",
+      "empty": "No timeline data available"
+    },
+    "discovery": {
+      "virtualTour": {
+        "title": "3D Space Tour",
+        "cardTitle": "Virtual Exhibition",
+        "subtitle": "Explore heritage spaces truthfully recreated in a 3D environment.",
+        "button": "Experience Now",
+        "comingSoon": "COMING SOON"
+      },
+      "game": {
+        "title": "Historical Experience",
+        "subtitle": "Join interactive levels to better understand this event.",
+        "playNow": "Play Now",
+        "ctaTitle": "Explore the historical game world",
+        "ctaSubtitle": "Dozens of exciting levels are waiting for you!",
+        "ctaButton": "Explore Now"
+      },
+      "related": {
+        "title": "Related Heritage & Artifacts"
+      },
+      "products": {
+        "title": "Cultural Products",
+        "subtitle": "Souvenirs and unique cultural works from this event.",
+        "viewDetails": "View Details"
+      },
+      "empty": "Updating more discovery content..."
+    },
+    "messages": {
+      "notFound": "Article not found",
+      "loadError": "Data loading error",
+      "favoriteError": "Error updating favorites"
+    },
+    "relatedBottom": {
+      "title": "Other Historical Articles"
+    }
+  }
+}

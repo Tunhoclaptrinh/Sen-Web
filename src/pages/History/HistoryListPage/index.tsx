@@ -1,16 +1,18 @@
-import React, {useEffect, useState} from "react";
-import {Row, Col, Input, Button, Spin, Empty, Typography, Pagination, Select} from "antd";
-import {SearchOutlined, FilterOutlined} from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Row, Col, Input, Button, Spin, Empty, Typography, Pagination, Select } from "antd";
+import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import historyService from "@/services/history.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
-import {useCategories} from "@/hooks/useCategories";
+import { useCategories } from "@/hooks/useCategories";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const HistoryListPage: React.FC = () => {
-  const {categories} = useCategories();
+  const { t } = useTranslation();
+  const { categories } = useCategories();
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [randomFeatured, setRandomFeatured] = useState<any | null>(null);
@@ -67,8 +69,8 @@ const HistoryListPage: React.FC = () => {
   };
 
   const handleSearch = (value: string) => {
-    setFilters((prev) => ({...prev, q: value}));
-    setPagination((prev) => ({...prev, current: 1}));
+    setFilters((prev) => ({ ...prev, q: value }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   return (
@@ -76,8 +78,8 @@ const HistoryListPage: React.FC = () => {
       {/* 1. Hero Section - Reusing heritage styling classes */}
       <section className="hero-section">
         <div className="hero-content">
-          <Title level={1}>Lịch Sử Việt Nam</Title>
-          <p className="hero-subtitle">Hào hùng ngàn năm văn hiến - Kết nối quá khứ và hiện tại.</p>
+          <Title level={1}>{t('history.list.title')}</Title>
+          <p className="hero-subtitle">{t('history.list.subtitle')}</p>
         </div>
       </section>
 
@@ -89,13 +91,13 @@ const HistoryListPage: React.FC = () => {
             <SearchOutlined />
             <Input
               bordered={false}
-              placeholder="Tìm kiếm sự kiện, nhân vật..."
+              placeholder={t('history.list.searchPlaceholder')}
               allowClear
               value={filters.q}
               onPressEnter={(e) => handleSearch(e.currentTarget.value)}
               onChange={(e) => {
-                setFilters((prev) => ({...prev, q: e.target.value}));
-                if (!e.target.value) setPagination((prev) => ({...prev, current: 1}));
+                setFilters((prev) => ({ ...prev, q: e.target.value }));
+                if (!e.target.value) setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             />
           </div>
@@ -106,11 +108,11 @@ const HistoryListPage: React.FC = () => {
           <div className="filter-item">
             <Select
               bordered={false}
-              placeholder="Danh mục"
-              style={{width: "100%"}}
+              placeholder={t('history.list.filters.category')}
+              style={{ width: "100%" }}
               allowClear
               value={filters.categoryId}
-              onChange={(value) => setFilters((prev) => ({...prev, categoryId: value}))}
+              onChange={(value) => setFilters((prev) => ({ ...prev, categoryId: value }))}
             >
               {categories.map((cat) => (
                 <Select.Option key={cat.id} value={cat.id}>
@@ -133,18 +135,18 @@ const HistoryListPage: React.FC = () => {
                   categoryId: undefined,
                   isActive: true,
                 });
-                setPagination((prev) => ({...prev, current: 1}));
+                setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             >
-              Xóa Lọc
+              {t('history.list.filters.reset')}
             </Button>
           </div>
         </div>
       </div>
 
       {loading ? (
-        <div style={{textAlign: "center", padding: "100px 0"}}>
-          <Spin size="large" tip="Đang tải dữ liệu..." />
+        <div style={{ textAlign: "center", padding: "100px 0" }}>
+          <Spin size="large" tip={t('history.list.messages.loading')} />
         </div>
       ) : (
         <>
@@ -152,10 +154,10 @@ const HistoryListPage: React.FC = () => {
           {randomFeatured && (
             <section className="discovered-section">
               <Title level={2} className="header-title">
-                Tiêu điểm
+                {t('history.list.sections.featured')}
               </Title>
               {/* @ts-ignore - type 'history' to be added */}
-              <DiscoveryCard data={{...randomFeatured, name: randomFeatured.title}} type="history" />
+              <DiscoveryCard data={{ ...randomFeatured, name: randomFeatured.title }} type="history" />
             </section>
           )}
 
@@ -166,31 +168,31 @@ const HistoryListPage: React.FC = () => {
             </div>
             <div className="section-content">
               <Title level={2} className="header-title">
-                Khám phá lịch sử
+                {t('history.list.sections.explore')}
               </Title>
 
               {articles.length === 0 ? (
-                <Empty description="Không tìm thấy bài viết nào" />
+                <Empty description={t('history.list.messages.empty')} />
               ) : (
                 <Row gutter={[24, 24]}>
                   {articles.map((item) => (
                     <Col xs={24} sm={12} lg={8} key={item.id}>
                       <ArticleCard
                         // @ts-ignore - mapping title to name and type handling
-                        data={{...item, name: item.title, id: item.id}}
+                        data={{ ...item, name: item.title, id: item.id }}
                         type="history"
                       />
                     </Col>
                   ))}
                 </Row>
               )}
-              <div style={{marginTop: 40, display: "flex", justifyContent: "center", width: "100%"}}>
+              <div style={{ marginTop: 40, display: "flex", justifyContent: "center", width: "100%" }}>
                 <Pagination
                   current={pagination.current}
                   pageSize={pagination.pageSize}
                   total={pagination.total}
-                  showTotal={(total) => `Tổng số: ${total}`}
-                  onChange={(page) => setPagination((prev) => ({...prev, current: page}))}
+                  showTotal={(total) => t('history.list.pagination.total', { count: total })}
+                  onChange={(page) => setPagination((prev) => ({ ...prev, current: page }))}
                   showSizeChanger={false}
                 />
               </div>

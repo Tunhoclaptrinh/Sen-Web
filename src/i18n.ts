@@ -11,6 +11,7 @@ import viHeritage from './locales/vi/heritage.json';
 import viArtifact from './locales/vi/artifact.json';
 import viMap from './locales/vi/map.json';
 import viExhibition from './locales/vi/exhibition.json';
+import viHistory from './locales/vi/history.json';
 
 import enNav from './locales/en/nav.json';
 import enHome from './locales/en/home.json';
@@ -21,6 +22,7 @@ import enHeritage from './locales/en/heritage.json';
 import enArtifact from './locales/en/artifact.json';
 import enMap from './locales/en/map.json';
 import enExhibition from './locales/en/exhibition.json';
+import enHistory from './locales/en/history.json';
 
 i18n
   .use(LanguageDetector)
@@ -38,6 +40,7 @@ i18n
           artifact: viArtifact,
           map: viMap,
           exhibition: viExhibition,
+          history: viHistory,
         },
       },
       en: {
@@ -51,6 +54,7 @@ i18n
           artifact: enArtifact,
           map: enMap,
           exhibition: enExhibition,
+          history: enHistory,
         },
       },
     },

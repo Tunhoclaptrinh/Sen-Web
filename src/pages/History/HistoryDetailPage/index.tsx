@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline} from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -23,18 +24,19 @@ import favoriteService from "@/services/favorite.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import gameService from "@/services/game.service";
-import {useViewTracker} from "@/hooks/useViewTracker";
-import {normalizeVietnamese} from "@/utils/helpers";
-import {HistoryArticle, HeritageSite, Artifact, TimelineEvent} from "@/types";
-import {ITEM_TYPES} from "@/config/constants";
+import { useViewTracker } from "@/hooks/useViewTracker";
+import { normalizeVietnamese } from "@/utils/helpers";
+import { HistoryArticle, HeritageSite, Artifact, TimelineEvent } from "@/types";
+import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const HistoryDetailPage = () => {
-  const {id} = useParams();
+  const { t } = useTranslation();
+  const { id } = useParams();
   const navigate = useNavigate();
   const [article, setArticle] = useState<HistoryArticle | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,7 +94,7 @@ const HistoryDetailPage = () => {
         // Fetch related history (prioritize explicit links + fill up to 3)
         const relHistIds = data.relatedHistoryIds || [];
         const relatedHistoryData: HistoryArticle[] = [];
-        
+
         if (relHistIds.length > 0) {
           const resRelIds = await historyService.getByIds(relHistIds);
           if (resRelIds.data) relatedHistoryData.push(...resRelIds.data);
@@ -111,11 +113,11 @@ const HistoryDetailPage = () => {
         }
         setRelatedHistory(relatedHistoryData);
       } else {
-        message.error("Không tìm thấy bài viết");
+        message.error(t('history.detail.messages.notFound'));
       }
     } catch (error) {
       console.error(error);
-      message.error("Lỗi tải dữ liệu");
+      message.error(t('history.detail.messages.loadError'));
     } finally {
       setLoading(false);
     }
@@ -141,7 +143,7 @@ const HistoryDetailPage = () => {
         message.success(res.message);
       }
     } catch (error) {
-      message.error("Lỗi khi cập nhật yêu thích");
+      message.error(t('history.detail.messages.favoriteError'));
     }
   };
 
@@ -161,11 +163,11 @@ const HistoryDetailPage = () => {
         <Spin size="large" />
       </div>
     );
-  if (!article) return <Empty description="Không tìm thấy bài viết" />;
+  if (!article) return <Empty description={t('history.detail.messages.notFound')} />;
 
   const mainImage = article.image || "https://images.unsplash.com/photo-1555921015-5532091f6026?w=1200";
   const publishDate = article.publishDate || article.createdAt;
-  const authorName = normalizeVietnamese(article.authorName || article.author || "Hệ thống");
+  const authorName = normalizeVietnamese(article.authorName || article.author || t('common.noInfo'));
   const normalizedTitle = normalizeVietnamese(article.title);
   const normalizedShortDescription = normalizeVietnamese(article.shortDescription || "");
   const normalizedContent = normalizeVietnamese(article.content || "");
@@ -186,11 +188,11 @@ const HistoryDetailPage = () => {
 
       {/* 1. HERO SECTION (Identical to Heritage) */}
       <section className="detail-hero">
-        <div className="hero-bg" style={{backgroundImage: `url('${mainImage}')`}} />
+        <div className="hero-bg" style={{ backgroundImage: `url('${mainImage}')` }} />
         <div className="hero-overlay">
           <div className="hero-content">
-            <Tag color="var(--primary-color)" style={{border: "none", marginBottom: 16}}>
-              LỊCH SỬ VIỆT NAM
+            <Tag color="var(--primary-color)" style={{ border: "none", marginBottom: 16 }}>
+              {t('history.detail.hero.tag')}
             </Tag>
             <h1>{normalizedTitle}</h1>
             <div className="hero-meta">
@@ -201,7 +203,7 @@ const HistoryDetailPage = () => {
                 <UserOutlined /> {authorName}
               </span>
               <span>
-                <EyeOutlined /> {article.views || 0} lượt xem
+                <EyeOutlined /> {t('history.detail.hero.views', { count: article.views || 0 })}
               </span>
             </div>
           </div>
@@ -216,7 +218,7 @@ const HistoryDetailPage = () => {
           items={[
             {
               key: "content",
-              label: "Nội dung",
+              label: t('history.detail.tabs.content'),
               children: (
                 <div className="article-main-wrapper">
                   <div className="article-meta-header">
@@ -227,12 +229,12 @@ const HistoryDetailPage = () => {
 
                   {/* Abstract/Short Description */}
                   {normalizedShortDescription && <blockquote>{normalizedShortDescription}</blockquote>}
-                  <div className="article-body-content" dangerouslySetInnerHTML={{__html: normalizedContent}} />
+                  <div className="article-body-content" dangerouslySetInnerHTML={{ __html: normalizedContent || `<p>${t('history.detail.content.noContent')}</p>` }} />
 
                   {article.references && (
                     <div className="references-section">
-                      <h3>Nguồn tham khảo</h3>
-                      <div className="references-content" dangerouslySetInnerHTML={{__html: article.references}} />
+                      <h3>{t('history.detail.content.references')}</h3>
+                      <div className="references-content" dangerouslySetInnerHTML={{ __html: article.references }} />
                     </div>
                   )}
 
@@ -242,13 +244,13 @@ const HistoryDetailPage = () => {
                       <Button
                         type="text"
                         size="large"
-                        icon={isFavorite ? <HeartFilled style={{color: "#ff4d4f"}} /> : <HeartOutlined />}
+                        icon={isFavorite ? <HeartFilled style={{ color: "#ff4d4f" }} /> : <HeartOutlined />}
                         onClick={handleToggleFavorite}
                       >
-                        {isFavorite ? "Đã lưu" : "Lưu bài viết"}
+                        {isFavorite ? t('history.detail.content.actions.saved') : t('history.detail.content.actions.save')}
                       </Button>
                       <Button type="text" size="large" icon={<ShareAltOutlined />}>
-                        Chia sẻ
+                        {t('history.detail.content.actions.share')}
                       </Button>
                       <Button
                         type="text"
@@ -256,7 +258,7 @@ const HistoryDetailPage = () => {
                         icon={<FolderAddOutlined />}
                         onClick={() => setShowCollectionModal(true)}
                       >
-                        Lưu vào BST
+                        {t('history.detail.content.actions.saveToCollection')}
                       </Button>
                     </div>
                   </div>
@@ -275,52 +277,52 @@ const HistoryDetailPage = () => {
             },
             {
               key: "timeline",
-              label: "Dòng thời gian",
+              label: t('history.detail.tabs.timeline'),
               children: (
                 <div className="article-main-wrapper">
-                  <Title level={3} style={{fontFamily: "Aleo, serif", marginBottom: 32, textAlign: "center"}}>
-                    Các Mốc Sự Kiện Quan Trọng
+                  <Title level={3} style={{ fontFamily: "Aleo, serif", marginBottom: 32, textAlign: "center" }}>
+                    {t('history.detail.timeline.title')}
                   </Title>
                   {article.timelineEvents && article.timelineEvents.length > 0 ? (
-                    <div style={{maxWidth: 800, margin: "0 auto"}}>
+                    <div style={{ maxWidth: 800, margin: "0 auto" }}>
                       <Timeline mode="alternate">
                         {article.timelineEvents.map((event: TimelineEvent, index: number) => (
                           <Timeline.Item key={index} label={event.year} color={index % 2 === 0 ? "red" : "blue"}>
-                            <strong style={{fontSize: 18, color: "#d4380d"}}>{event.title}</strong>
-                            <p style={{marginTop: 8, color: "#666"}}>{event.description}</p>
+                            <strong style={{ fontSize: 18, color: "#d4380d" }}>{event.title}</strong>
+                            <p style={{ marginTop: 8, color: "#666" }}>{event.description}</p>
                           </Timeline.Item>
                         ))}
                       </Timeline>
                     </div>
                   ) : (
-                    <Empty description="Chưa có dữ liệu dòng thời gian" />
+                    <Empty description={t('history.detail.timeline.empty')} />
                   )}
                 </div>
               ),
             },
             {
               key: "discovery",
-              label: "Khám phá & Trải nghiệm",
+              label: t('history.detail.tabs.discovery'),
               children: (
                 <div className="article-main-wrapper">
                   {/* 0. 3D Virtual Tour (Mock) */}
                   <div className="discovery-block">
                     <Title level={3}>
-                      <GlobalOutlined /> Tham quan Không gian 3D
+                      <GlobalOutlined /> {t('history.detail.discovery.virtualTour.title')}
                     </Title>
                     <div className="virtual-tour-card">
-                      <div style={{position: "relative", zIndex: 1}}>
-                        <h2>Triển lãm Thực tế ảo</h2>
-                        <p>Khám phá không gian di tích được tái hiện chân thực trong môi trường 3D.</p>
+                      <div style={{ position: "relative", zIndex: 1 }}>
+                        <h2>{t('history.detail.discovery.virtualTour.cardTitle')}</h2>
+                        <p>{t('history.detail.discovery.virtualTour.subtitle')}</p>
                         <Button
                           size="large"
                           onClick={() => message.info("Tính năng Tham quan 3D đang được phát triển!")}
                         >
-                          Trải nghiệm ngay <RocketOutlined style={{marginLeft: 8}} />
+                          {t('history.detail.discovery.virtualTour.button')} <RocketOutlined style={{ marginLeft: 8 }} />
                         </Button>
-                        <div style={{marginTop: 16}}>
-                          <Tag color="gold" style={{borderRadius: 4, fontWeight: 600}}>
-                            SẮP RA MẮT
+                        <div style={{ marginTop: 16 }}>
+                          <Tag color="gold" style={{ borderRadius: 4, fontWeight: 600 }}>
+                            {t('history.detail.discovery.virtualTour.comingSoon')}
                           </Tag>
                         </div>
                       </div>
@@ -331,13 +333,13 @@ const HistoryDetailPage = () => {
                   {/* 1. Related Games */}
                   <div className="discovery-block">
                     <Title level={3}>
-                      <RocketOutlined /> Trải nghiệm Lịch sử
+                      <RocketOutlined /> {t('history.detail.discovery.game.title')}
                     </Title>
-                    <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về sự kiện này.</p>
+                    <p>{t('history.detail.discovery.game.subtitle')}</p>
                     {showGame && selectedLevelId ? (
-                      <EmbeddedGameZone 
-                        levelId={selectedLevelId} 
-                        onClose={() => setShowGame(false)} 
+                      <EmbeddedGameZone
+                        levelId={selectedLevelId}
+                        onClose={() => setShowGame(false)}
                         onNavigateToFullGame={() => navigate("/game/chapters")}
                       />
                     ) : (
@@ -346,21 +348,21 @@ const HistoryDetailPage = () => {
                           relatedLevels.map((level: any) => (
                             <Col xs={24} md={12} key={level.id}>
                               <div className="game-card-mini">
-                                <div 
-                                  className="game-thumb" 
-                                  style={{backgroundImage: `url(${level.thumbnail || level.backgroundImage || level.image})`}} 
+                                <div
+                                  className="game-thumb"
+                                  style={{ backgroundImage: `url(${level.thumbnail || level.backgroundImage || level.image})` }}
                                 />
                                 <div className="game-info">
                                   <h4>{level.name}</h4>
                                   <div className="desc">{level.description}</div>
                                 </div>
-                                <Button 
-                                  type="primary" 
-                                  shape="round" 
+                                <Button
+                                  type="primary"
+                                  shape="round"
                                   icon={<RocketOutlined />}
                                   onClick={() => handleStartGame(level.id)}
                                 >
-                                  Chơi ngay
+                                  {t('history.detail.discovery.game.playNow')}
                                 </Button>
                               </div>
                             </Col>
@@ -370,17 +372,17 @@ const HistoryDetailPage = () => {
                             <div className="game-cta-banner">
                               <RocketOutlined className="cta-icon" />
                               <div className="cta-content">
-                                <h4>Khám phá thế giới game lịch sử</h4>
-                                <p>Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!</p>
+                                <h4>{t('history.detail.discovery.game.ctaTitle')}</h4>
+                                <p>{t('history.detail.discovery.game.ctaSubtitle')}</p>
                               </div>
-                              <Button 
-                                type="primary" 
-                                size="large" 
+                              <Button
+                                type="primary"
+                                size="large"
                                 shape="round"
                                 icon={<ArrowRightOutlined />}
                                 onClick={() => navigate("/game/chapters")}
                               >
-                                Khám phá ngay
+                                {t('history.detail.discovery.game.ctaButton')}
                               </Button>
                             </div>
                           </Col>
@@ -394,7 +396,7 @@ const HistoryDetailPage = () => {
                   {(relatedHeritage.length > 0 || relatedArtifacts.length > 0) && (
                     <div className="discovery-block">
                       <Title level={3}>
-                        <EnvironmentOutlined /> Di sản & Hiện vật liên quan
+                        <EnvironmentOutlined /> {t('history.detail.discovery.related.title')}
                       </Title>
                       <Row gutter={[24, 24]}>
                         {relatedHeritage.map((h: any) => (
@@ -414,11 +416,11 @@ const HistoryDetailPage = () => {
 
                   {/* 3. Related Products */}
                   {relatedProducts.length > 0 && (
-                    <div className="discovery-block" style={{marginBottom: 0}}>
+                    <div className="discovery-block" style={{ marginBottom: 0 }}>
                       <Title level={3}>
-                        <ShopOutlined /> Sản phẩm Văn hóa
+                        <ShopOutlined /> {t('history.detail.discovery.products.title')}
                       </Title>
-                      <p>Quà lưu niệm và các tác phẩm văn hóa đặc sắc từ sự kiện này.</p>
+                      <p>{t('history.detail.discovery.products.subtitle')}</p>
                       <Row gutter={[24, 24]}>
                         {relatedProducts.map((p: any) => (
                           <Col xs={24} sm={12} md={6} key={p.id}>
@@ -428,7 +430,7 @@ const HistoryDetailPage = () => {
                               </div>
                               <h4>{normalizeVietnamese(p.name)}</h4>
                               <div className="price">{p.price?.toLocaleString()} đ</div>
-                              <Button>Xem chi tiết</Button>
+                              <Button>{t('history.detail.discovery.products.viewDetails')}</Button>
                             </div>
                           </Col>
                         ))}
@@ -440,7 +442,7 @@ const HistoryDetailPage = () => {
                   {!relatedLevels.length &&
                     !relatedHeritage.length &&
                     !relatedArtifacts.length &&
-                    !relatedProducts.length && <Empty description="Đang cập nhật thêm các nội dung khám phá..." />}
+                    !relatedProducts.length && <Empty description={t('history.detail.discovery.empty')} />}
                 </div>
               ),
             },
@@ -466,12 +468,12 @@ const HistoryDetailPage = () => {
         <div className="content-container">
           <Divider />
           <Title level={3} className="section-title">
-            Bài viết lịch sử khác
+            {t('history.detail.relatedBottom.title')}
           </Title>
           <Row gutter={[24, 24]}>
             {relatedHistory.map((item) => (
               <Col xs={24} sm={12} md={8} key={item.id}>
-                <ArticleCard data={{...item, name: item.title}} type="history" />
+                <ArticleCard data={{ ...item, name: item.title }} type="history" />
               </Col>
             ))}
           </Row>
@@ -482,9 +484,9 @@ const HistoryDetailPage = () => {
 };
 
 // Helper Components
-const SpaceItem = ({icon, text}: {icon: React.ReactNode; text: string}) => (
-  <span className="meta-space-item" style={{marginRight: 24, fontSize: 14, color: "#888"}}>
-    {icon} <span style={{marginLeft: 6}}>{text}</span>
+const SpaceItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
+  <span className="meta-space-item" style={{ marginRight: 24, fontSize: 14, color: "#888" }}>
+    {icon} <span style={{ marginLeft: 6 }}>{text}</span>
   </span>
 );
 
