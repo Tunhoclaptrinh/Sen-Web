@@ -66,6 +66,7 @@
     "sculpture": "Sculpture",
     "painting": "Painting",
     "document": "Document",
+    "artifact": "Artifact",
     "pottery": "Pottery",
     "textile": "Textile",
     "tool": "Tool",

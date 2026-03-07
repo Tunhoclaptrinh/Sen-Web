@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Collapse, Form, Input, Button, Typography } from "antd";
+import { Row, Col, Collapse, Form, Input, Button, Typography, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { MailOutlined, PhoneOutlined, SendOutlined } from "@ant-design/icons";
 import "./styles.less";
@@ -13,6 +13,7 @@ const SupportPage: React.FC = () => {
 
   const onFinish = () => {
     // TODO: Implement contact form submission logic
+    message.success(t('support.contact.form.success'));
     form.resetFields();
   };
 
@@ -53,7 +54,7 @@ const SupportPage: React.FC = () => {
 
       <div className="support-content-container">
         {/* Decoration - moved inside content */}
-        <img src="/images/hoatiettrongdong.png" className="bg-drum" alt="" />
+        <img src="/images/hoatiettrongdong.png" className="bg-drum" alt="Decoration Drum Pattern" />
         {/* FAQ Section */}
         <div className="section-header">
           <Title level={2}>{t('support.faq.title')}</Title>
@@ -84,7 +85,7 @@ const SupportPage: React.FC = () => {
                 <div className="contact-method">
                   <MailOutlined className="icon" />
                   <h4>{t('support.contact.email')}</h4>
-                  <p>sen.culture.contact@gmail.com</p>
+                  <p>{t('support.contact.emailValue')}</p>
                   <Text type="secondary" style={{ fontSize: 13 }}>
                     {t('support.contact.emailDesc')}
                   </Text>
@@ -92,7 +93,7 @@ const SupportPage: React.FC = () => {
                 <div className="contact-method">
                   <PhoneOutlined className="icon" />
                   <h4>{t('support.contact.hotline')}</h4>
-                  <p>1900 1234 56</p>
+                  <p>{t('support.contact.hotlineValue')}</p>
                   <Text type="secondary" style={{ fontSize: 13 }}>
                     {t('support.contact.hotlineDesc')}
                   </Text>

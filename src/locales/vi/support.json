@@ -11,7 +11,7 @@
     "q2": "Tôi có thể đóng góp thông tin về di sản không?",
     "a2": "Tất nhiên! Chúng tôi hoan nghênh sự đóng góp từ cộng đồng. Sau khi đăng nhập, bạn có thể truy cập mục \"Đóng góp\" hoặc liên hệ với chúng tôi qua email để gửi thông tin và tư liệu về di sản.",
     "q3": "Làm sao để báo cáo nội dung không chính xác?",
-    "a3": "Nếu bạn phát hiện thông tin chưa chính xác, vùi lòng sử dụng tính năng \"Báo cáo\" ở cuối mỗi bài viết hoặc trang chi tiết di sản, hoặc gửi email trực tiếp cho đội ngũ hỗ trợ.",
+    "a3": "Nếu bạn phát hiện thông tin chưa chính xác, vui lòng sử dụng tính năng \"Báo cáo\" ở cuối mỗi bài viết hoặc trang chi tiết di sản, hoặc gửi email trực tiếp cho đội ngũ hỗ trợ.",
     "q4": "Ứng dụng có miễn phí không?",
     "a4": "Phần lớn các nội dung trên SEN là hoàn toàn miễn phí để phục vụ cộng đồng. Tuy nhiên, một số tính năng nâng cao hoặc nội dung chuyên sâu có thể yêu cầu tài khoản thành viên.",
     "q5": "Làm cách nào để liên hệ với ban quản trị?",
@@ -21,8 +21,10 @@
     "title": "Liên hệ với chúng tôi",
     "subtitle": "Chúng tôi luôn sẵn sàng hỗ trợ bạn",
     "email": "Email",
+    "emailValue": "sen.culture.contact@gmail.com",
     "emailDesc": "Chúng tôi sẽ phản hồi trong vòng 24 giờ",
     "hotline": "Hotline",
+    "hotlineValue": "1900 xxx xxx",
     "hotlineDesc": "Hỗ trợ từ 8:00 - 22:00 hàng ngày",
     "form": {
       "name": "Họ và tên",
@@ -36,7 +38,9 @@
       "messagePlaceholder": "Mô tả vấn đề bạn đang gặp phải...",
       "messageRequired": "Vui lòng nhập nội dung",
       "messageMin": "Nội dung yêu cầu tối thiểu 20 ký tự",
-      "submit": "Gửi yêu cầu"
+      "submit": "Gửi yêu cầu",
+      "success": "Cảm ơn bạn! Yêu cầu của bạn đã được gửi thành công. Chúng tôi sẽ phản hồi sớm nhất.",
+      "error": "Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau."
     }
   }
 }

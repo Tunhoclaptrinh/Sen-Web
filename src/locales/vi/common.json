@@ -64,6 +64,10 @@
   },
   "artifactTypes": {
     "sculpture": "Điêu khắc",
+    "artifact": "Hiện vật",
+    "exhibition": "Triển lãm",
+    "history": "Lịch sử",
+    "noInfo": "Hệ thống",
     "painting": "Tranh vẽ",
     "document": "Tài liệu",
     "pottery": "Gốm sứ",

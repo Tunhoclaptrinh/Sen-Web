@@ -21,8 +21,10 @@
     "title": "Contact Us",
     "subtitle": "We are always ready to support you",
     "email": "Email",
+    "emailValue": "sen.culture.contact@gmail.com",
     "emailDesc": "We will respond within 24 hours",
     "hotline": "Hotline",
+    "hotlineValue": "1900 xxx xxx",
     "hotlineDesc": "Support from 8:00 - 22:00 daily",
     "form": {
       "name": "Full Name",
@@ -36,7 +38,9 @@
       "messagePlaceholder": "Describe the issue you are facing...",
       "messageRequired": "Please enter content",
       "messageMin": "Minimum 20 characters required",
-      "submit": "Send Request"
+      "submit": "Send Request",
+      "success": "Thank you! Your request has been sent successfully. We will respond as soon as possible.",
+      "error": "An error occurred while sending the request. Please try again later."
     }
   }
 }
