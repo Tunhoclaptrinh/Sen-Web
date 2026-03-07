@@ -1,6 +1,6 @@
 import apiClient from "@/config/axios.config";
-import type {QueryParams, BaseApiResponse, ExportParams, BatchResult, ImportResult} from "@/types";
-import {logger} from "@/utils/logger.utils";
+import type { QueryParams, BaseApiResponse, ExportParams, BatchResult, ImportResult } from "@/types";
+import { logger } from "@/utils/logger.utils";
 
 /**
  * Base Service Class
@@ -63,6 +63,25 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
     });
 
     return queryParams.toString();
+  }
+
+  /**
+   * Preprocess data before sending to API
+   * Converts undefined to null to ensure they aren't stripped by JSON.stringify
+   * and can explicitly clear values in the backend (PATCH behavior)
+   */
+  protected preprocessData(data: any): any {
+    if (!data || typeof data !== "object") return data;
+
+    // Shallow copy for top-level transformation
+    const processed = { ...data };
+    Object.keys(processed).forEach((key) => {
+      if (processed[key] === undefined) {
+        processed[key] = null;
+      }
+    });
+
+    return processed;
   }
 
   /**
@@ -204,7 +223,8 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async update(id: number | string, data: UpdateDTO): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.put<BaseApiResponse<T>>(`${this.endpoint}/${id}`, data);
+      const processedData = this.preprocessData(data);
+      const response = await apiClient.put<BaseApiResponse<T>>(`${this.endpoint}/${id}`, processedData);
 
       return {
         success: response.success ?? true,
@@ -222,7 +242,8 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async patch(id: number | string, data: Partial<UpdateDTO>): Promise<BaseApiResponse<T>> {
     try {
-      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}`, data);
+      const processedData = this.preprocessData(data);
+      const response = await apiClient.patch<BaseApiResponse<T>>(`${this.endpoint}/${id}`, processedData);
 
       return {
         success: response.success ?? true,
@@ -392,13 +413,13 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * VALIDATE data before create/update
    */
-  async validate(data: CreateDTO | UpdateDTO): Promise<{valid: boolean; errors?: any[]}> {
+  async validate(data: CreateDTO | UpdateDTO): Promise<{ valid: boolean; errors?: any[] }> {
     try {
       const response = await apiClient.post(`${this.endpoint}/validate`, data);
-      return response.data ?? {valid: true};
+      return response.data ?? { valid: true };
     } catch (error) {
       logger.warn(`[${this.endpoint}] validate not supported`);
-      return {valid: true};
+      return { valid: true };
     }
   }
 
@@ -410,7 +431,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
       const queryString = this.buildQueryString(params);
       const url = queryString ? `${this.endpoint}/count?${queryString}` : `${this.endpoint}/count`;
 
-      const response = await apiClient.get<{count: number}>(url);
+      const response = await apiClient.get<{ count: number }>(url);
       return response.count ?? 0;
     } catch (error) {
       logger.warn(`[${this.endpoint}] count not supported`);
@@ -435,7 +456,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async bulkCreate(items: CreateDTO[]): Promise<BaseApiResponse<T[]>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<T[]>>(`${this.endpoint}/bulk`, {items});
+      const response = await apiClient.post<BaseApiResponse<T[]>>(`${this.endpoint}/bulk`, { items });
 
       return {
         success: response.success ?? true,
@@ -451,9 +472,9 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
   /**
    * BULK UPDATE multiple items
    */
-  async bulkUpdate(updates: Array<{id: number | string; data: UpdateDTO}>): Promise<BaseApiResponse<T[]>> {
+  async bulkUpdate(updates: Array<{ id: number | string; data: UpdateDTO }>): Promise<BaseApiResponse<T[]>> {
     try {
-      const response = await apiClient.put<BaseApiResponse<T[]>>(`${this.endpoint}/bulk`, {updates});
+      const response = await apiClient.put<BaseApiResponse<T[]>>(`${this.endpoint}/bulk`, { updates });
 
       return {
         success: response.success ?? true,
@@ -471,7 +492,7 @@ class BaseService<T = any, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
    */
   async bulkDelete(ids: (number | string)[]): Promise<BaseApiResponse<void>> {
     try {
-      const response = await apiClient.post<BaseApiResponse<void>>(`${this.endpoint}/bulk/delete`, {ids});
+      const response = await apiClient.post<BaseApiResponse<void>>(`${this.endpoint}/bulk/delete`, { ids });
 
       return {
         success: response.success ?? true,
