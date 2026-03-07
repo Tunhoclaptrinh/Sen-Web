@@ -1,6 +1,7 @@
 import React from "react";
-import {useNavigate} from "react-router-dom";
-import {Typography} from "antd";
+import { useNavigate } from "react-router-dom";
+import { Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   CalendarOutlined,
   UserOutlined,
@@ -10,17 +11,18 @@ import {
   ArrowRightOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import {ITEM_TYPES} from "@/config/constants";
+import { ITEM_TYPES } from "@/config/constants";
 import "./styles.less";
 
-const {Paragraph} = Typography;
+const { Paragraph } = Typography;
 
 export interface DiscoveryCardProps {
   data: any;
   type: "artifact" | "heritage" | "history" | "exhibition";
 }
 
-const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
+const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (!data) return null;
@@ -59,7 +61,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
                   <CalendarOutlined /> {data.yearCreated || "N/A"}
                 </span>
                 <span className="meta-item">
-                  <UserOutlined /> {data.dynasty || "Unknown Dynasty"}
+                  <UserOutlined /> {data.dynasty || t('common.unknownDynasty', { defaultValue: 'Unknown Dynasty' })}
                 </span>
               </>
             ) : type === "exhibition" ? (
@@ -85,19 +87,19 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
                   <CalendarOutlined /> {dayjs(data.publishDate || data.createdAt).format("DD/MM/YYYY")}
                 </span>
                 <span className="meta-item">
-                  <UserOutlined /> {data.authorName || data.author || "Hệ thống"}
+                  <UserOutlined /> {data.authorName || data.author || t('common.authorSystem', { defaultValue: 'Hệ thống' })}
                 </span>
                 <span className="meta-item">
                   <CommentOutlined /> {data.totalReviews ?? data.total_reviews ?? data.commentCount ?? 0}
                 </span>
                 {(data.address || data.region) && (
                   <span className="meta-item">
-                    <EnvironmentOutlined /> {data.address || data.region}
+                    <EnvironmentOutlined /> {data.address || (data.region ? t(`common.regions.${data.region}`, { defaultValue: data.region }) : "")}
                   </span>
                 )}
                 {data.rating && (
                   <span className="meta-item">
-                    <StarFilled style={{color: "var(--gold-color)"}} /> {data.rating.toFixed(1)}
+                    <StarFilled style={{ color: "var(--gold-color)" }} /> {data.rating.toFixed(1)}
                   </span>
                 )}
               </>
@@ -106,19 +108,19 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({data, type}) => {
 
           <h3 className="card-title">{data.name || data.title}</h3>
 
-          <Paragraph className="card-desc" ellipsis={{rows: 3}}>
-            {data.shortDescription || data.description?.replace(/<[^>]+>/g, "") || "Chưa có mô tả ngắn."}
+          <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
+            {data.shortDescription || data.description?.replace(/<[^>]+>/g, "") || t('common.noInfo')}
           </Paragraph>
         </div>
 
         <button className="action-btn" onClick={handleNavigate}>
           {type === ITEM_TYPES.ARTIFACT
-            ? "Xem chi tiết hiện vật"
+            ? t('heritage.detail.relatedArtifacts').split(' ')[0] + " " + t('common.artifact').toLowerCase()
             : type === "history"
-              ? "Đọc bài viết"
+              ? t('heritage.detail.relatedHistory').split(' ')[0] + " " + t('common.article', { defaultValue: 'bài viết' }).toLowerCase()
               : type === "exhibition"
-                ? "Tham quan triển lãm"
-                : "Khám phá di sản"}{" "}
+                ? t('common.cards.explore') + " " + t('common.exhibition', { defaultValue: 'triển lãm' }).toLowerCase()
+                : t('common.cards.explore') + " " + t('common.heritage').toLowerCase()}{" "}
           <ArrowRightOutlined />
         </button>
       </div>

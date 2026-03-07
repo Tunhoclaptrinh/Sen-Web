@@ -1,6 +1,7 @@
 import React from "react";
-import {useNavigate} from "react-router-dom";
-import {Typography} from "antd";
+import { useNavigate } from "react-router-dom";
+import { Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   CalendarOutlined,
   EnvironmentOutlined,
@@ -11,12 +12,12 @@ import {
   StarFilled,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import {resolveImage, getImageUrl} from "@/utils/image.helper";
-import {normalizeVietnamese} from "@/utils/helpers";
-import {ITEM_TYPES, ItemType} from "@/config/constants";
+import { resolveImage, getImageUrl } from "@/utils/image.helper";
+import { normalizeVietnamese } from "@/utils/helpers";
+import { ITEM_TYPES, ItemType } from "@/config/constants";
 import "./styles.less";
 
-const {Paragraph} = Typography;
+const { Paragraph } = Typography;
 
 export interface ArticleCardProps {
   data: any;
@@ -35,6 +36,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
   secondaryAction,
   showReadMore = true,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleNavigate = () => {
@@ -60,19 +62,19 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
 
   const normalizedTitle = normalizeVietnamese(data.name || data.title);
   const normalizedDesc = normalizeVietnamese(
-    data.short_description || data.shortDescription || data.description || "Chưa có mô tả ngắn.",
+    data.short_description || data.shortDescription || data.description || t('common.noInfo'),
   );
-  const normalizedAuthor = normalizeVietnamese(data.author_name || data.author || "Hệ thống");
+  const normalizedAuthor = normalizeVietnamese(data.author_name || data.author || t('common.authorSystem', { defaultValue: 'Hệ thống' }));
 
   return (
-    <div className={`article-card ${type} ${variant}`} onClick={handleNavigate} style={{cursor: "pointer"}}>
+    <div className={`article-card ${type} ${variant}`} onClick={handleNavigate} style={{ cursor: "pointer" }}>
       {type !== "collection" && (
         <div className="card-image-wrapper">
-          <div className="card-image" style={{backgroundImage: `url('${imageUrl}')`}} />
+          <div className="card-image" style={{ backgroundImage: `url('${imageUrl}')` }} />
           {/* Optional: Add Region/Location badge if Heritage */}
           {type === ITEM_TYPES.HERITAGE && data.region && (
             <div className="location-badge">
-              <EnvironmentOutlined /> {data.region}
+              <EnvironmentOutlined /> {t(`common.regions.${data.region}`, { defaultValue: data.region })}
             </div>
           )}
         </div>
@@ -86,7 +88,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
           </span>
           {type === "collection" && (
             <span className="meta-item">
-              <AppstoreOutlined /> {data.totalItems ?? data.total_items ?? 0} mục
+              <AppstoreOutlined /> {data.totalItems ?? data.total_items ?? 0} {t('common.items', { defaultValue: 'mục' })}
             </span>
           )}
           {type !== "collection" && (
@@ -102,7 +104,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
             )}
           {data.rating !== undefined && (data.totalReviews || data.total_reviews) > 0 && (
             <span className="meta-item rating-badge">
-              <StarFilled style={{color: "#fadb14"}} />
+              <StarFilled style={{ color: "#fadb14" }} />
               <span className="rating-val">{data.rating || 0}</span>
               <span className="review-count">({data.totalReviews || data.total_reviews})</span>
             </span>
@@ -114,7 +116,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
         </h3>
 
         {/* Short Description or Truncated Description */}
-        <Paragraph className="card-desc" ellipsis={{rows: 3}}>
+        <Paragraph className="card-desc" ellipsis={{ rows: 3 }}>
           {normalizedDesc}
         </Paragraph>
 
@@ -126,10 +128,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
             {actions
               ? actions
               : showReadMore && (
-                  <button className="read-more-btn">
-                    {data.short_description || data.shortDescription ? "Đọc thêm" : "Khám phá"} <ArrowRightOutlined />
-                  </button>
-                )}
+                <button className="read-more-btn">
+                  {data.short_description || data.shortDescription ? t('common.cards.readMore') : t('common.cards.explore')} <ArrowRightOutlined />
+                </button>
+              )}
           </div>
         </div>
       </div>

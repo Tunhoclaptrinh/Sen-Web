@@ -139,6 +139,40 @@
     "artifact": "Artifact",
     "details": "Details",
     "loading": "Initializing...",
+    "noInfo": "No information provided",
+    "actions": {
+      "favorite": "Favorite",
+      "favorited": "Favorited",
+      "share": "Share",
+      "saveToCollection": "Save to Collection"
+    },
+    "regions": {
+      "North": "North",
+      "Central": "Central",
+      "South": "South"
+    },
+    "cards": {
+      "readMore": "Read more",
+      "explore": "Explore"
+    },
+    "reviews": {
+      "title": "Visitor Reviews",
+      "stats": "Based on <strong>{{count}}</strong> reviews",
+      "allComments": "All Comments",
+      "writeBtn": "Write a Review",
+      "closeBtn": "Close",
+      "submitBtn": "Submit Review",
+      "satisfaction": "Your Satisfaction",
+      "comment": "Review Content",
+      "placeholder": "Share your experience...",
+      "successMessage": "Thank you for your review!",
+      "loginRequired": "Please log in to leave a review.",
+      "empty": "No reviews yet. Be the first to review!",
+      "loading": "Loading reviews...",
+      "minChars": "Minimum 10 characters",
+      "requiredComment": "Please enter review content",
+      "requiredRating": "Please select satisfaction level"
+    },
     "metadata": {
       "region": "Region:",
       "storage": "Storage:",
@@ -187,6 +221,55 @@
       "MANUSCRIPT": "Manuscript",
       "PHOTOGRAPH": "Photograph",
       "OTHER": "Other"
+    }
+  },
+  "heritage": {
+    "browse": {
+      "heroTitle": "Heritage Journey",
+      "heroSubtitle": "Connecting past and present, explore the endless beauty of Vietnam's landscapes and historical sites.",
+      "searchPlaceholder": "Search heritage sites...",
+      "regionPlaceholder": "Region",
+      "categoryPlaceholder": "Category",
+      "unescoPlaceholder": "UNESCO",
+      "unescoYes": "UNESCO Listed",
+      "unescoNo": "No",
+      "resetFilters": "Reset Filters",
+      "loading": "Loading data...",
+      "featuredSection": "Featured",
+      "exploreSection": "Explore",
+      "empty": "No other heritage sites found",
+      "total": "Total: {{count}}"
+    },
+    "detail": {
+      "viewGallery": "View Gallery",
+      "tabs": {
+        "description": "Description",
+        "info": "Information",
+        "discovery": "Discovery",
+        "timeline": "Timeline"
+      },
+      "references": "References",
+      "visitingDetails": "Visiting Details",
+      "openHours": "Opening Hours",
+      "ticketPrice": "Entrance Fee",
+      "yearEstablished": "Year Established",
+      "culturalPeriod": "Cultural Period",
+      "locationRating": "Location & Rating",
+      "address": "Address",
+      "visitorRating": "Visitor Rating",
+      "region": "Region",
+      "titleLabel": "Title",
+      "unescoTitle": "UNESCO World Heritage",
+      "bookingNote": "* Tickets can be purchased at the counter or booked online to avoid queues.",
+      "getDirections": "Get Directions",
+      "bookNow": "Book Now",
+      "interactiveExp": "Heritage Experience",
+      "playNow": "Play Now",
+      "relatedArtifacts": "Related Artifacts",
+      "relatedHistory": "History Stories",
+      "relatedProducts": "Cultural Products",
+      "historyEvents": "Historical Events",
+      "otherSites": "Other Heritage Sites"
     }
   }
 }

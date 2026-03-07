@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline, Dropdown} from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline, Dropdown } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -29,33 +30,34 @@ import {
   CompassOutlined,
   GoogleOutlined,
 } from "@ant-design/icons";
-import {Image} from "antd";
+import { Image } from "antd";
 import dayjs from "dayjs";
-import {fetchHeritageSiteById} from "@store/slices/heritageSlice";
+import { fetchHeritageSiteById } from "@store/slices/heritageSlice";
 import favoriteService from "@/services/favorite.service";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
 import gameService from "@/services/game.service";
-import {RootState, AppDispatch} from "@/store";
+import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
-import type {HeritageSite, TimelineEvent, Artifact, HistoryArticle} from "@/types";
-import {getImageUrl, resolveImage} from "@/utils/image.helper";
+import type { HeritageSite, TimelineEvent, Artifact, HistoryArticle } from "@/types";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
-import {useViewTracker} from "@/hooks/useViewTracker";
-import {HERITAGE_TYPE_LABELS, ITEM_TYPES} from "@/config/constants";
+import { useViewTracker } from "@/hooks/useViewTracker";
+import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const HeritageDetailPage = () => {
-  const {id} = useParams();
+  const { t } = useTranslation();
+  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const {currentItem: site, loading, error} = useSelector((state: RootState) => state.heritage);
-  const {isAuthenticated} = useSelector((state: RootState) => state.auth); // Get auth state
+  const { currentItem: site, loading, error } = useSelector((state: RootState) => state.heritage);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth); // Get auth state
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
   const [siteArtifacts, setSiteArtifacts] = useState<Artifact[]>([]);
@@ -104,17 +106,17 @@ const HeritageDetailPage = () => {
       // 1. Fetch related sites (prioritize explicit links)
       const relSiteIds = currentItem.relatedHeritageIds || [];
       let relatedSitesData: HeritageSite[] = [];
-      
+
       if (relSiteIds.length > 0) {
         const resRel = await heritageService.getAll({
           ids: relSiteIds.join(","),
         });
         if (resRel.data) relatedSitesData = resRel.data;
       }
-      
+
       // If we don't have enough, fill with random ones
       if (relatedSitesData.length < 3) {
-        const resAll = await heritageService.getAll({limit: 6});
+        const resAll = await heritageService.getAll({ limit: 6 });
         if (resAll.data) {
           const existingIds = new Set(relatedSitesData.map(s => s.id));
           resAll.data.forEach(s => {
@@ -197,7 +199,7 @@ const HeritageDetailPage = () => {
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-      message.warning("Vui lòng đăng nhập để sử dụng tính năng này");
+      message.warning(t('common.reviews.loginRequired'));
       return;
     }
     if (!id) return;
@@ -205,14 +207,14 @@ const HeritageDetailPage = () => {
       if (isFavorite) {
         await favoriteService.remove("heritageSite", Number(id));
         setIsFavorite(false);
-        message.success("Đã xóa khỏi yêu thích");
+        message.success(t('common.actions.favorited')); // Reusing for success message context
       } else {
         await favoriteService.add("heritageSite", Number(id));
         setIsFavorite(true);
-        message.success("Đã thêm vào yêu thích");
+        message.success(t('common.actions.favorite'));
       }
     } catch (error) {
-      message.error("Thao tác thất bại");
+      message.error(t('error.failed')); // Assuming error.failed exists or using a generic one
     }
   };
 
@@ -242,10 +244,10 @@ const HeritageDetailPage = () => {
   if (loading)
     return (
       <div className="loading-container">
-        <Spin size="large" />
+        <Spin size="large" tip={t('common.loading')} />
       </div>
     );
-  if (!site) return <Empty description="Không tìm thấy di sản" />;
+  if (!site) return <Empty description={t('heritage.browse.empty')} />;
 
   const relatedHistory = relatedHistoryArr.length > 0 ? relatedHistoryArr : site.relatedHistory || [];
 
@@ -271,13 +273,11 @@ const HeritageDetailPage = () => {
 
       {/* 1. RESTORED HERO SECTION */}
       <section className="detail-hero">
-        <div className="hero-bg" style={{backgroundImage: `url('${mainImage}')`}} />
+        <div className="hero-bg" style={{ backgroundImage: `url('${mainImage}')` }} />
         <div className="hero-overlay">
           <div className="hero-content">
-            <Tag color="var(--primary-color)" style={{border: "none", marginBottom: 16}}>
-              {HERITAGE_TYPE_LABELS[site.type as keyof typeof HERITAGE_TYPE_LABELS] ||
-                site.type?.toUpperCase() ||
-                "DI SẢN"}
+            <Tag color="var(--primary-color)" style={{ border: "none", marginBottom: 16 }}>
+              {t(`common.heritageTypes.${site.type}`, { defaultValue: t('common.heritage') })}
             </Tag>
             <h1>{site.name}</h1>
             <div className="hero-meta">
@@ -286,29 +286,29 @@ const HeritageDetailPage = () => {
               </span>
               {site.unescoListed && (
                 <span className="unesco-badge">
-                  <StarFilled style={{color: "#FFD700"}} /> UNESCO World Heritage
+                  <StarFilled style={{ color: "#FFD700" }} /> {t('heritage.detail.unescoTitle')}
                 </span>
               )}
               <span>
-                <HistoryOutlined /> {site.views || 0} lượt xem
+                <HistoryOutlined /> {t('home.heroSubtitle', { count: site.views || 0 }).replace(/[^0-9]/g, '')} {t('common.views', { defaultValue: 'lượt xem' })}
               </span>
             </div>
           </div>
 
           {/* Gallery Button */}
-          <div style={{position: "absolute", bottom: 32, right: 32}}>
+          <div style={{ position: "absolute", bottom: 32, right: 32 }}>
             <Button
               icon={<CameraOutlined />}
               size="large"
               className="gallery-btn"
               onClick={() => setPreviewVisible(true)}
             >
-              Xem toàn bộ ảnh
+              {t('heritage.detail.viewGallery')}
             </Button>
           </div>
 
           {/* Hidden Preview Group */}
-          <div style={{display: "none"}}>
+          <div style={{ display: "none" }}>
             <Image.PreviewGroup
               preview={{
                 visible: previewVisible,
@@ -341,33 +341,33 @@ const HeritageDetailPage = () => {
           items={[
             {
               key: "description",
-              label: "Mô tả",
+              label: t('heritage.detail.tabs.description'),
               children: (
                 <div className="article-main-wrapper">
                   {/* Article Header Meta */}
                   <div
                     className="article-meta-header"
-                    style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
                   >
-                    <div style={{display: "flex", alignItems: "center", gap: 24}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
                       <SpaceItem icon={<CalendarOutlined />} text={dayjs(publishDate).format("MMM D, YYYY")} />
                       <SpaceItem icon={<UserOutlined />} text={authorName} />
                       <SpaceItem icon={<CommentOutlined />} text={`${site.commentCount || 0} comments`} />
                       <SpaceItem icon={<HistoryOutlined />} text={`${site.views || 0} views`} />
                     </div>
-                    <div className="action-row" style={{display: "flex", gap: 8}}>
+                    <div className="action-row" style={{ display: "flex", gap: 8 }}>
                       <Button
                         type="text"
-                        icon={isFavorite ? <HeartFilled style={{color: "#ff4d4f"}} /> : <HeartOutlined />}
+                        icon={isFavorite ? <HeartFilled style={{ color: "#ff4d4f" }} /> : <HeartOutlined />}
                         onClick={handleToggleFavorite}
                       >
-                        {isFavorite ? "Đã thích" : "Yêu thích"}
+                        {isFavorite ? t('common.actions.favorited') : t('common.actions.favorite')}
                       </Button>
                       <Button type="text" icon={<ShareAltOutlined />} onClick={handleShare}>
-                        Chia sẻ
+                        {t('common.actions.share')}
                       </Button>
                       <Button type="text" icon={<FolderAddOutlined />} onClick={() => setShowCollectionModal(true)}>
-                        Lưu vào BST
+                        {t('common.actions.saveToCollection')}
                       </Button>
                     </div>
 
@@ -384,12 +384,12 @@ const HeritageDetailPage = () => {
 
                   {/* Main Title */}
                   <h2 className="article-main-title">{site.name}</h2>
-                  <div className="article-body-content" dangerouslySetInnerHTML={{__html: site.description || ""}} />
+                  <div className="article-body-content" dangerouslySetInnerHTML={{ __html: site.description || "" }} />
 
                   {site.references && (
                     <div className="references-section">
-                      <h3>Nguồn tham khảo</h3>
-                      <div className="references-content" dangerouslySetInnerHTML={{__html: site.references}} />
+                      <h3>{t('heritage.detail.references')}</h3>
+                      <div className="references-content" dangerouslySetInnerHTML={{ __html: site.references }} />
                     </div>
                   )}
 
@@ -402,22 +402,22 @@ const HeritageDetailPage = () => {
             },
             {
               key: "info",
-              label: "Thông tin",
+              label: t('heritage.detail.tabs.info'),
               children: (
                 <div className="article-main-wrapper">
-                  <div className="info-tab-content" style={{maxWidth: 900, margin: "0 auto"}}>
+                  <div className="info-tab-content" style={{ maxWidth: 900, margin: "0 auto" }}>
                     <div className="info-card-widget large-format">
                       <Row gutter={[48, 24]}>
                         <Col xs={24} md={12}>
-                          <h3 className="info-section-title">Chi tiết Tham quan</h3>
+                          <h3 className="info-section-title">{t('heritage.detail.visitingDetails')}</h3>
                           <ul className="info-grid-list">
                             <li>
                               <div className="icon-wrapper">
                                 <ClockCircleOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Giờ mở cửa</span>
-                                <span className="value">{site.visitHours || "Chưa có thông tin"}</span>
+                                <span className="label">{t('heritage.detail.openHours')}</span>
+                                <span className="value">{site.visitHours || t('common.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -425,9 +425,9 @@ const HeritageDetailPage = () => {
                                 <DollarOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Giá vé tham quan</span>
+                                <span className="label">{t('heritage.detail.ticketPrice')}</span>
                                 <span className="value highlight">
-                                  {site.entranceFee ? `${site.entranceFee.toLocaleString()} VNĐ` : "Chưa có thông tin"}
+                                  {site.entranceFee ? t('format.currency', { amount: site.entranceFee }) || `${site.entranceFee.toLocaleString()} VNĐ` : t('common.noInfo')}
                                 </span>
                               </div>
                             </li>
@@ -436,8 +436,8 @@ const HeritageDetailPage = () => {
                                 <CalendarOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Năm thành lập</span>
-                                <span className="value">{site.yearEstablished || "Chưa có thông tin"}</span>
+                                <span className="label">{t('heritage.detail.yearEstablished')}</span>
+                                <span className="value">{site.yearEstablished || t('common.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -445,22 +445,22 @@ const HeritageDetailPage = () => {
                                 <BankOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Niên đại / Thời kỳ</span>
-                                <span className="value">{site.culturalPeriod || "Chưa có thông tin"}</span>
+                                <span className="label">{t('heritage.detail.culturalPeriod')}</span>
+                                <span className="value">{site.culturalPeriod || t('common.noInfo')}</span>
                               </div>
                             </li>
                           </ul>
                         </Col>
                         <Col xs={24} md={12}>
-                          <h3 className="info-section-title">Địa Điểm & Xếp Hạng</h3>
+                          <h3 className="info-section-title">{t('heritage.detail.locationRating')}</h3>
                           <ul className="info-grid-list">
                             <li>
                               <div className="icon-wrapper">
                                 <EnvironmentOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Địa chỉ</span>
-                                <span className="value">{site.address || site.region || "Chưa có thông tin"}</span>
+                                <span className="label">{t('heritage.detail.address')}</span>
+                                <span className="value">{site.address || site.region || t('common.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -468,10 +468,10 @@ const HeritageDetailPage = () => {
                                 <StarFilled />
                               </div>
                               <div className="info-text">
-                                <span className="label">Đánh giá du khách</span>
+                                <span className="label">{t('heritage.detail.visitorRating')}</span>
                                 <span className="value">
-                                  {site.rating ? `${site.rating}/5` : "Chưa có đánh giá"}{" "}
-                                  <span className="sub">({site.totalReviews || 0} đánh giá)</span>
+                                  {site.rating ? `${site.rating}/5` : t('common.noRating', { defaultValue: 'Chưa có đánh giá' })}{" "}
+                                  <span className="sub">({site.totalReviews || 0} {t('common.reviews_count', { defaultValue: 'đánh giá' })})</span>
                                 </span>
                               </div>
                             </li>
@@ -480,8 +480,8 @@ const HeritageDetailPage = () => {
                                 <GlobalOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Vùng miền</span>
-                                <span className="value">{site.region || "Chưa có thông tin"}</span>
+                                <span className="label">{t('heritage.detail.region')}</span>
+                                <span className="value">{site.region ? t(`common.regions.${site.region}`, { defaultValue: site.region }) : t('common.noInfo')}</span>
                               </div>
                             </li>
                             {site.unescoListed && (
@@ -490,8 +490,8 @@ const HeritageDetailPage = () => {
                                   <SafetyCertificateFilled />
                                 </div>
                                 <div className="info-text">
-                                  <span className="label">Danh hiệu</span>
-                                  <span className="value highlight-unesco">Di sản văn hóa UNESCO</span>
+                                  <span className="label">{t('heritage.detail.titleLabel')}</span>
+                                  <span className="value highlight-unesco">{t('heritage.detail.unescoTitle')}</span>
                                 </div>
                               </li>
                             )}
@@ -503,8 +503,8 @@ const HeritageDetailPage = () => {
 
                       <div className="info-footer-actions">
                         <div className="booking-note">
-                          <span>* Vé có thể được mua trực tiếp tại quầy hoặc đặt trước online để tránh xếp hàng.</span>
-                          <span className="promo-text">Đặt vé với SEN để nhận ưu đãi đặc biệt!</span>
+                          <span>{t('heritage.detail.bookingNote')}</span>
+                          <span className="promo-text">{t('heritage.detail.bookingPromo', { defaultValue: 'Đặt vé với SEN để nhận ưu đãi đặc biệt!' })}</span>
                         </div>
                         <div className="action-buttons">
                           <Dropdown
@@ -540,24 +540,24 @@ const HeritageDetailPage = () => {
                               ]
                             }}
                           >
-                            <Button 
-                              size="large" 
-                              className="direction-btn" 
+                            <Button
+                              size="large"
+                              className="direction-btn"
                               icon={<EnvironmentOutlined />}
                             >
-                              Chỉ đường <MoreOutlined />
+                              {t('heritage.detail.getDirections')} <MoreOutlined />
                             </Button>
                           </Dropdown>
-                          <Button 
-                            type="primary" 
-                            size="large" 
+                          <Button
+                            type="primary"
+                            size="large"
                             className="booking-btn-large"
                             onClick={() => {
                               const bookingUrl = site.bookingLink || site.website || `https://www.google.com/search?q=đặt+vé+tham+quan+${encodeURIComponent(site.name)}`;
                               window.open(bookingUrl, "_blank");
                             }}
                           >
-                            Đặt vé ngay
+                            {t('heritage.detail.bookNow')}
                           </Button>
                         </div>
                       </div>
@@ -568,19 +568,19 @@ const HeritageDetailPage = () => {
             },
             {
               key: "discovery",
-              label: "Khám phá",
+              label: t('heritage.detail.tabs.discovery'),
               children: (
                 <div className="article-main-wrapper">
                   {/* 1. Related Games / Interactive (Mock UI) */}
                   <div className="discovery-block">
                     <Title level={3}>
-                      <RocketOutlined /> Trải nghiệm Di sản
+                      <RocketOutlined /> {t('heritage.detail.interactiveExp')}
                     </Title>
-                    <p>Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.</p>
+                    <p>{t('heritage.detail.interactiveSubtitle', { defaultValue: 'Tham gia các màn chơi tương tác để hiểu rõ hơn về di sản này.' })}</p>
                     {showGame && selectedLevelId ? (
-                      <EmbeddedGameZone 
-                        levelId={selectedLevelId} 
-                        onClose={() => setShowGame(false)} 
+                      <EmbeddedGameZone
+                        levelId={selectedLevelId}
+                        onClose={() => setShowGame(false)}
                         onNavigateToFullGame={() => navigate("/game/chapters")}
                       />
                     ) : (
@@ -599,13 +599,13 @@ const HeritageDetailPage = () => {
                                   <h4>{level.name}</h4>
                                   <div className="desc">{level.description}</div>
                                 </div>
-                                <Button 
-                                  type="primary" 
-                                  shape="round" 
+                                <Button
+                                  type="primary"
+                                  shape="round"
                                   icon={<RocketOutlined />}
                                   onClick={() => handleStartGame(level.id)}
                                 >
-                                  Chơi ngay
+                                  {t('heritage.detail.playNow')}
                                 </Button>
                               </div>
                             </Col>
@@ -618,14 +618,14 @@ const HeritageDetailPage = () => {
                                 <h4>Khám phá thế giới game lịch sử</h4>
                                 <p>Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!</p>
                               </div>
-                              <Button 
-                                type="primary" 
-                                size="large" 
+                              <Button
+                                type="primary"
+                                size="large"
                                 shape="round"
                                 icon={<ArrowRightOutlined />}
                                 onClick={() => navigate("/game/chapters")}
                               >
-                                Khám phá ngay
+                                {t('common.cards.explore')}
                               </Button>
                             </div>
                           </Col>
@@ -639,9 +639,9 @@ const HeritageDetailPage = () => {
                   {siteArtifacts.length > 0 && (
                     <div className="discovery-block">
                       <Title level={3}>
-                        <ReadOutlined /> Hiện vật liên quan
+                        <ReadOutlined /> {t('heritage.detail.relatedArtifacts')}
                       </Title>
-                      <p>Những bảo vật quý giá gắn liền với di tích này.</p>
+                      <p>{t('heritage.detail.artifactsSubtitle', { defaultValue: 'Những bảo vật quý giá gắn liền với di tích này.' })}</p>
                       <Row gutter={[24, 24]}>
                         {siteArtifacts.map((artifact: Artifact) => (
                           <Col xs={24} sm={12} md={8} key={`a-${artifact.id}`}>
@@ -657,9 +657,9 @@ const HeritageDetailPage = () => {
                   {relatedHistory.length > 0 && (
                     <div className="discovery-block">
                       <Title level={3}>
-                        <HistoryOutlined /> Câu chuyện Lịch sử
+                        <HistoryOutlined /> {t('heritage.detail.relatedHistory')}
                       </Title>
-                      <p>Các sự kiện và câu chuyện lịch sử liên quan.</p>
+                      <p>{t('heritage.detail.historySubtitle', { defaultValue: 'Các sự kiện và câu chuyện lịch sử liên quan.' })}</p>
                       <Row gutter={[24, 24]}>
                         {relatedHistory.map((item: HistoryArticle) => (
                           <Col xs={24} sm={12} md={8} key={`h-${item.id}`}>
@@ -672,12 +672,12 @@ const HeritageDetailPage = () => {
                   )}
 
                   {/* 4. Related Products (Mock UI) */}
-                  <div className="discovery-block" style={{marginBottom: 0}}>
+                  <div className="discovery-block" style={{ marginBottom: 0 }}>
                     <Title level={3}>
-                      <ShopOutlined /> Sản phẩm Văn hóa
+                      <ShopOutlined /> {t('heritage.detail.relatedProducts')}
                     </Title>
-                    <p>Quà lưu niệm và các tác phẩm văn hóa đặc sắc.</p>
-                    <Row gutter={[24, 24]} style={{display: "flex"}}>
+                    <p>{t('heritage.detail.productsSubtitle', { defaultValue: 'Quà lưu niệm và các tác phẩm văn hóa đặc sắc.' })}</p>
+                    <Row gutter={[24, 24]} style={{ display: "flex" }}>
                       <Col xs={24} sm={12} md={6}>
                         <div className="product-card">
                           <div className="prod-img">
@@ -733,7 +733,7 @@ const HeritageDetailPage = () => {
             },
             {
               key: "timeline",
-              label: "Dòng thời gian",
+              label: t('heritage.detail.tabs.timeline'),
               children: (
                 <div className="article-main-wrapper">
                   <div className="cultural-header-wrapper">
@@ -755,7 +755,7 @@ const HeritageDetailPage = () => {
                     </div>
 
                     <div className="cultural-sub-title">
-                      <CrownFilled style={{fontSize: 18, color: "var(--gold-color)"}} />
+                      <CrownFilled style={{ fontSize: 18, color: "var(--gold-color)" }} />
                       Di sản trường tồn
                     </div>
 
@@ -771,7 +771,7 @@ const HeritageDetailPage = () => {
                       ))}
                     </Timeline>
                   ) : (
-                    <Empty description="Chưa có dữ liệu dòng thời gian" />
+                    <Empty description={t('common.noInfo')} />
                   )}
                 </div>
               ),
@@ -798,7 +798,7 @@ const HeritageDetailPage = () => {
         <div className="content-container">
           <Divider />
           <Title level={3} className="section-title">
-            Di sản văn hóa khác
+            {t('heritage.detail.otherSites')}
           </Title>
           <Row gutter={[24, 24]}>
             {relatedSites.map((item) => (
@@ -814,9 +814,9 @@ const HeritageDetailPage = () => {
 };
 
 // Helper Components
-const SpaceItem = ({icon, text}: {icon: React.ReactNode; text: string}) => (
+const SpaceItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   <span className="meta-space-item">
-    {icon} <span style={{marginLeft: 6}}>{text}</span>
+    {icon} <span style={{ marginLeft: 6 }}>{text}</span>
   </span>
 );
 

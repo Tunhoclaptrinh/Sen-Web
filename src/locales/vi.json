@@ -139,6 +139,40 @@
     "artifact": "Hiện vật",
     "details": "Chi tiết",
     "loading": "Đang khởi tạo...",
+    "noInfo": "Chưa có thông tin",
+    "actions": {
+      "favorite": "Yêu thích",
+      "favorited": "Đã thích",
+      "share": "Chia sẻ",
+      "saveToCollection": "Lưu vào BST"
+    },
+    "regions": {
+      "North": "Miền Bắc",
+      "Central": "Miền Trung",
+      "South": "Miền Nam"
+    },
+    "cards": {
+      "readMore": "Đọc thêm",
+      "explore": "Khám phá"
+    },
+    "reviews": {
+      "title": "Cảm nhận khách tham quan",
+      "stats": "Dựa trên <strong>{{count}}</strong> lượt đánh giá",
+      "allComments": "Tất cả nhận xét",
+      "writeBtn": "Gửi đánh giá của bạn",
+      "closeBtn": "Đóng",
+      "submitBtn": "Gửi đánh giá",
+      "satisfaction": "Sự hài lòng của bạn",
+      "comment": "Nội dung đánh giá",
+      "placeholder": "Chia sẻ trải nghiệm của bạn...",
+      "successMessage": "Cảm ơn bạn đã gửi đánh giá!",
+      "loginRequired": "Vui lòng đăng nhập để lại đánh giá.",
+      "empty": "Chưa có đánh giá nào cho mục này. Hãy là người đầu tiên!",
+      "loading": "Đang tải đánh giá...",
+      "minChars": "Nội dung tối thiểu 10 ký tự",
+      "requiredComment": "Vui lòng nhập nội dung đánh giá",
+      "requiredRating": "Vui lòng chọn mức độ hài lòng"
+    },
     "metadata": {
       "region": "Vùng miền:",
       "storage": "Nơi lưu giữ:",
@@ -198,6 +232,55 @@
       "manuscript_uc": "Bản thảo",
       "photograph_uc": "Ảnh",
       "other_uc": "Khác"
+    }
+  },
+  "heritage": {
+    "browse": {
+      "heroTitle": "Hành Trình Di Sản",
+      "heroSubtitle": "Kết nối quá khứ và hiện tại, khám phá vẻ đẹp bất tận của danh lam thắng cảnh và di tích lịch sử Việt Nam.",
+      "searchPlaceholder": "Tìm kiếm di sản...",
+      "regionPlaceholder": "Vùng miền",
+      "categoryPlaceholder": "Danh mục",
+      "unescoPlaceholder": "UNESCO",
+      "unescoYes": "Có UNESCO",
+      "unescoNo": "Không",
+      "resetFilters": "Xóa Lọc",
+      "loading": "Đang tải dữ liệu...",
+      "featuredSection": "Nổi bật",
+      "exploreSection": "Khám phá",
+      "empty": "Không tìm thấy di sản nào khác",
+      "total": "Tổng số: {{count}}"
+    },
+    "detail": {
+      "viewGallery": "Xem toàn bộ ảnh",
+      "tabs": {
+        "description": "Mô tả",
+        "info": "Thông tin",
+        "discovery": "Khám phá",
+        "timeline": "Dòng thời gian"
+      },
+      "references": "Nguồn tham khảo",
+      "visitingDetails": "Chi tiết Tham quan",
+      "openHours": "Giờ mở cửa",
+      "ticketPrice": "Giá vé tham quan",
+      "yearEstablished": "Năm thành lập",
+      "culturalPeriod": "Niên đại / Thời kỳ",
+      "locationRating": "Địa Điểm & Xếp Hạng",
+      "address": "Địa chỉ",
+      "visitorRating": "Đánh giá du khách",
+      "region": "Vùng miền",
+      "titleLabel": "Danh hiệu",
+      "unescoTitle": "Di sản văn hóa UNESCO",
+      "bookingNote": "* Vé có thể được mua trực tiếp tại quầy hoặc đặt trước online để tránh xếp hàng.",
+      "getDirections": "Chỉ đường",
+      "bookNow": "Đặt vé ngay",
+      "interactiveExp": "Trải nghiệm Di sản",
+      "playNow": "Chơi ngay",
+      "relatedArtifacts": "Hiện vật liên quan",
+      "relatedHistory": "Câu chuyện Lịch sử",
+      "relatedProducts": "Sản phẩm Văn hóa",
+      "historyEvents": "Sự Kiện Lịch Sử",
+      "otherSites": "Di sản văn hóa khác"
     }
   }
 }

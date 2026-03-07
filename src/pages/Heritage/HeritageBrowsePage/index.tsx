@@ -1,18 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {Row, Col, Input, Button, Spin, Empty, Typography, Pagination, Select} from "antd";
-import {SearchOutlined, FilterOutlined} from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Input, Button, Spin, Empty, Typography, Pagination, Select } from "antd";
+import { useTranslation } from "react-i18next";
+import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
-import {ITEM_TYPES} from "@/config/constants";
-import {useCategories} from "@/hooks/useCategories";
-import {HeritageSite} from "@/types/heritage.types";
+import { ITEM_TYPES } from "@/config/constants";
+import { useCategories } from "@/hooks/useCategories";
+import { HeritageSite } from "@/types/heritage.types";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const HeritageBrowsePage: React.FC = () => {
-  const {categories} = useCategories();
+  const { t } = useTranslation();
+  const { categories } = useCategories();
   const [sites, setSites] = useState<HeritageSite[]>([]);
   const [loading, setLoading] = useState(true);
   const [randomFeatured, setRandomFeatured] = useState<HeritageSite | null>(null);
@@ -73,8 +75,8 @@ const HeritageBrowsePage: React.FC = () => {
   };
 
   const handleSearch = (value: string) => {
-    setFilters((prev) => ({...prev, q: value}));
-    setPagination((prev) => ({...prev, current: 1}));
+    setFilters((prev) => ({ ...prev, q: value }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   return (
@@ -82,9 +84,9 @@ const HeritageBrowsePage: React.FC = () => {
       {/* 1. Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <Title level={1}>Hành Trình Di Sản</Title>
+          <Title level={1}>{t('heritage.browse.heroTitle')}</Title>
           <p className="hero-subtitle">
-            Kết nối quá khứ và hiện tại, khám phá vẻ đẹp bất tận của danh lam thắng cảnh và di tích lịch sử Việt Nam.
+            {t('heritage.browse.heroSubtitle')}
           </p>
         </div>
       </section>
@@ -97,14 +99,14 @@ const HeritageBrowsePage: React.FC = () => {
             <SearchOutlined />
             <Input
               bordered={false}
-              placeholder="Tìm kiếm di sản..."
+              placeholder={t('heritage.browse.searchPlaceholder')}
               allowClear
               value={filters.q}
               onPressEnter={(e) => handleSearch(e.currentTarget.value)}
               onChange={(e) => {
                 // If clearing manually or typing
-                setFilters((prev) => ({...prev, q: e.target.value}));
-                if (!e.target.value) setPagination((prev) => ({...prev, current: 1}));
+                setFilters((prev) => ({ ...prev, q: e.target.value }));
+                if (!e.target.value) setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             />
           </div>
@@ -115,15 +117,15 @@ const HeritageBrowsePage: React.FC = () => {
           <div className="filter-item">
             <Select
               bordered={false}
-              placeholder="Vùng miền"
-              style={{width: "100%"}}
+              placeholder={t('heritage.browse.regionPlaceholder')}
+              style={{ width: "100%" }}
               allowClear
               value={filters.region}
-              onChange={(value) => setFilters((prev) => ({...prev, region: value}))}
+              onChange={(value) => setFilters((prev) => ({ ...prev, region: value }))}
             >
-              <Select.Option value="North">Miền Bắc</Select.Option>
-              <Select.Option value="Central">Miền Trung</Select.Option>
-              <Select.Option value="South">Miền Nam</Select.Option>
+              <Select.Option value="North">{t('common.regions.North')}</Select.Option>
+              <Select.Option value="Central">{t('common.regions.Central')}</Select.Option>
+              <Select.Option value="South">{t('common.regions.South')}</Select.Option>
             </Select>
           </div>
 
@@ -131,11 +133,11 @@ const HeritageBrowsePage: React.FC = () => {
           <div className="filter-item">
             <Select
               bordered={false}
-              placeholder="Danh mục"
-              style={{width: "100%"}}
+              placeholder={t('heritage.browse.categoryPlaceholder')}
+              style={{ width: "100%" }}
               allowClear
               value={filters.categoryId}
-              onChange={(value) => setFilters((prev) => ({...prev, categoryId: value}))}
+              onChange={(value) => setFilters((prev) => ({ ...prev, categoryId: value }))}
             >
               {categories.map((cat) => (
                 <Select.Option key={cat.id} value={cat.id}>
@@ -151,14 +153,14 @@ const HeritageBrowsePage: React.FC = () => {
           <div className="filter-item">
             <Select
               bordered={false}
-              placeholder="UNESCO"
-              style={{width: "100%"}}
+              placeholder={t('heritage.browse.unescoPlaceholder')}
+              style={{ width: "100%" }}
               allowClear
               value={filters.unescoListed}
-              onChange={(value) => setFilters((prev) => ({...prev, unescoListed: value}))}
+              onChange={(value) => setFilters((prev) => ({ ...prev, unescoListed: value }))}
             >
-              <Select.Option value={true}>Có UNESCO</Select.Option>
-              <Select.Option value={false}>Không</Select.Option>
+              <Select.Option value={true}>{t('heritage.browse.unescoYes')}</Select.Option>
+              <Select.Option value={false}>{t('heritage.browse.unescoNo')}</Select.Option>
             </Select>
           </div>
 
@@ -174,18 +176,18 @@ const HeritageBrowsePage: React.FC = () => {
                   categoryId: undefined,
                   unescoListed: undefined,
                 });
-                setPagination((prev) => ({...prev, current: 1}));
+                setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             >
-              Xóa Lọc
+              {t('heritage.browse.resetFilters')}
             </Button>
           </div>
         </div>
       </div>
 
       {loading ? (
-        <div style={{textAlign: "center", padding: "100px 0"}}>
-          <Spin size="large" tip="Đang tải dữ liệu..." />
+        <div style={{ textAlign: "center", padding: "100px 0" }}>
+          <Spin size="large" tip={t('heritage.browse.loading')} />
         </div>
       ) : (
         <>
@@ -193,7 +195,7 @@ const HeritageBrowsePage: React.FC = () => {
           {randomFeatured && (
             <section className="discovered-section">
               <Title level={2} className="header-title">
-                Nổi bật
+                {t('heritage.browse.featuredSection')}
               </Title>
               <DiscoveryCard data={randomFeatured} type={ITEM_TYPES.HERITAGE} />
             </section>
@@ -206,11 +208,11 @@ const HeritageBrowsePage: React.FC = () => {
             </div>
             <div className="section-content">
               <Title level={2} className="header-title">
-                Khám phá
+                {t('heritage.browse.exploreSection')}
               </Title>
 
               {sites.length === 0 ? (
-                <Empty description="Không tìm thấy di sản nào khác" />
+                <Empty description={t('heritage.browse.empty')} />
               ) : (
                 <Row gutter={[24, 24]}>
                   {sites.map((site) => (
@@ -220,13 +222,13 @@ const HeritageBrowsePage: React.FC = () => {
                   ))}
                 </Row>
               )}
-              <div style={{marginTop: 40, display: "flex", justifyContent: "center", width: "100%"}}>
+              <div style={{ marginTop: 40, display: "flex", justifyContent: "center", width: "100%" }}>
                 <Pagination
                   current={pagination.current}
                   pageSize={pagination.pageSize}
                   total={pagination.total}
-                  showTotal={(total) => `Tổng số: ${total}`}
-                  onChange={(page) => setPagination((prev) => ({...prev, current: page}))}
+                  showTotal={(total) => t('heritage.browse.total', { count: total })}
+                  onChange={(page) => setPagination((prev) => ({ ...prev, current: page }))}
                   showSizeChanger={false}
                 />
               </div>
