@@ -49,18 +49,18 @@
   "leaderboard": {
     "subHeader": "Bảng vàng danh dự",
     "title": "Vinh danh <1>Nhà thám hiểm</1> <3>xuất sắc</3>",
-    "desc": "Cùng chiêm ngưỡng những người chơi dẫn đầu trong hành trình khám phá di sản. Bạn có muốn tên mình được xướng lên tại đây? Tham gia ngay để tích điểm và leo hạng!",
+    "desc": "Cùng chiêm ngưỡng những người chơi dẫn đầu trong hành trình khám phá di sản. Bạn có muốn tên mình được xướng lên tại đây? Tham gia ngay để tích cúp và leo hạng!",
     "btn": "Khám phá Bảng xếp hạng",
     "cardTitle": "Top 5 Nhà Thám Hiểm",
     "month": "THÁNG",
     "updating": "Đang cập nhật...",
     "categories": {
-      "points": "Điểm số",
+      "points": "Cúp tích lũy",
       "checkins": "Check-in",
       "level": "Cấp độ"
     },
     "units": {
-      "points": "điểm",
+      "points": "cúp",
       "checkins": "lượt",
       "level": "Cấp"
     }

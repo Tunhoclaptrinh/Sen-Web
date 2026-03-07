@@ -47,6 +47,7 @@ export interface Chapter {
   color: string;
   image?: string;
   requiredPetals: number;
+  requiredChapterId?: number | null;
   totalLevels: number;
   completedLevels: number;
   completionRate: number;

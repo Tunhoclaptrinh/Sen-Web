@@ -48,13 +48,17 @@
       "quiz": "Làm bài kiểm tra ngay",
       "complete": "Hoàn thành bài học"
     },
-    "rewards": "Thưởng",
+    "interactiveTitle": "Trải nghiệm Tương tác",
+    "playGameBtn": "Khám phá Màn Chơi",
+    "playAgainBtn": "Trải nghiệm Lại",
+    "rewards": "Phần thưởng",
+    "reviewRewards": "Thưởng Ôn tập",
     "keyKnowledge": "Kiến thức trọng tâm",
     "tooltips": {
       "timer": "Thời gian còn lại",
       "progress": "Tiến độ hoàn thành",
       "rewards": "Phần thưởng bài học",
-      "passingScore": "Điểm số để đạt: {{score}}"
+      "passingScore": "Cúp cần đạt: {{score}}"
     }
   },
   "quiz": {

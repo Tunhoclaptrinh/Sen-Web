@@ -10,6 +10,7 @@ import categoryService, { Category } from "@/services/category.service";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
+import gameService from "@/services/game.service";
 import { HeritageSite, Artifact, HistoryArticle } from "@/types";
 
 interface LearningFormProps {
@@ -58,6 +59,52 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
     fetchCategories();
   }, []);
 
+  const [gameRouteOptions, setGameRouteOptions] = React.useState<{ label: string, options: { label: string, value: string }[] }[]>([]);
+
+  React.useEffect(() => {
+    const fetchGameRoutes = async () => {
+      try {
+        const chapters = await gameService.getChapters();
+        const grouped: { label: string, options: { label: string, value: string }[] }[] = [
+          {
+            label: "Trang Tự Do",
+            options: [
+              { label: "Bản đồ Màn Chơi", value: "/game/chapters" },
+            ]
+          }
+        ];
+
+        for (const chapter of chapters) {
+          const chapterOptions = [
+            { label: `${chapter.name} (Chi tiết Chương)`, value: `/game/chapters/${chapter.id}/levels` },
+          ];
+
+          try {
+            const levels = await gameService.getLevelsByChapter(chapter.id);
+            levels.forEach(lvl => {
+              chapterOptions.push({
+                label: `Màn chơi: ${lvl.name}`,
+                value: `/game/play/${lvl.id}`
+              });
+            });
+          } catch (err) {
+            // ignore empty or error
+          }
+
+          grouped.push({
+            label: chapter.name,
+            options: chapterOptions
+          });
+        }
+
+        setGameRouteOptions(grouped);
+      } catch (err) {
+        console.error("Failed to fetch game routes options", err);
+      }
+    };
+    fetchGameRoutes();
+  }, []);
+
   const memoizedInitialValues = React.useMemo(() => {
     if (!initialValues)
       return {
@@ -67,8 +114,11 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
         quiz: { passingScore: 50, questions: [] },
         rewardPoints: 50,
         rewardCoins: 0,
+        rewardPetals: 0,
         reviewRewardPoints: 10,
         reviewRewardCoins: 0,
+        reviewRewardPetals: 0,
+        maxReviewRewards: 3,
         author: user?.name,
       };
 
@@ -167,8 +217,11 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
           "categoryId",
           "rewardPoints",
           "rewardCoins",
+          "rewardPetals",
           "reviewRewardPoints",
           "reviewRewardCoins",
+          "reviewRewardPetals",
+          "maxReviewRewards",
         ]);
       }
       setCurrentStep(currentStep + 1);
@@ -321,9 +374,9 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
             <Col span={8}>
               <Form.Item name="contentType" label="Loại nội dung">
                 <Select>
-                  <Select.Option value="article">Article (Bài đọc)</Select.Option>
+                  <Select.Option value="article">Bài báo (Article)</Select.Option>
+                  <Select.Option value="interactive">Màn chơi (Interactive)</Select.Option>
                   <Select.Option value="video">Video</Select.Option>
-                  <Select.Option value="interactive">Interactive (Tương tác)</Select.Option>
                   <Select.Option value="quiz">Quiz</Select.Option>
                 </Select>
               </Form.Item>
@@ -351,8 +404,13 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
                   <TinyEditor height={400} placeholder="Soạn thảo nội dung bài học..." />
                 </Form.Item>
               ) : type === "interactive" ? (
-                <Form.Item name="contentUrl" label="Đường dẫn Game/App" rules={[{ required: true }]}>
-                  <Input placeholder="/game/..." />
+                <Form.Item name="contentUrl" label="Liên kết Màn chơi/Chương học" rules={[{ required: true, message: "Vui lòng chọn hoặc nhập liên kết" }]}>
+                  <Select
+                    showSearch
+                    placeholder="Chọn màn chơi hoặc tự nhập URL (/game/...)"
+                    options={gameRouteOptions}
+                    allowClear
+                  />
                 </Form.Item>
               ) : null;
             }}
@@ -371,10 +429,13 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
               <div style={{ background: '#f6ffed', padding: 16, borderRadius: 8, border: '1px solid #b7eb8f', marginBottom: 16 }}>
                 <div style={{ fontWeight: 600, color: '#389e0d', marginBottom: 12 }}>Phần thưởng Lần Đầu Hoàn Thành</div>
                 <div style={{ display: 'flex', gap: 16 }}>
-                  <Form.Item name="rewardPoints" label="Điểm (XP)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                  <Form.Item name="rewardPoints" label="Cúp (🏆)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
                     <InputNumber min={0} style={{ width: '100%' }} />
                   </Form.Item>
                   <Form.Item name="rewardCoins" label="Xu (Coins)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
+                  <Form.Item name="rewardPetals" label="Sen hoa (🪷)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
                     <InputNumber min={0} style={{ width: '100%' }} />
                   </Form.Item>
                 </div>
@@ -385,13 +446,28 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
               <div style={{ background: '#e6f7ff', padding: 16, borderRadius: 8, border: '1px solid #91d5ff', marginBottom: 16 }}>
                 <div style={{ fontWeight: 600, color: '#096dd9', marginBottom: 12 }}>Phần thưởng Ôn Tập (Review)</div>
                 <div style={{ display: 'flex', gap: 16 }}>
-                  <Form.Item name="reviewRewardPoints" label="Điểm (XP)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                  <Form.Item name="reviewRewardPoints" label="Cúp (🏆)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
                     <InputNumber min={0} style={{ width: '100%' }} />
                   </Form.Item>
                   <Form.Item name="reviewRewardCoins" label="Xu (Coins)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
                     <InputNumber min={0} style={{ width: '100%' }} />
                   </Form.Item>
+                  <Form.Item name="reviewRewardPetals" label="Sen hoa (🪷)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
                 </div>
+              </div>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <Form.Item name="maxReviewRewards" label="Giới hạn ôn tập có thưởng" rules={[{ required: true }]}>
+                <InputNumber min={0} style={{ width: '100%' }} addonAfter="lần" />
+              </Form.Item>
+            </Col>
+            <Col span={16}>
+              <div style={{ marginTop: 32, fontSize: 13, color: '#8c8c8c' }}>
+                * Sau khi đạt giới hạn, người dùng vẫn có thể ôn tập nhưng sẽ không được cộng thêm phần thưởng.
               </div>
             </Col>
           </Row>
@@ -576,7 +652,7 @@ const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit
         {/* Step 3: Related Content */}
         <div style={{ display: currentStep === 2 ? "block" : "none" }}>
           <div style={{ background: "#f9f9f9", padding: 24, borderRadius: 12, border: "1px solid #f0f0f0" }}>
-            <h3 style={{ marginBottom: 20 }}>Nội dung liên quan (Ngon Logic)</h3>
+            <h3 style={{ marginBottom: 20 }}>Nội dung liên quan</h3>
 
             <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
               <DebounceSelect

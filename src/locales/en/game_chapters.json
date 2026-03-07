@@ -18,7 +18,8 @@
     "levelsCount": "{{completed}}/{{total}} levels",
     "locked": "Locked",
     "needPetals": "Need {{petals}} lotus petals",
-    "unlock": "Unlock"
+    "unlock": "Unlock",
+    "requires": "Requires completion: {{name}}"
   },
   "modal": {
     "unlockSuccess": {

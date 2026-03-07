@@ -35,8 +35,12 @@ export interface LearningModule {
   passingScore?: number;
   rewardPoints?: number;
   rewardCoins?: number;
+  rewardPetals?: number;
   reviewRewardPoints?: number;
   reviewRewardCoins?: number;
+  reviewRewardPetals?: number;
+  maxReviewRewards?: number;
+  reviewCount?: number;
   thumbnail?: string;
 }
 

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { useAuth } from "@/hooks/useAuth";
 import {
   fetchLevelsByChapter,
+  fetchChapterDetail,
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
 import { Spin, Typography, Progress, Switch, Tooltip, message } from "antd";
@@ -38,9 +39,24 @@ const LevelsPage: React.FC = () => {
 
   useEffect(() => {
     if (chapterId) {
-      dispatch(fetchLevelsByChapter(Number(chapterId)));
+      const id = Number(chapterId);
+      dispatch(fetchLevelsByChapter(id));
+      dispatch(fetchChapterDetail(id));
     }
-  }, [dispatch, chapterId, levels?.length, currentChapter?.id]); // Refetch if chapter mismatches or initially
+  }, [dispatch, chapterId]);
+
+  // Handle locked chapter access
+  useEffect(() => {
+    if (currentChapter && !levelsLoading) {
+      const hasBypass = user?.role === 'admin';
+      const isUnlocked = hasBypass || currentChapter.petalState === 'blooming' || currentChapter.petalState === 'full';
+
+      if (!isUnlocked && currentChapter.petalState === 'locked') {
+        message.error(t('gameChapters.modal.unlockError'));
+        navigate('/game/chapters');
+      }
+    }
+  }, [currentChapter, levelsLoading, navigate, t, user?.role]);
 
   // ✅ Force refetch when progress changes (level completed)
   const { progress } = useAppSelector((state) => state.game); // Needs to be destructured from state.game
@@ -52,7 +68,8 @@ const LevelsPage: React.FC = () => {
   }, [dispatch, chapterId, progress?.completedLevels]); // Re-run when completion status changes
 
   const handleStartLevel = (level: Level) => {
-    if (!level.isLocked || user?.role === 'admin') {
+    const hasBypass = user?.role === 'admin';
+    if (!level.isLocked || hasBypass) {
       playClick();
       dispatch(setCurrentLevel(level));
       navigate(`/game/play/${level.id}`);
@@ -122,7 +139,7 @@ const LevelsPage: React.FC = () => {
 
       {/* MAP AREA */}
       <ChapterMap
-        levels={user?.role === 'admin' ? levels.map(l => ({ ...l, isLocked: false })) : levels}
+        levels={(user?.role === 'admin') ? levels.map(l => ({ ...l, isLocked: false })) : levels}
         currentActiveLevelId={currentActiveLevelId}
         onLevelClick={handleStartLevel}
         showDetailCards={showDetailCards}

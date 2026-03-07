@@ -5,7 +5,7 @@
     "subtitle": "Mỗi cánh sen là một chương trong hành trình khám phá di sản Việt Nam. Hoàn thành các màn chơi để mở khóa những câu chuyện mới!"
   },
   "stats": {
-    "points": "Điểm",
+    "points": "Cúp",
     "petals": "Cánh Sen",
     "coins": "Xu",
     "completion": "Hoàn thành"
@@ -18,7 +18,8 @@
     "levelsCount": "{{completed}}/{{total}} màn",
     "locked": "Chưa mở khóa",
     "needPetals": "Cần {{petals}} cánh sen",
-    "unlock": "Mở khóa"
+    "unlock": "Mở khóa",
+    "requires": "Yêu cầu hoàn thành: {{name}}"
   },
   "modal": {
     "unlockSuccess": {

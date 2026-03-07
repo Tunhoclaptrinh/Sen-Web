@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchChapters } from '@/store/slices/gameSlice';
+import { fetchChapters, fetchProgress, unlockChapter } from '@/store/slices/gameSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { Card, Row, Col, Progress, Spin, Typography, Tag, Modal, message } from 'antd';
 import Button from '@/components/common/Button';
 import { useGameSounds } from '@/hooks/useSound';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
-import gameService from '@/services/game.service';
 import type { Chapter } from '@/types';
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,6 +25,7 @@ const ChaptersPage: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchChapters());
+        dispatch(fetchProgress());
     }, [dispatch]);
 
     const handleChapterClick = (chapter: Chapter) => {
@@ -36,14 +36,11 @@ const ChaptersPage: React.FC = () => {
 
     const handleUnlockChapter = async (chapterId: number) => {
         try {
-            const result = await gameService.unlockChapter(chapterId);
+            const result = await dispatch(unlockChapter(chapterId)).unwrap();
             if (result.success) {
                 Modal.success({
                     title: t('gameChapters.modal.unlockSuccess.title'),
                     content: t('gameChapters.modal.unlockSuccess.content', { petals: result.data.petalsSpent }),
-                    onOk: () => {
-                        dispatch(fetchChapters());
-                    }
                 });
             } else {
                 message.error(result.message || t('gameChapters.modal.unlockError'));
@@ -142,11 +139,18 @@ const ChaptersPage: React.FC = () => {
                 >
                     <Row gutter={[24, 24]} className="chapters-grid">
                         {chapters.map((chapter) => {
-                            // Derived logic from petal_state
-                            const isAdmin = user?.role === 'admin';
-                            const isUnlocked = isAdmin || chapter.petalState === 'blooming' || chapter.petalState === 'full';
-                            // "locked" state from backend means Hard Lock (previous chapter not finished)
-                            const isHardLocked = !isAdmin && chapter.petalState === 'locked';
+                            // Access logic
+                            const hasBypass = user?.role === 'admin';
+                            const isActuallyUnlocked = chapter.petalState === 'blooming' || chapter.petalState === 'full';
+                            const canAccess = hasBypass || isActuallyUnlocked;
+
+                            // Lock states for overlay
+                            const isHardLocked = chapter.petalState === 'locked';
+                            const isUnlockable = chapter.petalState === 'closed' || (chapter.requiredPetals > 0 && !isActuallyUnlocked);
+
+                            // The card is interactive if the user can access it
+                            const isCardInteractive = canAccess;
+
                             return (
                                 <Col xs={24} sm={12} lg={8} key={chapter.id}>
                                     <motion.div
@@ -158,17 +162,19 @@ const ChaptersPage: React.FC = () => {
                                             }
                                         }}
                                         style={{ height: '100%', width: '100%', position: 'relative' }}
-                                        whileHover={{ y: !isUnlocked ? 0 : -5 }}
+                                        whileHover={{ y: !isCardInteractive ? 0 : -5 }}
                                         className="chapter-card-wrapper"
                                     >
                                         <Card
-                                            hoverable={isUnlocked}
-                                            className={`chapter-card ${!isUnlocked ? 'locked' : ''}`}
+                                            hoverable={isCardInteractive}
+                                            className={`chapter-card ${!isCardInteractive ? 'locked' : ''}`}
                                             onClick={() => {
-                                                if (isUnlocked) playClick();
-                                                handleChapterClick(chapter);
+                                                if (isCardInteractive) {
+                                                    playClick();
+                                                    handleChapterClick(chapter);
+                                                }
                                             }}
-                                            actions={isUnlocked ? [
+                                            actions={isCardInteractive ? [
                                                 <Button
                                                     variant="primary"
                                                     className="play-button"
@@ -233,27 +239,39 @@ const ChaptersPage: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            {!isUnlocked && (
+                                            {!canAccess && (
                                                 <div className="locked-overlay">
                                                     <LockOutlined style={{ fontSize: 32, marginBottom: 8 }} />
                                                     {isHardLocked ? (
                                                         <>
                                                             <Text>{t('gameChapters.card.locked')}</Text>
+                                                            {chapter.requiredChapterId && (
+                                                                <Text style={{ fontSize: 12, opacity: 0.8, display: 'block', marginTop: 4 }}>
+                                                                    ({t('gameChapters.card.requires', {
+                                                                        name: chapters.find(c => c.id === chapter.requiredChapterId)?.name || 'Chương trước'
+                                                                    })})
+                                                                </Text>
+                                                            )}
                                                         </>
-                                                    ) : (
+                                                    ) : isUnlockable ? (
                                                         <>
-                                                            <Text>{t('gameChapters.card.needPetals', { petals: chapter.requiredPetals })}</Text>
+                                                            <Text>{t('gameChapters.card.locked')}</Text>
+                                                            <Text style={{ fontSize: 14, marginBottom: 12, display: 'block' }}>
+                                                                {t('gameChapters.card.needPetals', { petals: chapter.requiredPetals })}
+                                                            </Text>
                                                             <Button
                                                                 variant="primary"
+                                                                className="unlock-button"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     handleUnlockChapter(chapter.id);
                                                                 }}
-                                                                style={{ marginTop: 12 }}
                                                             >
                                                                 {t('gameChapters.card.unlock')}
                                                             </Button>
                                                         </>
+                                                    ) : (
+                                                        <Text>{t('gameChapters.card.locked')}</Text>
                                                     )}
                                                 </div>
                                             )}

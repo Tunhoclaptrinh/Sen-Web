@@ -48,6 +48,8 @@
       "quiz": "Take Quiz Now",
       "complete": "Complete Lesson"
     },
+    "interactiveTitle": "Interactive Experience",
+    "playGameBtn": "Explore Game",
     "rewards": "Rewards",
     "keyKnowledge": "Key Knowledge",
     "tooltips": {

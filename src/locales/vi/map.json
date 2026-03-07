@@ -45,7 +45,7 @@
     },
     "checkinSuccess": {
       "title": "Check-in thành công!",
-      "desc": "Chúc mừng! Bạn đã nhận được {{points}} điểm cúp tại {{location}}."
+      "desc": "Chúc mừng! Bạn đã nhận được {{points}} 🏆 tại {{location}}."
     },
     "checkinFailed": {
       "title": "Check-in thất bại",

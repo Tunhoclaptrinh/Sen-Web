@@ -1,7 +1,7 @@
-import {Form, Input, InputNumber, ColorPicker, Descriptions, Space, Row, Col, message} from "antd";
-import {Button} from "@/components/common";
-import {Chapter} from "@/types";
-import {useState} from "react";
+import { Form, Input, InputNumber, ColorPicker, Descriptions, Space, Row, Col, message, Select } from "antd";
+import { Button } from "@/components/common";
+import { Chapter } from "@/types";
+import { useState, useEffect } from "react";
 import adminChapterService from "@/services/admin-chapter.service";
 
 interface ChapterInfoTabProps {
@@ -13,9 +13,24 @@ interface ChapterInfoTabProps {
   onSubmit?: (values: any) => Promise<boolean>;
 }
 
-const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({data, mode, onUpdate, onSuccess, onCancel, onSubmit}) => {
+const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({ data, mode, onUpdate, onSuccess, onCancel, onSubmit }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        const response = await adminChapterService.getAll({ limit: 100 });
+        if (response.success && response.data) {
+          setChapters(response.data);
+        }
+      } catch (error) {
+        console.error("Fetch chapters error:", error);
+      }
+    };
+    fetchChapters();
+  }, []);
 
   const handleSubmit = async () => {
     try {
@@ -33,7 +48,7 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({data, mode, onUpdate, on
       let response;
       if (mode === "create") {
         // Remove order when creating (backend auto-sets)
-        const {order, ...createValues} = values;
+        const { order, ...createValues } = values;
         response = await adminChapterService.create(createValues);
       } else if (mode === "edit" && data?.id) {
         response = await adminChapterService.update(data.id, values);
@@ -79,19 +94,24 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({data, mode, onUpdate, on
         </Descriptions.Item>
         <Descriptions.Item label="Thứ tự">{data.order}</Descriptions.Item>
         <Descriptions.Item label="Số cánh hoa yêu cầu">{data.requiredPetals}</Descriptions.Item>
+        <Descriptions.Item label="Chương yêu cầu">
+          {data.requiredChapterId
+            ? chapters.find((c) => c.id === data.requiredChapterId)?.name || `Mã chương: ${data.requiredChapterId}`
+            : "Không có"}
+        </Descriptions.Item>
       </Descriptions>
     );
   }
 
   // Edit/Create mode: Display as Form
   return (
-    <Form form={form} layout="vertical" initialValues={data || {requiredPetals: 0}}>
+    <Form form={form} layout="vertical" initialValues={data || { requiredPetals: 0 }}>
       <Form.Item
         name="name"
         label="Tên Chương"
         rules={[
-          {required: true, message: "Vui lòng nhập tên chương"},
-          {min: 3, message: "Tên chương phải có ít nhất 3 ký tự"},
+          { required: true, message: "Vui lòng nhập tên chương" },
+          { min: 3, message: "Tên chương phải có ít nhất 3 ký tự" },
         ]}
       >
         <Input placeholder="Nhập tên chương (VD: Sen Hồng - Ký Ức Đầu Tiên)" />
@@ -101,8 +121,8 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({data, mode, onUpdate, on
         name="description"
         label="Mô tả"
         rules={[
-          {required: true, message: "Vui lòng nhập mô tả"},
-          {min: 20, message: "Mô tả phải có ít nhất 20 ký tự"},
+          { required: true, message: "Vui lòng nhập mô tả" },
+          { min: 20, message: "Mô tả phải có ít nhất 20 ký tự" },
         ]}
       >
         <Input.TextArea rows={4} placeholder="Mô tả về nội dung chương..." />
@@ -110,7 +130,7 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({data, mode, onUpdate, on
 
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item name="theme" label="Chủ đề" rules={[{required: true, message: "Vui lòng nhập chủ đề"}]}>
+          <Form.Item name="theme" label="Chủ đề" rules={[{ required: true, message: "Vui lòng nhập chủ đề" }]}>
             <Input placeholder="Chủ đề (VD: Văn hóa Đại Việt)" />
           </Form.Item>
         </Col>
@@ -128,19 +148,36 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({data, mode, onUpdate, on
       <Row gutter={16}>
         {mode === "edit" && (
           <Col span={12}>
-            <Form.Item name="order" label="Thứ tự" rules={[{required: true, message: "Vui lòng nhập thứ tự"}]}>
-              <InputNumber style={{width: "100%"}} min={1} />
+            <Form.Item name="order" label="Thứ tự" rules={[{ required: true, message: "Vui lòng nhập thứ tự" }]}>
+              <InputNumber style={{ width: "100%" }} min={1} />
             </Form.Item>
           </Col>
         )}
         <Col span={mode === "edit" ? 12 : 24}>
           <Form.Item name="requiredPetals" label="Số cánh hoa yêu cầu">
-            <InputNumber style={{width: "100%"}} min={0} />
+            <InputNumber style={{ width: "100%" }} min={0} />
           </Form.Item>
         </Col>
       </Row>
 
-      <div style={{marginTop: 24, textAlign: "right"}}>
+      <Row gutter={16}>
+        <Col span={24}>
+          <Form.Item name="requiredChapterId" label="Chương yêu cầu (Prerequisite)">
+            <Select
+              placeholder="Chọn chương yêu cầu để mở khóa chương này"
+              allowClear
+              options={chapters
+                .filter((c) => c.id !== data?.id) // Cannot be prerequisite of itself
+                .map((c) => ({
+                  label: c.name,
+                  value: c.id,
+                }))}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <div style={{ marginTop: 24, textAlign: "right" }}>
         <Space>
           <Button variant="outline" onClick={onCancel}>
             Hủy

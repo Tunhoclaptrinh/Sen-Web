@@ -28,6 +28,7 @@ import {
   TrophyOutlined,
   PlayCircleOutlined,
   LockOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import learningService, { LearningModule } from "@/services/learning.service";
 import { useAuth } from "@/hooks/useAuth";
@@ -281,24 +282,36 @@ const LearningPathPage: React.FC = () => {
                             </div>
                           </div>
 
+
+
                           <Title level={4} ellipsis={{ rows: 2 }} style={{ marginBottom: 12, fontSize: 18, lineHeight: 1.4, flex: 1 }}>
                             {module.title}
                           </Title>
 
                           <div style={{ marginTop: 'auto' }}>
                             {module.isCompleted ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <span style={{ fontSize: 13, color: '#8c8c8c', fontWeight: 500 }}>Lịch sử cao nhất:</span>
-                                  <div style={{ fontSize: 20, fontWeight: 800, color: (module.score ?? 0) >= (module.passingScore || 70) ? '#52c41a' : '#faad14', lineHeight: 1 }}>
-                                    {module.score ?? 0}<span style={{ fontSize: 12, fontWeight: 500, color: '#8c8c8c', marginLeft: 2 }}>/100</span>
-                                  </div>
+                              <div style={{ marginBottom: 20 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 6 }}>
+                                  <span style={{ fontSize: 12, color: '#8c8c8c', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Điểm số</span>
+                                  <span style={{ fontSize: 14, fontWeight: 800, color: (module.score ?? 0) >= (module.passingScore || 70) ? '#52c41a' : '#faad14' }}>
+                                    {module.score ?? 0}
+                                  </span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f5f5f5', padding: '6px 10px', borderRadius: 6 }}>
-                                  <span style={{ fontSize: 12, color: '#595959', fontWeight: 500 }}>Điểm yêu cầu:</span>
-                                  <div style={{ fontSize: 14, fontWeight: 700, color: '#595959' }}>
-                                    {module.passingScore || 70}
-                                  </div>
+                                <div style={{ height: 6, background: '#f0f0f0', borderRadius: 3, overflow: 'hidden', position: 'relative' }}>
+                                  <div style={{
+                                    position: 'absolute', left: 0, top: 0, height: '100%',
+                                    width: `${module.score ?? 0}%`,
+                                    background: (module.score ?? 0) >= (module.passingScore || 70) ? 'linear-gradient(90deg, #52c41a, #95de64)' : 'linear-gradient(90deg, #faad14, #ffec3d)',
+                                    borderRadius: 3, transition: 'width 0.5s ease'
+                                  }} />
+                                  <div style={{
+                                    position: 'absolute', left: `${module.passingScore || 70}%`, top: 0, height: '100%',
+                                    width: 2, background: 'rgba(255,255,255,0.5)', zIndex: 1
+                                  }} />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                                  <span style={{ fontSize: 11, color: '#bfbfbf' }}>0</span>
+                                  <span style={{ fontSize: 11, color: '#bfbfbf' }}>Mục tiêu: {module.passingScore || 70}</span>
                                 </div>
                               </div>
                             ) : (
@@ -307,6 +320,33 @@ const LearningPathPage: React.FC = () => {
                                 {!isLocked && <Tag color="processing" style={{ borderRadius: 6, border: 'none' }}>{t('gameLearning.card.notStudied')}</Tag>}
                               </div>
                             )}
+
+                            {/* Compact Reward Badges */}
+                            <div style={{
+                              display: 'flex',
+                              gap: 8,
+                              width: '100%',
+                              marginBottom: 12,
+                              justifyContent: 'space-around',
+                              opacity: (module.isCompleted && (module.reviewCount || 0) >= (module.maxReviewRewards || 3)) ? 0.35 : 1
+                            }}>
+                              {[
+                                { icon: '🏆', value: module.isCompleted ? (module.reviewRewardPoints || 0) : (module.rewardPoints || 0), color: '#d48806', bg: '#fffbe6' },
+                                { icon: '🪙', value: module.isCompleted ? (module.reviewRewardCoins || 0) : (module.rewardCoins || 0), color: '#d48806', bg: '#fffbe6' },
+                                { icon: '🪷', value: module.isCompleted ? (module.reviewRewardPetals || 0) : (module.rewardPetals || 0), color: '#c41d7f', bg: '#fff0f6' }
+                              ].map((reward, idx) => (
+                                <span key={idx} style={{
+                                  display: 'flex', alignItems: 'center', gap: 4,
+                                  background: reward.bg, padding: '2px 8px', borderRadius: 6,
+                                  justifyContent: 'space-between',
+                                  fontSize: 13, fontWeight: 700, color: reward.color,
+                                  border: `1px solid ${reward.bg === '#fffbe6' ? '#ffe58f' : '#ffadd2'}`
+                                }}>
+                                  <span style={{ fontSize: 13 }}>{reward.icon}</span>
+                                  {reward.value}
+                                </span>
+                              ))}
+                            </div>
 
                             <Button
                               fullWidth
@@ -318,9 +358,18 @@ const LearningPathPage: React.FC = () => {
                               }}
                               variant={module.isCompleted ? "outline" : "primary"}
                               className="action-button action-btn"
-                              icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <BookOutlined /> : <PlayCircleOutlined />)}
+                              icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <ReloadOutlined /> : <PlayCircleOutlined />)}
                             >
-                              {isLocked ? t('gameLearning.card.actions.locked') : (module.isCompleted ? t('gameLearning.card.actions.review') : t('gameLearning.card.actions.learnNow'))}
+                              {isLocked ? t('gameLearning.card.actions.locked') : (
+                                module.isCompleted ?
+                                  (
+                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                                      {t('gameLearning.card.actions.review')}
+                                      <span style={{ fontSize: 12, opacity: 0.8, fontWeight: 500 }}>({module.reviewCount || 0}/{module.maxReviewRewards || 3})</span>
+                                    </div>
+                                  ) :
+                                  t('gameLearning.card.actions.learnNow')
+                              )}
                             </Button>
                           </div>
                         </div>

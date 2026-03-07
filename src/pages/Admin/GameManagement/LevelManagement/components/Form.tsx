@@ -367,24 +367,45 @@ const LevelForm: React.FC<LevelFormProps> = ({
           <GiftOutlined /> Phần thưởng chiến thắng (Lần đầu)
         </Title>
         <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name={["rewards", "petals"]} label="Số Cánh hoa">
-              <InputNumber
-                style={{ width: "100%" }}
-                min={0}
-                placeholder="0"
-                formatter={(value) => `${value || ""}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              />
+          <Col span={8}>
+            <Form.Item name={["rewards", "points"]} label="Số Cúp (🏆)">
+              <InputNumber style={{ width: "100%" }} min={0} placeholder="0" />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
+            <Form.Item name={["rewards", "petals"]} label="Số Sen hoa (🪷)">
+              <InputNumber style={{ width: "100%" }} min={0} placeholder="0" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
             <Form.Item name={["rewards", "coins"]} label="Số Xu (Coins)">
-              <InputNumber
-                style={{ width: "100%" }}
-                min={0}
-                placeholder="0"
-                formatter={(value) => `${value || ""}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              />
+              <InputNumber style={{ width: "100%" }} min={0} placeholder="0" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Title level={5} style={{ marginTop: 16, marginBottom: 16 }}>
+          <GiftOutlined /> Thưởng Ôn tập (Review)
+        </Title>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item name={["rewards", "reviewPoints"]} label="Cúp ôn tập">
+              <InputNumber style={{ width: "100%" }} min={0} placeholder="0" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item name={["rewards", "reviewPetals"]} label="Sen hoa ôn tập">
+              <InputNumber style={{ width: "100%" }} min={0} placeholder="0" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item name={["rewards", "reviewCoins"]} label="Xu ôn tập">
+              <InputNumber style={{ width: "100%" }} min={0} placeholder="0" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item name="maxReviewRewards" label="Giới hạn thưởng ôn tập">
+              <InputNumber style={{ width: "100%" }} min={0} addonAfter="lần" placeholder="3" />
             </Form.Item>
           </Col>
         </Row>
@@ -415,7 +436,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
         <Divider style={{ margin: "16px 0" }} />
 
         <Title level={5} style={{ marginBottom: 16 }}>
-          <LinkOutlined /> Nội dung liên quan (Ngon Logic)
+          <LinkOutlined /> Nội dung liên quan
         </Title>
         <Row gutter={24}>
           <Col span={8}>
