@@ -39,6 +39,8 @@ const App: React.FC = () => {
 
   // Track Page Views
   const location = useLocation();
+  const isPosterOnlyRoute = location.pathname === "/poster-only";
+
   useEffect(() => {
     sendPageView(location.pathname + location.search);
   }, [location]);
@@ -122,9 +124,13 @@ const App: React.FC = () => {
         <AntApp>
           <ToastProvider>
             <GlobalCharacterProvider>
-              <GlobalCharacterOverlay />
-              <CustomBgmPlayer />
-              <MobileAppPromotion />
+              {!isPosterOnlyRoute && (
+                <>
+                  <GlobalCharacterOverlay />
+                  <CustomBgmPlayer />
+                  <MobileAppPromotion />
+                </>
+              )}
               {routing}
             </GlobalCharacterProvider>
           </ToastProvider>

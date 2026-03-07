@@ -89,6 +89,7 @@ const Header: React.FC = () => {
     if (location.pathname.startsWith('/learn')) return 'learn';
     if (location.pathname.startsWith('/map')) return 'map';
     if (location.pathname.startsWith('/support')) return 'support';
+    if (location.pathname.startsWith('/poster')) return 'poster';
     return '';
   };
 
@@ -156,6 +157,10 @@ const Header: React.FC = () => {
     {
       key: 'support',
       label: <Link to="/support">{t('nav.support')}</Link>,
+    },
+    {
+      key: 'poster',
+      label: <Link to="/poster">{t('nav.poster')}</Link>,
     },
   ];
 

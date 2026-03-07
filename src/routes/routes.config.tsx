@@ -39,6 +39,8 @@ const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Support = lazy(() => import("@/pages/Support"));
+const Poster = lazy(() => import("@/pages/Poster"));
+const PosterOnlyPage = lazy(() => import("@/pages/PosterOnly"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
@@ -101,6 +103,16 @@ const routes: RouteObject[] = [
         element: <Login />,
       },
     ],
+  },
+
+  // ============ STANDALONE ROUTES ============
+  {
+    path: "/poster-only",
+    element: (
+      <LazyLoadWrapper>
+        <PosterOnlyPage />
+      </LazyLoadWrapper>
+    ),
   },
 
   // ============ PUBLIC ROUTES ============
@@ -175,6 +187,10 @@ const routes: RouteObject[] = [
       {
         path: "support",
         element: <Support />,
+      },
+      {
+        path: "poster",
+        element: <Poster />,
       },
       {
         path: "map",
