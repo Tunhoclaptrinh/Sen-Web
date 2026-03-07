@@ -207,23 +207,36 @@ export interface CollectClueResponse {
 export interface CompleteLevelResponse {
   passed: boolean;
   score: number;
-  rewards: {
-    petals: number;
-    coins: number;
+  rewards?: {
+    petals?: number;
+    coins?: number;
     trophies?: number;
     points?: number;
     character?: string;
     isReview?: boolean;
-  };
-  newTotals: {
+  } | null;
+  newTotals?: {
     petals: number;
     points: number;
     coins: number;
-  };
+  } | null;
   reviewProgress?: {
     current: number;
     total: number;
   } | null;
+  breakdown?: {
+    baseScore: number;
+    timeBonus: number;
+    hintPenalty?: number;
+  };
+  requiredScore?: number;
+  maxPotentialScore?: number;
+  passingPercentage?: number;
+  canRetry?: boolean;
+  nextLevelId?: number | null;
+  isGuest?: boolean;
+  isCompleted?: boolean;
+  newBadges?: Badge[];
 }
 
 // ==================== Rewards ====================

@@ -11,7 +11,7 @@ import {
   CommentOutlined,
 } from "@ant-design/icons";
 import gameService from "@/services/game.service";
-import type { Screen, Level } from "@/types/game.types";
+import type { Screen, Level, CompleteLevelResponse } from "@/types/game.types";
 import { SCREEN_TYPES } from "@/types/game.types";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useAuth } from "@/hooks/useAuth";
@@ -59,7 +59,7 @@ const GamePlayPage: React.FC = () => {
   const [score, setScore] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [gameCompleted, setGameCompleted] = useState(false);
-  const [completionData, setCompletionData] = useState<any>(null);
+  const [completionData, setCompletionData] = useState<CompleteLevelResponse | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const [pointsGained, setPointsGained] = useState<number | null>(null);

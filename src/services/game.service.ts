@@ -1,5 +1,14 @@
 import BaseService from "./base.service";
-import type { GameProgress, Chapter, Level, Screen, LeaderboardEntry, Badge, Achievement } from "@/types/game.types";
+import type {
+  GameProgress,
+  Chapter,
+  Level,
+  Screen,
+  LeaderboardEntry,
+  Badge,
+  Achievement,
+  CompleteLevelResponse,
+} from "@/types/game.types";
 
 class GameService extends BaseService {
   constructor() {
@@ -138,28 +147,7 @@ class GameService extends BaseService {
     levelId: number,
     score: number,
     timeSpent: number,
-  ): Promise<{
-    passed: boolean;
-    score: number;
-    rewards: {
-      petals: number;
-      coins: number;
-      trophies?: number;
-      points?: number;
-      character?: string;
-      isReview?: boolean;
-    };
-    newTotals: {
-      petals: number;
-      points: number;
-      coins: number;
-    };
-    reviewProgress?: {
-      current: number;
-      total: number;
-    } | null;
-    nextLevelId?: number;
-  }> {
+  ): Promise<CompleteLevelResponse> {
     const response = await this.post(`/levels/${levelId}/complete`, { score, timeSpent });
     return response.data;
   }
