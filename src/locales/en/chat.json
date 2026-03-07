@@ -1,0 +1,65 @@
+{
+  "errors": {
+    "micAccess": "Unable to access microphone",
+    "unclearVoice": "Could not hear you clearly.",
+    "recognitionError": "Voice recognition error: ",
+    "audioProcessError": "An error occurred while processing audio.",
+    "invalidFileType": "Please select an image file only!",
+    "fileTooLarge": "Image must be smaller than 5MB!"
+  },
+  "attachment": {
+    "tooltip": "Supports images (JPG, PNG) up to 5MB",
+    "addMenu": "Add image, attachment",
+    "addTooltipShort": "Add attachment"
+  },
+  "modes": {
+    "guidedLearning": {
+      "title": "Guided Learning",
+      "tooltip": "Sen, acting as a teacher, helps you understand concepts step-by-step, explains clearly with examples, and adjusts to your level.",
+      "prompt": "Activate mode: Guided Learning"
+    },
+    "quiz": {
+      "title": "Quiz",
+      "tooltip": "Sen, acting as an examiner, asks appropriate questions to assess your understanding and provides short feedback after each answer.",
+      "prompt": "Activate mode: Quiz"
+    }
+  },
+  "messages": {
+    "welcome": "Hello! I am Sen assistant. I will guide you to explore Vietnam's cultural heritage! 🌸",
+    "defaultError": "Sorry, I cannot answer this question right now."
+  },
+  "suggestions": {
+    "lessonHint": {
+      "label": "Lesson Hint",
+      "prompt": "Give me a hint please"
+    },
+    "explainMore": {
+      "label": "Explain more",
+      "prompt": "Can you explain more about this content?"
+    }
+  },
+  "voice": {
+    "recognizing": "Recognizing...",
+    "recognized": "Recognized"
+  },
+  "input": {
+    "placeholderAuth": "Ask about Vietnam's cultural heritage...",
+    "placeholderGuest": "Please login to chat"
+  },
+  "settings": {
+    "title": "AI Settings",
+    "tabs": {
+      "character": "Character",
+      "customizeSen": "Customize SEN"
+    },
+    "activeBadge": "Selected"
+  },
+  "switchCharacter": {
+    "title": "Switch Character",
+    "desc1": "Since each character has a different personality, we have designed separate chat sessions for each.",
+    "desc2": "If you switch to <strong>{newChar}</strong>, your current conversation with <strong>{oldChar}</strong> will be saved.",
+    "desc3": "Do you want to continue?",
+    "okText": "Confirm",
+    "cancelText": "Cancel"
+  }
+}

@@ -37,6 +37,7 @@ import SenChibi from "@/components/SenChibi";
 import type { SenChibiGesture, SenChibiMouthState, SenChibiEyeState } from "@/components/SenChibi/types";
 import SenCharacter from "@/components/SenCharacter";
 import { SenCustomizationSettings } from "@/components/common";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 
 interface AIChatProps {
@@ -87,6 +88,7 @@ const renderMessageWithLinks = (text: string) => {
 };
 
 const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) => {
+  const { t } = useTranslation("translation", { keyPrefix: "chat" });
   const dispatch = useAppDispatch();
   const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings, activeContext } = useAppSelector((state) => state.ai);
   const { user } = useAppSelector((state) => state.auth);
@@ -225,7 +227,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
           requestAnimationFrame(draw);
         } catch (err) {
           console.error('Error accessing microphone:', err);
-          message.error("Không thể truy cập microphone");
+          message.error(t("errors.micAccess"));
           setIsListening(false);
         }
       };
@@ -289,18 +291,18 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                 setIsListening(false);
               }, 1500);
             } else {
-              message.warning("Không nghe rõ lời bạn nói.");
+              message.warning(t("errors.unclearVoice"));
               setIsTranscribing(false);
               setIsListening(false);
             }
           } else {
-            message.error("Lỗi nhận diện giọng nói: " + (resultAction.payload || "Unknown error"));
+            message.error(t("errors.recognitionError") + (resultAction.payload || "Unknown error"));
             setIsTranscribing(false);
             setIsListening(false);
           }
         } catch (err) {
           console.error("Transcription error:", err);
-          message.error("Có lỗi xảy ra khi xử lý âm thanh.");
+          message.error(t("errors.audioProcessError"));
           setIsTranscribing(false);
           setIsListening(false);
         }
@@ -385,14 +387,14 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   const processFile = (file: File) => {
     // Validate type
     if (!file.type.startsWith('image/')) {
-      message.error('Vui lòng chỉ chọn file ảnh!');
+      message.error(t("errors.invalidFileType"));
       return;
     }
 
     // Validate size (5MB)
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      message.error('Ảnh phải nhỏ hơn 5MB!');
+      message.error(t("errors.fileTooLarge"));
       return;
     }
 
@@ -460,7 +462,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     return (
       <div className="attachment-menu">
         <Tooltip
-          title="Hỗ trợ ảnh (JPG, PNG) tối đa 5MB"
+          title={t("attachment.tooltip")}
           placement="right"
           overlayStyle={{ zIndex: 20005 }}
         >
@@ -468,42 +470,42 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
             fileInputRef.current?.click();
           }}>
             <PaperClipOutlined />
-            <span>Thêm ảnh, tệp đính kèm</span>
+            <span>{t("attachment.addMenu")}</span>
           </div>
         </Tooltip>
 
         <div className="menu-divider" />
 
         <Tooltip
-          title="Sen, đóng vai trò là giáo viên, giúp bạn hiểu kiến thức từng bước, giải thích rõ ràng, có ví dụ minh họa và điều chỉnh theo trình độ của bạn."
+          title={t("modes.guidedLearning.tooltip")}
           placement="right"
           overlayStyle={{ maxWidth: 300, zIndex: 20005 }}
         >
           <div className={`menu-item ${!isSen ? 'disabled' : ''}`} onClick={() => {
             if (isSen) {
-              setInput("Kích hoạt chế độ: Học có hướng dẫn");
+              setInput(t("modes.guidedLearning.prompt"));
               // handleSend(); // Optional: Auto send
             }
           }}>
             <ReadOutlined />
-            <span>Học có hướng dẫn</span>
+            <span>{t("modes.guidedLearning.title")}</span>
             {!isSen && <span className="lock-icon">🔒</span>}
           </div>
         </Tooltip>
 
         <Tooltip
-          title="Sen, đóng vai trò là người kiểm tra, đưa ra câu hỏi phù hợp để đánh giá mức độ hiểu bài và đưa nhận xét ngắn gọn sau mỗi câu trả lời."
+          title={t("modes.quiz.tooltip")}
           placement="right"
           overlayStyle={{ maxWidth: 300, zIndex: 20005 }}
         >
           <div className={`menu-item ${!isSen ? 'disabled' : ''}`} onClick={() => {
             if (isSen) {
-              setInput("Kích hoạt chế độ: Câu đố kiểm tra");
+              setInput(t("modes.quiz.prompt"));
               // handleSend();
             }
           }}>
             <QuestionCircleOutlined />
-            <span>Câu đố</span>
+            <span>{t("modes.quiz.title")}</span>
             {!isSen && <span className="lock-icon">🔒</span>}
           </div>
         </Tooltip>
@@ -786,7 +788,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
       // Extract from ChatResponse - message is a ChatMessage object
       const messageObj = response.message;
-      const fullResponse = messageObj?.content || "Xin lỗi, mình không thể trả lời câu hỏi này.";
+      const fullResponse = messageObj?.content || t("messages.defaultError");
       const audioBase64 = messageObj?.audioBase64;
       const recommendation = messageObj?.recommendation; // Extract recommendation
 
@@ -921,7 +923,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                     <div className="message assistant">
                       <div className="message-content">
                         <div className="message-bubble">
-                          Xin chào! Mình là trợ lý Sen. Mình sẽ hướng dẫn bạn khám phá di sản văn hóa Việt Nam! 🌸
+                          {t("messages.welcome")}
                         </div>
                       </div>
                     </div>
@@ -1018,13 +1020,13 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
               <div className="suggestions-overlay">
                 <div className="suggestions-container">
                   {position === 'absolute' && activeContext?.levelId && (
-                    <div className="suggestion-chip" onClick={() => { setInput("Gợi ý giúp mình với"); handleSend(); }}>
-                      <BulbOutlined /> Gợi ý bài học
+                    <div className="suggestion-chip" onClick={() => { setInput(t("suggestions.lessonHint.prompt")); handleSend(); }}>
+                      <BulbOutlined /> {t("suggestions.lessonHint.label")}
                     </div>
                   )}
                   {(activeContext?.artifactId || activeContext?.heritageSiteId) && (
-                    <div className="suggestion-chip" onClick={() => { setInput("Bạn hãy giải thích thêm về nội dung này"); handleSend(); }}>
-                      <InfoCircleOutlined /> Giải thích thêm
+                    <div className="suggestion-chip" onClick={() => { setInput(t("suggestions.explainMore.prompt")); handleSend(); }}>
+                      <InfoCircleOutlined /> {t("suggestions.explainMore.label")}
                     </div>
                   )}
                 </div>
@@ -1052,7 +1054,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                         color: 'white'
                       }}>
                         <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'white' }} spin />} />
-                        <span style={{ fontFamily: 'Cinzel', fontSize: '16px' }}>Đang nhận diện...</span>
+                        <span style={{ fontFamily: 'Cinzel', fontSize: '16px' }}>{t("voice.recognizing")}</span>
                       </div>
                     ) : isTranscriptionSuccess ? (
                       <div className="transcribing-state" style={{
@@ -1064,7 +1066,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                         color: '#52c41a' // Success Green
                       }}>
                         <CheckOutlined style={{ fontSize: 24 }} />
-                        <span style={{ fontFamily: 'Cinzel', fontSize: '16px' }}>Đã nhận diện</span>
+                        <span style={{ fontFamily: 'Cinzel', fontSize: '16px' }}>{t("voice.recognized")}</span>
                       </div>
                     ) : (
                       <>
@@ -1114,7 +1116,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
                     <Input
                       autoFocus
-                      placeholder={user ? "Hỏi về di sản văn hóa Việt Nam..." : "Vui lòng đăng nhập để trò chuyện"}
+                      placeholder={user ? t("input.placeholderAuth") : t("input.placeholderGuest")}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onPressEnter={handleSend}
@@ -1122,7 +1124,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                       disabled={loading || chatLoading || !user}
                       style={{ fontSize: '18px' }}
                       prefix={
-                        <Tooltip title="Thêm tệp đính kèm" placement="top" overlayStyle={{ zIndex: 20005 }}>
+                        <Tooltip title={t("attachment.addTooltipShort")} placement="top" overlayStyle={{ zIndex: 20005 }}>
                           <Popover
                             content={renderAttachmentMenu()}
                             trigger="click"
@@ -1183,7 +1185,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
       <Modal
         key="settings-modal"
-        title="Cài đặt AI"
+        title={t("settings.title")}
         open={isSettingsOpen}
         onCancel={() => setIsSettingsOpen(false)}
         footer={null}
@@ -1199,7 +1201,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
               label: (
                 <span>
                   <UserOutlined style={{ marginRight: '8px' }} />
-                  Nhân vật
+                  {t("settings.tabs.character")}
                 </span>
               ),
               children: (
@@ -1224,7 +1226,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                         description={character.description}
                       />
                       {currentCharacter?.id === character.id && (
-                        <div className="active-badge">Đang chọn</div>
+                        <div className="active-badge">{t("settings.activeBadge")}</div>
                       )}
                     </List.Item>
                   )}
@@ -1236,7 +1238,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
               label: (
                 <span>
                   <EditOutlined style={{ marginRight: '8px' }} />
-                  Tùy chỉnh SEN
+                  {t("settings.tabs.customizeSen")}
                 </span>
               ),
               children: (
@@ -1252,7 +1254,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       {/* Modal xác nhận chuyển nhân vật */}
       <Modal
         key="character-switch-modal"
-        title="Đổi nhân vật trò chuyện"
+        title={t("switchCharacter.title")}
         open={!!pendingSwitchCharacter}
         onOk={() => {
           if (pendingSwitchCharacter) {
@@ -1262,19 +1264,13 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
           setPendingSwitchCharacter(null);
         }}
         onCancel={() => setPendingSwitchCharacter(null)}
-        okText="Đồng ý"
-        cancelText="Hủy"
+        okText={t("switchCharacter.okText")}
+        cancelText={t("switchCharacter.cancelText")}
         zIndex={10001}
       >
-        <p>
-          Vì tính cách của mỗi nhân vật là khác nhau, chúng tôi đã thiết kế mỗi nhân vật
-          sẽ có một đoạn chat riêng.
-        </p>
-        <p>
-          Nếu đổi sang <strong>{pendingSwitchCharacter?.name}</strong>, cuộc trò chuyện hiện
-          tại với <strong>{currentCharacter?.name}</strong> sẽ được lưu lại.
-        </p>
-        <p>Bạn có muốn tiếp tục?</p>
+        <p dangerouslySetInnerHTML={{ __html: t("switchCharacter.desc1") }} />
+        <p dangerouslySetInnerHTML={{ __html: t("switchCharacter.desc2", { newChar: pendingSwitchCharacter?.name, oldChar: currentCharacter?.name }) }} />
+        <p>{t("switchCharacter.desc3")}</p>
       </Modal>
     </AnimatePresence>
   );

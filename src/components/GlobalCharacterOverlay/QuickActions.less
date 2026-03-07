@@ -33,6 +33,7 @@
     align-items: flex-end;
     gap: 16px;
     transition: all 0.3s ease;
+    pointer-events: none;
 
     .speed-dial-actions {
         display: flex;
@@ -116,6 +117,7 @@
     z-index: 10000;
     position: relative;
     overflow: hidden;
+    pointer-events: auto;
 
     &::after {
         content: '';

@@ -1,0 +1,65 @@
+{
+  "errors": {
+    "micAccess": "Không thể truy cập microphone",
+    "unclearVoice": "Không nghe rõ lời bạn nói.",
+    "recognitionError": "Lỗi nhận diện giọng nói: ",
+    "audioProcessError": "Có lỗi xảy ra khi xử lý âm thanh.",
+    "invalidFileType": "Vui lòng chỉ chọn file ảnh!",
+    "fileTooLarge": "Ảnh phải nhỏ hơn 5MB!"
+  },
+  "attachment": {
+    "tooltip": "Hỗ trợ ảnh (JPG, PNG) tối đa 5MB",
+    "addMenu": "Thêm ảnh, tệp đính kèm",
+    "addTooltipShort": "Thêm tệp đính kèm"
+  },
+  "modes": {
+    "guidedLearning": {
+      "title": "Học có hướng dẫn",
+      "tooltip": "Sen, đóng vai trò là giáo viên, giúp bạn hiểu kiến thức từng bước, giải thích rõ ràng, có ví dụ minh họa và điều chỉnh theo trình độ của bạn.",
+      "prompt": "Kích hoạt chế độ: Học có hướng dẫn"
+    },
+    "quiz": {
+      "title": "Câu đố",
+      "tooltip": "Sen, đóng vai trò là người kiểm tra, đưa ra câu hỏi phù hợp để đánh giá mức độ hiểu bài và đưa nhận xét ngắn gọn sau mỗi câu trả lời.",
+      "prompt": "Kích hoạt chế độ: Câu đố kiểm tra"
+    }
+  },
+  "messages": {
+    "welcome": "Xin chào! Mình là trợ lý Sen. Mình sẽ hướng dẫn bạn khám phá di sản văn hóa Việt Nam! 🌸",
+    "defaultError": "Xin lỗi, mình không thể trả lời câu hỏi này."
+  },
+  "suggestions": {
+    "lessonHint": {
+      "label": "Gợi ý bài học",
+      "prompt": "Gợi ý giúp mình với"
+    },
+    "explainMore": {
+      "label": "Giải thích thêm",
+      "prompt": "Bạn hãy giải thích thêm về nội dung này"
+    }
+  },
+  "voice": {
+    "recognizing": "Đang nhận diện...",
+    "recognized": "Đã nhận diện"
+  },
+  "input": {
+    "placeholderAuth": "Hỏi về di sản văn hóa Việt Nam...",
+    "placeholderGuest": "Vui lòng đăng nhập để trò chuyện"
+  },
+  "settings": {
+    "title": "Cài đặt AI",
+    "tabs": {
+      "character": "Nhân vật",
+      "customizeSen": "Tùy chỉnh SEN"
+    },
+    "activeBadge": "Đang chọn"
+  },
+  "switchCharacter": {
+    "title": "Đổi nhân vật trò chuyện",
+    "desc1": "Vì tính cách của mỗi nhân vật là khác nhau, chúng tôi đã thiết kế mỗi nhân vật sẽ có một đoạn chat riêng.",
+    "desc2": "Nếu đổi sang <strong>{newChar}</strong>, cuộc trò chuyện hiện tại với <strong>{oldChar}</strong> sẽ được lưu lại.",
+    "desc3": "Bạn có muốn tiếp tục?",
+    "okText": "Đồng ý",
+    "cancelText": "Hủy"
+  }
+}
