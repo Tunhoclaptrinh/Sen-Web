@@ -1,0 +1,84 @@
+{
+  "browse": {
+    "title": "Triển Lãm Ảo",
+    "subtitle": "Khám phá không gian triển lãm di sản văn hóa qua công nghệ hiện đại",
+    "searchPlaceholder": "Tìm kiếm triển lãm...",
+    "filters": {
+      "theme": "Chủ đề",
+      "type": "Loại triển lãm",
+      "permanent": "Vĩnh viễn",
+      "temporary": "Tạm thời",
+      "reset": "Xóa Lọc"
+    },
+    "sections": {
+      "featured": "Nổi bật",
+      "explore": "Khám phá"
+    },
+    "messages": {
+      "loading": "Đang tải dữ liệu...",
+      "empty": "Không tìm thấy triển lãm nào"
+    },
+    "pagination": {
+      "total": "Tổng số: {{count}}"
+    },
+    "themes": {
+      "pottery": "Gốm sứ",
+      "history": "Lịch sử",
+      "culture": "Văn hóa",
+      "art": "Nghệ thuật"
+    }
+  },
+  "detail": {
+    "navigation": {
+      "back": "Quay lại danh sách"
+    },
+    "hero": {
+      "tag": "VIRTUAL EXHIBITION",
+      "permanent": "Vĩnh viễn",
+      "visitors": "{{count}} lượt tham quan"
+    },
+    "tabs": {
+      "introduction": "Giới thiệu",
+      "artifacts": "Hiện vật ({{count}})"
+    },
+    "content": {
+      "introTitle": "Giới thiệu",
+      "noDescription": "Chưa có mô tả chi tiết cho triển lãm này.",
+      "virtualTour": {
+        "title": "Trải nghiệm không gian 3D",
+        "subtitle": "Khám phá triển lãm trong không gian thực tế ảo sống động.",
+        "button": "Vào tham quan 3D (Sắp ra mắt)"
+      },
+      "artifactsTitle": "Hiện vật trưng bày",
+      "noArtifacts": "Chưa có hiện vật nào được cập nhật"
+    },
+    "sidebar": {
+      "title": "Thông tin triển lãm",
+      "time": {
+        "label": "Thời gian",
+        "permanent": "Thường trực",
+        "temporary": "Có thời hạn"
+      },
+      "theme": {
+        "label": "Chủ đề",
+        "default": "Văn hóa"
+      },
+      "organizer": {
+        "label": "Người tổ chức",
+        "default": "Ban quản lý"
+      },
+      "artifactCount": {
+        "label": "Số lượng hiện vật",
+        "value": "{{count}} hiện vật"
+      }
+    },
+    "actions": {
+      "share": "Chia sẻ sự kiện",
+      "saveToCollection": "Lưu vào BST"
+    },
+    "messages": {
+      "accessDenied": "Triển lãm này chưa được công khai hoặc bạn không có quyền truy cập",
+      "notFound": "Không tìm thấy triển lãm"
+    }
+  }
+}

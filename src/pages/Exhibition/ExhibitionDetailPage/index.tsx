@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {Spin, Row, Col, Typography, Empty, Button, Tag, Tabs, message} from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Spin, Row, Col, Typography, Empty, Button, Tag, Tabs, message } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeftOutlined,
   CalendarOutlined,
@@ -12,23 +13,24 @@ import {
   RocketOutlined,
   FolderAddOutlined,
 } from "@ant-design/icons";
-import exhibitionService, {Exhibition} from "@/services/exhibition.service";
+import exhibitionService, { Exhibition } from "@/services/exhibition.service";
 import artifactService from "@/services/artifact.service";
-import {getImageUrl, resolveImage} from "@/utils/image.helper";
-import {useAuth} from "@/hooks/useAuth";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
+import { useAuth } from "@/hooks/useAuth";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import dayjs from "dayjs";
-import {ITEM_TYPES} from "@/config/constants";
+import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const ExhibitionDetailPage: React.FC = () => {
-  const {id} = useParams<{id: string}>();
+  const { t } = useTranslation();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const [exhibition, setExhibition] = useState<Exhibition | null>(null);
   const [artifacts, setArtifacts] = useState<any[]>([]);
@@ -58,7 +60,7 @@ const ExhibitionDetailPage: React.FC = () => {
           const canView = isAdmin || isOwner || isPublished || isActive || inDateRange;
 
           if (!canView) {
-            message.error("Triển lãm này chưa được công khai hoặc bạn không có quyền truy cập");
+            message.error(t('exhibition.detail.messages.accessDenied'));
             if (user?.role === "researcher") {
               navigate("/researcher/exhibitions");
             } else {
@@ -70,7 +72,7 @@ const ExhibitionDetailPage: React.FC = () => {
 
           // 2. Fetch Related Artifacts
           if (data.artifactIds && data.artifactIds.length > 0) {
-            const artRes = await artifactService.getAll({ids: data.artifactIds.join(",")});
+            const artRes = await artifactService.getAll({ ids: data.artifactIds.join(",") });
             if (artRes.success && artRes.data) {
               setArtifacts(artRes.data); // Assuming getAll returns { data: [...] } or array
             }
@@ -94,7 +96,7 @@ const ExhibitionDetailPage: React.FC = () => {
         </div>
       </div>
     );
-  if (!exhibition) return <Empty description="Không tìm thấy triển lãm" />;
+  if (!exhibition) return <Empty description={t('exhibition.detail.messages.notFound')} />;
 
   const rawImage = resolveImage(exhibition.image);
   const heroImage = getImageUrl(rawImage, "/images/Zero_home.png"); // Fallback to generic if empty
@@ -115,12 +117,12 @@ const ExhibitionDetailPage: React.FC = () => {
 
       {/* HERO SECTION */}
       <section className="detail-hero">
-        <div className="hero-bg" style={{backgroundImage: `url('${heroImage}')`}} />
+        <div className="hero-bg" style={{ backgroundImage: `url('${heroImage}')` }} />
         <div className="hero-overlay">
           <div className="hero-content">
             <Tag
               color="var(--primary-color)"
-              style={{border: "none", marginBottom: 16, fontSize: 14, padding: "4px 12px"}}
+              style={{ border: "none", marginBottom: 16, fontSize: 14, padding: "4px 12px" }}
             >
               VIRTUAL EXHIBITION
             </Tag>
@@ -129,14 +131,14 @@ const ExhibitionDetailPage: React.FC = () => {
               <span>
                 <CalendarOutlined />{" "}
                 {exhibition.isPermanent
-                  ? "Vĩnh viễn"
+                  ? t('exhibition.detail.hero.permanent')
                   : `${dayjs(exhibition.startDate).format("DD/MM/YYYY")} - ${dayjs(exhibition.endDate).format("DD/MM/YYYY")}`}
               </span>
               <span>
-                <UserOutlined /> {exhibition.curator || "Bảo tàng SEN"}
+                <UserOutlined /> {exhibition.curator || t('exhibition.detail.sidebar.organizer.default')}
               </span>
               <span>
-                <EyeOutlined /> {exhibition.visitorCount || 0} lượt tham quan
+                <EyeOutlined /> {t('exhibition.detail.hero.visitors', { count: exhibition.visitorCount || 0 })}
               </span>
             </div>
           </div>
@@ -153,24 +155,24 @@ const ExhibitionDetailPage: React.FC = () => {
               items={[
                 {
                   key: "desc",
-                  label: "Giới thiệu",
+                  label: t('exhibition.detail.tabs.introduction'),
                   children: (
                     <div className="article-main-wrapper">
                       <h2 className="article-main-title">{exhibition.name}</h2>
                       <div
                         className="article-body-content"
                         dangerouslySetInnerHTML={{
-                          __html: exhibition.description || "<p>Chưa có mô tả chi tiết cho triển lãm này.</p>",
+                          __html: exhibition.description || `<p>${t('exhibition.detail.content.noDescription')}</p>`,
                         }}
                       />
 
                       {/* Gallery Preview Block (Mock) */}
-                      <div className="discovery-block" style={{marginTop: 40, marginBottom: 0}}>
+                      <div className="discovery-block" style={{ marginTop: 40, marginBottom: 0 }}>
                         <div className="virtual-tour-card">
-                          <h2>Trải nghiệm không gian 3D</h2>
-                          <p>Khám phá triển lãm trong không gian thực tế ảo sống động.</p>
+                          <h2>{t('exhibition.detail.content.virtualTour.title')}</h2>
+                          <p>{t('exhibition.detail.content.virtualTour.subtitle')}</p>
                           <Button size="large" icon={<RocketOutlined />} disabled>
-                            Vào tham quan 3D (Sắp ra mắt)
+                            {t('exhibition.detail.content.virtualTour.button')}
                           </Button>
                         </div>
                       </div>
@@ -179,11 +181,11 @@ const ExhibitionDetailPage: React.FC = () => {
                 },
                 {
                   key: "artifacts",
-                  label: `Hiện vật (${artifacts.length})`,
+                  label: t('exhibition.detail.tabs.artifacts', { count: artifacts.length }),
                   children: (
                     <div className="article-main-wrapper">
-                      <Title level={3} style={{fontFamily: "Aleo, serif", marginBottom: 24, fontWeight: 700}}>
-                        Hiện vật trưng bày
+                      <Title level={3} style={{ fontFamily: "Aleo, serif", marginBottom: 24, fontWeight: 700 }}>
+                        {t('exhibition.detail.content.artifactsTitle')}
                       </Title>
                       {artifacts.length > 0 ? (
                         <Row gutter={[24, 24]}>
@@ -194,7 +196,7 @@ const ExhibitionDetailPage: React.FC = () => {
                           ))}
                         </Row>
                       ) : (
-                        <Empty description="Chưa có hiện vật nào được cập nhật" />
+                        <Empty description={t('exhibition.detail.content.noArtifacts')} />
                       )}
                     </div>
                   ),
@@ -207,15 +209,19 @@ const ExhibitionDetailPage: React.FC = () => {
             <div className="sidebar-wrapper">
               {/* Info Widget */}
               <div className="info-card-widget">
-                <h3 className="info-section-title">Thông tin triển lãm</h3>
+                <h3 className="info-section-title">{t('exhibition.detail.sidebar.title')}</h3>
                 <ul className="info-grid-list">
                   <li>
                     <div className="icon-wrapper">
                       <CalendarOutlined />
                     </div>
                     <div className="info-text">
-                      <span className="label">Thời gian</span>
-                      <span className="value">{exhibition.isPermanent ? "Thường trực" : "Có thời hạn"}</span>
+                      <span className="label">{t('exhibition.detail.sidebar.time.label')}</span>
+                      <span className="value">
+                        {exhibition.isPermanent
+                          ? t('exhibition.detail.sidebar.time.permanent')
+                          : t('exhibition.detail.sidebar.time.temporary')}
+                      </span>
                     </div>
                   </li>
                   <li>
@@ -223,8 +229,8 @@ const ExhibitionDetailPage: React.FC = () => {
                       <TagOutlined />
                     </div>
                     <div className="info-text">
-                      <span className="label">Chủ đề</span>
-                      <span className="value">{exhibition.theme || "Văn hóa"}</span>
+                      <span className="label">{t('exhibition.detail.sidebar.theme.label')}</span>
+                      <span className="value">{exhibition.theme || t('exhibition.detail.sidebar.theme.default')}</span>
                     </div>
                   </li>
                   <li>
@@ -232,8 +238,8 @@ const ExhibitionDetailPage: React.FC = () => {
                       <UserOutlined />
                     </div>
                     <div className="info-text">
-                      <span className="label">Người tổ chức</span>
-                      <span className="value">{exhibition.curator || "Ban quản lý"}</span>
+                      <span className="label">{t('exhibition.detail.sidebar.organizer.label')}</span>
+                      <span className="value">{exhibition.curator || t('exhibition.detail.sidebar.organizer.default')}</span>
                     </div>
                   </li>
                   <li>
@@ -241,8 +247,8 @@ const ExhibitionDetailPage: React.FC = () => {
                       <PictureOutlined />
                     </div>
                     <div className="info-text">
-                      <span className="label">Số lượng hiện vật</span>
-                      <span className="value">{artifacts.length} hiện vật</span>
+                      <span className="label">{t('exhibition.detail.sidebar.artifactCount.label')}</span>
+                      <span className="value">{t('exhibition.detail.sidebar.artifactCount.value', { count: artifacts.length })}</span>
                     </div>
                   </li>
                 </ul>
@@ -251,16 +257,16 @@ const ExhibitionDetailPage: React.FC = () => {
               {/* Actions Widget */}
               <div className="action-button-group">
                 <Button type="primary" size="large" className="primary-action-btn" icon={<ShareAltOutlined />}>
-                  Chia sẻ sự kiện
+                  {t('exhibition.detail.actions.share')}
                 </Button>
                 <Button
                   size="large"
                   className="secondary-action-btn"
                   icon={<FolderAddOutlined />}
                   onClick={() => setShowCollectionModal(true)}
-                  style={{marginTop: 12, width: "100%"}}
+                  style={{ marginTop: 12, width: "100%" }}
                 >
-                  Lưu vào BST
+                  {t('exhibition.detail.actions.saveToCollection')}
                 </Button>
                 <Button
                   size="large"
@@ -268,7 +274,7 @@ const ExhibitionDetailPage: React.FC = () => {
                   icon={<ArrowLeftOutlined />}
                   onClick={() => navigate("/exhibitions")}
                 >
-                  Quay lại danh sách
+                  {t('exhibition.detail.navigation.back')}
                 </Button>
               </div>
             </div>

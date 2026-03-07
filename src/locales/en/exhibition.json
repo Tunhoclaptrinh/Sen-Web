@@ -1,0 +1,84 @@
+{
+  "browse": {
+    "title": "Virtual Exhibition",
+    "subtitle": "Explore cultural heritage exhibition spaces through modern technology",
+    "searchPlaceholder": "Search exhibitions...",
+    "filters": {
+      "theme": "Theme",
+      "type": "Exhibition Type",
+      "permanent": "Permanent",
+      "temporary": "Temporary",
+      "reset": "Reset Filters"
+    },
+    "sections": {
+      "featured": "Featured",
+      "explore": "Explore"
+    },
+    "messages": {
+      "loading": "Loading data...",
+      "empty": "No exhibitions found"
+    },
+    "pagination": {
+      "total": "Total: {{count}}"
+    },
+    "themes": {
+      "pottery": "Pottery",
+      "history": "History",
+      "culture": "Culture",
+      "art": "Art"
+    }
+  },
+  "detail": {
+    "navigation": {
+      "back": "Back to list"
+    },
+    "hero": {
+      "tag": "VIRTUAL EXHIBITION",
+      "permanent": "Permanent",
+      "visitors": "{{count}} visits"
+    },
+    "tabs": {
+      "introduction": "Introduction",
+      "artifacts": "Artifacts ({{count}})"
+    },
+    "content": {
+      "introTitle": "Introduction",
+      "noDescription": "No detailed description available for this exhibition.",
+      "virtualTour": {
+        "title": "3D Experience",
+        "subtitle": "Explore the exhibition in a vivid virtual reality space.",
+        "button": "Enter 3D Tour (Coming Soon)"
+      },
+      "artifactsTitle": "Displayed Artifacts",
+      "noArtifacts": "No artifacts have been updated yet"
+    },
+    "sidebar": {
+      "title": "Exhibition Information",
+      "time": {
+        "label": "Time",
+        "permanent": "Permanent",
+        "temporary": "Scheduled"
+      },
+      "theme": {
+        "label": "Theme",
+        "default": "Culture"
+      },
+      "organizer": {
+        "label": "Organizer",
+        "default": "Management Board"
+      },
+      "artifactCount": {
+        "label": "Artifact Count",
+        "value": "{{count}} artifacts"
+      }
+    },
+    "actions": {
+      "share": "Share Event",
+      "saveToCollection": "Save to Collection"
+    },
+    "messages": {
+      "accessDenied": "This exhibition is not public yet or you do not have permission to access",
+      "notFound": "Exhibition not found"
+    }
+  }
+}
