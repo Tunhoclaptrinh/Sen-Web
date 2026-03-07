@@ -1,0 +1,203 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "heritage": "Di sản",
+    "artifacts": "Hiện vật",
+    "map": "Bản đồ",
+    "history": "Bài viết",
+    "exhibitions": "Triển lãm",
+    "learn": "Học tập",
+    "game": "Game",
+    "support": "Hỗ trợ",
+    "login": "Đăng nhập",
+    "account": "Tài khoản",
+    "profile": "Hồ sơ",
+    "library": "Kho lưu trữ",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "home": {
+    "heroSubtitle": "Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ",
+    "exploreNow": "Khám phá ngay",
+    "mission": {
+      "subHeader": "Sứ mệnh của Sen",
+      "title": "Khám phá lịch sử - văn hóa",
+      "desc1": "Qua lịch sử Việt Nam đầy hào hùng được người kể những câu chuyện chưa quen tương tác, sinh động và dễ tiếp cận. Bằng việc kết hợp kiến thức lịch sử chính thống với lối chơi hấp dẫn, website mong muốn khơi dậy niềm hứng thú khám phá quá khứ.",
+      "desc2": "Sen không chỉ gìn giữ bảo tồn và lan tỏa di sản dân tộc mà còn nuôi dưỡng tinh thần yêu nước, ý thức gìn giữ bản sắc dân tộc trong thời đại số."
+    },
+    "actions": {
+      "explore": "Khám phá",
+      "heritage": "Di sản văn hóa",
+      "artifacts": "Hiện vật",
+      "learn": "Học tập"
+    },
+    "heritage": {
+      "title": "Di sản & địa điểm nổi bật"
+    },
+    "artifacts": {
+      "title": "Hiện vật tiêu biểu",
+      "subtitle": "Tìm và khám phá những bộ sưu tập hiện vật lịch sử, mỹ thuật giá trị của các bảo tàng trên thế giới"
+    },
+    "gamification": {
+      "title": "Trải nghiệm Gamification",
+      "subtitle": "Hành trình giải mã những bí mật văn hóa thông qua thế giới ảo trực quan và sinh động.",
+      "cardTitle": "Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi",
+      "cardDesc1": "Chào mừng người chơi bước vào một hành trình khám phá mới. Trong trò chơi này, bạn sẽ hóa thân thành người lữ hành thời gian, lần theo những dấu tích lịch sử và văn hóa để giải mã các câu chuyện, nhân vật và sự kiện đã từng in dấu trong quá khứ.",
+      "cardDesc2": "Bên cạnh đó việc tích hợp các bài tập và câu hỏi trắc nghiệm được thiết kế phù hợp với nội dung, giúp người chơi củng cố kiến thức, tăng khả năng ghi nhớ và hiểu sâu hơn những giá trị lịch sử - văn hóa đã trải nghiệm.",
+      "startBtn": "Bắt đầu hành trình"
+    },
+    "cta": {
+      "ready": "Sẵn sàng khám phá?",
+      "desc": "Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay",
+      "btn": "Khám phá ngay"
+    },
+    "mapSection": {
+      "subHeader": "Bản đồ Văn hóa",
+      "title": "Khám phá <1>Di sản</1> & <3>Hiện vật</3>",
+      "desc": "Hành trình trực quan dọc theo chiều dài đất nước. Tìm kiếm các địa danh lịch sử và bảo vật quốc gia ngay trên bản đồ.",
+      "loading": "Đang tải bản đồ...",
+      "hint": "👆 Click vào bản đồ để xem toàn màn hình và zoom",
+      "fullview": "Khám phá toàn màn hình",
+      "exitFull": "Thoát toàn màn hình (ESC)",
+      "statsTitle": "Dữ liệu Văn hóa",
+      "statsHeritage": "DI TÍCH",
+      "statsArtifact": "HIỆN VẬT",
+      "statsProvince": "TỈNH THÀNH"
+    },
+    "leaderboard": {
+      "subHeader": "Bảng vàng danh dự",
+      "title": "Vinh danh <1>Nhà thám hiểm</1> <3>xuất sắc</3>",
+      "desc": "Cùng chiêm ngưỡng những người chơi dẫn đầu trong hành trình khám phá di sản. Bạn có muốn tên mình được xướng lên tại đây? Tham gia ngay để tích điểm và leo hạng!",
+      "btn": "Khám phá Bảng xếp hạng",
+      "cardTitle": "Top 5 Nhà Thám Hiểm",
+      "month": "THÁNG",
+      "updating": "Đang cập nhật...",
+      "categories": {
+        "points": "Điểm số",
+        "checkins": "Check-in",
+        "level": "Cấp độ"
+      },
+      "units": {
+        "points": "điểm",
+        "checkins": "lượt",
+        "level": "Cấp"
+      }
+    }
+  },
+  "support": {
+    "hero": {
+      "title": "Chúng tôi có thể giúp gì cho bạn?",
+      "subtitle": "Khám phá các câu hỏi thường gặp hoặc liên hệ trực tiếp với đội ngũ hỗ trợ của SEN."
+    },
+    "faq": {
+      "title": "Câu hỏi thường gặp",
+      "subtitle": "Tìm câu trả lời nhanh chóng cho các thắc mắc phổ biến",
+      "q1": "Làm thế nào để tạo tài khoản?",
+      "a1": "Bạn có thể đăng ký tài khoản bằng cách nhấp vào nút \"Tài khoản\" ở góc trên bên phải màn hình và chọn \"Đăng ký\". Điền các thông tin cần thiết và xác nhận email để hoàn tất.",
+      "q2": "Tôi có thể đóng góp thông tin về di sản không?",
+      "a2": "Tất nhiên! Chúng tôi hoan nghênh sự đóng góp từ cộng đồng. Sau khi đăng nhập, bạn có thể truy cập mục \"Đóng góp\" hoặc liên hệ với chúng tôi qua email để gửi thông tin và tư liệu về di sản.",
+      "q3": "Làm sao để báo cáo nội dung không chính xác?",
+      "a3": "Nếu bạn phát hiện thông tin chưa chính xác, vui lòng sử dụng tính năng \"Báo cáo\" ở cuối mỗi bài viết hoặc trang chi tiết di sản, hoặc gửi email trực tiếp cho đội ngũ hỗ trợ.",
+      "q4": "Ứng dụng có miễn phí không?",
+      "a4": "Phần lớn các nội dung trên SEN là hoàn toàn miễn phí để phục vụ cộng đồng. Tuy nhiên, một số tính năng nâng cao hoặc nội dung chuyên sâu có thể yêu cầu tài khoản thành viên.",
+      "q5": "Làm cách nào để liên hệ với ban quản trị?",
+      "a5": "Bạn có thể liên hệ với chúng tôi qua form bên dưới, hoặc gửi email đến sen.culture.contact@gmail.com. Chúng tôi sẽ phản hồi trong thời gian sớm nhất."
+    },
+    "contact": {
+      "title": "Liên hệ với chúng tôi",
+      "subtitle": "Chúng tôi luôn sẵn sàng hỗ trợ bạn",
+      "email": "Email",
+      "emailDesc": "Chúng tôi sẽ phản hồi trong vòng 24 giờ",
+      "hotline": "Hotline",
+      "hotlineDesc": "Hỗ trợ từ 8:00 - 22:00 hàng ngày",
+      "form": {
+        "name": "Họ và tên",
+        "namePlaceholder": "Nhập họ tên của bạn",
+        "nameRequired": "Vui lòng nhập họ tên",
+        "email": "Email",
+        "emailPlaceholder": "Nhập địa chỉ email",
+        "emailRequired": "Vui lòng nhập email",
+        "emailInvalid": "Email không hợp lệ",
+        "message": "Nội dung cần hỗ trợ",
+        "messagePlaceholder": "Mô tả vấn đề bạn đang gặp phải...",
+        "messageRequired": "Vui lòng nhập nội dung",
+        "messageMin": "Nội dung yêu cầu tối thiểu 20 ký tự",
+        "submit": "Gửi yêu cầu"
+      }
+    }
+  },
+  "header": {
+    "search": "Tìm kiếm...",
+    "email": "sen.culture.contact@gmail.com",
+    "slogan": "Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ",
+    "exploreSen": "KHÁM PHÁ SEN",
+    "historySlogan": "Hào hùng ngàn năm văn hiến - Kết nối quá khứ và hiện tại.",
+    "searchPlaceholder": "Tìm kiếm sự kiện, nhân vật..."
+  },
+  "common": {
+    "heritage": "Di sản",
+    "artifact": "Hiện vật",
+    "details": "Chi tiết",
+    "loading": "Đang khởi tạo...",
+    "metadata": {
+      "region": "Vùng miền:",
+      "storage": "Nơi lưu giữ:",
+      "age": "Niên đại:"
+    },
+    "heritageTypes": {
+      "monument": "Di tích",
+      "temple": "Đền chùa",
+      "museum": "Bảo tàng",
+      "archaeologicalSite": "Khu khảo cổ",
+      "historicBuilding": "Công trình lịch sử",
+      "naturalHeritage": "Di sản thiên nhiên",
+      "intangibleHeritage": "Di sản phi vật thể",
+      "MONUMENT": "Di tích",
+      "TEMPLE": "Đền chùa",
+      "MUSEUM": "Bảo tàng",
+      "ARCHAEOLOGICAL_SITE": "Khu khảo cổ",
+      "HISTORIC_BUILDING": "Công trình lịch sử",
+      "NATURAL_HERITAGE": "Di sản thiên nhiên",
+      "INTANGIBLE_HERITAGE": "Di sản phi vật thể",
+      "archaeological_site": "Khu khảo cổ",
+      "historic_building": "Công trình lịch sử",
+      "natural_heritage": "Di sản thiên nhiên",
+      "intangible_heritage": "Di sản phi vật thể"
+    },
+    "artifactTypes": {
+      "sculpture": "Điêu khắc",
+      "painting": "Tranh vẽ",
+      "document": "Tài liệu",
+      "pottery": "Gốm sứ",
+      "textile": "Dệt may",
+      "tool": "Công cụ",
+      "weapon": "Vũ khí",
+      "jewelry": "Trang sức",
+      "manuscript": "Bản thảo",
+      "photograph": "Ảnh",
+      "other": "Khác",
+      "SCULPTURE": "Điêu khắc",
+      "PAINTING": "Tranh vẽ",
+      "DOCUMENT": "Tài liệu",
+      "POTTERY": "Gốm sứ",
+      "TEXTILE": "Dệt may",
+      "TOOL": "Công cụ",
+      "WEAPON": "Vũ khí",
+      "JEWELRY": "Trang sức",
+      "MANUSCRIPT": "Bản thảo",
+      "PHOTOGRAPH": "Ảnh",
+      "OTHER": "Khác",
+      "sculpture_uc": "Điêu khắc",
+      "painting_uc": "Tranh vẽ",
+      "document_uc": "Tài liệu",
+      "pottery_uc": "Gốm sứ",
+      "textile_uc": "Dệt may",
+      "tool_uc": "Công cụ",
+      "weapon_uc": "Vũ khí",
+      "jewelry_uc": "Trang sức",
+      "manuscript_uc": "Bản thảo",
+      "photograph_uc": "Ảnh",
+      "other_uc": "Khác"
+    }
+  }
+}

@@ -15,7 +15,9 @@ import { Layout, Typography, Menu, Input, Dropdown, Button, Drawer, Space, Avata
 import type { MenuProps } from 'antd';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { logout } from '@/store/slices/authSlice';
+import { setLanguage } from '@/store/slices/uiSlice';
 import { RootState } from '@/store';
 import logo from '@/assets/images/logo.png';
 import NotificationPopover from '@/components/common/NotificationPopover';
@@ -30,7 +32,9 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { language } = useSelector((state: RootState) => state.ui);
 
   const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -67,6 +71,12 @@ const Header: React.FC = () => {
     navigate('/login');
   };
 
+  // Handle language change
+  const handleLanguageChange = (lang: string) => {
+    dispatch(setLanguage(lang));
+    i18n.changeLanguage(lang);
+  };
+
   // Handle search
   const handleSearch = () => {
     if (searchValue.trim()) {
@@ -93,23 +103,23 @@ const Header: React.FC = () => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: <Link to="/profile">Hồ sơ</Link>,
+      label: <Link to="/profile">{t('nav.profile')}</Link>,
     },
     {
       key: 'library',
       icon: <AppstoreOutlined />,
-      label: <Link to="/profile/library">Kho lưu trữ</Link>,
+      label: <Link to="/profile/library">{t('nav.library')}</Link>,
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Cài đặt',
+      label: t('nav.settings'),
     },
     { type: 'divider' },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Đăng xuất',
+      label: t('nav.logout'),
       onClick: handleLogout,
       danger: true,
     },
@@ -119,39 +129,39 @@ const Header: React.FC = () => {
   const navMenuItems: MenuProps['items'] = [
     {
       key: 'home',
-      label: <Link to="/">Trang chủ</Link>,
+      label: <Link to="/">{t('nav.home')}</Link>,
     },
     {
       key: 'heritage',
-      label: <Link to="/heritage-sites">Di sản</Link>,
+      label: <Link to="/heritage-sites">{t('nav.heritage')}</Link>,
     },
     {
       key: 'artifacts',
-      label: <Link to="/artifacts">Hiện vật</Link>,
+      label: <Link to="/artifacts">{t('nav.artifacts')}</Link>,
     },
     {
       key: 'map',
-      label: <Link to="/map">Bản đồ</Link>,
+      label: <Link to="/map">{t('nav.map')}</Link>,
     },
     {
       key: 'history',
-      label: <Link to="/history">Bài viết</Link>,
+      label: <Link to="/history">{t('nav.history')}</Link>,
     },
     {
       key: 'exhibitions',
-      label: <Link to="/exhibitions">Triển lãm</Link>,
+      label: <Link to="/exhibitions">{t('nav.exhibitions')}</Link>,
     },
     {
       key: 'learn',
-      label: <Link to="/game/learning">Học tập</Link>,
+      label: <Link to="/game/learning">{t('nav.learn')}</Link>,
     },
     {
       key: 'game',
-      label: <Link to="/game/chapters">Game</Link>,
+      label: <Link to="/game/chapters">{t('nav.game')}</Link>,
     },
     {
       key: 'support',
-      label: <Link to="/support">Hỗ trợ</Link>,
+      label: <Link to="/support">{t('nav.support')}</Link>,
     },
   ];
 
@@ -163,15 +173,15 @@ const Header: React.FC = () => {
           {/* LEFT: Contact & Slogan */}
           {!isMobile && (
             <Space split={<span className="divider">|</span>} className="util-left">
-              <Text className="util-item"><MailOutlined /> sen.culture.contact@gmail.com</Text>
-              <Text className="util-item">Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ</Text>
+              <Text className="util-item"><MailOutlined /> {t('header.email')}</Text>
+              <Text className="util-item">{t('header.slogan')}</Text>
             </Space>
           )}
 
           {/* CENTER: Search */}
           <div className="top-search-wrapper">
             <Input
-              placeholder="Tìm kiếm..."
+              placeholder={t('header.search')}
               prefix={<SearchOutlined style={{ color: 'rgba(255,255,255,0.7)' }} />}
               bordered={false}
               className="top-bar-search"
@@ -186,12 +196,12 @@ const Header: React.FC = () => {
             <FacebookOutlined className="social-icon" onClick={() => window.open('https://www.facebook.com/profile.php?id=61586454543352', '_blank')} />
             <HeartOutlined className="social-icon" />
             <div className="language-switcher">
-              <span className="lang-item active">
+              <span className={`lang-item ${language === 'vi' ? 'active' : ''}`} onClick={() => handleLanguageChange('vi')}>
                 <img src="https://flagcdn.com/w20/vn.png" alt="VN" className="flag-icon" />
                 {!isMobile && "VN"}
               </span>
               <span className="lang-divider">|</span>
-              <span className="lang-item">
+              <span className={`lang-item ${language === 'en' ? 'active' : ''}`} onClick={() => handleLanguageChange('en')}>
                 <img src="https://flagcdn.com/w20/gb.png" alt="EN" className="flag-icon" />
                 {!isMobile && "EN"}
               </span>
@@ -255,14 +265,14 @@ const Header: React.FC = () => {
                   icon={!user?.avatar && <UserOutlined />}
                   size={32}
                 />
-                <span className="user-text">{user?.name || 'Tài khoản'}</span>
+                <span className="user-text">{user?.name || t('nav.account')}</span>
               </div>
             </Dropdown>
           ) : (
             !isMobile && (
               <Link to="/login" className="login-link">
                 <UserOutlined style={{ fontSize: 20 }} />
-                <span className="user-text">Tài khoản</span>
+                <span className="user-text">{t('nav.account')}</span>
               </Link>
             )
           )}
@@ -280,7 +290,7 @@ const Header: React.FC = () => {
 
       {/* MOBILE DRAWER */}
       <Drawer
-        title="KHÁM PHÁ SEN"
+        title={t('header.exploreSen')}
         placement="left"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
@@ -290,7 +300,7 @@ const Header: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Mobile Search - Also in drawer for logic redundancy if top bar is hidden or hard to reach */}
           <Input
-            placeholder="Tìm kiếm..."
+            placeholder={t('header.search')}
             prefix={<SearchOutlined />}
             className="search-input-premium"
             value={searchValue}
@@ -312,7 +322,7 @@ const Header: React.FC = () => {
             <div className="mobile-auth-section">
               <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button type="primary" block className="action-btn-premium">
-                  Đăng Nhập
+                  {t('nav.login')}
                 </Button>
               </Link>
             </div>

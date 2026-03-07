@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRoutes, useNavigate } from "react-router-dom";
 import { ConfigProvider, theme as antdTheme, App as AntApp } from "antd";
 import viVN from "antd/locale/vi_VN";
+import enUS from "antd/locale/en_US";
+import { useTranslation } from "react-i18next";
 import { forceLogout, initializeAuth } from "./store/slices/authSlice";
 import { RootState } from "./store";
 import routes from "./routes/routes.config";
@@ -24,7 +26,10 @@ const App: React.FC = () => {
   const { isInitialized, loading } = useSelector(
     (state: RootState) => state.auth,
   );
-  const { theme: uiTheme } = useSelector((state: RootState) => state.ui);
+  const { theme: uiTheme, language } = useSelector((state: RootState) => state.ui);
+  const { t } = useTranslation();
+
+  const currentLocale = language === 'en' ? enUS : viVN;
 
   // Initialize Auth and GA on Mount
   useEffect(() => {
@@ -55,13 +60,13 @@ const App: React.FC = () => {
 
   // Show Loading Screen During Initialization
   if (!isInitialized || loading) {
-    return <Loading fullScreen message="Đang khởi tạo..." />;
+    return <Loading fullScreen message={t('common.loading')} />;
   }
 
   return (
     <ErrorBoundary>
       <ConfigProvider
-        locale={viVN}
+        locale={currentLocale}
         theme={{
           algorithm:
             uiTheme === "dark"

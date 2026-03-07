@@ -1,18 +1,20 @@
-import React, {useEffect, useState, useRef} from "react";
-import {Typography, Spin, Button} from "antd";
-import {useNavigate} from "react-router-dom";
-import {EnvironmentOutlined, BankOutlined, SketchOutlined} from "@ant-design/icons";
-import {ITEM_TYPES} from "@/config/constants";
+import React, { useEffect, useState, useRef } from "react";
+import { Typography, Spin, Button } from "antd";
+import { useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
+import { EnvironmentOutlined, BankOutlined, SketchOutlined } from "@ant-design/icons";
+import { ITEM_TYPES } from "@/config/constants";
 import heritageServiceReal from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import SimpleMap from "@/components/Map/SimpleMap";
 import "./HomeGame.less";
 import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
 
-const {Title, Paragraph} = Typography;
+const { Title, Paragraph } = Typography;
 
 const HomeMapSection: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mapData, setMapData] = useState<any>(null);
   const [worldData, setWorldData] = useState<any>(null);
   const [locations, setLocations] = useState<any[]>([]);
@@ -22,95 +24,95 @@ const HomeMapSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const fetchWithTimeout = async (url: string, timeoutMs: number) => {
-        const controller = new AbortController();
-        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+    const fetchData = async () => {
+      try {
+        const fetchWithTimeout = async (url: string, timeoutMs: number) => {
+          const controller = new AbortController();
+          const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
+          try {
+            return await fetch(url, { signal: controller.signal });
+          } finally {
+            window.clearTimeout(timeoutId);
+          }
+        };
+
+        // Fetch Vietnam Map Data FIRST to ensure core functionality
+        let mapRes: Response | null = null;
         try {
-          return await fetch(url, {signal: controller.signal});
-        } finally {
-          window.clearTimeout(timeoutId);
+          mapRes = await fetchWithTimeout(
+            "https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json",
+            5000,
+          );
+        } catch (error) {
+          console.warn("CDN map fetch failed, fallback to local", error);
         }
-      };
 
-      // Fetch Vietnam Map Data FIRST to ensure core functionality
-      let mapRes: Response | null = null;
-      try {
-        mapRes = await fetchWithTimeout(
-          "https://code.highcharts.com/mapdata/countries/vn/vn-all.geo.json",
-          5000,
-        );
-      } catch (error) {
-        console.warn("CDN map fetch failed, fallback to local", error);
-      }
+        let mapJson: any = null;
+        if (mapRes && mapRes.ok) {
+          mapJson = await mapRes.json();
+        }
 
-      let mapJson: any = null;
-      if (mapRes && mapRes.ok) {
-        mapJson = await mapRes.json();
-      }
+        if (!mapJson || !Array.isArray(mapJson.features) || mapJson.features.length === 0) {
+          mapJson = await fetch(vnMapDataUrl).then((res) => res.json());
+        }
+        setMapData(mapJson);
 
-      if (!mapJson || !Array.isArray(mapJson.features) || mapJson.features.length === 0) {
-        mapJson = await fetch(vnMapDataUrl).then((res) => res.json());
-      }
-      setMapData(mapJson);
-
-      // Fetch World Data for background (Custom filtered for SEA)
-      try {
-        const worldRes = await fetch("https://code.highcharts.com/mapdata/custom/world.geo.json");
-        const worldJson = await worldRes.json();
+        // Fetch World Data for background (Custom filtered for SEA)
+        try {
+          const worldRes = await fetch("https://code.highcharts.com/mapdata/custom/world.geo.json");
+          const worldJson = await worldRes.json();
 
           // Filter for SEA and neighbors: China, Laos, Cambodia, Thailand, Philippines, Malaysia, Indonesia, etc.
-        const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
-        const filteredFeatures = worldJson.features.filter(
-          (f: any) =>
-            neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
-        );
+          const neighborCodes = ["CN", "LA", "KH", "TH", "MM", "MY", "SG", "ID", "PH", "BN", "TW", "HK", "JP", "IN"];
+          const filteredFeatures = worldJson.features.filter(
+            (f: any) =>
+              neighborCodes.includes(f.properties["iso-a2"]) || neighborCodes.includes(f.properties["iso-a2-nice"]),
+          );
 
-        setWorldData({
-          ...worldJson,
-          features: filteredFeatures,
-        });
-      } catch (e) {
-        console.warn("Failed to load background map", e);
-      }
+          setWorldData({
+            ...worldJson,
+            features: filteredFeatures,
+          });
+        } catch (e) {
+          console.warn("Failed to load background map", e);
+        }
 
-      // Fetch Heritage Locations
-      const locRes = await heritageServiceReal.getLocations();
-      let locs: any[] = [];
-      if (locRes.success && locRes.data) {
-        locs = locRes.data;
-        setLocations(locs);
-      }
+        // Fetch Heritage Locations
+        const locRes = await heritageServiceReal.getLocations();
+        let locs: any[] = [];
+        if (locRes.success && locRes.data) {
+          locs = locRes.data;
+          setLocations(locs);
+        }
 
-      // Fetch Artifacts
-      const artRes = await artifactService.getAll();
-      if (artRes.success && artRes.data) {
+        // Fetch Artifacts
+        const artRes = await artifactService.getAll();
+        if (artRes.success && artRes.data) {
           // Map artifacts to locations
-        const mappedArtifacts = artRes.data
-          .map((art: any) => {
-            const site = locs.find((s: any) => s.id === art.heritageSiteId);
-            if (site && site.lat && site.lng) {
-              return {
-                ...art,
-                lat: site.lat + (Math.random() - 0.5) * 0.05,
-                lng: site.lng + (Math.random() - 0.5) * 0.05,
-                siteName: site.name,
-                itemType: ITEM_TYPES.ARTIFACT,
-              };
-            }
-            return null;
-          })
-          .filter((item: any) => item !== null);
-        setArtifacts(mappedArtifacts);
-      }
+          const mappedArtifacts = artRes.data
+            .map((art: any) => {
+              const site = locs.find((s: any) => s.id === art.heritageSiteId);
+              if (site && site.lat && site.lng) {
+                return {
+                  ...art,
+                  lat: site.lat + (Math.random() - 0.5) * 0.05,
+                  lng: site.lng + (Math.random() - 0.5) * 0.05,
+                  siteName: site.name,
+                  itemType: ITEM_TYPES.ARTIFACT,
+                };
+              }
+              return null;
+            })
+            .filter((item: any) => item !== null);
+          setArtifacts(mappedArtifacts);
+        }
       } catch (error) {
         console.error("Error loading map data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchData();
   }, []);
@@ -161,13 +163,13 @@ const HomeMapSection: React.FC = () => {
       `}</style>
 
       {/* Full width container for "To hẳn ra" effect */}
-      <div style={{maxWidth: 1400, margin: "0 auto", padding: "100px 80px 80px"}}>
-        <div style={{marginBottom: 80, textAlign: "center"}}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "100px 80px 80px" }}>
+        <div style={{ marginBottom: 80, textAlign: "center" }}>
           <span
             className="home-game-sub-header"
-            style={{color: "var(--gold-color)", fontFamily: "var(--font-serif)", fontWeight: 700, marginBottom: 20}}
+            style={{ color: "var(--gold-color)", fontFamily: "var(--font-serif)", fontWeight: 700, marginBottom: 20 }}
           >
-            Bản đồ Văn hóa
+            {t('home.mapSection.subHeader')}
           </span>
           <Title
             level={2}
@@ -181,15 +183,19 @@ const HomeMapSection: React.FC = () => {
               lineHeight: 1.25,
             }}
           >
-            Khám phá <span style={{color: "var(--gold-color)"}}>Di sản</span> &{" "}
-            <span style={{color: "var(--gold-color)"}}>Hiện vật</span>
+            <Trans
+              i18nKey="home.mapSection.title"
+              components={{
+                1: <span style={{ color: "var(--gold-color)" }} />,
+                3: <span style={{ color: "var(--gold-color)" }} />,
+              }}
+            />
           </Title>
           <Paragraph
             className="home-game-section-subtitle"
-            style={{color: "rgba(255, 255, 255, 0.7)", margin: "0 auto", maxWidth: 740, lineHeight: 1.8, fontSize: 17}}
+            style={{ color: "rgba(255, 255, 255, 0.7)", margin: "0 auto", maxWidth: 740, lineHeight: 1.8, fontSize: 17 }}
           >
-            Hành trình trực quan dọc theo chiều dài đất nước. Tìm kiếm các địa danh lịch sử và bảo vật quốc gia ngay
-            trên bản đồ.
+            {t('home.mapSection.desc')}
           </Paragraph>
         </div>
 
@@ -275,7 +281,7 @@ const HomeMapSection: React.FC = () => {
                 background: "#fdf6e3",
               }}
             >
-              <Spin size="large" tip="Đang tải bản đồ..." />
+              <Spin size="large" tip={t('home.mapSection.loading')} />
             </div>
           ) : (
             <SimpleMap
@@ -312,34 +318,34 @@ const HomeMapSection: React.FC = () => {
                 gap: 8,
               }}
             >
-              👆 Click vào bản đồ để xem toàn màn hình và zoom
+              {t('home.mapSection.hint')}
             </div>
           )}
 
           {!isFullscreen && (
-            <div style={{position: "absolute", top: 32, right: 80, zIndex: 100}}>
+            <div style={{ position: "absolute", top: 32, right: 80, zIndex: 100 }}>
               <Button className="home-game-btn" onClick={() => navigate("/map")} icon={<EnvironmentOutlined />}>
-                Khám phá toàn màn hình
+                {t('home.mapSection.fullview')}
               </Button>
             </div>
           )}
 
           {/* Exit fullscreen button */}
           {isFullscreen && (
-            <div style={{position: "absolute", top: 32, right: 32, zIndex: 100}}>
+            <div style={{ position: "absolute", top: 32, right: 32, zIndex: 100 }}>
               <Button
                 className="home-game-btn"
                 onClick={handleFullscreenToggle}
                 icon={<EnvironmentOutlined />}
-                style={{background: "#8b1d1d"}}
+                style={{ background: "#8b1d1d" }}
               >
-                Thoát toàn màn hình (ESC)
+                {t('home.mapSection.exitFull')}
               </Button>
             </div>
           )}
 
           {/* Game Style Stats Floating Card */}
-          <div className="home-game-card home-map-stats-card" style={{top: 80, left: 60, zIndex: 1001}}>
+          <div className="home-game-card home-map-stats-card" style={{ top: 80, left: 60, zIndex: 1001 }}>
             <div
               style={{
                 fontFamily: "var(--font-serif)",
@@ -354,10 +360,10 @@ const HomeMapSection: React.FC = () => {
                 borderBottom: "2px solid #c5a065",
               }}
             >
-              Dữ liệu Văn hóa
+              {t('home.mapSection.statsTitle')}
             </div>
 
-            <div style={{display: "flex", flexDirection: "column", gap: 0, padding: "32px 32px 36px 32px"}}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 0, padding: "32px 32px 36px 32px" }}>
               <div
                 style={{
                   display: "flex",
@@ -368,8 +374,8 @@ const HomeMapSection: React.FC = () => {
                   gap: 24,
                 }}
               >
-                <div style={{display: "flex", alignItems: "center", gap: 14}}>
-                  <span style={{fontSize: 26, color: "#d9363e", lineHeight: 1}}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <span style={{ fontSize: 26, color: "#d9363e", lineHeight: 1 }}>
                     <BankOutlined />
                   </span>
                   <span
@@ -381,7 +387,7 @@ const HomeMapSection: React.FC = () => {
                       fontWeight: 600,
                     }}
                   >
-                    DI TÍCH
+                    {t('home.mapSection.statsHeritage')}
                   </span>
                 </div>
                 <div
@@ -407,8 +413,8 @@ const HomeMapSection: React.FC = () => {
                   gap: 24,
                 }}
               >
-                <div style={{display: "flex", alignItems: "center", gap: 14}}>
-                  <span style={{fontSize: 26, color: "#faad14", lineHeight: 1}}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <span style={{ fontSize: 26, color: "#faad14", lineHeight: 1 }}>
                     <SketchOutlined />
                   </span>
                   <span
@@ -420,7 +426,7 @@ const HomeMapSection: React.FC = () => {
                       fontWeight: 600,
                     }}
                   >
-                    HIỆN VẬT
+                    {t('home.mapSection.statsArtifact')}
                   </span>
                 </div>
                 <div
@@ -445,8 +451,8 @@ const HomeMapSection: React.FC = () => {
                   gap: 24,
                 }}
               >
-                <div style={{display: "flex", alignItems: "center", gap: 14}}>
-                  <span style={{fontSize: 26, color: "#1890ff", lineHeight: 1}}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <span style={{ fontSize: 26, color: "#1890ff", lineHeight: 1 }}>
                     <EnvironmentOutlined />
                   </span>
                   <span
@@ -458,7 +464,7 @@ const HomeMapSection: React.FC = () => {
                       fontWeight: 600,
                     }}
                   >
-                    TỈNH THÀNH
+                    {t('home.mapSection.statsProvince')}
                   </span>
                 </div>
                 <div

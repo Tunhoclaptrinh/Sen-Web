@@ -2,32 +2,35 @@ import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/vi';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+import i18n from '@/i18n';
+
 dayjs.extend(relativeTime);
-dayjs.locale('vi');
 
 export const formatDate = (date: string | Date | Dayjs | null | undefined, format: string = 'DD/MM/YYYY'): string => {
     if (!date) return '';
-    return dayjs(date).format(format);
+    return dayjs(date).locale(i18n.language).format(format);
 };
 
 export const formatDateTime = (date: string | Date | Dayjs | null | undefined, format: string = 'DD/MM/YYYY HH:mm'): string => {
     if (!date) return '';
-    return dayjs(date).format(format);
+    return dayjs(date).locale(i18n.language).format(format);
 };
 
 export const formatRelativeTime = (date: string | Date | Dayjs | null | undefined): string => {
     if (!date) return '';
-    return dayjs(date).fromNow();
+    return dayjs(date).locale(i18n.language).fromNow();
 };
 
 export const formatNumber = (num: number | null | undefined): string => {
     if (!num && num !== 0) return '';
-    return new Intl.NumberFormat('vi-VN').format(num);
+    const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
+    return new Intl.NumberFormat(locale).format(num);
 };
 
 export const formatCurrency = (amount: number | null | undefined, currency: string = 'VND'): string => {
     if (!amount && amount !== 0) return '';
-    return new Intl.NumberFormat('vi-VN', {
+    const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
+    return new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency,
     }).format(amount);

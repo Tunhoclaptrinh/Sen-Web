@@ -1,15 +1,17 @@
-import React, {useEffect, useState, useRef} from "react";
-import {Typography, Row, Col, Avatar, Button, Spin, Card, Space, Tag} from "antd";
-import {UserOutlined, ArrowRightOutlined, CrownFilled} from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { Typography, Row, Col, Avatar, Button, Spin, Card, Space, Tag } from "antd";
+import { UserOutlined, ArrowRightOutlined, CrownFilled } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import gameService from "@/services/game.service";
-import {LeaderboardEntry} from "@/types/game.types";
+import { LeaderboardEntry } from "@/types/game.types";
 import "./HomeGame.less";
 
-const {Title, Text, Paragraph} = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const HomeLeaderboardSection: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [topPlayers, setTopPlayers] = useState<LeaderboardEntry[]>([]);
   const [activeCategory, setActiveCategory] = useState<"points" | "checkins" | "level">("points");
@@ -73,12 +75,12 @@ const HomeLeaderboardSection: React.FC = () => {
 
   const getCategoryInfo = () => {
     if (activeCategory === "points") {
-      return {label: "Điểm số", unit: "điểm"};
+      return { label: t('home.leaderboard.categories.points'), unit: t('home.leaderboard.units.points') };
     }
     if (activeCategory === "checkins") {
-      return {label: "Check-in", unit: "lượt"};
+      return { label: t('home.leaderboard.categories.checkins'), unit: t('home.leaderboard.units.checkins') };
     }
-    return {label: "Cấp độ", unit: "Cấp"};
+    return { label: t('home.leaderboard.categories.level'), unit: t('home.leaderboard.units.level') };
   };
 
   return (
@@ -107,26 +109,26 @@ const HomeLeaderboardSection: React.FC = () => {
         `}
       </style>
 
-      <div style={{maxWidth: 1400, margin: "0 auto", padding: "100px 80px 140px", position: "relative", zIndex: 1}}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "100px 80px 140px", position: "relative", zIndex: 1 }}>
         {/* Heritage Corner Decorations (Double Line Style) */}
         {/* Top Left */}
-        <div style={{position: "absolute", top: 40, left: 80, width: 60, height: 60, zIndex: 5}}>
-          <div style={{position: "absolute", top: 0, left: 0, width: 40, height: 2, background: "var(--gold-color)"}} />
-          <div style={{position: "absolute", top: 0, left: 0, width: 2, height: 40, background: "var(--gold-color)"}} />
+        <div style={{ position: "absolute", top: 40, left: 80, width: 60, height: 60, zIndex: 5 }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: 40, height: 2, background: "var(--gold-color)" }} />
+          <div style={{ position: "absolute", top: 0, left: 0, width: 2, height: 40, background: "var(--gold-color)" }} />
           <div
-            style={{position: "absolute", top: 6, left: 6, width: 24, height: 1, background: "rgba(250, 173, 20, 0.4)"}}
+            style={{ position: "absolute", top: 6, left: 6, width: 24, height: 1, background: "rgba(250, 173, 20, 0.4)" }}
           />
           <div
-            style={{position: "absolute", top: 6, left: 6, width: 1, height: 24, background: "rgba(250, 173, 20, 0.4)"}}
+            style={{ position: "absolute", top: 6, left: 6, width: 1, height: 24, background: "rgba(250, 173, 20, 0.4)" }}
           />
         </div>
         {/* Top Right */}
-        <div style={{position: "absolute", top: 40, right: 80, width: 60, height: 60, zIndex: 5}}>
+        <div style={{ position: "absolute", top: 40, right: 80, width: 60, height: 60, zIndex: 5 }}>
           <div
-            style={{position: "absolute", top: 0, right: 0, width: 40, height: 2, background: "var(--gold-color)"}}
+            style={{ position: "absolute", top: 0, right: 0, width: 40, height: 2, background: "var(--gold-color)" }}
           />
           <div
-            style={{position: "absolute", top: 0, right: 0, width: 2, height: 40, background: "var(--gold-color)"}}
+            style={{ position: "absolute", top: 0, right: 0, width: 2, height: 40, background: "var(--gold-color)" }}
           />
           <div
             style={{
@@ -150,12 +152,12 @@ const HomeLeaderboardSection: React.FC = () => {
           />
         </div>
         {/* Bottom Left */}
-        <div style={{position: "absolute", bottom: 80, left: 80, width: 60, height: 60, zIndex: 5}}>
+        <div style={{ position: "absolute", bottom: 80, left: 80, width: 60, height: 60, zIndex: 5 }}>
           <div
-            style={{position: "absolute", bottom: 0, left: 0, width: 40, height: 2, background: "var(--gold-color)"}}
+            style={{ position: "absolute", bottom: 0, left: 0, width: 40, height: 2, background: "var(--gold-color)" }}
           />
           <div
-            style={{position: "absolute", bottom: 0, left: 0, width: 2, height: 40, background: "var(--gold-color)"}}
+            style={{ position: "absolute", bottom: 0, left: 0, width: 2, height: 40, background: "var(--gold-color)" }}
           />
           <div
             style={{
@@ -179,12 +181,12 @@ const HomeLeaderboardSection: React.FC = () => {
           />
         </div>
         {/* Bottom Right */}
-        <div style={{position: "absolute", bottom: 80, right: 80, width: 60, height: 60, zIndex: 5}}>
+        <div style={{ position: "absolute", bottom: 80, right: 80, width: 60, height: 60, zIndex: 5 }}>
           <div
-            style={{position: "absolute", bottom: 0, right: 0, width: 40, height: 2, background: "var(--gold-color)"}}
+            style={{ position: "absolute", bottom: 0, right: 0, width: 40, height: 2, background: "var(--gold-color)" }}
           />
           <div
-            style={{position: "absolute", bottom: 0, right: 0, width: 2, height: 40, background: "var(--gold-color)"}}
+            style={{ position: "absolute", bottom: 0, right: 0, width: 2, height: 40, background: "var(--gold-color)" }}
           />
           <div
             style={{
@@ -208,11 +210,11 @@ const HomeLeaderboardSection: React.FC = () => {
           />
         </div>
 
-        <Row align="middle" style={{width: "100%", position: "relative", zIndex: 2, margin: 0}}>
-          <Col xs={24} lg={12} style={{paddingRight: 40}}>
-            <div className="section-header" style={{textAlign: "left"}}>
-              <div style={{display: "flex", alignItems: "center", gap: 14, marginBottom: 32}}>
-                <CrownFilled style={{color: "var(--gold-color)", fontSize: 22}} />
+        <Row align="middle" style={{ width: "100%", position: "relative", zIndex: 2, margin: 0 }}>
+          <Col xs={24} lg={12} style={{ paddingRight: 40 }}>
+            <div className="section-header" style={{ textAlign: "left" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 32 }}>
+                <CrownFilled style={{ color: "var(--gold-color)", fontSize: 22 }} />
                 <span
                   style={{
                     fontFamily: "var(--font-serif)",
@@ -223,7 +225,7 @@ const HomeLeaderboardSection: React.FC = () => {
                     color: "var(--gold-color)",
                   }}
                 >
-                  Bảng vàng danh dự
+                  {t('home.leaderboard.subHeader')}
                 </span>
               </div>
 
@@ -241,12 +243,13 @@ const HomeLeaderboardSection: React.FC = () => {
                   maxWidth: "100%",
                 }}
               >
-                Vinh danh <br />
-                <span style={{color: "var(--gold-color)", textShadow: "0 2px 10px rgba(0,0,0,0.2)"}}>
-                  Nhà thám hiểm
-                </span>{" "}
-                <br />
-                xuất sắc
+                <Trans
+                  i18nKey="home.leaderboard.title"
+                  components={{
+                    1: <span style={{ color: "var(--gold-color)", textShadow: "0 2px 10px rgba(0,0,0,0.2)" }} />,
+                    3: <span />,
+                  }}
+                />
               </h2>
 
               <Paragraph
@@ -260,8 +263,7 @@ const HomeLeaderboardSection: React.FC = () => {
                   lineHeight: 1.9,
                 }}
               >
-                Cùng chiêm ngưỡng những người chơi dẫn đầu trong hành trình khám phá di sản. Bạn có muốn tên mình được
-                xướng lên tại đây? Tham gia ngay để tích điểm và leo hạng!
+                {t('home.leaderboard.desc')}
               </Paragraph>
 
               <Button
@@ -282,16 +284,16 @@ const HomeLeaderboardSection: React.FC = () => {
                   boxShadow: "0 8px 0 rgba(197, 160, 101, 0.25)",
                 }}
               >
-                Khám phá Bảng xếp hạng
+                {t('home.leaderboard.btn')}
               </Button>
             </div>
           </Col>
 
-          <Col xs={24} lg={12} style={{paddingLeft: 40, paddingTop: 48}}>
+          <Col xs={24} lg={12} style={{ paddingLeft: 40, paddingTop: 48 }}>
             <Card
               bordered={false}
               className="home-game-leaderboard-card"
-              styles={{body: {padding: 0}}}
+              styles={{ body: { padding: 0 } }}
               style={{
                 borderRadius: 12,
                 boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
@@ -309,9 +311,9 @@ const HomeLeaderboardSection: React.FC = () => {
                   borderBottom: "1px solid rgba(0,0,0,0.05)",
                 }}
               >
-                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                  <Title level={4} style={{margin: 0, color: "var(--seal-red)", fontFamily: "var(--font-serif)"}}>
-                    Top 5 Nhà Thám Hiểm
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Title level={4} style={{ margin: 0, color: "var(--seal-red)", fontFamily: "var(--font-serif)" }}>
+                    {t('home.leaderboard.cardTitle')}
                   </Title>
                   <Tag
                     style={{
@@ -324,12 +326,12 @@ const HomeLeaderboardSection: React.FC = () => {
                       borderRadius: 4,
                     }}
                   >
-                    THÁNG {new Date().getMonth() + 1}
+                    {t('home.leaderboard.month')} {new Date().getMonth() + 1}
                   </Tag>
                 </div>
 
                 {/* INTERACTIVE TABS */}
-                <div style={{display: "flex", gap: 12}}>
+                <div style={{ display: "flex", gap: 12 }}>
                   <div
                     onClick={() => handleCategoryChange("points")}
                     style={{
@@ -347,7 +349,7 @@ const HomeLeaderboardSection: React.FC = () => {
                       boxShadow: activeCategory === "points" ? "0 4px 12px rgba(139, 29, 29, 0.2)" : "none",
                     }}
                   >
-                    Điểm số
+                    {t('home.leaderboard.categories.points')}
                   </div>
                   <div
                     onClick={() => handleCategoryChange("checkins")}
@@ -366,7 +368,7 @@ const HomeLeaderboardSection: React.FC = () => {
                       boxShadow: activeCategory === "checkins" ? "0 4px 12px rgba(139, 29, 29, 0.2)" : "none",
                     }}
                   >
-                    Check-in
+                    {t('home.leaderboard.categories.checkins')}
                   </div>
                   <div
                     onClick={() => handleCategoryChange("level")}
@@ -385,12 +387,12 @@ const HomeLeaderboardSection: React.FC = () => {
                       boxShadow: activeCategory === "level" ? "0 4px 12px rgba(139, 29, 29, 0.2)" : "none",
                     }}
                   >
-                    Cấp độ
+                    {t('home.leaderboard.categories.level')}
                   </div>
                 </div>
               </div>
 
-              <div style={{minHeight: 440, background: "#fffcf5", position: "relative"}}>
+              <div style={{ minHeight: 440, background: "#fffcf5", position: "relative" }}>
                 {loading ? (
                   <div
                     style={{
@@ -407,7 +409,7 @@ const HomeLeaderboardSection: React.FC = () => {
                       backdropFilter: "blur(2px)",
                     }}
                   >
-                    <Spin size="large" tip="Đang cập nhật..." style={{color: "#8c3b3b"}} />
+                    <Spin size="large" tip={t('home.leaderboard.updating')} style={{ color: "#8c3b3b" }} />
                   </div>
                 ) : null}
 
@@ -454,17 +456,17 @@ const HomeLeaderboardSection: React.FC = () => {
                         }}
                       />
 
-                      <div style={{flex: 1, marginLeft: 16}}>
-                        <div style={{display: "flex", alignItems: "center", gap: 8}}>
+                      <div style={{ flex: 1, marginLeft: 16 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <Text
                             strong
-                            style={{fontSize: 16, color: "var(--text-color-primary)", fontFamily: "var(--font-sans)"}}
+                            style={{ fontSize: 16, color: "var(--text-color-primary)", fontFamily: "var(--font-sans)" }}
                           >
                             {player.userName}
                           </Text>
-                          {index === 0 && <CrownFilled style={{color: "#FFD700", fontSize: 14}} />}
+                          {index === 0 && <CrownFilled style={{ color: "#FFD700", fontSize: 14 }} />}
                         </div>
-                        <Space size={4} style={{marginTop: 2}}>
+                        <Space size={4} style={{ marginTop: 2 }}>
                           <Tag
                             style={{
                               borderRadius: 4,
@@ -481,7 +483,7 @@ const HomeLeaderboardSection: React.FC = () => {
                         </Space>
                       </div>
 
-                      <div style={{textAlign: "right"}}>
+                      <div style={{ textAlign: "right" }}>
                         <Text
                           strong
                           style={{
@@ -499,7 +501,7 @@ const HomeLeaderboardSection: React.FC = () => {
                               : player.level
                           ).toLocaleString()}
                         </Text>
-                        <Text type="secondary" style={{fontSize: 11, textTransform: "uppercase"}}>
+                        <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
                           {getCategoryInfo().unit}
                         </Text>
                       </div>

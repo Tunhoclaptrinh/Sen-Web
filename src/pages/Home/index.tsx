@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation, Trans } from "react-i18next";
 import { Row, Col, Typography, Button } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { fetchHeritageSites } from "@store/slices/heritageSlice";
@@ -19,6 +20,7 @@ const { Title, Paragraph } = Typography;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { items: sites } = useSelector((state: RootState) => state.heritage);
   const { items: artifacts } = useSelector((state: RootState) => state.artifact);
@@ -60,9 +62,9 @@ const Home: React.FC = () => {
             <div className="brand-title">
               <img src={brandTitle} alt="" />
             </div>
-            <p className="hero-subtitle">Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ</p>
+            <p className="hero-subtitle">{t('home.heroSubtitle')}</p>
             <Button className="cta-button" onClick={() => navigate("/game/chapters")}>
-              Khám phá ngay
+              {t('home.exploreNow')}
             </Button>
           </div>
           {/* Optional decorative bottom elements can go here if provided */}
@@ -84,31 +86,28 @@ const Home: React.FC = () => {
             />
           </div>
           <div className="mission-text-col">
-            <span className="sub-header">Sứ mệnh của Sen</span>
+            <span className="sub-header">{t('home.mission.subHeader')}</span>
             <Title level={2} className="header-title">
-              Khám phá lịch sử - văn hóa
+              {t('home.mission.title')}
             </Title>
             <Paragraph className="mission-desc">
-              Qua lịch sử Việt Nam đầy hào hùng được người kể những câu chuyện chưa quen tương tác, sinh động và dễ tiếp
-              cận. Bằng việc kết hợp kiến thức lịch sử chính thống với lối chơi hấp dẫn, website mong muốn khơi dậy niềm
-              hứng thú khám phá quá khứ.
+              {t('home.mission.desc1')}
             </Paragraph>
             <Paragraph className="mission-desc">
-              Sen không chỉ gìn giữ bảo tồn và lan tỏa di sản dân tộc mà còn nuôi dưỡng tinh thần yêu nước, ý thức gìn
-              giữ bản sắc dân tộc trong thời đại số.
+              {t('home.mission.desc2')}
             </Paragraph>
             <div className="mission-actions">
               <button className="action-btn green-btn" onClick={() => navigate("/game/chapters")}>
-                Khám phá
+                {t('home.actions.explore')}
               </button>
               <button className="action-btn light-green-btn" onClick={() => navigate("/heritage-sites")}>
-                Di sản văn hóa
+                {t('home.actions.heritage')}
               </button>
               <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts")}>
-                Hiện vật
+                {t('home.actions.artifacts')}
               </button>
               <button className="action-btn light-green-btn" onClick={() => navigate("/game/learning")}>
-                Học tập
+                {t('home.actions.learn')}
               </button>
             </div>
           </div>
@@ -126,7 +125,7 @@ const Home: React.FC = () => {
       {/* 3. Featured Heritage Section */}
       <section className="featured-heritage-section">
         <Title level={2} className="header-title">
-          Di sản & địa điểm nổi bật
+          {t('home.heritage.title')}
         </Title>
         <Row gutter={[24, 24]} justify="center">
           {sites?.slice(0, 4).map((site) => (
@@ -141,10 +140,10 @@ const Home: React.FC = () => {
       <section className="featured-artifacts-section">
         <div className="section-content">
           <Title level={2} className="header-title">
-            Hiện vật tiêu biểu
+            {t('home.artifacts.title')}
           </Title>
           <Paragraph className="section-subtitle">
-            Tìm và khám phá những bộ sưu tập hiện vật lịch sử, mỹ thuật giá trị của các bảo tàng trên thế giới
+            {t('home.artifacts.subtitle')}
           </Paragraph>
 
           <Row gutter={[24, 24]}>
@@ -169,7 +168,14 @@ const Home: React.FC = () => {
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 80px" }}>
           <div className="section-header" style={{ textAlign: "center", marginBottom: 60 }}>
             <Title level={2} className="header-title">
-              Trải nghiệm <span style={{ color: "var(--primary-color)" }}>Gamification</span>
+              <Trans
+                i18nKey="home.gamification.title"
+                components={{
+                  1: <span style={{ color: "var(--primary-color)" }}>Gamification</span>
+                }}
+              >
+                Trải nghiệm <span style={{ color: "var(--primary-color)" }}>Gamification</span>
+              </Trans>
             </Title>
             <Paragraph
               style={{
@@ -181,7 +187,7 @@ const Home: React.FC = () => {
                 fontStyle: "italic",
               }}
             >
-              Hành trình giải mã những bí mật văn hóa thông qua thế giới ảo trực quan và sinh động.
+              {t('home.gamification.subtitle')}
             </Paragraph>
           </div>
 
@@ -198,18 +204,14 @@ const Home: React.FC = () => {
                 <div className="card-icon-header">
                   <img src={headerLogo} alt="Sen Logo" style={{ height: 48, marginBottom: 20 }} />
                 </div>
-                <h3 className="card-title">Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi</h3>
+                <h3 className="card-title">{t('home.gamification.cardTitle')}</h3>
 
                 <div className="card-description-box">
                   <Paragraph className="card-desc">
-                    Chào mừng người chơi bước vào một hành trình khám phá mới. Trong trò chơi này, bạn sẽ hóa thân thành
-                    người lữ hành thời gian, lần theo những dấu tích lịch sử và văn hóa để giải mã các câu chuyện, nhân
-                    vật và sự kiện đã từng in dấu trong quá khứ.
+                    {t('home.gamification.cardDesc1')}
                   </Paragraph>
                   <Paragraph className="card-desc">
-                    Bên cạnh đó việc tích hợp các bài tập và câu hỏi trắc nghiệm được thiết kế phù hợp với nội dung,
-                    giúp người chơi củng cố kiến thức, tăng khả năng ghi nhớ và hiểu sâu hơn những giá trị lịch sử - văn
-                    hóa đã trải nghiệm.
+                    {t('home.gamification.cardDesc2')}
                   </Paragraph>
                 </div>
 
@@ -219,7 +221,7 @@ const Home: React.FC = () => {
                   icon={<ArrowRightOutlined />}
                   onClick={() => navigate("/game")}
                 >
-                  Bắt đầu hành trình
+                  {t('home.gamification.startBtn')}
                 </Button>
               </div>
             </Col>
@@ -251,11 +253,11 @@ const Home: React.FC = () => {
 
         <div className="cta-content">
           <Title level={2} className="header-title">
-            Sẵn sàng khám phá?
+            {t('home.cta.ready')}
           </Title>
-          <Paragraph className="cta-desc">Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay</Paragraph>
+          <Paragraph className="cta-desc">{t('home.cta.desc')}</Paragraph>
           <button className="main-cta-btn" onClick={() => navigate("/auth/register")}>
-            Khám phá ngay
+            {t('home.cta.btn')}
           </button>
         </div>
       </section>

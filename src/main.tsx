@@ -11,9 +11,12 @@ import "./assets/styles/variables.css";
 import "./styles/global.less";
 import "./styles/antd-custom.less";
 import "./styles/premium-ui.less";
-import "./assets/styles/antd-override.css"; 
+import "./assets/styles/antd-override.css";
 // Inject store vào axios config để tránh circular dependency
 injectStore(store);
+
+// i18n
+import "./i18n";
 
 const rootElement = document.getElementById("root");
 

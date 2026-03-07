@@ -1,5 +1,6 @@
 import React from "react";
 import { Row, Col, Collapse, Form, Input, Button, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import { MailOutlined, PhoneOutlined, SendOutlined } from "@ant-design/icons";
 import "./styles.less";
 
@@ -7,6 +8,7 @@ const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
 
 const SupportPage: React.FC = () => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onFinish = () => {
@@ -16,29 +18,24 @@ const SupportPage: React.FC = () => {
 
   const faqData = [
     {
-      question: "Làm thế nào để tạo tài khoản?",
-      answer:
-        'Bạn có thể đăng ký tài khoản bằng cách nhấp vào nút "Tài khoản" ở góc trên bên phải màn hình và chọn "Đăng ký". Điền các thông tin cần thiết và xác nhận email để hoàn tất.',
+      question: t('support.faq.q1'),
+      answer: t('support.faq.a1'),
     },
     {
-      question: "Tôi có thể đóng góp thông tin về di sản không?",
-      answer:
-        'Tất nhiên! Chúng tôi hoan nghênh sự đóng góp từ cộng đồng. Sau khi đăng nhập, bạn có thể truy cập mục "Đóng góp" hoặc liên hệ với chúng tôi qua email để gửi thông tin và tư liệu về di sản.',
+      question: t('support.faq.q2'),
+      answer: t('support.faq.a2'),
     },
     {
-      question: "Làm sao để báo cáo nội dung không chính xác?",
-      answer:
-        'Nếu bạn phát hiện thông tin chưa chính xác, vui lòng sử dụng tính năng "Báo cáo" ở cuối mỗi bài viết hoặc trang chi tiết di sản, hoặc gửi email trực tiếp cho đội ngũ hỗ trợ.',
+      question: t('support.faq.q3'),
+      answer: t('support.faq.a3'),
     },
     {
-      question: "Ứng dụng có miễn phí không?",
-      answer:
-        "Phần lớn các nội dung trên SEN là hoàn toàn miễn phí để phục vụ cộng đồng. Tuy nhiên, một số tính năng nâng cao hoặc nội dung chuyên sâu có thể yêu cầu tài khoản thành viên.",
+      question: t('support.faq.q4'),
+      answer: t('support.faq.a4'),
     },
     {
-      question: "Làm cách nào để liên hệ với ban quản trị?",
-      answer:
-        "Bạn có thể liên hệ với chúng tôi qua form bên dưới, hoặc gửi email đến sen.culture.contact@gmail.com. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.",
+      question: t('support.faq.q5'),
+      answer: t('support.faq.a5'),
     },
   ];
 
@@ -47,9 +44,9 @@ const SupportPage: React.FC = () => {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <Title level={1}>Chúng tôi có thể giúp gì cho bạn?</Title>
+          <Title level={1}>{t('support.hero.title')}</Title>
           <p className="hero-subtitle">
-            Khám phá các câu hỏi thường gặp hoặc liên hệ trực tiếp với đội ngũ hỗ trợ của SEN.
+            {t('support.hero.subtitle')}
           </p>
         </div>
       </section>
@@ -59,8 +56,8 @@ const SupportPage: React.FC = () => {
         <img src="/images/hoatiettrongdong.png" className="bg-drum" alt="" />
         {/* FAQ Section */}
         <div className="section-header">
-          <Title level={2}>Câu hỏi thường gặp</Title>
-          <p>Tìm câu trả lời nhanh chóng cho các thắc mắc phổ biến</p>
+          <Title level={2}>{t('support.faq.title')}</Title>
+          <p>{t('support.faq.subtitle')}</p>
         </div>
 
         <div className="faq-section">
@@ -76,8 +73,8 @@ const SupportPage: React.FC = () => {
         {/* Contact Section */}
         <div className="contact-section">
           <div className="contact-header">
-            <Title level={2}>Liên hệ với chúng tôi</Title>
-            <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+            <Title level={2}>{t('support.contact.title')}</Title>
+            <p>{t('support.contact.subtitle')}</p>
           </div>
 
           <Row gutter={48}>
@@ -86,18 +83,18 @@ const SupportPage: React.FC = () => {
               <div className="contact-info-column">
                 <div className="contact-method">
                   <MailOutlined className="icon" />
-                  <h4>Email</h4>
+                  <h4>{t('support.contact.email')}</h4>
                   <p>sen.culture.contact@gmail.com</p>
                   <Text type="secondary" style={{ fontSize: 13 }}>
-                    Chúng tôi sẽ phản hồi trong vòng 24 giờ
+                    {t('support.contact.emailDesc')}
                   </Text>
                 </div>
                 <div className="contact-method">
                   <PhoneOutlined className="icon" />
-                  <h4>Hotline</h4>
+                  <h4>{t('support.contact.hotline')}</h4>
                   <p>1900 1234 56</p>
                   <Text type="secondary" style={{ fontSize: 13 }}>
-                    Hỗ trợ từ 8:00 - 22:00 hàng ngày
+                    {t('support.contact.hotlineDesc')}
                   </Text>
                 </div>
               </div>
@@ -110,38 +107,38 @@ const SupportPage: React.FC = () => {
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="name"
-                      label="Họ và tên"
-                      rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
+                      label={t('support.contact.form.name')}
+                      rules={[{ required: true, message: t('support.contact.form.nameRequired') }]}
                     >
-                      <Input placeholder="Nhập họ tên của bạn" />
+                      <Input placeholder={t('support.contact.form.namePlaceholder')} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="email"
-                      label="Email"
+                      label={t('support.contact.form.email')}
                       rules={[
-                        { required: true, message: "Vui lòng nhập email" },
-                        { type: "email", message: "Email không hợp lệ" },
+                        { required: true, message: t('support.contact.form.emailRequired') },
+                        { type: "email", message: t('support.contact.form.emailInvalid') },
                       ]}
                     >
-                      <Input placeholder="Nhập địa chỉ email" />
+                      <Input placeholder={t('support.contact.form.emailPlaceholder')} />
                     </Form.Item>
                   </Col>
                 </Row>
                 <Form.Item
                   name="message"
-                  label="Nội dung cần hỗ trợ"
+                  label={t('support.contact.form.message')}
                   rules={[
-                    { required: true, message: "Vui lòng nhập nội dung" },
-                    { min: 20, message: "Nội dung yêu cầu tối thiểu 20 ký tự" },
+                    { required: true, message: t('support.contact.form.messageRequired') },
+                    { min: 20, message: t('support.contact.form.messageMin') },
                   ]}
                 >
-                  <Input.TextArea rows={5} placeholder="Mô tả vấn đề bạn đang gặp phải..." />
+                  <Input.TextArea rows={5} placeholder={t('support.contact.form.messagePlaceholder')} />
                 </Form.Item>
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button htmlType="submit" className="submit-button">
-                    <SendOutlined /> Gửi yêu cầu
+                    <SendOutlined /> {t('support.contact.form.submit')}
                   </Button>
                 </Form.Item>
               </Form>

@@ -1,20 +1,22 @@
 import React from "react";
-import {Link} from "react-router-dom";
-import {Tag, Tooltip} from "antd";
-import {StarFilled} from "@ant-design/icons";
-import {resolveImage, getImageUrl} from "@/utils/image.helper";
-import {HERITAGE_TYPE_LABELS, ARTIFACT_TYPE_LABELS, ITEM_TYPES} from "@/config/constants";
-import {FeatureCardProps} from "./types";
+import { Link } from "react-router-dom";
+import { Tag, Tooltip } from "antd";
+import { StarFilled } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import { resolveImage, getImageUrl } from "@/utils/image.helper";
+import { ITEM_TYPES } from "@/config/constants";
+import { FeatureCardProps } from "./types";
 import "./styles.less";
 
-const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = ITEM_TYPES.HERITAGE, variant = "landscape"}) => {
+const FeatureCard: React.FC<FeatureCardProps> = ({ data, cardType = ITEM_TYPES.HERITAGE, variant = "landscape" }) => {
+  const { t } = useTranslation();
   const linkPath = cardType === ITEM_TYPES.HERITAGE ? `/heritage-sites/${data.id}` : `/artifacts/${data.id}`;
 
   const rawImage = resolveImage(data.image) || resolveImage(data.mainImage) || resolveImage(data.images);
   const imageUrl = getImageUrl(rawImage, "https://via.placeholder.com/300x400?text=No+Image");
 
   return (
-    <Link to={linkPath} style={{display: "block", height: "100%"}}>
+    <Link to={linkPath} style={{ display: "block", height: "100%" }}>
       <div className={`feature-card ${variant} ${cardType}`}>
         {/* Cover Image Area */}
         <div className="card-cover">
@@ -38,17 +40,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = ITEM_TYPES.HE
           <div className="card-info-overlay">
             <Tag className="type-tag">
               {cardType === ITEM_TYPES.HERITAGE
-                ? HERITAGE_TYPE_LABELS[data.type as keyof typeof HERITAGE_TYPE_LABELS] ||
-                  (data.type === ITEM_TYPES.HERITAGE ? "Di sản" : data.type) ||
-                  "Di sản"
-                : ARTIFACT_TYPE_LABELS[data.type as keyof typeof ARTIFACT_TYPE_LABELS] ||
-                  (data.type === ITEM_TYPES.ARTIFACT ? "Hiện vật" : data.type) ||
-                  "Hiện vật"}
+                ? t(`common.heritageTypes.${data.type}`, { defaultValue: t("common.heritage") })
+                : t(`common.artifactTypes.${data.type}`, { defaultValue: t("common.artifact") })}
             </Tag>
 
             {data.rating && (
               <div className="card-rating">
-                <StarFilled style={{color: "#faad14"}} />
+                <StarFilled style={{ color: "#faad14" }} />
                 <span className="rating-value">{data.rating.toFixed(1)}</span>
                 <span className="rating-count">({data.totalReviews || 0})</span>
               </div>
@@ -75,7 +73,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = ITEM_TYPES.HE
             {cardType === ITEM_TYPES.HERITAGE ? (
               data.region && (
                 <div className="meta-item">
-                  <span className="meta-label">Vùng miền:</span>
+                  <span className="meta-label">{t('common.metadata.region')}</span>
                   <span className="meta-value">{data.region}</span>
                 </div>
               )
@@ -83,13 +81,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = ITEM_TYPES.HE
               <>
                 {(data.locationInSite || data.currentLocation) && (
                   <div className="meta-item">
-                    <span className="meta-label">Nơi lưu giữ:</span>
+                    <span className="meta-label">{t('common.metadata.storage')}</span>
                     <span className="meta-value">{data.locationInSite || data.currentLocation}</span>
                   </div>
                 )}
                 {(data.dynasty || data.yearCreated) && (
                   <div className="meta-item">
-                    <span className="meta-label">Niên đại:</span>
+                    <span className="meta-label">{t('common.metadata.age')}</span>
                     <span className="meta-value">{data.dynasty || data.yearCreated}</span>
                   </div>
                 )}
@@ -98,7 +96,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({data, cardType = ITEM_TYPES.HE
           </div>
 
           <div className="card-action-hint">
-            <span>Chi tiết</span>
+            <span>{t('common.details')}</span>
             <span className="hint-arrow">→</span>
           </div>
         </div>

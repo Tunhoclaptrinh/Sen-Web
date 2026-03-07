@@ -13,6 +13,7 @@ interface UiState {
   loading: boolean;
   notifications: Notification[];
   globalUnreadCount: number;
+  language: string;
 }
 
 const initialState: UiState = {
@@ -21,6 +22,7 @@ const initialState: UiState = {
   loading: false,
   notifications: [],
   globalUnreadCount: 0,
+  language: localStorage.getItem('i18nextLng') || 'vi',
 };
 
 const uiSlice = createSlice({
@@ -64,6 +66,9 @@ const uiSlice = createSlice({
     clearGlobalUnreadCount: (state) => {
       state.globalUnreadCount = 0;
     },
+    setLanguage: (state, action: PayloadAction<string>) => {
+      state.language = action.payload;
+    },
   },
 });
 
@@ -77,6 +82,7 @@ export const {
   setGlobalUnreadCount,
   decrementGlobalUnreadCount,
   clearGlobalUnreadCount,
+  setLanguage,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;
