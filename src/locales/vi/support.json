@@ -1,0 +1,42 @@
+{
+  "hero": {
+    "title": "Chúng tôi có thể giúp gì cho bạn?",
+    "subtitle": "Khám phá các câu hỏi thường gặp hoặc liên hệ trực tiếp với đội ngũ hỗ trợ của SEN."
+  },
+  "faq": {
+    "title": "Câu hỏi thường gặp",
+    "subtitle": "Tìm câu trả lời nhanh chóng cho các thắc mắc phổ biến",
+    "q1": "Làm thế nào để tạo tài khoản?",
+    "a1": "Bạn có thể đăng ký tài khoản bằng cách nhấp vào nút \"Tài khoản\" ở góc trên bên phải màn hình và chọn \"Đăng ký\". Điền các thông tin cần thiết và xác nhận email để hoàn tất.",
+    "q2": "Tôi có thể đóng góp thông tin về di sản không?",
+    "a2": "Tất nhiên! Chúng tôi hoan nghênh sự đóng góp từ cộng đồng. Sau khi đăng nhập, bạn có thể truy cập mục \"Đóng góp\" hoặc liên hệ với chúng tôi qua email để gửi thông tin và tư liệu về di sản.",
+    "q3": "Làm sao để báo cáo nội dung không chính xác?",
+    "a3": "Nếu bạn phát hiện thông tin chưa chính xác, vùi lòng sử dụng tính năng \"Báo cáo\" ở cuối mỗi bài viết hoặc trang chi tiết di sản, hoặc gửi email trực tiếp cho đội ngũ hỗ trợ.",
+    "q4": "Ứng dụng có miễn phí không?",
+    "a4": "Phần lớn các nội dung trên SEN là hoàn toàn miễn phí để phục vụ cộng đồng. Tuy nhiên, một số tính năng nâng cao hoặc nội dung chuyên sâu có thể yêu cầu tài khoản thành viên.",
+    "q5": "Làm cách nào để liên hệ với ban quản trị?",
+    "a5": "Bạn có thể liên hệ với chúng tôi qua form bên dưới, hoặc gửi email đến sen.culture.contact@gmail.com. Chúng tôi sẽ phản hồi trong thời gian sớm nhất."
+  },
+  "contact": {
+    "title": "Liên hệ với chúng tôi",
+    "subtitle": "Chúng tôi luôn sẵn sàng hỗ trợ bạn",
+    "email": "Email",
+    "emailDesc": "Chúng tôi sẽ phản hồi trong vòng 24 giờ",
+    "hotline": "Hotline",
+    "hotlineDesc": "Hỗ trợ từ 8:00 - 22:00 hàng ngày",
+    "form": {
+      "name": "Họ và tên",
+      "namePlaceholder": "Nhập họ tên của bạn",
+      "nameRequired": "Vui lòng nhập họ tên",
+      "email": "Email",
+      "emailPlaceholder": "Nhập địa chỉ email",
+      "emailRequired": "Vui lòng nhập email",
+      "emailInvalid": "Email không hợp lệ",
+      "message": "Nội dung cần hỗ trợ",
+      "messagePlaceholder": "Mô tả vấn đề bạn đang gặp phải...",
+      "messageRequired": "Vui lòng nhập nội dung",
+      "messageMin": "Nội dung yêu cầu tối thiểu 20 ký tự",
+      "submit": "Gửi yêu cầu"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "browse": {
+    "heroTitle": "Heritage Journey",
+    "heroSubtitle": "Connecting past and present, explore the endless beauty of Vietnam's landscapes and historical sites.",
+    "searchPlaceholder": "Search heritage sites...",
+    "regionPlaceholder": "Region",
+    "categoryPlaceholder": "Category",
+    "unescoPlaceholder": "UNESCO",
+    "unescoYes": "UNESCO Listed",
+    "unescoNo": "No",
+    "resetFilters": "Reset Filters",
+    "loading": "Loading data...",
+    "featuredSection": "Featured",
+    "exploreSection": "Explore",
+    "empty": "No other heritage sites found",
+    "total": "Total: {{count}}"
+  },
+  "detail": {
+    "viewGallery": "View Gallery",
+    "tabs": {
+      "description": "Description",
+      "info": "Information",
+      "discovery": "Discovery",
+      "timeline": "Timeline"
+    },
+    "references": "References",
+    "visitingDetails": "Visiting Details",
+    "openHours": "Opening Hours",
+    "ticketPrice": "Entrance Fee",
+    "yearEstablished": "Year Established",
+    "culturalPeriod": "Cultural Period",
+    "locationRating": "Location & Rating",
+    "address": "Address",
+    "visitorRating": "Visitor Rating",
+    "region": "Region",
+    "titleLabel": "Title",
+    "unescoTitle": "UNESCO World Heritage",
+    "bookingNote": "* Tickets can be purchased at the counter or booked online to avoid queues.",
+    "getDirections": "Get Directions",
+    "bookNow": "Book Now",
+    "interactiveExp": "Heritage Experience",
+    "playNow": "Play Now",
+    "relatedArtifacts": "Related Artifacts",
+    "relatedHistory": "History Stories",
+    "relatedProducts": "Cultural Products",
+    "historyEvents": "Historical Events",
+    "otherSites": "Other Heritage Sites"
+  }
+}

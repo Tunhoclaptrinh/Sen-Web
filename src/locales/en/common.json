@@ -1,0 +1,99 @@
+{
+  "heritage": "Heritage",
+  "artifact": "Artifact",
+  "details": "Details",
+  "loading": "Initializing...",
+  "noInfo": "No information provided",
+  "actions": {
+    "favorite": "Favorite",
+    "favorited": "Favorited",
+    "share": "Share",
+    "saveToCollection": "Save to Collection"
+  },
+  "regions": {
+    "North": "North",
+    "Central": "Central",
+    "South": "South"
+  },
+  "cards": {
+    "readMore": "Read more",
+    "explore": "Explore"
+  },
+  "reviews": {
+    "title": "Visitor Reviews",
+    "stats": "Based on <strong>{{count}}</strong> reviews",
+    "allComments": "All Comments",
+    "writeBtn": "Write a Review",
+    "closeBtn": "Close",
+    "submitBtn": "Submit Review",
+    "satisfaction": "Your Satisfaction",
+    "comment": "Review Content",
+    "placeholder": "Share your experience...",
+    "successMessage": "Thank you for your review!",
+    "loginRequired": "Please log in to leave a review.",
+    "empty": "No reviews yet. Be the first to review!",
+    "loading": "Loading reviews...",
+    "minChars": "Minimum 10 characters",
+    "requiredComment": "Please enter review content",
+    "requiredRating": "Please select satisfaction level"
+  },
+  "metadata": {
+    "region": "Region:",
+    "storage": "Storage:",
+    "age": "Age:"
+  },
+  "heritageTypes": {
+    "monument": "Monument",
+    "temple": "Temple",
+    "museum": "Museum",
+    "archaeologicalSite": "Archaeological Site",
+    "historicBuilding": "Historic Building",
+    "naturalHeritage": "Natural Heritage",
+    "intangibleHeritage": "Intangible Heritage",
+    "MONUMENT": "Monument",
+    "TEMPLE": "Temple",
+    "MUSEUM": "Museum",
+    "ARCHAEOLOGICAL_SITE": "Archaeological Site",
+    "HISTORIC_BUILDING": "Historic Building",
+    "NATURAL_HERITAGE": "Natural Heritage",
+    "INTANGIBLE_HERITAGE": "Intangible Heritage",
+    "archaeological_site": "Archaeological Site",
+    "historic_building": "Historic Building",
+    "natural_heritage": "Natural Heritage",
+    "intangible_heritage": "Intangible Heritage"
+  },
+  "artifactTypes": {
+    "sculpture": "Sculpture",
+    "painting": "Painting",
+    "document": "Document",
+    "pottery": "Pottery",
+    "textile": "Textile",
+    "tool": "Tool",
+    "weapon": "Weapon",
+    "jewelry": "Jewelry",
+    "manuscript": "Manuscript",
+    "photograph": "Photograph",
+    "other": "Other",
+    "SCULPTURE": "Sculpture",
+    "PAINTING": "Painting",
+    "DOCUMENT": "Document",
+    "POTTERY": "Pottery",
+    "TEXTILE": "Textile",
+    "TOOL": "Tool",
+    "WEAPON": "Weapon",
+    "JEWELRY": "Jewelry",
+    "MANUSCRIPT": "Manuscript",
+    "PHOTOGRAPH": "Photograph",
+    "OTHER": "Other"
+  },
+  "footer": {
+    "address": "Address",
+    "academy": "Posts and Telecommunications Institute of Technology",
+    "addressDetail": "Km10, Nguyen Trai St., Ha Dong Dist., Hanoi",
+    "explore": "Explore",
+    "aboutUs": "About Us",
+    "newsletterPlaceholder": "Enter your email...",
+    "newsletterBtn": "Submit",
+    "copyright": "© 2026 Sen. Creating history and culture experiences with technology."
+  }
+}

@@ -1,18 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {Row, Col, Input, Button, Spin, Empty, Typography, Pagination, Select} from "antd";
-import {SearchOutlined, FilterOutlined, CalendarOutlined, UserOutlined} from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Input, Button, Spin, Empty, Typography, Pagination, Select } from "antd";
+import { SearchOutlined, FilterOutlined, CalendarOutlined, UserOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import artifactService from "@/services/artifact.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
-import {ITEM_TYPES} from "@/config/constants";
-import {useCategories} from "@/hooks/useCategories";
-import {Artifact} from "@/types/artifact.types";
+import { ITEM_TYPES } from "@/config/constants";
+import { useCategories } from "@/hooks/useCategories";
+import { Artifact } from "@/types/artifact.types";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const ArtifactBrowsePage: React.FC = () => {
-  const {categories} = useCategories();
+  const { t } = useTranslation();
+  const { categories } = useCategories();
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [loading, setLoading] = useState(true);
   const [randomFeatured, setRandomFeatured] = useState<Artifact | null>(null);
@@ -72,8 +74,8 @@ const ArtifactBrowsePage: React.FC = () => {
   };
 
   const handleSearch = (value: string) => {
-    setFilters((prev) => ({...prev, q: value}));
-    setPagination((prev) => ({...prev, current: 1}));
+    setFilters((prev) => ({ ...prev, q: value }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   return (
@@ -81,8 +83,8 @@ const ArtifactBrowsePage: React.FC = () => {
       {/* 1. Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">Kho tàng Hiện Vật</h1>
-          <p className="hero-subtitle">Lưu giữ những giá trị văn hóa, lịch sử qua từng hiện vật cổ xưa</p>
+          <h1 className="hero-title">{t('artifact.browse.heroTitle')}</h1>
+          <p className="hero-subtitle">{t('artifact.browse.heroSubtitle')}</p>
         </div>
       </section>
 
@@ -94,13 +96,13 @@ const ArtifactBrowsePage: React.FC = () => {
             <SearchOutlined />
             <Input
               bordered={false}
-              placeholder="Tìm kiếm hiện vật..."
+              placeholder={t('artifact.browse.searchPlaceholder')}
               allowClear
               value={filters.q}
               onPressEnter={(e) => handleSearch(e.currentTarget.value)}
               onChange={(e) => {
-                setFilters((prev) => ({...prev, q: e.target.value}));
-                if (!e.target.value) setPagination((prev) => ({...prev, current: 1}));
+                setFilters((prev) => ({ ...prev, q: e.target.value }));
+                if (!e.target.value) setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             />
           </div>
@@ -109,11 +111,11 @@ const ArtifactBrowsePage: React.FC = () => {
           <div className="filter-item">
             <Select
               bordered={false}
-              placeholder="Danh mục"
-              style={{width: "100%"}}
+              placeholder={t('heritage.browse.categoryPlaceholder')}
+              style={{ width: "100%" }}
               allowClear
               value={filters.categoryId}
-              onChange={(value) => setFilters((prev) => ({...prev, categoryId: value}))}
+              onChange={(value) => setFilters((prev) => ({ ...prev, categoryId: value }))}
             >
               {categories.map((cat) => (
                 <Select.Option key={cat.id} value={cat.id}>
@@ -130,11 +132,11 @@ const ArtifactBrowsePage: React.FC = () => {
             <CalendarOutlined />
             <Input
               bordered={false}
-              placeholder="Năm tạo tác"
+              placeholder={t('artifact.browse.yearPlaceholder')}
               allowClear
               value={filters.year_created}
-              onPressEnter={(e) => setFilters((prev) => ({...prev, year_created: e.currentTarget.value}))}
-              onChange={(e) => setFilters((prev) => ({...prev, year_created: e.target.value}))}
+              onPressEnter={(e) => setFilters((prev) => ({ ...prev, year_created: e.currentTarget.value }))}
+              onChange={(e) => setFilters((prev) => ({ ...prev, year_created: e.target.value }))}
             />
           </div>
 
@@ -145,11 +147,11 @@ const ArtifactBrowsePage: React.FC = () => {
             <UserOutlined />
             <Input
               bordered={false}
-              placeholder="Triều đại"
+              placeholder={t('artifact.browse.dynastyPlaceholder')}
               allowClear
               value={filters.dynasty}
-              onPressEnter={(e) => setFilters((prev) => ({...prev, dynasty: e.currentTarget.value}))}
-              onChange={(e) => setFilters((prev) => ({...prev, dynasty: e.target.value}))}
+              onPressEnter={(e) => setFilters((prev) => ({ ...prev, dynasty: e.currentTarget.value }))}
+              onChange={(e) => setFilters((prev) => ({ ...prev, dynasty: e.target.value }))}
             />
           </div>
 
@@ -165,18 +167,18 @@ const ArtifactBrowsePage: React.FC = () => {
                   year_created: undefined,
                   dynasty: undefined,
                 });
-                setPagination((prev) => ({...prev, current: 1}));
+                setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             >
-              Xóa Lọc
+              {t('artifact.browse.resetFilters')}
             </Button>
           </div>
         </div>
       </div>
 
       {loading ? (
-        <div style={{textAlign: "center", padding: "100px 0"}}>
-          <Spin size="large" tip="Đang tải dữ liệu..." />
+        <div style={{ textAlign: "center", padding: "100px 0" }}>
+          <Spin size="large" tip={t('artifact.browse.loading')} />
         </div>
       ) : (
         <>
@@ -184,7 +186,7 @@ const ArtifactBrowsePage: React.FC = () => {
           {randomFeatured && (
             <section className="discovered-section">
               <Title level={2} className="header-title">
-                Nổi bật
+                {t('artifact.browse.featuredSection')}
               </Title>
               <DiscoveryCard data={randomFeatured} type={ITEM_TYPES.ARTIFACT} />
             </section>
@@ -197,11 +199,11 @@ const ArtifactBrowsePage: React.FC = () => {
             </div>
             <div className="section-content">
               <Title level={2} className="header-title">
-                Khám phá
+                {t('artifact.browse.exploreSection')}
               </Title>
 
               {artifacts.length === 0 ? (
-                <Empty description="Không tìm thấy hiện vật nào khác" />
+                <Empty description={t('artifact.browse.empty')} />
               ) : (
                 <Row gutter={[24, 24]}>
                   {artifacts.map((artifact) => (
@@ -212,13 +214,13 @@ const ArtifactBrowsePage: React.FC = () => {
                 </Row>
               )}
 
-              <div style={{marginTop: 40, display: "flex", justifyContent: "center", width: "100%"}}>
+              <div style={{ marginTop: 40, display: "flex", justifyContent: "center", width: "100%" }}>
                 <Pagination
                   current={pagination.current}
                   pageSize={pagination.pageSize}
                   total={pagination.total}
-                  showTotal={(total) => `Tổng số: ${total}`}
-                  onChange={(page) => setPagination((prev) => ({...prev, current: page}))}
+                  showTotal={(total) => t('artifact.browse.total', { count: total })}
+                  onChange={(page) => setPagination((prev) => ({ ...prev, current: page }))}
                   showSizeChanger={false}
                 />
               </div>

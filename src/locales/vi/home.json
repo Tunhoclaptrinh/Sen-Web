@@ -1,0 +1,68 @@
+{
+  "heroSubtitle": "Kiến tạo trải nghiệm lịch sử, văn hóa bằng công nghệ",
+  "exploreNow": "Khám phá ngay",
+  "mission": {
+    "subHeader": "Sứ mệnh của Sen",
+    "title": "Khám phá lịch sử - văn hóa",
+    "desc1": "Qua lịch sử Việt Nam đầy hào hùng được người kể những câu chuyện chưa quen tương tác, sinh động và dễ tiếp cận. Bằng việc kết hợp kiến thức lịch sử chính thống với lối chơi hấp dẫn, website mong muốn khơi dậy niềm hứng thú khám phá quá khứ.",
+    "desc2": "Sen không chỉ gìn giữ bảo tồn và lan tỏa di sản dân tộc mà còn nuôi dưỡng tinh thần yêu nước, ý thức gìn giữ bản sắc dân tộc trong thời đại số."
+  },
+  "actions": {
+    "explore": "Khám phá",
+    "heritage": "Di sản văn hóa",
+    "artifacts": "Hiện vật",
+    "learn": "Học tập"
+  },
+  "heritage": {
+    "title": "Di sản & địa điểm nổi bật"
+  },
+  "artifacts": {
+    "title": "Hiện vật tiêu biểu",
+    "subtitle": "Tìm và khám phá những bộ sưu tập hiện vật lịch sử, mỹ thuật giá trị của các bảo tàng trên thế giới"
+  },
+  "gamification": {
+    "title": "Trải nghiệm Gamification",
+    "subtitle": "Hành trình giải mã những bí mật văn hóa thông qua thế giới ảo trực quan và sinh động.",
+    "cardTitle": "Trải nghiệm và học tập lịch sử - văn hóa thông qua trò chơi",
+    "cardDesc1": "Chào mừng người chơi bước vào một hành trình khám phá mới. Trong trò chơi này, bạn sẽ hóa thân thành người lữ hành thời gian, lần theo những dấu tích lịch sử và văn hóa để giải mã các câu chuyện, nhân vật và sự kiện đã từng in dấu trong quá khứ.",
+    "cardDesc2": "Bên cạnh đó việc tích hợp các bài tập và câu hỏi trắc nghiệm được thiết kế phù hợp với nội dung, giúp người chơi củng cố kiến thức, tăng khả năng ghi nhớ và hiểu sâu hơn những giá trị lịch sử - văn hóa đã trải nghiệm.",
+    "startBtn": "Bắt đầu hành trình"
+  },
+  "cta": {
+    "ready": "Sẵn sàng khám phá?",
+    "desc": "Tham gia tìm hiểu văn hóa lịch sử Việt Nam và nhận quà ngay",
+    "btn": "Khám phá ngay"
+  },
+  "mapSection": {
+    "subHeader": "Bản đồ Văn hóa",
+    "title": "Khám phá <1>Di sản</1> & <3>Hiện vật</3>",
+    "desc": "Hành trình trực quan dọc theo chiều dài đất nước. Tìm kiếm các địa danh lịch sử và bảo vật quốc gia ngay trên bản đồ.",
+    "loading": "Đang tải bản đồ...",
+    "hint": "👆 Click vào bản đồ để xem toàn màn hình và zoom",
+    "fullview": "Khám phá toàn màn hình",
+    "exitFull": "Thoát toàn màn hình (ESC)",
+    "statsTitle": "Dữ liệu Văn hóa",
+    "statsHeritage": "DI TÍCH",
+    "statsArtifact": "HIỆN VẬT",
+    "statsProvince": "TỈNH THÀNH"
+  },
+  "leaderboard": {
+    "subHeader": "Bảng vàng danh dự",
+    "title": "Vinh danh <1>Nhà thám hiểm</1> <3>xuất sắc</3>",
+    "desc": "Cùng chiêm ngưỡng những người chơi dẫn đầu trong hành trình khám phá di sản. Bạn có muốn tên mình được xướng lên tại đây? Tham gia ngay để tích điểm và leo hạng!",
+    "btn": "Khám phá Bảng xếp hạng",
+    "cardTitle": "Top 5 Nhà Thám Hiểm",
+    "month": "THÁNG",
+    "updating": "Đang cập nhật...",
+    "categories": {
+      "points": "Điểm số",
+      "checkins": "Check-in",
+      "level": "Cấp độ"
+    },
+    "units": {
+      "points": "điểm",
+      "checkins": "lượt",
+      "level": "Cấp"
+    }
+  }
+}

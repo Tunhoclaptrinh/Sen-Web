@@ -44,10 +44,10 @@ export enum ArtifactCondition {
 
 // Artifact Condition Labels (Vietnamese)
 export const ArtifactConditionLabels: Record<ArtifactCondition, string> = {
-  [ArtifactCondition.EXCELLENT]: "Xuất sắc",
-  [ArtifactCondition.GOOD]: "Tốt",
-  [ArtifactCondition.FAIR]: "Khá",
-  [ArtifactCondition.POOR]: "Kém",
+  [ArtifactCondition.EXCELLENT]: "excellent",
+  [ArtifactCondition.GOOD]: "good",
+  [ArtifactCondition.FAIR]: "fair",
+  [ArtifactCondition.POOR]: "poor",
 };
 
 // Artifact

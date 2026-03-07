@@ -1,0 +1,42 @@
+{
+  "hero": {
+    "title": "How can we help you?",
+    "subtitle": "Explore frequently asked questions or contact SEN's support team directly."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find quick answers to common queries",
+    "q1": "How to create an account?",
+    "a1": "You can register an account by clicking the \"Account\" button in the upper right corner of the screen and selecting \"Register\". Fill in the necessary information and confirm email to complete.",
+    "q2": "Can I contribute heritage information?",
+    "a2": "Of course! We welcome contributions from the community. After logging in, you can access the \"Contribute\" section or contact us via email to send information and documents about heritage.",
+    "q3": "How to report inaccurate content?",
+    "a3": "If you find inaccurate information, please use the \"Report\" feature at the end of each article or heritage detail page, or send an email directly to the support team.",
+    "q4": "Is the app free?",
+    "a4": "Most of the content on SEN is completely free to serve the community. However, some advanced features or in-depth content may require a member account.",
+    "q5": "How to contact the administration?",
+    "a5": "You can contact us via the form below, or send an email to sen.culture.contact@gmail.com. We will respond as soon as possible."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We are always ready to support you",
+    "email": "Email",
+    "emailDesc": "We will respond within 24 hours",
+    "hotline": "Hotline",
+    "hotlineDesc": "Support from 8:00 - 22:00 daily",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "nameRequired": "Please enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter email address",
+      "emailRequired": "Please enter email",
+      "emailInvalid": "Invalid email",
+      "message": "Support Content",
+      "messagePlaceholder": "Describe the issue you are facing...",
+      "messageRequired": "Please enter content",
+      "messageMin": "Minimum 20 characters required",
+      "submit": "Send Request"
+    }
+  }
+}

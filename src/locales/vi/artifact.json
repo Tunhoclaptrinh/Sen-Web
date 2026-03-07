@@ -1,0 +1,81 @@
+{
+  "browse": {
+    "heroTitle": "Kho tàng Hiện Vật",
+    "heroSubtitle": "Lưu giữ những giá trị văn hóa, lịch sử qua từng hiện vật cổ xưa",
+    "searchPlaceholder": "Tìm kiếm hiện vật...",
+    "yearPlaceholder": "Năm tạo tác",
+    "dynastyPlaceholder": "Triều đại",
+    "resetFilters": "Xóa Lọc",
+    "loading": "Đang tải dữ liệu...",
+    "featuredSection": "Nổi bật",
+    "exploreSection": "Khám phá",
+    "empty": "Không tìm thấy hiện vật nào khác",
+    "total": "Tổng số: {{count}}"
+  },
+  "detail": {
+    "viewGallery": "Xem toàn bộ ảnh ({{count}})",
+    "tabs": {
+      "description": "Mô tả",
+      "info": "Thông tin",
+      "discovery": "Khám phá"
+    },
+    "meta": {
+      "views": "{{count}} lượt xem",
+      "unknownDate": "Không rõ niên đại",
+      "unknownAuthor": "Không rõ"
+    },
+    "sections": {
+      "details": "Thông tin chi tiết",
+      "history": "Ngữ cảnh Lịch sử",
+      "significance": "Ý nghĩa Văn hóa",
+      "references": "Nguồn tham khảo",
+      "features": "Đặc Điểm Hiện Vật",
+      "values": "Chi tiết & Giá trị",
+      "interactive": "Trải nghiệm Hiện vật",
+      "related": "Di sản & Lịch sử liên quan",
+      "products": "Sản phẩm Văn hóa"
+    },
+    "labels": {
+      "type": "Loại hiện vật",
+      "period": "Thời kỳ / Năm",
+      "material": "Chất liệu",
+      "condition": "Tình trạng",
+      "dimensions": "Kích thước",
+      "author": "Tác giả / Nguồn",
+      "rating": "Đánh giá chung",
+      "location": "Vị trí trưng bày",
+      "weight": "Trọng lượng:",
+      "origin": "Nguồn gốc:",
+      "acquisitionDate": "Ngày tiếp nhận:"
+    },
+    "actions": {
+      "getDirections": "Chỉ đường",
+      "bookNow": "Đặt vé tham quan",
+      "viewArtifact": "Đến xem hiện vật"
+    },
+    "messages": {
+      "noInfo": "Chưa có thông tin",
+      "unknownArtifact": "Không tìm thấy hiện vật",
+      "unknownLocation": "Bảo tàng / Di tích",
+      "displayLocation": "* Hiện vật đang được trưng bày tại {{location}}.",
+      "promoText": "Đặt trước online để có trải nghiệm tham quan tốt nhất.",
+      "unauthorizedFavorite": "Vui lòng đăng nhập để sử dụng tính năng này",
+      "favoriteSuccess": "Đã thêm vào yêu thích",
+      "favoriteRemoved": "Đã xóa khỏi yêu thích",
+      "shareSuccess": "Đã sao chép liên kết vào bộ nhớ tạm!",
+      "shareError": "Không thể sao chép liên kết",
+      "actionFailed": "Thao tác thất bại",
+      "noReview": "Chưa có đánh giá",
+      "gameBanner": {
+        "title": "Khám phá thế giới game lịch sử",
+        "subtitle": "Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!"
+      }
+    },
+    "discovery": {
+      "subtitle": "Tương tác 3D và tham gia trò chơi liên quan đến hiện vật.",
+      "productSubtitle": "Quà lưu niệm độc đáo lấy cảm hứng từ hiện vật này.",
+      "viewProduct": "Xem chi tiết",
+      "viewProductSmall": "Chi tiết"
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "browse": {
+    "heroTitle": "Artifact Collection",
+    "heroSubtitle": "Preserving cultural and historical values through ancient artifacts",
+    "searchPlaceholder": "Search artifacts...",
+    "yearPlaceholder": "Year created",
+    "dynastyPlaceholder": "Dynasty",
+    "resetFilters": "Reset Filters",
+    "loading": "Loading data...",
+    "featuredSection": "Featured",
+    "exploreSection": "Explore",
+    "empty": "No other artifacts found",
+    "total": "Total: {{count}}"
+  },
+  "detail": {
+    "viewGallery": "View Gallery ({{count}})",
+    "tabs": {
+      "description": "Description",
+      "info": "Information",
+      "discovery": "Discovery"
+    },
+    "meta": {
+      "views": "{{count}} views",
+      "unknownDate": "Unknown date",
+      "unknownAuthor": "Unknown"
+    },
+    "sections": {
+      "details": "Detailed Information",
+      "history": "Historical Context",
+      "significance": "Cultural Significance",
+      "references": "References",
+      "features": "Artifact Features",
+      "values": "Details & Values",
+      "interactive": "Artifact Experience",
+      "related": "Related Heritage & History",
+      "products": "Cultural Products"
+    },
+    "labels": {
+      "type": "Artifact type",
+      "period": "Period / Year",
+      "material": "Material",
+      "condition": "Condition",
+      "dimensions": "Dimensions",
+      "author": "Author / Source",
+      "rating": "Overall Rating",
+      "location": "Display Location",
+      "weight": "Weight:",
+      "origin": "Origin:",
+      "acquisitionDate": "Acquisition Date:"
+    },
+    "actions": {
+      "getDirections": "Get Directions",
+      "bookNow": "Book Now",
+      "viewArtifact": "View Artifact"
+    },
+    "messages": {
+      "noInfo": "No information",
+      "unknownArtifact": "Artifact not found",
+      "unknownLocation": "Museum / Site",
+      "displayLocation": "* This artifact is currently on display at {{location}}.",
+      "promoText": "Book online for the best visiting experience.",
+      "unauthorizedFavorite": "Please login to use this feature",
+      "favoriteSuccess": "Added to favorites",
+      "favoriteRemoved": "Removed from favorites",
+      "shareSuccess": "Link copied to clipboard!",
+      "shareError": "Failed to copy link",
+      "actionFailed": "Action failed",
+      "noReview": "No reviews yet",
+      "gameBanner": {
+        "title": "Explore historical games",
+        "subtitle": "Dozens of exciting levels are waiting for you!"
+      }
+    },
+    "discovery": {
+      "subtitle": "3D interaction and artifact-related games.",
+      "productSubtitle": "Unique souvenirs inspired by this artifact.",
+      "viewProduct": "View Details",
+      "viewProductSmall": "Details"
+    }
+  }
+}

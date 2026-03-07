@@ -2,8 +2,21 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import viTranslation from './locales/vi.json';
-import enTranslation from './locales/en.json';
+import viNav from './locales/vi/nav.json';
+import viHome from './locales/vi/home.json';
+import viSupport from './locales/vi/support.json';
+import viHeader from './locales/vi/header.json';
+import viCommon from './locales/vi/common.json';
+import viHeritage from './locales/vi/heritage.json';
+import viArtifact from './locales/vi/artifact.json';
+
+import enNav from './locales/en/nav.json';
+import enHome from './locales/en/home.json';
+import enSupport from './locales/en/support.json';
+import enHeader from './locales/en/header.json';
+import enCommon from './locales/en/common.json';
+import enHeritage from './locales/en/heritage.json';
+import enArtifact from './locales/en/artifact.json';
 
 i18n
   .use(LanguageDetector)
@@ -11,10 +24,26 @@ i18n
   .init({
     resources: {
       vi: {
-        translation: viTranslation,
+        translation: {
+          nav: viNav,
+          home: viHome,
+          support: viSupport,
+          header: viHeader,
+          common: viCommon,
+          heritage: viHeritage,
+          artifact: viArtifact,
+        },
       },
       en: {
-        translation: enTranslation,
+        translation: {
+          nav: enNav,
+          home: enHome,
+          support: enSupport,
+          header: enHeader,
+          common: enCommon,
+          heritage: enHeritage,
+          artifact: enArtifact,
+        },
       },
     },
     fallbackLng: 'vi',

@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown} from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown } from "antd";
+import { useTranslation } from "react-i18next";
 import {
   EnvironmentOutlined,
   HeartOutlined,
@@ -25,33 +26,33 @@ import {
   CompassOutlined,
   GoogleOutlined,
 } from "@ant-design/icons";
-import {Image} from "antd";
-import {fetchArtifactById} from "@store/slices/artifactSlice";
+import { Image } from "antd";
+import { fetchArtifactById } from "@store/slices/artifactSlice";
 import favoriteService from "@/services/favorite.service";
 import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import gameService from "@/services/game.service";
-import {RootState, AppDispatch} from "@/store";
+import { RootState, AppDispatch } from "@/store";
 import ArticleCard from "@/components/common/cards/ArticleCard";
-import type {Artifact, HeritageSite, HistoryArticle} from "@/types";
-import {ArtifactTypeLabels, ArtifactConditionLabels} from "@/types/artifact.types";
-import {getImageUrl, resolveImage} from "@/utils/image.helper";
+import type { Artifact, HeritageSite, HistoryArticle } from "@/types";
+import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
-import {useViewTracker} from "@/hooks/useViewTracker";
-import {ITEM_TYPES} from "@/config/constants";
+import { useViewTracker } from "@/hooks/useViewTracker";
+import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import "./styles.less";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const ArtifactDetailPage = () => {
-  const {id} = useParams();
+  const { t } = useTranslation();
+  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const {currentItem: artifact, loading, error} = useSelector((state: RootState) => state.artifact);
-  const {isAuthenticated} = useSelector((state: RootState) => state.auth);
+  const { currentItem: artifact, loading, error } = useSelector((state: RootState) => state.artifact);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
   const [relatedHeritage, setRelatedHeritage] = useState<HeritageSite[]>([]);
@@ -125,7 +126,7 @@ const ArtifactDetailPage = () => {
 
       // If still not enough, fill with random ones
       if (relatedArtifactsData.length < 3) {
-        const resAll = await artifactService.getAll({limit: 6});
+        const resAll = await artifactService.getAll({ limit: 6 });
         if (resAll.data) {
           const existingIds = new Set(relatedArtifactsData.map(a => a.id));
           resAll.data.forEach(a => {
@@ -140,12 +141,12 @@ const ArtifactDetailPage = () => {
       // 2. Fetch related heritage (prioritize explicit + fill up to 3)
       const relHeriIds = currentItem.relatedHeritageIds || [];
       const relatedHeritageData: HeritageSite[] = [];
-      
+
       if (relHeriIds.length > 0) {
         const res = await heritageService.getByIds(relHeriIds);
         if (res.data) relatedHeritageData.push(...res.data);
       }
-      
+
       if (relatedHeritageData.length < 3) {
         // Fallback: try parent site, then random
         if (currentItem.heritageSiteId) {
@@ -155,9 +156,9 @@ const ArtifactDetailPage = () => {
             if (res.data) relatedHeritageData.push(res.data);
           }
         }
-        
+
         if (relatedHeritageData.length < 3) {
-          const resAll = await heritageService.getAll({limit: 6});
+          const resAll = await heritageService.getAll({ limit: 6 });
           if (resAll.data) {
             const existingIds = new Set(relatedHeritageData.map(h => h.id));
             resAll.data.forEach(h => {
@@ -177,9 +178,9 @@ const ArtifactDetailPage = () => {
         const res = await historyService.getByIds(relHistIds);
         if (res.data) relatedHistoryData.push(...res.data);
       }
-      
+
       if (relatedHistoryData.length < 3) {
-        const resAll = await historyService.getAll({limit: 6});
+        const resAll = await historyService.getAll({ limit: 6 });
         if (resAll.data) {
           const existingIds = new Set(relatedHistoryData.map(h => h.id));
           resAll.data.forEach(h => {
@@ -219,20 +220,20 @@ const ArtifactDetailPage = () => {
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-      message.warning("Vui lòng đăng nhập để sử dụng tính năng này");
+      message.warning(t('artifact.detail.messages.unauthorizedFavorite'));
       return;
     }
     try {
       if (isFavorite) {
         setIsFavorite(false);
-        message.success("Đã xóa khỏi yêu thích");
+        message.success(t('artifact.detail.messages.favoriteRemoved'));
       } else {
         await favoriteService.add(ITEM_TYPES.ARTIFACT, Number(id));
         setIsFavorite(true);
-        message.success("Đã thêm vào yêu thích");
+        message.success(t('artifact.detail.messages.favoriteSuccess'));
       }
     } catch (error) {
-      message.error("Thao tác thất bại");
+      message.error(t('artifact.detail.messages.actionFailed'));
     }
   };
 
@@ -241,10 +242,10 @@ const ArtifactDetailPage = () => {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        message.success("Đã sao chép liên kết vào bộ nhớ tạm!");
+        message.success(t('artifact.detail.messages.shareSuccess'));
       })
       .catch(() => {
-        message.error("Không thể sao chép liên kết");
+        message.error(t('artifact.detail.messages.shareError'));
       });
   };
 
@@ -265,7 +266,7 @@ const ArtifactDetailPage = () => {
       </div>
     );
 
-  if (!artifact) return <Empty description="Không tìm thấy hiện vật" />;
+  if (!artifact) return <Empty description={t('artifact.detail.messages.unknownArtifact')} />;
 
   // Image helpers
   const rawMainImage =
@@ -282,11 +283,11 @@ const ArtifactDetailPage = () => {
     .filter((img): img is string => !!img)
     .map((img) => getImageUrl(img));
 
-  const authorName = artifact.authorName || artifact.author || artifact.creator || "Không rõ";
+  const authorName = artifact.authorName || artifact.author || artifact.creator || t('artifact.detail.meta.unknownAuthor');
   const artifactTypeLabel = artifact.artifactType
-    ? ArtifactTypeLabels[artifact.artifactType] || artifact.artifactType
-    : "Hiện vật";
-  const conditionLabel = artifact.condition ? ArtifactConditionLabels[artifact.condition] || artifact.condition : "Tốt";
+    ? t(`common.artifactTypes.${artifact.artifactType}`) || artifact.artifactType
+    : t('artifact.detail.messages.unknownLocation');
+  const conditionLabel = artifact.condition ? t(`common.artifactConditions.${artifact.condition.toLowerCase()}`) || artifact.condition : t('artifact.detail.messages.noInfo');
 
   return (
     <div className="artifact-detail-page">
@@ -304,40 +305,40 @@ const ArtifactDetailPage = () => {
 
       {/* 1. HERO SECTION */}
       <section className="detail-hero">
-        <div className="hero-bg" style={{backgroundImage: `url('${mainImage}')`}} />
+        <div className="hero-bg" style={{ backgroundImage: `url('${mainImage}')` }} />
         <div className="hero-overlay">
           <div className="hero-content">
-            <Tag color="var(--primary-color)" style={{border: "none", marginBottom: 16}}>
+            <Tag color="var(--primary-color)" style={{ border: "none", marginBottom: 16 }}>
               {artifactTypeLabel.toUpperCase()}
             </Tag>
             <h1>{artifact.name}</h1>
             <div className="hero-meta">
               <span>
-                <CalendarOutlined /> {artifact.yearCreated || "Không rõ niên đại"}
+                <CalendarOutlined /> {artifact.yearCreated || t('artifact.detail.meta.unknownDate')}
               </span>
               <span>
                 <UserOutlined /> {authorName}
               </span>
               <span>
-                <HistoryOutlined /> {artifact.views || 0} lượt xem
+                <HistoryOutlined /> {t('artifact.detail.meta.views', { count: artifact.views || 0 })}
               </span>
             </div>
           </div>
 
           {/* Gallery Button */}
-          <div style={{position: "absolute", bottom: 32, right: 32}}>
+          <div style={{ position: "absolute", bottom: 32, right: 32 }}>
             <Button
               icon={<CameraOutlined />}
               size="large"
               className="gallery-btn"
               onClick={() => setPreviewVisible(true)}
             >
-              Xem toàn bộ ảnh ({galleryImages.length})
+              {t('artifact.detail.viewGallery', { count: galleryImages.length })}
             </Button>
           </div>
 
           {/* Hidden Preview Group */}
-          <div style={{display: "none"}}>
+          <div style={{ display: "none" }}>
             <Image.PreviewGroup
               preview={{
                 visible: previewVisible,
@@ -360,32 +361,32 @@ const ArtifactDetailPage = () => {
           items={[
             {
               key: "description",
-              label: "Mô tả",
+              label: t('artifact.detail.tabs.description'),
               children: (
                 <div className="article-main-wrapper">
                   {/* Article Header Meta */}
                   <div
                     className="article-meta-header"
-                    style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
                   >
-                    <div style={{display: "flex", alignItems: "center", gap: 24}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
                       <SpaceItem icon={<CalendarOutlined />} text={String(artifact.yearCreated || "N/A")} />
                       <SpaceItem icon={<UserOutlined />} text={authorName} />
                       <SpaceItem icon={<HistoryOutlined />} text={`${artifact.views || 0} views`} />
                     </div>
-                    <div className="action-row" style={{display: "flex", gap: 8}}>
+                    <div className="action-row" style={{ display: "flex", gap: 8 }}>
                       <Button
                         type="text"
-                        icon={isFavorite ? <HeartFilled style={{color: "#ff4d4f"}} /> : <HeartOutlined />}
+                        icon={isFavorite ? <HeartFilled style={{ color: "#ff4d4f" }} /> : <HeartOutlined />}
                         onClick={handleToggleFavorite}
                       >
-                        {isFavorite ? "Đã thích" : "Yêu thích"}
+                        {isFavorite ? t('common.actions.favorited') : t('common.actions.favorite')}
                       </Button>
                       <Button type="text" icon={<ShareAltOutlined />} onClick={handleShare}>
-                        Chia sẻ
+                        {t('common.actions.share')}
                       </Button>
                       <Button type="text" icon={<FolderAddOutlined />} onClick={() => setShowCollectionModal(true)}>
-                        Lưu vào BST
+                        {t('common.actions.saveToCollection')}
                       </Button>
                     </div>
 
@@ -402,27 +403,27 @@ const ArtifactDetailPage = () => {
 
                   <h2 className="article-main-title">{artifact.name}</h2>
                   <div className="article-body-content">
-                    <h3 className="content-section-title">Thông tin chi tiết</h3>
-                    <div dangerouslySetInnerHTML={{__html: artifact.description || ""}} />
+                    <h3 className="content-section-title">{t('artifact.detail.sections.details')}</h3>
+                    <div dangerouslySetInnerHTML={{ __html: artifact.description || "" }} />
 
                     {artifact.historicalContext && (
                       <>
-                        <h3 className="content-section-title">Ngữ cảnh Lịch sử</h3>
-                        <div dangerouslySetInnerHTML={{__html: artifact.historicalContext}} />
+                        <h3 className="content-section-title">{t('artifact.detail.sections.history')}</h3>
+                        <div dangerouslySetInnerHTML={{ __html: artifact.historicalContext }} />
                       </>
                     )}
 
                     {artifact.culturalSignificance && (
                       <>
-                        <h3 className="content-section-title">Ý nghĩa Văn hóa</h3>
-                        <div dangerouslySetInnerHTML={{__html: artifact.culturalSignificance}} />
+                        <h3 className="content-section-title">{t('artifact.detail.sections.significance')}</h3>
+                        <div dangerouslySetInnerHTML={{ __html: artifact.culturalSignificance }} />
                       </>
                     )}
 
                     {artifact.references && (
                       <div className="references-section">
-                        <h3>Nguồn tham khảo</h3>
-                        <div className="references-content" dangerouslySetInnerHTML={{__html: artifact.references}} />
+                        <h3>{t('artifact.detail.sections.references')}</h3>
+                        <div className="references-content" dangerouslySetInnerHTML={{ __html: artifact.references }} />
                       </div>
                     )}
                   </div>
@@ -435,22 +436,22 @@ const ArtifactDetailPage = () => {
             },
             {
               key: "info",
-              label: "Thông tin",
+              label: t('artifact.detail.tabs.info'),
               children: (
                 <div className="article-main-wrapper">
-                  <div className="info-tab-content" style={{maxWidth: 900, margin: "0 auto"}}>
+                  <div className="info-tab-content" style={{ maxWidth: 900, margin: "0 auto" }}>
                     <div className="info-box-premium info-card-widget large-format">
                       <Row gutter={[48, 24]}>
                         <Col xs={24} md={12}>
-                          <h3 className="info-section-title">Đặc Điểm Hiện Vật</h3>
+                          <h3 className="info-section-title">{t('artifact.detail.sections.features')}</h3>
                           <ul className="info-grid-list">
                             <li>
                               <div className="icon-wrapper">
                                 <InfoCircleOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Loại hiện vật</span>
-                                <span className="value">{artifactTypeLabel || "Chưa có thông tin"}</span>
+                                <span className="label">{t('artifact.detail.labels.type')}</span>
+                                <span className="value">{artifactTypeLabel || t('artifact.detail.messages.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -458,8 +459,8 @@ const ArtifactDetailPage = () => {
                                 <CalendarOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Thời kỳ / Năm</span>
-                                <span className="value">{artifact.yearCreated || "Chưa có thông tin"}</span>
+                                <span className="label">{t('artifact.detail.labels.period')}</span>
+                                <span className="value">{artifact.yearCreated || t('artifact.detail.messages.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -467,8 +468,8 @@ const ArtifactDetailPage = () => {
                                 <GlobalOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Chất liệu</span>
-                                <span className="value">{artifact.material || "Chưa có thông tin"}</span>
+                                <span className="label">{t('artifact.detail.labels.material')}</span>
+                                <span className="value">{artifact.material || t('artifact.detail.messages.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -476,22 +477,22 @@ const ArtifactDetailPage = () => {
                                 <StarFilled />
                               </div>
                               <div className="info-text">
-                                <span className="label">Tình trạng</span>
-                                <span className="value highlight">{conditionLabel || "Chưa có thông tin"}</span>
+                                <span className="label">{t('artifact.detail.labels.condition')}</span>
+                                <span className="value highlight">{conditionLabel || t('artifact.detail.messages.noInfo')}</span>
                               </div>
                             </li>
                           </ul>
                         </Col>
                         <Col xs={24} md={12}>
-                          <h3 className="info-section-title">Chi tiết & Giá trị</h3>
+                          <h3 className="info-section-title">{t('artifact.detail.sections.values')}</h3>
                           <ul className="info-grid-list">
                             <li>
                               <div className="icon-wrapper">
                                 <ExpandOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Kích thước</span>
-                                <span className="value">{artifact.dimensions || "Chưa có thông tin"}</span>
+                                <span className="label">{t('artifact.detail.labels.dimensions')}</span>
+                                <span className="value">{artifact.dimensions || t('artifact.detail.messages.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -499,8 +500,8 @@ const ArtifactDetailPage = () => {
                                 <UserOutlined />
                               </div>
                               <div className="info-text">
-                                <span className="label">Tác giả / Nguồn</span>
-                                <span className="value">{authorName || "Chưa có thông tin"}</span>
+                                <span className="label">{t('artifact.detail.labels.author')}</span>
+                                <span className="value">{authorName || t('artifact.detail.messages.noInfo')}</span>
                               </div>
                             </li>
                             <li>
@@ -508,10 +509,10 @@ const ArtifactDetailPage = () => {
                                 <StarFilled />
                               </div>
                               <div className="info-text">
-                                <span className="label">Đánh giá chung</span>
+                                <span className="label">{t('artifact.detail.labels.rating')}</span>
                                 <span className="value">
-                                  {artifact.rating ? `${artifact.rating}/5` : "Chưa có đánh giá"}{" "}
-                                  <span className="sub">({artifact.totalReviews || 0} đánh giá)</span>
+                                  {artifact.rating ? `${artifact.rating}/5` : t('artifact.detail.messages.noReview')}{" "}
+                                  <span className="sub">({artifact.totalReviews || 0} {t('common.details').toLowerCase()})</span>
                                 </span>
                               </div>
                             </li>
@@ -520,9 +521,9 @@ const ArtifactDetailPage = () => {
                                 <SafetyCertificateFilled />
                               </div>
                               <div className="info-text">
-                                <span className="label">Vị trí trưng bày</span>
+                                <span className="label">{t('artifact.detail.labels.location')}</span>
                                 <span className="value highlight-unesco">
-                                  {artifact.locationInSite || artifact.currentLocation || "Chưa có thông tin"}
+                                  {artifact.locationInSite || artifact.currentLocation || t('artifact.detail.messages.noInfo')}
                                 </span>
                               </div>
                             </li>
@@ -536,37 +537,37 @@ const ArtifactDetailPage = () => {
                           <Row gutter={[48, 24]}>
                             {artifact.weight && (
                               <Col xs={24} md={8}>
-                                <div style={{display: "flex", gap: 12}}>
+                                <div style={{ display: "flex", gap: 12 }}>
                                   <div
-                                    style={{fontWeight: 600, color: "#888", textTransform: "uppercase", fontSize: 11}}
+                                    style={{ fontWeight: 600, color: "#888", textTransform: "uppercase", fontSize: 11 }}
                                   >
-                                    Trọng lượng:
+                                    {t('artifact.detail.labels.weight')}
                                   </div>
-                                  <div style={{fontWeight: 500}}>{artifact.weight}</div>
+                                  <div style={{ fontWeight: 500 }}>{artifact.weight}</div>
                                 </div>
                               </Col>
                             )}
                             {artifact.origin && (
                               <Col xs={24} md={8}>
-                                <div style={{display: "flex", gap: 12}}>
+                                <div style={{ display: "flex", gap: 12 }}>
                                   <div
-                                    style={{fontWeight: 600, color: "#888", textTransform: "uppercase", fontSize: 11}}
+                                    style={{ fontWeight: 600, color: "#888", textTransform: "uppercase", fontSize: 11 }}
                                   >
-                                    Nguồn gốc:
+                                    {t('artifact.detail.labels.origin')}
                                   </div>
-                                  <div style={{fontWeight: 500}}>{artifact.origin}</div>
+                                  <div style={{ fontWeight: 500 }}>{artifact.origin}</div>
                                 </div>
                               </Col>
                             )}
                             {artifact.acquisitionDate && (
                               <Col xs={24} md={8}>
-                                <div style={{display: "flex", gap: 12}}>
+                                <div style={{ display: "flex", gap: 12 }}>
                                   <div
-                                    style={{fontWeight: 600, color: "#888", textTransform: "uppercase", fontSize: 11}}
+                                    style={{ fontWeight: 600, color: "#888", textTransform: "uppercase", fontSize: 11 }}
                                   >
-                                    Ngày tiếp nhận:
+                                    {t('artifact.detail.labels.acquisitionDate')}
                                   </div>
-                                  <div style={{fontWeight: 500}}>{artifact.acquisitionDate}</div>
+                                  <div style={{ fontWeight: 500 }}>{artifact.acquisitionDate}</div>
                                 </div>
                               </Col>
                             )}
@@ -579,9 +580,9 @@ const ArtifactDetailPage = () => {
                       <div className="info-footer-actions">
                         <div className="booking-note">
                           <span>
-                            * Hiện vật đang được trưng bày tại {artifact.locationInSite || "Bảo tàng / Di tích"}.
+                            {t('artifact.detail.messages.displayLocation', { location: artifact.locationInSite || t('artifact.detail.messages.unknownLocation') })}
                           </span>
-                          <span className="promo-text">Đặt trước online để có trải nghiệm tham quan tốt nhất.</span>
+                          <span className="promo-text">{t('artifact.detail.messages.promoText')}</span>
                         </div>
                         <div className="action-buttons">
                           <Dropdown
@@ -597,10 +598,10 @@ const ArtifactDetailPage = () => {
                                     const lat = artifact.latitude;
                                     const lng = artifact.longitude;
                                     const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
-                                    
+
                                     const finalLat = lat || site?.latitude;
                                     const finalLng = lng || site?.longitude;
-                                    
+
                                     navigate(`/map?id=${artifact.id}&type=${ITEM_TYPES.ARTIFACT}&lat=${finalLat}&lng=${finalLng}&action=hunt`);
                                   }
                                 },
@@ -631,7 +632,7 @@ const ArtifactDetailPage = () => {
                                     const lat = artifact.latitude;
                                     const lng = artifact.longitude;
                                     const site = relatedHeritage.find(h => h.id === artifact.heritageSiteId);
-                                    
+
                                     const finalLat = lat || site?.latitude;
                                     const finalLng = lng || site?.longitude;
                                     window.open(`https://www.google.com/maps/search/?api=1&query=${finalLat},${finalLng}`, "_blank");
@@ -658,7 +659,7 @@ const ArtifactDetailPage = () => {
                               window.open(bookingUrl, "_blank");
                             }}
                           >
-                            {artifact.bookingLink ? "Đến xem hiện vật" : "Đặt vé tham quan"}
+                            {artifact.bookingLink ? t('artifact.detail.actions.viewArtifact') : t('artifact.detail.actions.bookNow')}
                           </Button>
                         </div>
                       </div>
@@ -669,19 +670,19 @@ const ArtifactDetailPage = () => {
             },
             {
               key: "discovery",
-              label: "Khám phá",
+              label: t('artifact.detail.tabs.discovery'),
               children: (
                 <div className="article-main-wrapper">
                   {/* 1. Related Games */}
                   <div className="discovery-block">
                     <Title level={3}>
-                      <RocketOutlined /> Trải nghiệm Hiện vật
+                      <RocketOutlined /> {t('artifact.detail.sections.interactive')}
                     </Title>
-                    <p>Tương tác 3D và tham gia trò chơi liên quan đến hiện vật.</p>
+                    <p>{t('artifact.detail.discovery.subtitle')}</p>
                     {showGame && selectedLevelId ? (
-                      <EmbeddedGameZone 
-                        levelId={selectedLevelId} 
-                        onClose={() => setShowGame(false)} 
+                      <EmbeddedGameZone
+                        levelId={selectedLevelId}
+                        onClose={() => setShowGame(false)}
                         onNavigateToFullGame={() => navigate("/game/chapters")}
                       />
                     ) : (
@@ -700,13 +701,13 @@ const ArtifactDetailPage = () => {
                                   <h4>{level.name}</h4>
                                   <div className="desc">{level.description}</div>
                                 </div>
-                                <Button 
-                                  type="primary" 
-                                  shape="round" 
+                                <Button
+                                  type="primary"
+                                  shape="round"
                                   icon={<RocketOutlined />}
                                   onClick={() => handleStartGame(level.id)}
                                 >
-                                  Chơi ngay
+                                  {t('artifact.detail.discovery.playNow') || t('heritage.detail.playNow')}
                                 </Button>
                               </div>
                             </Col>
@@ -716,17 +717,17 @@ const ArtifactDetailPage = () => {
                             <div className="game-cta-banner">
                               <RocketOutlined className="cta-icon" />
                               <div className="cta-content">
-                                <h4>Khám phá thế giới game lịch sử</h4>
-                                <p>Hàng chục màn chơi hấp dẫn đang chờ bạn khám phá!</p>
+                                <h4>{t('artifact.detail.messages.gameBanner.title')}</h4>
+                                <p>{t('artifact.detail.messages.gameBanner.subtitle')}</p>
                               </div>
-                              <Button 
-                                type="primary" 
-                                size="large" 
+                              <Button
+                                type="primary"
+                                size="large"
                                 shape="round"
                                 icon={<ArrowRightOutlined />}
                                 onClick={() => navigate("/game/chapters")}
                               >
-                                Khám phá ngay
+                                {t('artifact.detail.discovery.viewProduct') || t('common.actions.explore')}
                               </Button>
                             </div>
                           </Col>
@@ -740,7 +741,7 @@ const ArtifactDetailPage = () => {
                   {(relatedHeritage.length > 0 || relatedHistory.length > 0) && (
                     <div className="discovery-block">
                       <Title level={3}>
-                        <EnvironmentOutlined /> Di sản & Lịch sử liên quan
+                        <EnvironmentOutlined /> {t('artifact.detail.sections.related')}
                       </Title>
                       <Row gutter={[24, 24]}>
                         {relatedHeritage.map((item) => (
@@ -759,12 +760,12 @@ const ArtifactDetailPage = () => {
                   )}
 
                   {/* 3. Products */}
-                  <div className="discovery-block" style={{marginBottom: 0}}>
+                  <div className="discovery-block" style={{ marginBottom: 0 }}>
                     <Title level={3}>
-                      <ShopOutlined /> Sản phẩm Văn hóa
+                      <ShopOutlined /> {t('artifact.detail.sections.products')}
                     </Title>
-                    <p>Quà lưu niệm độc đáo lấy cảm hứng từ hiện vật này.</p>
-                    <Row gutter={[24, 24]} style={{display: "flex"}}>
+                    <p>{t('artifact.detail.discovery.productSubtitle')}</p>
+                    <Row gutter={[24, 24]} style={{ display: "flex" }}>
                       <Col xs={24} sm={12} md={6}>
                         <div className="product-card">
                           <div className="prod-img">
@@ -818,7 +819,7 @@ const ArtifactDetailPage = () => {
         <div className="content-container">
           <Divider />
           <Title level={3} className="section-title">
-            Hiện vật liên quan
+            {t('artifact.detail.sections.related')}
           </Title>
           <Row gutter={[24, 24]}>
             {relatedArtifacts.map((item) => (
@@ -834,9 +835,9 @@ const ArtifactDetailPage = () => {
 };
 
 // Helper Components
-const SpaceItem = ({icon, text}: {icon: React.ReactNode; text: string}) => (
+const SpaceItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   <span className="meta-space-item">
-    {icon} <span style={{marginLeft: 6}}>{text}</span>
+    {icon} <span style={{ marginLeft: 6 }}>{text}</span>
   </span>
 );
 
