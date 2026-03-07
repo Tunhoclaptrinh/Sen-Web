@@ -186,6 +186,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
     // Transform related IDs back to numbers
     const submitData = {
       ...values,
+      publishDate: values.publishDate ? dayjs(values.publishDate).toISOString() : undefined,
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedArtifactIds:

@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Typography } from "antd";
 import { CaretRightFilled } from "@ant-design/icons";
 import type { Level } from "@/types";
+import { useTranslation } from "react-i18next";
 // We need to ensure styles are imported. Since we are moving this to components, 
 // strictly speaking it should validly import its styles. 
 // However, the original file imported "./styles.less". 
@@ -18,6 +19,7 @@ interface LevelDetailCardProps {
 }
 
 const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }) => {
+  const { t } = useTranslation();
   const { name, thumbnail, isLocked } = level;
 
   const [imageError, setImageError] = React.useState(false);
@@ -73,6 +75,28 @@ const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }
         <div className="thumbnail-container">
             {renderThumbnail()}
         </div>
+
+        {level.isCompleted && (
+          <div
+            style={{
+              position: "absolute",
+              top: 16,
+              left: 16,
+              zIndex: 3,
+              background: "rgba(255, 249, 230, 0.92)",
+              border: "1px solid rgba(180, 145, 100, 0.45)",
+              borderRadius: 6,
+              padding: "2px 8px",
+            }}
+          >
+            <Typography.Text style={{ fontSize: 12, fontWeight: 700, color: "#8b1d1d" }}>
+              {t("gameLevels.card.reviewProgress", {
+                current: level.reviewCount ?? 0,
+                total: level.maxReviewRewards ?? 3,
+              })}
+            </Typography.Text>
+          </div>
+        )}
         
         {/* Play Button */}
         <Button 

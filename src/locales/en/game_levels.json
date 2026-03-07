@@ -6,5 +6,8 @@
   },
   "messages": {
     "locked": "This level is locked!"
+  },
+  "card": {
+    "reviewProgress": "Replays: {{current}}/{{total}}"
   }
 }

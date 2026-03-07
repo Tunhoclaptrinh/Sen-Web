@@ -93,11 +93,13 @@
       "scoreTotal": "Total Trophies:",
       "rewardsTitle": "Rewards received:",
       "coins": "Coins",
-      "petals": "Petals"
+      "petals": "Petals",
+      "trophies": "Trophies"
     },
     "reviewMode": {
       "title": "🔄 Review Mode",
-      "description": "You have already completed this level! <br /> No additional rewards this time."
+      "description": "You have already completed this level! <br /> No additional rewards this time.",
+      "count": "Replays: {{current}}/{{total}}"
     },
     "actions": {
       "lobby": "Back to Lobby",

@@ -71,6 +71,8 @@ export interface Level {
   isLocked: boolean;
   playerBestScore?: number;
   playCount?: number;
+  reviewCount?: number;
+  maxReviewRewards?: number;
   rewards: Rewards;
   timeLimit?: number;
   passingScore?: number;
@@ -208,13 +210,20 @@ export interface CompleteLevelResponse {
   rewards: {
     petals: number;
     coins: number;
+    trophies?: number;
+    points?: number;
     character?: string;
+    isReview?: boolean;
   };
   newTotals: {
     petals: number;
     points: number;
     coins: number;
   };
+  reviewProgress?: {
+    current: number;
+    total: number;
+  } | null;
 }
 
 // ==================== Rewards ====================

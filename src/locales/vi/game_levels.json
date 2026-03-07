@@ -6,5 +6,8 @@
   },
   "messages": {
     "locked": "Màn chơi này đang bị khóa!"
+  },
+  "card": {
+    "reviewProgress": "Chơi lại: {{current}}/{{total}}"
   }
 }

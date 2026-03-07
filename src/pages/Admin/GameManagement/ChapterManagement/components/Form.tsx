@@ -1,4 +1,4 @@
-import { Input, InputNumber, Row, Col, Form, Switch, Radio, ColorPicker, DatePicker, Divider, Space } from "antd";
+import { Input, InputNumber, Row, Col, Form, Switch, Radio, ColorPicker, DatePicker, Divider, Space, Select } from "antd";
 import { LinkOutlined } from "@ant-design/icons";
 import { FormModal, DebounceSelect } from "@/components/common";
 import { useEffect, useState, useMemo } from "react";
@@ -8,7 +8,8 @@ import dayjs from "dayjs";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
-import { HeritageSite, Artifact, HistoryArticle } from "@/types";
+import adminChapterService from "@/services/admin-chapter.service";
+import { HeritageSite, Artifact, HistoryArticle, Chapter } from "@/types";
 
 interface ChapterFormProps {
   open: boolean;
@@ -59,6 +60,7 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const { user } = useAuth();
+  const [chapters, setChapters] = useState<Chapter[]>([]);
 
   const memoizedInitialValues = useMemo(() => {
     if (!initialValues) {
@@ -129,10 +131,28 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
     initData();
   }, [open, memoizedInitialValues, form, initialValues]);
 
+  useEffect(() => {
+    const fetchChapters = async () => {
+      if (!open) return;
+
+      try {
+        const response = await adminChapterService.getAll({ limit: 100 });
+        if (response.success && Array.isArray(response.data)) {
+          setChapters(response.data as Chapter[]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch chapter options", error);
+      }
+    };
+
+    fetchChapters();
+  }, [open]);
+
   const handleOk = async (values: any) => {
     // Transform related IDs back to numbers
     const submitData = {
       ...values,
+      publishDate: values.publishDate ? dayjs(values.publishDate).toISOString() : undefined,
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedArtifactIds:
@@ -204,6 +224,19 @@ const ChapterForm: React.FC<ChapterFormProps> = ({
               </Col>
             )}
           </Row>
+
+          <Form.Item name="requiredChapterId" label="Chương yêu cầu (Prerequisite)">
+            <Select
+              placeholder="Chọn chương yêu cầu để mở khóa chương này"
+              allowClear
+              options={chapters
+                .filter((chapter) => chapter.id !== initialValues?.id)
+                .map((chapter) => ({
+                  label: chapter.name,
+                  value: chapter.id,
+                }))}
+            />
+          </Form.Item>
 
           <Form.Item
             name="description"

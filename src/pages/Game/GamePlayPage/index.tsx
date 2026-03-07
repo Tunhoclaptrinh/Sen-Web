@@ -205,7 +205,7 @@ const GamePlayPage: React.FC = () => {
         passed: true,
         score: score,
         requiredScore: 0,
-        rewards: { coins: 0, petals: 0 },
+        rewards: { coins: 0, petals: 0, trophies: score },
         breakdown: { baseScore: score, timeBonus: 0 },
         isCompleted: true,
         message: "Admin Mode: Completed without saving.",
@@ -305,6 +305,11 @@ const GamePlayPage: React.FC = () => {
   // Render Completion Screen
   const renderCompletion = () => {
     if (!completionData) return null;
+    const trophyReward = completionData.rewards
+      ? (completionData.rewards.trophies ?? completionData.rewards.points ?? 0)
+      : 0;
+    const reviewProgress = completionData.reviewProgress;
+
     return (
       <div className="game-completion">
         <Card className="completion-card">
@@ -366,6 +371,14 @@ const GamePlayPage: React.FC = () => {
                 {completionData.rewards ? (
                   <div className="rewards-summary">
                     <Title level={4}>{t('gamePlay.completion.labels.rewardsTitle')}</Title>
+                    {completionData.rewards?.isReview && reviewProgress && (
+                      <Paragraph style={{ marginBottom: 12, color: "#8c8c8c", fontSize: 14 }}>
+                        {t('gamePlay.completion.reviewMode.count', {
+                          current: reviewProgress.current,
+                          total: reviewProgress.total,
+                        })}
+                      </Paragraph>
+                    )}
                     <div className="rewards-grid">
 
                       <div className="reward-item">
@@ -378,7 +391,7 @@ const GamePlayPage: React.FC = () => {
                       </div>
                       <div className="reward-item">
                         <span className="reward-icon">🏆</span>
-                        <span className="reward-value">+{completionData.rewards.trophies} {t('gamePlay.completion.labels.trophies')}</span>
+                        <span className="reward-value">+{trophyReward} {t('gamePlay.completion.labels.trophies')}</span>
                       </div>
                     </div>
                   </div>

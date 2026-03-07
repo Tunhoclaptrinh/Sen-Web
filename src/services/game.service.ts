@@ -144,13 +144,20 @@ class GameService extends BaseService {
     rewards: {
       petals: number;
       coins: number;
+      trophies?: number;
+      points?: number;
       character?: string;
+      isReview?: boolean;
     };
     newTotals: {
       petals: number;
       points: number;
       coins: number;
     };
+    reviewProgress?: {
+      current: number;
+      total: number;
+    } | null;
     nextLevelId?: number;
   }> {
     const response = await this.post(`/levels/${levelId}/complete`, { score, timeSpent });

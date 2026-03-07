@@ -93,11 +93,13 @@
       "scoreTotal": "Tổng cúp:",
       "rewardsTitle": "Phần thưởng nhận được:",
       "coins": "Xu",
-      "petals": "Cánh Sen"
+      "petals": "Cánh Sen",
+      "trophies": "Cúp"
     },
     "reviewMode": {
       "title": "🔄 Chế độ ôn tập",
-      "description": "Bạn đã hoàn thành màn chơi này rồi! <br /> Lần chơi này không nhận thêm phần thưởng."
+      "description": "Bạn đã hoàn thành màn chơi này rồi! <br /> Lần chơi này không nhận thêm phần thưởng.",
+      "count": "Chơi lại: {{current}}/{{total}}"
     },
     "actions": {
       "lobby": "Quay về Sảnh",
