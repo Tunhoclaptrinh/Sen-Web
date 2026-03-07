@@ -23,6 +23,7 @@ import type { Screen, Level } from "@/types/game.types";
 import { getImageUrl } from "@/utils/image.helper";
 import { setBgmVolume, toggleMute } from "@/store/slices/audioSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { fetchChapters, fetchProgress, syncProgressTotals } from "@/store/slices/gameSlice";
 
 // Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -253,6 +254,22 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
 
     try {
       const result = await gameService.completeLevel(Number(levelId), score, timeSpent);
+
+      if (result.passed !== false) {
+        if (result.newTotals) {
+          dispatch(
+            syncProgressTotals({
+              points: result.newTotals.points,
+              petals: result.newTotals.petals,
+              coins: result.newTotals.coins,
+            }),
+          );
+        }
+
+        dispatch(fetchProgress());
+        dispatch(fetchChapters());
+      }
+
       setCompletionData(result);
       setGameState(GAME_STATE.COMPLETED);
     } catch (error) {

@@ -25,7 +25,10 @@ import TimelineScreen from "@/components/Game/Screens/TimelineScreen";
 import ImageViewerScreen from "@/components/Game/Screens/ImageViewerScreen";
 import VideoScreen from "@/components/Game/Screens/VideoScreen";
 import {
+  fetchChapters,
+  fetchProgress,
   setCurrentLevel,
+  syncProgressTotals,
 } from "@/store/slices/gameSlice";
 import { setOverlayOpen, setActiveContext } from "@/store/slices/aiSlice";
 import { setBgmAutoMuted } from "@/store/slices/audioSlice";
@@ -220,6 +223,20 @@ const GamePlayPage: React.FC = () => {
       const result = await gameService.completeLevel(parseInt(levelId), score, timeSpent);
       if (result.passed !== false) {
         playWin();
+
+        if (result.newTotals) {
+          dispatch(
+            syncProgressTotals({
+              points: result.newTotals.points,
+              petals: result.newTotals.petals,
+              coins: result.newTotals.coins,
+            }),
+          );
+        }
+
+        // Keep UI in sync with backend-calculated progress/chapter states.
+        dispatch(fetchProgress());
+        dispatch(fetchChapters());
       }
       setCompletionData(result);
       setGameCompleted(true);
@@ -350,6 +367,7 @@ const GamePlayPage: React.FC = () => {
                   <div className="rewards-summary">
                     <Title level={4}>{t('gamePlay.completion.labels.rewardsTitle')}</Title>
                     <div className="rewards-grid">
+
                       <div className="reward-item">
                         <span className="reward-icon">🪙</span>
                         <span className="reward-value coins">+{completionData.rewards.coins} {t('gamePlay.completion.labels.coins')}</span>
@@ -357,6 +375,10 @@ const GamePlayPage: React.FC = () => {
                       <div className="reward-item">
                         <span className="reward-icon">🌸</span>
                         <span className="reward-value">+{completionData.rewards.petals} {t('gamePlay.completion.labels.petals')}</span>
+                      </div>
+                      <div className="reward-item">
+                        <span className="reward-icon">🏆</span>
+                        <span className="reward-value">+{completionData.rewards.trophies} {t('gamePlay.completion.labels.trophies')}</span>
                       </div>
                     </div>
                   </div>

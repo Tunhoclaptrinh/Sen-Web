@@ -39,6 +39,12 @@ interface GameState {
   successMessage: string | null;
 }
 
+interface ProgressTotalsPayload {
+  points: number;
+  petals: number;
+  coins: number;
+}
+
 const initialState: GameState = {
   progress: null,
   progressLoading: false,
@@ -260,6 +266,13 @@ const gameSlice = createSlice({
     },
     clearSession: (state) => {
       state.currentSession = null;
+    },
+    syncProgressTotals: (state, action: PayloadAction<ProgressTotalsPayload>) => {
+      if (!state.progress) return;
+
+      state.progress.totalPoints = action.payload.points;
+      state.progress.totalSenPetals = action.payload.petals;
+      state.progress.coins = action.payload.coins;
     },
   },
   extraReducers: (builder) => {
@@ -492,6 +505,6 @@ const gameSlice = createSlice({
   },
 });
 
-export const {clearError, clearSuccessMessage, setCurrentChapter, setCurrentLevel, clearSession} = gameSlice.actions;
+export const {clearError, clearSuccessMessage, setCurrentChapter, setCurrentLevel, clearSession, syncProgressTotals} = gameSlice.actions;
 
 export default gameSlice.reducer;
