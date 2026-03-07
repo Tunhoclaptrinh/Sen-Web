@@ -32,6 +32,11 @@ export interface LearningModule {
   difficulty?: "easy" | "medium" | "hard";
   estimatedDuration?: number;
   score?: number;
+  passingScore?: number;
+  rewardPoints?: number;
+  rewardCoins?: number;
+  reviewRewardPoints?: number;
+  reviewRewardCoins?: number;
   thumbnail?: string;
 }
 
@@ -79,13 +84,13 @@ class LearningService extends ReviewableBaseService {
       totalTimeSpent?: number;
     };
   }> {
-    const response = await this.get<{data: LearningModule[]; progress: any}>("/path");
+    const response = await this.get<{ data: LearningModule[]; progress: any }>("/path");
     return response;
   }
 
   // Get all learning paths
-  async getPaths(params?: {difficulty?: string; category?: string}): Promise<LearningPath[]> {
-    const response = await this.get<LearningPath[]>("/paths", {params});
+  async getPaths(params?: { difficulty?: string; category?: string }): Promise<LearningPath[]> {
+    const response = await this.get<LearningPath[]>("/paths", { params });
     return response;
   }
 
@@ -123,7 +128,7 @@ class LearningService extends ReviewableBaseService {
     passed: boolean;
     pointsEarned: number;
   }> {
-    const response = await this.post(`/paths/${pathId}/modules/${moduleId}/quiz/submit`, {answers});
+    const response = await this.post(`/paths/${pathId}/modules/${moduleId}/quiz/submit`, { answers });
     return response as any;
   }
 
@@ -136,7 +141,7 @@ class LearningService extends ReviewableBaseService {
   // Complete module
   async completeModule(
     moduleId: number,
-    data: {timeSpent: number; score?: number; answers?: Record<number, number>},
+    data: { timeSpent: number; score?: number; answers?: Record<number, number> },
   ): Promise<{
     success: boolean;
     message: string;

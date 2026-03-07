@@ -12,6 +12,18 @@ import viArtifact from './locales/vi/artifact.json';
 import viMap from './locales/vi/map.json';
 import viExhibition from './locales/vi/exhibition.json';
 import viHistory from './locales/vi/history.json';
+import viGameMenu from './locales/vi/game_menu.json';
+import viGameDashboard from './locales/vi/game_dashboard.json';
+import viGameChapters from './locales/vi/game_chapters.json';
+import viGameLevels from './locales/vi/game_levels.json';
+import viGameQuests from './locales/vi/game_quests.json';
+import viGameMuseum from './locales/vi/game_museum.json';
+import viGameShop from './locales/vi/game_shop.json';
+import viGameWelfare from './locales/vi/game_welfare.json';
+import viGameLeaderboard from './locales/vi/game_leaderboard.json';
+import viGameScan from './locales/vi/game_scan.json';
+import viGameLearning from './locales/vi/game_learning.json';
+import viGamePlay from './locales/vi/game_play.json';
 
 import enNav from './locales/en/nav.json';
 import enHome from './locales/en/home.json';
@@ -23,6 +35,18 @@ import enArtifact from './locales/en/artifact.json';
 import enMap from './locales/en/map.json';
 import enExhibition from './locales/en/exhibition.json';
 import enHistory from './locales/en/history.json';
+import enGameMenu from './locales/en/game_menu.json';
+import enGameDashboard from './locales/en/game_dashboard.json';
+import enGameChapters from './locales/en/game_chapters.json';
+import enGameLevels from './locales/en/game_levels.json';
+import enGameQuests from './locales/en/game_quests.json';
+import enGameMuseum from './locales/en/game_museum.json';
+import enGameShop from './locales/en/game_shop.json';
+import enGameWelfare from './locales/en/game_welfare.json';
+import enGameLeaderboard from './locales/en/game_leaderboard.json';
+import enGameScan from './locales/en/game_scan.json';
+import enGameLearning from './locales/en/game_learning.json';
+import enGamePlay from './locales/en/game_play.json';
 
 i18n
   .use(LanguageDetector)
@@ -41,6 +65,18 @@ i18n
           map: viMap,
           exhibition: viExhibition,
           history: viHistory,
+          gameMenu: viGameMenu,
+          gameDashboard: viGameDashboard,
+          gameChapters: viGameChapters,
+          gameLevels: viGameLevels,
+          gameQuests: viGameQuests,
+          gameMuseum: viGameMuseum,
+          gameShop: viGameShop,
+          gameWelfare: viGameWelfare,
+          gameLeaderboard: viGameLeaderboard,
+          gameScan: viGameScan,
+          gameLearning: viGameLearning,
+          gamePlay: viGamePlay,
         },
       },
       en: {
@@ -55,6 +91,18 @@ i18n
           map: enMap,
           exhibition: enExhibition,
           history: enHistory,
+          gameMenu: enGameMenu,
+          gameDashboard: enGameDashboard,
+          gameChapters: enGameChapters,
+          gameLevels: enGameLevels,
+          gameQuests: enGameQuests,
+          gameMuseum: enGameMuseum,
+          gameShop: enGameShop,
+          gameWelfare: enGameWelfare,
+          gameLeaderboard: enGameLeaderboard,
+          gameScan: enGameScan,
+          gameLearning: enGameLearning,
+          gamePlay: enGamePlay,
         },
       },
     },

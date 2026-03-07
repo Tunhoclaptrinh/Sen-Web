@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Card, Tabs, Spin, Empty, Progress, Tag, message, Modal, Typography, Space } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import { StatisticsCard } from "@/components/common";
@@ -29,6 +30,7 @@ import { getImageUrl } from "@/utils/image.helper";
 const { Title, Paragraph } = Typography;
 
 const QuestsPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { activeQuests, activeLoading, error, successMessage } = useAppSelector(
@@ -63,7 +65,7 @@ const QuestsPage: React.FC = () => {
     dispatch(claimQuestRewards(questId))
       .unwrap()
       .then(() => {
-        message.success("Phần thưởng đã được chuyển vào túi đồ!");
+        message.success(t('gameQuests.messages.claimSuccess'));
       })
       .catch(() => {
         // Error handled by global state
@@ -164,25 +166,25 @@ const QuestsPage: React.FC = () => {
 
   const statsData = [
     {
-      title: "Tất cả",
+      title: t('gameQuests.stats.all'),
       value: activeQuests.length,
       valueColor: "#1890ff",
       icon: <CheckCircleOutlined />,
     },
     {
-      title: "Hàng ngày",
+      title: t('gameQuests.stats.daily'),
       value: activeQuests.filter((q) => q.type === "daily").length,
       valueColor: "#52c41a",
       icon: <CalendarOutlined />,
     },
     {
-      title: "Hàng tuần",
+      title: t('gameQuests.stats.weekly'),
       value: activeQuests.filter((q) => q.type === "weekly").length,
       valueColor: "#722ed1",
       icon: <ClockCircleOutlined />,
     },
     {
-      title: "Thành tích",
+      title: t('gameQuests.stats.achievement'),
       value: activeQuests.filter((q) => q.type === "achievement").length,
       valueColor: "#faad14",
       icon: <TrophyOutlined />,
@@ -192,7 +194,7 @@ const QuestsPage: React.FC = () => {
   if (activeLoading && activeQuests.length === 0) {
     return (
       <div className="quests-loading">
-        <Spin size="large" tip="Đang chuẩn bị nhiệm vụ..." />
+        <Spin size="large" tip={t('gameQuests.loading')} />
       </div>
     );
   }
@@ -201,9 +203,9 @@ const QuestsPage: React.FC = () => {
     <div className="premium-quests-page">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="page-header">
         <Title level={1} className="main-title">
-          <TrophyOutlined className="title-icon" /> Đường đến Vinh quang
+          <TrophyOutlined className="title-icon" /> {t('gameQuests.header.title')}
         </Title>
-        <Paragraph className="subtitle">Hoàn thành thử thách, nhận báu vật di truyền và thăng cấp bản thân</Paragraph>
+        <Paragraph className="subtitle">{t('gameQuests.header.subtitle')}</Paragraph>
       </motion.div>
 
       <div className="stats-container">
@@ -216,11 +218,11 @@ const QuestsPage: React.FC = () => {
           onChange={(key) => { playClick(); setActiveTab(key); }}
           centered
           items={[
-            { key: "all", label: "Tất cả" },
-            { key: "daily", label: "Hằng ngày" },
-            { key: "weekly", label: "Hằng tuần" },
-            { key: "achievement", label: "Thành tích" },
-            { key: "exploration", label: "Thám hiểm" },
+            { key: "all", label: t('gameQuests.tabs.all') },
+            { key: "daily", label: t('gameQuests.tabs.daily') },
+            { key: "weekly", label: t('gameQuests.tabs.weekly') },
+            { key: "achievement", label: t('gameQuests.tabs.achievement') },
+            { key: "exploration", label: t('gameQuests.tabs.exploration') },
           ]}
         />
       </div>
@@ -235,7 +237,7 @@ const QuestsPage: React.FC = () => {
         >
           {getQuestsByTab().length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <Empty description="Hiện không có nhiệm vụ nào trong mục này" />
+              <Empty description={t('gameQuests.empty')} />
             </motion.div>
           ) : (
             <Row gutter={[24, 24]}>
@@ -269,9 +271,9 @@ const QuestsPage: React.FC = () => {
                       {quest.progress ? (
                         <div className="quest-progress-section">
                           <div className="progress-info">
-                            <span>Tiến độ</span>
+                            <span>{t('gameQuests.card.progress')}</span>
                             <span>
-                              currentValue: {quest.progress.currentValue}/{quest.requirements[0]?.target}
+                              {quest.progress.currentValue}/{quest.requirements[0]?.target}
                             </span>
                           </div>
                           <Progress
@@ -285,7 +287,7 @@ const QuestsPage: React.FC = () => {
                         </div>
                       ) : (
                         <div className="quest-locked-state">
-                          <RocketOutlined /> Chăm chỉ học tập để mở khóa
+                          <RocketOutlined /> {t('gameQuests.card.locked')}
                         </div>
                       )}
 
@@ -307,7 +309,7 @@ const QuestsPage: React.FC = () => {
                             className="action-btn start-btn"
                             onClick={() => handleStartQuest(quest.id)}
                           >
-                            Bắt đầu
+                            {t('gameQuests.card.start')}
                           </Button>
                         ) : quest.progress.status === "completed" ? (
                           <Button
@@ -317,7 +319,7 @@ const QuestsPage: React.FC = () => {
                             icon={<GiftOutlined />}
                             onClick={() => handleClaimRewards(quest.id)}
                           >
-                            Nhận Thưởng
+                            {t('gameQuests.card.claim')}
                           </Button>
                         ) : quest.progress.status === "claimed" ? (
                           <Button
@@ -326,7 +328,7 @@ const QuestsPage: React.FC = () => {
                             disabled
                             className="action-btn claimed-btn"
                           >
-                            <CheckCircleOutlined /> Đã Hoàn Thành
+                            <CheckCircleOutlined /> {t('gameQuests.card.claimed')}
                           </Button>
                         ) : (
                           <div style={{ display: "flex", gap: 8 }}>
@@ -336,7 +338,7 @@ const QuestsPage: React.FC = () => {
                               onClick={() => handleViewDetail(quest)}
                               style={{ flex: 1 }}
                             >
-                              Chi tiết
+                              {t('gameQuests.card.detail')}
                             </Button>
                             <Button
                               variant="primary"
@@ -344,7 +346,7 @@ const QuestsPage: React.FC = () => {
                               onClick={() => handleNavigate(quest)}
                               style={{ flex: 1 }}
                             >
-                              Thực hiện
+                              {t('gameQuests.card.execute')}
                             </Button>
                           </div>
                         )}
@@ -371,29 +373,29 @@ const QuestsPage: React.FC = () => {
             <Paragraph className="modal-desc">{selectedQuest.description}</Paragraph>
 
             <div className="modal-section">
-              <Title level={5}>Yêu cầu</Title>
+              <Title level={5}>{t('gameQuests.modal.requirements')}</Title>
               <Paragraph>{selectedQuest.requirements[0]?.description}</Paragraph>
             </div>
 
             <div className="modal-section">
-              <Title level={5}>Phần thưởng</Title>
+              <Title level={5}>{t('gameQuests.modal.rewards')}</Title>
               <div className="rewards-grid">
                 {selectedQuest.rewards.experience && (
                   <div className="modal-reward">
                     <div className="reward-icon">🏆</div>
-                    <div className="reward-val">{selectedQuest.rewards.experience} Cúp</div>
+                    <div className="reward-val">{selectedQuest.rewards.experience} {t('gameQuests.modal.units.trophies')}</div>
                   </div>
                 )}
                 {selectedQuest.rewards.petals && (
                   <div className="modal-reward">
                     <div className="reward-icon">🌸</div>
-                    <div className="reward-val">{selectedQuest.rewards.petals} Cánh</div>
+                    <div className="reward-val">{selectedQuest.rewards.petals} {t('gameQuests.modal.units.petals')}</div>
                   </div>
                 )}
                 {selectedQuest.rewards.coins && (
                   <div className="modal-reward">
                     <div className="reward-icon">💰</div>
-                    <div className="reward-val">{selectedQuest.rewards.coins} Xu</div>
+                    <div className="reward-val">{selectedQuest.rewards.coins} {t('gameQuests.modal.units.coins')}</div>
                   </div>
                 )}
               </div>
@@ -406,7 +408,7 @@ const QuestsPage: React.FC = () => {
               onClick={() => { playClick(); setDetailModalVisible(false); }}
               className="action-btn modal-close-btn"
             >
-              Đã hiểu
+              {t('gameQuests.modal.understood')}
             </Button>
           </div>
         )}

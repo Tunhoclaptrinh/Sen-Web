@@ -1,0 +1,35 @@
+{
+  "processing": "Decrypting script...",
+  "card": {
+    "title": "Treasure Hunt & Check-in"
+  },
+  "errors": {
+    "invalidCheckinCode": "Invalid Check-in code!",
+    "notFound": "Item or location not found.",
+    "scanFailed": "Scan Failed"
+  },
+  "actions": {
+    "retry": "Try again",
+    "backHome": "Back to Home",
+    "viewMap": "View Heritage Map",
+    "continueSearching": "Continue treasure hunting",
+    "continueFinding": "Continue searching",
+    "goToLibrary": "Enter the Library"
+  },
+  "checkin": {
+    "success": "Check-in Successful!",
+    "description": "I have registered your presence at <strong>{{locationName}}</strong>",
+    "meritPoints": "+{{points}} Merit Points",
+    "visitCount": "Visited: <strong>{{count}}</strong> times"
+  },
+  "artifact": {
+    "newDiscovery": "New Artifact Discovered!",
+    "collect": "Collect Artifact",
+    "new": "NEW",
+    "badgesFound": "Badges earned:",
+    "rewards": {
+      "coins": "+{{count}} Coins",
+      "petals": "+{{count}} Petals"
+    }
+  }
+}

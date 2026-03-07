@@ -1,0 +1,35 @@
+{
+  "loading": "Đang tải dữ liệu...",
+  "header": {
+    "title": "Bảng xếp hạng",
+    "subtitle": "Vinh danh những nhà thám hiểm xuất sắc nhất trên hành trình di sản"
+  },
+  "podium": {
+    "labels": {
+      "points": "Cúp",
+      "checkins": "Check-in",
+      "level": "Cấp độ"
+    },
+    "level": "Cấp độ {{level}}",
+    "petals": "Cánh Sen"
+  },
+  "columns": {
+    "rank": "Hạng",
+    "player": "Người chơi",
+    "points": "Cúp",
+    "checkins": "Địa điểm",
+    "level": "Cấp độ",
+    "petals": "Cánh Sen",
+    "characters": "Nhân vật"
+  },
+  "table": {
+    "level": "Cấp {{level}}",
+    "checkinCount": "{{count}} địa điểm",
+    "charactersCount": "{{count}} nhân vật"
+  },
+  "tabs": {
+    "points": "Điểm số (Cúp)",
+    "checkins": "Nhà thám hiểm (Check-in)",
+    "level": "Cấp độ"
+  }
+}

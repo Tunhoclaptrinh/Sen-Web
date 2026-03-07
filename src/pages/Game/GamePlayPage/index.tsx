@@ -32,12 +32,14 @@ import { setBgmAutoMuted } from "@/store/slices/audioSlice";
 import { useGameSounds } from "@/hooks/useSound";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
 import { SoundOutlined, MutedOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 import "./styles.less";
 
 const { Title, Paragraph } = Typography;
 
 const GamePlayPage: React.FC = () => {
+  const { t } = useTranslation();
   const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -97,8 +99,10 @@ const GamePlayPage: React.FC = () => {
       dispatch(setCurrentLevel(data.level));
       setProgress({ completed: 0, total: data.level.totalScreens || 10 });
       setStartTime(Date.now());
+      setProgress({ completed: 0, total: data.level.totalScreens || 10 });
+      setStartTime(Date.now());
     } catch (error) {
-      message.error("Không thể bắt đầu màn chơi. Vui lòng thử lại.");
+      message.error(t('gamePlay.errors.initGame'));
       navigate("/game/chapters");
     } finally {
       setLoading(false);
@@ -143,7 +147,7 @@ const GamePlayPage: React.FC = () => {
     } catch (error: any) {
       if (error?.response?.status !== 409) {
         console.error(error);
-        message.error("Lỗi khi chuyển màn");
+        message.error(t('gamePlay.errors.nextScreen'));
       }
     } finally {
       setLoading(false);
@@ -207,7 +211,7 @@ const GamePlayPage: React.FC = () => {
         setCompletionData(mockResult);
         setGameCompleted(true);
         setLoading(false);
-        message.info("Admin Mode: Kết quả không được lưu vào hệ thống.");
+        message.info(t('gamePlay.adminMode'));
       }, 1000);
       return;
     }
@@ -223,7 +227,7 @@ const GamePlayPage: React.FC = () => {
     } catch (error: any) {
       if (error?.response?.status !== 409) {
         console.error(error);
-        message.error("Lỗi khi hoàn thành màn chơi");
+        message.error(t('gamePlay.errors.finishLevel'));
       }
     } finally {
       setLoading(false);
@@ -270,12 +274,12 @@ const GamePlayPage: React.FC = () => {
         return (
           <div style={{ textAlign: "center", padding: 50, color: "white" }}>
             <Title level={3} style={{ color: "white" }}>
-              Sắp ra mắt
+              {t('gamePlay.screens.comingSoon')}
             </Title>
             <Paragraph style={{ color: "rgba(255,255,255,0.8)" }}>
-              Loại màn hình này ({currentScreen.type}) đang được phát triển.
+              {t('gamePlay.screens.development', { type: currentScreen.type })}
             </Paragraph>
-            <Button variant="primary" onClick={handleNextScreen}>Bỏ qua</Button>
+            <Button variant="primary" onClick={handleNextScreen}>{t('gamePlay.common.skip')}</Button>
           </div>
         );
     }
@@ -291,12 +295,12 @@ const GamePlayPage: React.FC = () => {
             <div className="completion-header">
               <TrophyTwoTone twoToneColor="#faad14" style={{ fontSize: 80 }} />
               <Title level={2} className="completion-title">
-                {completionData.passed === false ? "RẤT TIẾC!" : "HOÀN THÀNH MÀN CHƠI!"}
+                {completionData.passed === false ? t('gamePlay.completion.titles.failure') : t('gamePlay.completion.titles.success')}
               </Title>
               <Paragraph className="completion-subtitle">
                 {completionData.passed === false
-                  ? `Bạn chưa đủ cúp để qua màn. Hãy thử lại nhé!`
-                  : `Bạn đã xuất sắc vượt qua màn chơi này với: ${completionData.score} 🏆`}
+                  ? t('gamePlay.completion.subtitles.failure')
+                  : t('gamePlay.completion.subtitles.success', { score: completionData.score })}
               </Paragraph>
             </div>
 
@@ -306,12 +310,12 @@ const GamePlayPage: React.FC = () => {
                 {completionData.passed === false ? (
                   <div className="score-breakdown">
                     <div className="breakdown-row">
-                      <span>Cúp đạt được:</span>
+                      <span>{t('gamePlay.completion.labels.scoreEarned')}</span>
                       <span>{completionData.score}</span>
                     </div>
                     <div className="breakdown-divider"></div>
                     <div className="breakdown-row total">
-                      <span>Cần đạt:</span>
+                      <span>{t('gamePlay.completion.labels.scoreRequired')}</span>
                       <span>{completionData.requiredScore}</span>
                     </div>
                   </div>
@@ -320,12 +324,12 @@ const GamePlayPage: React.FC = () => {
                     {completionData.breakdown && (
                       <>
                         <div className="breakdown-row">
-                          <span>Cúp màn chơi:</span>
+                          <span>{t('gamePlay.completion.labels.scoreBase')}</span>
                           <span>{completionData.breakdown.baseScore}</span>
                         </div>
                         {completionData.breakdown.timeBonus > 0 && (
                           <div className="breakdown-row bonus">
-                            <span>Thưởng tốc độ:</span>
+                            <span>{t('gamePlay.completion.labels.scoreBonus')}</span>
                             <span>+{completionData.breakdown.timeBonus}</span>
                           </div>
                         )}
@@ -333,7 +337,7 @@ const GamePlayPage: React.FC = () => {
                       </>
                     )}
                     <div className="breakdown-row total">
-                      <span>Tổng cúp:</span>
+                      <span>{t('gamePlay.completion.labels.scoreTotal')}</span>
                       <span>{completionData.score}</span>
                     </div>
                   </div>
@@ -344,25 +348,25 @@ const GamePlayPage: React.FC = () => {
               <div className="completion-section">
                 {completionData.rewards ? (
                   <div className="rewards-summary">
-                    <Title level={4}>Phần thưởng nhận được:</Title>
+                    <Title level={4}>{t('gamePlay.completion.labels.rewardsTitle')}</Title>
                     <div className="rewards-grid">
                       <div className="reward-item">
                         <span className="reward-icon">🪙</span>
-                        <span className="reward-value coins">+{completionData.rewards.coins} Xu</span>
+                        <span className="reward-value coins">+{completionData.rewards.coins} {t('gamePlay.completion.labels.coins')}</span>
                       </div>
                       <div className="reward-item">
                         <span className="reward-icon">🌸</span>
-                        <span className="reward-value">+{completionData.rewards.petals} Cánh Sen</span>
+                        <span className="reward-value">+{completionData.rewards.petals} {t('gamePlay.completion.labels.petals')}</span>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="rewards-summary info-only">
                     <Title level={4} style={{ color: "#faad14" }}>
-                      🔄 Chế độ ôn tập
+                      {t('gamePlay.completion.reviewMode.title')}
                     </Title>
                     <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>
-                      Bạn đã hoàn thành màn chơi này rồi! <br /> Lần chơi này không nhận thêm phần thưởng.
+                      <span dangerouslySetInnerHTML={{ __html: t('gamePlay.completion.reviewMode.description') }} />
                     </Paragraph>
                   </div>
                 )}
@@ -377,7 +381,7 @@ const GamePlayPage: React.FC = () => {
                 icon={<ArrowLeftOutlined />}
                 onClick={() => navigate("/game/chapters")}
               >
-                Quay về Sảnh
+                {t('gamePlay.completion.actions.lobby')}
               </Button>
               <Button
                 variant="outline"
@@ -386,7 +390,7 @@ const GamePlayPage: React.FC = () => {
                 icon={<RedoOutlined />}
                 onClick={handleReplay}
               >
-                Chơi Lại
+                {t('gamePlay.completion.actions.replay')}
               </Button>
               {(completionData.newTotals || completionData.passed || completionData.isCompleted) && (
                 <Button
@@ -399,7 +403,7 @@ const GamePlayPage: React.FC = () => {
                     navigate(`/game/chapters/${chapterId}/levels`);
                   }}
                 >
-                  Về Bản đồ
+                  {t('gamePlay.completion.actions.map')}
                 </Button>
               )}
             </div>
@@ -421,15 +425,15 @@ const GamePlayPage: React.FC = () => {
               onClick={() => {
                 playClick();
                 Modal.confirm({
-                  title: "Thoát màn chơi?",
-                  content: "Tiến độ hiện tại của bạn sẽ bị mất.",
-                  okText: "Thoát",
-                  cancelText: "Ở lại",
+                  title: t('gamePlay.header.exitTitle'),
+                  content: t('gamePlay.header.exitContent'),
+                  okText: t('gamePlay.common.exit'),
+                  cancelText: t('gamePlay.common.stay'),
                   onOk: () => navigate("/game/chapters"),
                 });
               }}
               className="back-button game-action-btn"
-              title="Thoát màn chơi"
+              title={t('gamePlay.header.exitTitle')}
             />
           </div>
 
@@ -454,9 +458,9 @@ const GamePlayPage: React.FC = () => {
                 />
 
                 <div className="score-display">
-                  <span className="current-score">Cúp: {score}</span>
+                  <span className="current-score">{t('gamePlay.header.trophies', { score })}</span>
                   {currentScreen?.potentialScore && !currentScreen.isCompleted && (
-                    <span className="potential-score" title="Cúp có thể đạt được">
+                    <span className="potential-score" title={t('gamePlay.header.potentialTrophies')}>
                       (+{currentScreen.potentialScore})
                     </span>
                   )}
@@ -466,7 +470,7 @@ const GamePlayPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="header-right">
+          <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <AudioSettingsPopover>
               <Button
                 variant="outline"
@@ -478,7 +482,7 @@ const GamePlayPage: React.FC = () => {
                     <SoundOutlined />
                   )
                 }
-                title="Âm thanh"
+                title={t('gamePlay.header.audio')}
               />
             </AudioSettingsPopover>
 
@@ -487,7 +491,7 @@ const GamePlayPage: React.FC = () => {
               className="game-action-btn"
               style={{ marginLeft: 8 }}
               icon={<CommentOutlined />}
-              title="AI Chat"
+              title={t('gamePlay.header.chat')}
               onClick={() => {
                 playClick();
                 dispatch(setActiveContext({ levelId: levelInfo?.id }));
@@ -506,7 +510,7 @@ const GamePlayPage: React.FC = () => {
     if (loading && !currentScreen && !gameCompleted) {
       return (
         <div className="game-loading">
-          <Spin size="large" tip="Đang tải dữ liệu game..." />
+          <Spin size="large" tip={t('gamePlay.loading')} />
         </div>
       );
     }
@@ -525,7 +529,7 @@ const GamePlayPage: React.FC = () => {
         icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
         onClick={() => { playClick(); setIsFullscreen(!isFullscreen); }}
         className="fullscreen-button game-action-btn"
-        title={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
+        title={isFullscreen ? t('gamePlay.header.exitFullscreen') : t('gamePlay.header.fullscreen')}
       />
 
       <AIChat open={isChatOpen} onClose={() => dispatch(setOverlayOpen(false))} position="absolute" />

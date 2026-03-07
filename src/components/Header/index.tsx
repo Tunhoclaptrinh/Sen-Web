@@ -17,12 +17,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { logout } from '@/store/slices/authSlice';
-import { setLanguage } from '@/store/slices/uiSlice';
 import { RootState } from '@/store';
 import logo from '@/assets/images/logo.png';
 import NotificationPopover from '@/components/common/NotificationPopover';
 import { setOverlayOpen } from '@/store/slices/aiSlice';
 import { getImageUrl } from "@/utils/image.helper";
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import './styles.less';
 
 const { Header: AntHeader } = Layout;
@@ -32,9 +32,8 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
-  const { language } = useSelector((state: RootState) => state.ui);
 
   const [searchValue, setSearchValue] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -71,11 +70,6 @@ const Header: React.FC = () => {
     navigate('/login');
   };
 
-  // Handle language change
-  const handleLanguageChange = (lang: string) => {
-    dispatch(setLanguage(lang));
-    i18n.changeLanguage(lang);
-  };
 
   // Handle search
   const handleSearch = () => {
@@ -195,17 +189,7 @@ const Header: React.FC = () => {
           <Space size="middle" className="util-right">
             <FacebookOutlined className="social-icon" onClick={() => window.open('https://www.facebook.com/profile.php?id=61586454543352', '_blank')} />
             <HeartOutlined className="social-icon" />
-            <div className="language-switcher">
-              <span className={`lang-item ${language === 'vi' ? 'active' : ''}`} onClick={() => handleLanguageChange('vi')}>
-                <img src="https://flagcdn.com/w20/vn.png" alt="VN" className="flag-icon" />
-                {!isMobile && "VN"}
-              </span>
-              <span className="lang-divider">|</span>
-              <span className={`lang-item ${language === 'en' ? 'active' : ''}`} onClick={() => handleLanguageChange('en')}>
-                <img src="https://flagcdn.com/w20/gb.png" alt="EN" className="flag-icon" />
-                {!isMobile && "EN"}
-              </span>
-            </div>
+            <LanguageSwitcher showText={!isMobile} />
           </Space>
         </div>
       </div>

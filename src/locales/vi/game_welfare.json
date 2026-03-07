@@ -1,0 +1,64 @@
+{
+  "header": {
+    "title": "Trung tâm Phúc lợi Sen",
+    "subtitle": "Quy đổi tài nguyên game lấy Voucher & Đặc quyền hấp dẫn"
+  },
+  "alert": {
+    "title": "Lưu ý quan trọng",
+    "description": "Tính năng này đang được phát triển và dự kiến phát triển hiện tại chưa hoạt động được thực tế. Chúng tôi sẽ sớm cập nhật trong thời gian tới."
+  },
+  "tabs": {
+    "exchange": "Quy đổi P-Coin",
+    "store": "Cửa hàng Voucher",
+    "history": "Lịch sử hoạt động"
+  },
+  "stats": {
+    "available": "P-Coin khả dụng",
+    "viewDetail": "Bấm vào ảnh để xem chi tiết P-Coin",
+    "previewMask": "Xem to"
+  },
+  "exchange": {
+    "title": "Quy đổi Tài nguyên",
+    "subtitle": "Chuyển đổi vật phẩm trong game thành P-Coin",
+    "coins": "Tiền vàng (Coins)",
+    "petals": "Cánh Sen (Petals)",
+    "rate": "Tỷ lệ {{rate}}",
+    "action": "Đổi ngay"
+  },
+  "store": {
+    "stock": "Còn {{count}} lượt",
+    "action": "Đổi Voucher"
+  },
+  "history": {
+    "title": "Lịch sử hoạt động",
+    "status": "Hoàn thành",
+    "items": {
+      "voucher": "Đổi {{name}}",
+      "fromCoins": "Quy đổi từ Tiền vàng",
+      "fromPetals": "Quy đổi từ Cánh Sen"
+    }
+  },
+  "modal": {
+    "confirmExchange": {
+      "title": "Xác nhận quy đổi",
+      "content": "Bạn có muốn đổi {{amount}} {{resource}} sang P-Coin không?",
+      "ok": "Đồng ý",
+      "cancel": "Hủy"
+    },
+    "confirmRedeem": {
+      "title": "Đổi Voucher",
+      "content": "Bạn muốn đổi {{price}} {{currency}} lấy {{name}}?",
+      "ok": "Đổi ngay",
+      "cancel": "Hủy"
+    }
+  },
+  "messages": {
+    "exchangeSuccess": "Quy đổi thành công!",
+    "redeemSuccess": "Đổi voucher thành công! Kiểm tra trong Kho quà của bạn."
+  },
+  "currencies": {
+    "pcoin": "P-Coin",
+    "coins": "Tiền vàng",
+    "petals": "Cánh Sen"
+  }
+}

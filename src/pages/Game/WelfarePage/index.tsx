@@ -16,6 +16,7 @@ import {
   Flex,
   Alert
 } from 'antd';
+import { useTranslation } from "react-i18next";
 import Button from '@/components/common/Button';
 import { useGameSounds } from '@/hooks/useSound';
 import {
@@ -52,6 +53,7 @@ interface WelfareStats {
 }
 
 const WelfarePage: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('exchange');
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [stats] = useState<WelfareStats>({
@@ -112,13 +114,13 @@ const WelfarePage: React.FC = () => {
 
   const handleExchangePCoin = (amount: number, resource: string) => {
     Modal.confirm({
-      title: 'Xác nhận quy đổi',
-      content: `Bạn có muốn đổi ${amount} ${resource} sang P-Coin không?`,
-      okText: 'Đồng ý',
-      cancelText: 'Hủy',
+      title: t('gameWelfare.modal.confirmExchange.title'),
+      content: t('gameWelfare.modal.confirmExchange.content', { amount, resource }),
+      okText: t('gameWelfare.modal.confirmExchange.ok'),
+      cancelText: t('gameWelfare.modal.confirmExchange.cancel'),
       onOk: () => {
         playClick();
-        message.success('Quy đổi thành công!');
+        message.success(t('gameWelfare.messages.exchangeSuccess'));
         // Trigger refresh
       }
     });
@@ -126,13 +128,17 @@ const WelfarePage: React.FC = () => {
 
   const handleRedeemVoucher = (voucher: Voucher) => {
     Modal.confirm({
-      title: 'Đổi Voucher',
-      content: `Bạn muốn đổi ${voucher.price} ${voucher.currencyType === 'pcoin' ? 'P-Coin' : voucher.currencyType === 'coins' ? 'Tiền vàng' : 'Cánh Sen'} lấy ${voucher.name}?`,
-      okText: 'Đổi ngay',
-      cancelText: 'Hủy',
+      title: t('gameWelfare.modal.confirmRedeem.title'),
+      content: t('gameWelfare.modal.confirmRedeem.content', {
+        price: voucher.price,
+        currency: voucher.currencyType === 'pcoin' ? t('gameWelfare.currencies.pcoin') : voucher.currencyType === 'coins' ? t('gameWelfare.currencies.coins') : t('gameWelfare.currencies.petals'),
+        name: voucher.name
+      }),
+      okText: t('gameWelfare.modal.confirmRedeem.ok'),
+      cancelText: t('gameWelfare.modal.confirmRedeem.cancel'),
       onOk: () => {
         playClick();
-        message.success('Đổi voucher thành công! Kiểm tra trong Kho quà của bạn.');
+        message.success(t('gameWelfare.messages.redeemSuccess'));
       }
     });
   };
@@ -150,18 +156,18 @@ const WelfarePage: React.FC = () => {
                     height={140}
                     style={{ objectFit: 'contain', padding: '12px' }}
                     preview={{
-                      mask: <div className="pcoin-preview-mask">Xem to</div>
+                      mask: <div className="pcoin-preview-mask">{t('gameWelfare.stats.previewMask')}</div>
                     }}
                   />
                 </div>
                 <div className="pcoin-stat-content" style={{ padding: '24px 16px' }}>
                   <Statistic
-                    title={<span style={{ fontWeight: 700, fontSize: '16px' }}>P-Coin khả dụng</span>}
+                    title={<span style={{ fontWeight: 700, fontSize: '16px' }}>{t('gameWelfare.stats.available')}</span>}
                     value={stats.pCoins}
                     suffix="P"
                     valueStyle={{ color: '#c5a065', fontWeight: 800, fontSize: '28px' }}
                   />
-                  <div className="stat-label">Bấm vào ảnh để xem chi tiết P-Coin</div>
+                  <div className="stat-label">{t('gameWelfare.stats.viewDetail')}</div>
                 </div>
               </Flex>
             </Card>
@@ -171,8 +177,8 @@ const WelfarePage: React.FC = () => {
               <div className="exchange-header">
                 <SwapOutlined className="header-icon" />
                 <div>
-                  <Title level={4}>Quy đổi Tài nguyên</Title>
-                  <Text type="secondary">Chuyển đổi vật phẩm trong game thành P-Coin</Text>
+                  <Title level={4}>{t('gameWelfare.exchange.title')}</Title>
+                  <Text type="secondary">{t('gameWelfare.exchange.subtitle')}</Text>
                 </div>
               </div>
               <Divider />
@@ -182,11 +188,11 @@ const WelfarePage: React.FC = () => {
                     <div className="item-meta">
                       <Avatar size="large" src="https://api.dicebear.com/7.x/icons/svg?seed=coins" />
                       <div className="item-text">
-                        <Text strong>Tiền vàng (Coins)</Text>
-                        <Text type="secondary">Tỷ lệ 10:1</Text>
+                        <Text strong>{t('gameWelfare.exchange.coins')}</Text>
+                        <Text type="secondary">{t('gameWelfare.exchange.rate', { rate: '10:1' })}</Text>
                       </div>
                     </div>
-                    <Button variant="primary" onClick={() => handleExchangePCoin(1000, 'Coins')}>Đổi ngay</Button>
+                    <Button variant="primary" onClick={() => handleExchangePCoin(1000, t('gameWelfare.currencies.coins'))}>{t('gameWelfare.exchange.action')}</Button>
                   </div>
                 </Col>
                 <Col span={12}>
@@ -194,11 +200,11 @@ const WelfarePage: React.FC = () => {
                     <div className="item-meta">
                       <Avatar size="large" src="https://api.dicebear.com/7.x/icons/svg?seed=petals" />
                       <div className="item-text">
-                        <Text strong>Cánh Sen (Petals)</Text>
-                        <Text type="secondary">Tỷ lệ 1:2</Text>
+                        <Text strong>{t('gameWelfare.exchange.petals')}</Text>
+                        <Text type="secondary">{t('gameWelfare.exchange.rate', { rate: '1:2' })}</Text>
                       </div>
                     </div>
-                    <Button variant="primary" onClick={() => handleExchangePCoin(100, 'Cánh Sen')}>Đổi ngay</Button>
+                    <Button variant="primary" onClick={() => handleExchangePCoin(100, t('gameWelfare.currencies.petals'))}>{t('gameWelfare.exchange.action')}</Button>
                   </div>
                 </Col>
               </Row>
@@ -236,14 +242,14 @@ const WelfarePage: React.FC = () => {
               <Title level={5}>{v.name}</Title>
               <Paragraph ellipsis={{ rows: 2 }}>{v.description}</Paragraph>
               <div className="voucher-footer">
-                <Text type="secondary"><ClockCircleOutlined /> Còn {v.stock} lượt</Text>
+                <Text type="secondary"><ClockCircleOutlined /> {t('gameWelfare.store.stock', { count: v.stock })}</Text>
                 <Button
                   variant="primary"
                   shape="round"
                   disabled={stats.pCoins < v.price}
                   onClick={() => handleRedeemVoucher(v)}
                 >
-                  Đổi Voucher
+                  {t('gameWelfare.store.action')}
                 </Button>
               </div>
             </Card>
@@ -259,12 +265,12 @@ const WelfarePage: React.FC = () => {
         <List
           itemLayout="horizontal"
           dataSource={[
-            { title: 'Đổi P-Coffee Voucher', date: '2024-02-26 14:00', amount: '-100 P', status: 'success' },
-            { title: 'Quy đổi từ Tiền vàng', date: '2024-02-25 09:30', amount: '+500 P', status: 'success' },
-            { title: 'Quy đổi từ Cánh Sen', date: '2024-02-24 16:45', amount: '+200 P', status: 'success' },
+            { title: t('gameWelfare.history.items.voucher', { name: 'P-Coffee Voucher' }), date: '2024-02-26 14:00', amount: '-100 P', status: 'success' },
+            { title: t('gameWelfare.history.items.fromCoins'), date: '2024-02-25 09:30', amount: '+500 P', status: 'success' },
+            { title: t('gameWelfare.history.items.fromPetals'), date: '2024-02-24 16:45', amount: '+200 P', status: 'success' },
           ]}
           renderItem={(item) => (
-            <List.Item actions={[<Tag color="green">Hoàn thành</Tag>]}>
+            <List.Item actions={[<Tag color="green">{t('gameWelfare.history.status')}</Tag>]}>
               <List.Item.Meta
                 avatar={<Avatar icon={<HistoryOutlined />} />}
                 title={item.title}
@@ -289,18 +295,18 @@ const WelfarePage: React.FC = () => {
         <div className="header-content">
           <GiftOutlined className="main-icon" />
           <div className="title-area">
-            <Title level={2}>Trung tâm Phúc lợi Sen</Title>
-            <Text>Quy đổi tài nguyên game lấy Voucher & Đặc quyền hấp dẫn</Text>
+            <Title level={2}>{t('gameWelfare.header.title')}</Title>
+            <Text>{t('gameWelfare.header.subtitle')}</Text>
           </div>
         </div>
       </div>
 
       <div className="welfare-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
         <Alert
-          message={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>Lưu ý quan trọng</span>}
+          message={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>{t('gameWelfare.alert.title')}</span>}
           description={
             <span style={{ fontSize: '16px' }}>
-              Tính năng này đang được phát triển và dự kiến phát triển hiện tại chưa hoạt động được thực tế. Chúng tôi sẽ sớm cập nhật trong thời gian tới.
+              {t('gameWelfare.alert.description')}
             </span>
           }
           type="warning"
@@ -317,7 +323,7 @@ const WelfarePage: React.FC = () => {
               key: 'exchange',
               label: (
                 <span>
-                  <SwapOutlined /> Quy đổi P-Coin
+                  <SwapOutlined /> {t('gameWelfare.tabs.exchange')}
                 </span>
               ),
               children: renderExchangeTab(),
@@ -326,7 +332,7 @@ const WelfarePage: React.FC = () => {
               key: 'store',
               label: (
                 <span>
-                  <GiftOutlined /> Cửa hàng Voucher
+                  <GiftOutlined /> {t('gameWelfare.tabs.store')}
                 </span>
               ),
               children: renderStoreTab(),
@@ -335,7 +341,7 @@ const WelfarePage: React.FC = () => {
               key: 'history',
               label: (
                 <span>
-                  <HistoryOutlined /> Lịch sử hoạt động
+                  <HistoryOutlined /> {t('gameWelfare.tabs.history')}
                 </span>
               ),
               children: renderHistoryTab(),

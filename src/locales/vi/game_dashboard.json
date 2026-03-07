@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "welcome": "Xin chào,",
+    "defaultName": "Nhà thám hiểm",
+    "subtitle": "Hành trình khám phá di sản của bạn đang chờ đợi. Hãy tiếp tục chinh phục các thử thách!",
+    "continue": "Tiếp tục chơi",
+    "viewQuests": "Xem nhiệm vụ"
+  },
+  "rank": {
+    "title": "Hạng {{rank}}",
+    "defaultRank": "Tập Sự",
+    "needPoints": "Cần {{points}} 🏆 để lên hạng {{rank}}",
+    "maxRank": "Bạn đã đạt hạng cao nhất! 🎉"
+  },
+  "stats": {
+    "trophies": "Tổng cúp",
+    "petals": "Hoa Sen",
+    "coins": "Xu vàng"
+  },
+  "quests": {
+    "activeTitle": "Nhiệm vụ đang làm",
+    "viewAll": "Xem tất cả",
+    "empty": "Chưa có nhiệm vụ nào",
+    "start": "Nhận nhiệm vụ",
+    "claim": "Nhận thưởng",
+    "claimed": "Đã nhận",
+    "execute": "Thực hiện",
+    "successClaim": "Đã nhận thưởng thành công!",
+    "errorClaim": "Không thể nhận thưởng",
+    "successStart": "Đã nhận nhiệm vụ!",
+    "errorStart": "Không thể nhận nhiệm vụ lúc này"
+  },
+  "news": {
+    "title": "Tin tức & Sự kiện"
+  },
+  "notifications": {
+    "title": "Thông báo mới",
+    "viewAll": "Tất cả",
+    "empty": "Không có thông báo mới",
+    "markRead": "Đánh dấu đã đọc",
+    "loadMore": "Xem thêm",
+    "loading": "Đang tải...",
+    "errorRead": "Thao tác thất bại",
+    "errorLoad": "Không thể tải thêm thông báo"
+  },
+  "activity": {
+    "title": "Lịch sử hoạt động",
+    "updating": "Tính năng đang cập nhật, Vui lòng đợi nhé"
+  },
+  "quickExplore": {
+    "title": "Khám phá nhanh",
+    "learning": "Ôn tập",
+    "museum": "Bảo tàng",
+    "shop": "Cửa hàng",
+    "leaderboard": "Xếp hạng",
+    "map": "Bản đồ",
+    "scan": "Tầm Bảo",
+    "welfare": "Đổi thưởng"
+  },
+  "feedback": {
+    "title": "Góp ý cho SEN 💌",
+    "subtitle": "SEN đang trong giai đoạn thử nghiệm. Mỗi ý kiến của bạn đều giúp chúng mình trở nên tốt hơn mỗi ngày!",
+    "btn": "Điền khảo sát ngay"
+  }
+}

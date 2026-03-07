@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { fetchMuseum, collectMuseumIncome, useItem } from "@/store/slices/gameSlice";
 import { fetchShopData } from "@/store/slices/shopSlice";
 import { Row, Col, Spin, Typography, Empty, Tabs, Tag, Card, Modal } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import { CloudUploadOutlined, TrophyOutlined, RiseOutlined, GoldOutlined } from "@ant-design/icons";
@@ -15,6 +16,7 @@ import "./styles.less";
 const { Title, Text } = Typography;
 
 const MuseumPage: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { museum, museumLoading } = useAppSelector((state) => state.game);
   const { inventory = [], items: shopItems = [], loading: shopLoading } = useAppSelector((state) => state.shop);
@@ -58,10 +60,10 @@ const MuseumPage: React.FC = () => {
     if (!item) return;
 
     Modal.confirm({
-      title: 'Xác nhận sử dụng',
-      content: `Bạn có chắc chắn muốn sử dụng "${item.name}" không?`,
-      okText: 'Sử dụng',
-      cancelText: 'Hủy',
+      title: t('gameMuseum.modal.confirmUse.title'),
+      content: t('gameMuseum.modal.confirmUse.content', { name: item.name }),
+      okText: t('gameMuseum.modal.confirmUse.ok'),
+      cancelText: t('gameMuseum.modal.confirmUse.cancel'),
       onOk: () => {
         dispatch(useItem({ itemId }));
         setDetailModalVisible(false);
@@ -93,7 +95,7 @@ const MuseumPage: React.FC = () => {
       type: ITEM_TYPES.ARTIFACT,
       id: `art-${art.artifactId}`,
       name: art.name,
-      description: `Thu thập ngày ${new Date(art.acquiredAt).toLocaleDateString()}`,
+      description: t('gameMuseum.card.collectDate', { date: new Date(art.acquiredAt).toLocaleDateString() }),
       image: art.image,
       original: art,
       quantity: 1,
@@ -103,7 +105,7 @@ const MuseumPage: React.FC = () => {
       type: "character",
       id: `char-${char.id}`,
       name: char.name,
-      description: char.description || char.personality || "Nhân vật đồng hành cùng bạn",
+      description: char.description || char.personality || t('gameMuseum.card.charFallbackDesc'),
       image: char.avatar,
       original: char,
       quantity: 1,
@@ -165,45 +167,45 @@ const MuseumPage: React.FC = () => {
                     background: "#f5f5f5",
                   }}
                 >
-                  No image
+                  {t('gameMuseum.card.noImage')}
                 </div>
               )}
               {/* Tags - Always show Type Tag at top right */}
               <div className="item-type-tag">
                 {(() => {
                   let color = "gold";
-                  let text = "Vật phẩm";
+                  let text = t('gameMuseum.types.item');
 
                   if (item.type === ITEM_TYPES.ARTIFACT) {
                     color = "orange";
-                    text = (item.original?.artifactType || "Hiện vật").toUpperCase();
+                    text = (item.original?.artifactType || t('gameMuseum.types.artifact')).toUpperCase();
                   } else if (item.type === "character") {
                     color = "magenta";
-                    text = "ĐỒNG HÀNH";
+                    text = t('gameMuseum.types.companion');
                   } else if (item.type === "inventory") {
                     // Map shop types
                     const shopType = item.original?.type || "";
                     if (["consumable_hint", "hint"].includes(shopType)) {
                       color = "blue";
-                      text = "GỢI Ý";
+                      text = t('gameMuseum.types.hint');
                     } else if (["consumable_shield", "boost"].includes(shopType)) {
                       color = "green";
-                      text = "BẢO VỆ";
+                      text = t('gameMuseum.types.protection');
                     } else if (["permanent_theme", "theme"].includes(shopType)) {
                       color = "purple";
-                      text = "GIAO DIỆN";
+                      text = t('gameMuseum.types.interface');
                     } else if (["permanent_avatar", "avatar"].includes(shopType)) {
                       color = "magenta";
-                      text = "AVATAR";
+                      text = t('gameMuseum.types.avatar');
                     } else if (shopType === "decoration") {
                       color = "volcano";
-                      text = "TRANG TRÍ";
+                      text = t('gameMuseum.types.decoration');
                     } else if (shopType === "premium_ai") {
                       color = "gold";
-                      text = "AI VIP";
+                      text = t('gameMuseum.types.aivip');
                     } else {
                       color = "cyan";
-                      text = (item.original?.type || "vật phẩm").toUpperCase();
+                      text = (item.original?.type || t('gameMuseum.types.item')).toUpperCase();
                     }
                   }
 
@@ -216,7 +218,7 @@ const MuseumPage: React.FC = () => {
           <div className="item-info">
             <div className="item-name">{item.name}</div>
             <div className="item-desc" title={item.description}>
-              {item.description || "Vật phẩm sưu tầm"}
+              {item.description || t('gameMuseum.card.itemFallbackDesc')}
             </div>
 
             {/* Quantity Badge in Body - Strictly matching Shop style */}
@@ -238,7 +240,7 @@ const MuseumPage: React.FC = () => {
                   width: "fit-content",
                 }}
               >
-                Đang có: {item.quantity}
+                {t('gameMuseum.card.ownedCount', { count: item.quantity })}
               </div>
             )}
           </div>
@@ -250,7 +252,7 @@ const MuseumPage: React.FC = () => {
   if (museumLoading || shopLoading || charactersLoading) {
     return (
       <div style={{ textAlign: "center", padding: "100px 0" }}>
-        <Spin size="large" tip="Đang tải dữ liệu..." />
+        <Spin size="large" tip={t('gameMuseum.loading')} />
       </div>
     );
   }
@@ -259,28 +261,28 @@ const MuseumPage: React.FC = () => {
     <div className="museum-page">
       <div className="page-header">
         <Title level={1} className="main-title">
-          <TrophyOutlined className="title-icon" /> Bảo Tàng
+          <TrophyOutlined className="title-icon" /> {t('gameMuseum.header.title')}
         </Title>
-        <div className="subtitle">Lưu giữ báu vật - Thu thập tinh hoa</div>
+        <div className="subtitle">{t('gameMuseum.header.subtitle')}</div>
       </div>
 
       <div className="stats-container">
         <StatisticsCard
           data={[
             {
-              title: "Cấp độ",
+              title: t('gameMuseum.stats.level'),
               value: museum?.level || 1,
               valueColor: "#1890ff",
               icon: <TrophyOutlined />,
             },
             {
-              title: "Thu nhập trong 1 giờ",
+              title: t('gameMuseum.stats.incomePerHour'),
               value: `${museum?.incomePerHour || 0}`,
               valueColor: "#52c41a",
               icon: <RiseOutlined />,
             },
             {
-              title: "Chờ thu",
+              title: t('gameMuseum.stats.pendingIncome'),
               value: (
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span>{museum?.pendingIncome || 0}</span>
@@ -292,7 +294,7 @@ const MuseumPage: React.FC = () => {
                       className="collect-btn"
                       style={{ fontSize: "0.8rem", height: 24, padding: "0 8px" }}
                     >
-                      Thu hoạch
+                      {t('gameMuseum.stats.collect')}
                     </Button>
                   ) : null}
                 </div>
@@ -313,9 +315,9 @@ const MuseumPage: React.FC = () => {
           centered
           className="museum-tabs"
           items={[
-            { label: <span>Tất cả</span>, key: "all" },
-            { label: <span>Nhân vật</span>, key: "character" },
-            { label: <span>Hiện vật</span>, key: ITEM_TYPES.ARTIFACT },
+            { label: <span>{t('gameMuseum.tabs.all')}</span>, key: "all" },
+            { label: <span>{t('gameMuseum.tabs.character')}</span>, key: "character" },
+            { label: <span>{t('gameMuseum.tabs.artifact')}</span>, key: ITEM_TYPES.ARTIFACT },
           ]}
         />
       </div>
@@ -324,7 +326,7 @@ const MuseumPage: React.FC = () => {
         {filteredItems.length > 0 ? (
           <Row gutter={[24, 24]}>{filteredItems.map(renderMuseumItem)}</Row>
         ) : (
-          <Empty description="Trống trơn" />
+          <Empty description={t('gameMuseum.card.empty')} />
         )}
       </div>
 
@@ -338,11 +340,11 @@ const MuseumPage: React.FC = () => {
         onCancel={() => setDetailModalVisible(false)}
         footer={[
           <Button key="close" variant="ghost" onClick={() => { playClick(); setDetailModalVisible(false); }}>
-            Đóng
+            {t('gameMuseum.modal.close')}
           </Button>,
           selectedItem?.type === "inventory" && (
             <Button key="use" variant="primary" onClick={() => { playClick(); handleUseItem(selectedItem.original.itemId); }}>
-              Sử dụng
+              {t('gameMuseum.modal.use')}
             </Button>
           ),
         ]}
@@ -386,44 +388,44 @@ const MuseumPage: React.FC = () => {
             <Title level={4} style={{ marginBottom: 8 }}>
               {selectedItem.name}
             </Title>
-            <Text type="secondary">{selectedItem.description || "Không có mô tả"}</Text>
+            <Text type="secondary">{selectedItem.description || t('gameMuseum.modal.noDescription')}</Text>
 
             <div style={{ marginTop: 24, textAlign: "left", background: "#f5f5f5", padding: 16, borderRadius: 8 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <Text strong>Loại:</Text>
+                <Text strong>{t('gameMuseum.modal.typeLabel')}</Text>
                 {(() => {
                   let color = "gold";
-                  let text = "Vật phẩm";
+                  let text = t('gameMuseum.types.item');
 
                   if (selectedItem.type === ITEM_TYPES.ARTIFACT) {
                     color = "orange";
-                    text = (selectedItem.original?.artifactType || "Hiện vật").toUpperCase();
+                    text = (selectedItem.original?.artifactType || t('gameMuseum.types.artifact')).toUpperCase();
                   } else if (selectedItem.type === "character") {
                     color = "magenta";
-                    text = "ĐỒNG HÀNH";
+                    text = t('gameMuseum.types.companion');
                   } else if (selectedItem.type === "inventory") {
                     const shopType = selectedItem.original?.type || "";
                     if (["consumable_hint", "hint"].includes(shopType)) {
                       color = "blue";
-                      text = "GỢI Ý";
+                      text = t('gameMuseum.types.hint');
                     } else if (["consumable_shield", "boost"].includes(shopType)) {
                       color = "green";
-                      text = "BẢO VỆ";
+                      text = t('gameMuseum.types.protection');
                     } else if (["permanent_theme", "theme"].includes(shopType)) {
                       color = "purple";
-                      text = "GIAO DIỆN";
+                      text = t('gameMuseum.types.interface');
                     } else if (["permanent_avatar", "avatar"].includes(shopType)) {
                       color = "magenta";
-                      text = "AVATAR";
+                      text = t('gameMuseum.types.avatar');
                     } else if (shopType === "decoration") {
                       color = "volcano";
-                      text = "TRANG TRÍ";
+                      text = t('gameMuseum.types.decoration');
                     } else if (shopType === "premium_ai") {
                       color = "gold";
-                      text = "AI VIP";
+                      text = t('gameMuseum.types.aivip');
                     } else {
                       color = "cyan";
-                      text = (selectedItem.original?.type || "VẬT PHẨM").toUpperCase();
+                      text = (selectedItem.original?.type || t('gameMuseum.types.item')).toUpperCase();
                     }
                   }
 
@@ -431,7 +433,7 @@ const MuseumPage: React.FC = () => {
                 })()}
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Text strong>Số lượng:</Text>
+                <Text strong>{t('gameMuseum.modal.quantityLabel')}</Text>
                 <Text>{selectedItem.quantity}</Text>
               </div>
             </div>

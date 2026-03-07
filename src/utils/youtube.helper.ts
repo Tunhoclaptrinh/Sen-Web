@@ -8,16 +8,16 @@
  * - Raw <iframe> tags (handled by caller, but logic provided for safety)
  *
  * @param url - The source YouTube URL or embed tag
- * @returns Valid embed URL or null if invalid
+ * @returns Valid embed URL or undefined if invalid
  */
-export const getYouTubeEmbedUrl = (url?: string): string | null => {
-  if (!url) return null;
+export const getYouTubeEmbedUrl = (url?: string): string | undefined => {
+  if (!url) return undefined;
 
   const trimmedUrl = url.trim();
 
   // If it's already an iframe tag, we don't try to parse it as a URL.
   if (trimmedUrl.startsWith("<iframe")) {
-    return null;
+    return undefined;
   }
 
   try {
@@ -73,8 +73,8 @@ export const getYouTubeEmbedUrl = (url?: string): string | null => {
       return trimmedUrl;
     }
 
-    return null;
+    return undefined;
   } catch (e) {
-    return null;
+    return undefined;
   }
 };

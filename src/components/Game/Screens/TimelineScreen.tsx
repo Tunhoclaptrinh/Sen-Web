@@ -21,6 +21,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import type { TimelineScreen as TimelineScreenType } from "@/types/game.types";
 import { useGameSounds } from "@/hooks/useSound";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 
 import { getImageUrl } from "@/utils/image.helper";
@@ -76,6 +77,7 @@ const transformEvents = (data: TimelineScreenType) => {
 };
 
 const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage, loading }) => {
+  const { t } = useTranslation();
   const [events, setEvents] = useState(() => transformEvents(data));
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -118,7 +120,7 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
 
   const handleCheck = async () => {
     if (events.length === 0) {
-      message.warning("Không có sự kiện để kiểm tra");
+      message.warning(t('gamePlay.errors.noData'));
       return;
     }
     setSubmitting(true);
@@ -129,13 +131,13 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
       setIsCorrect(result.isCorrect);
 
       if (result.isCorrect) {
-        message.success({ content: "Chính xác! Bạn đã sắp xếp đúng dòng lịch sử.", key: "timeline_check" });
+        message.success({ content: t('gamePlay.screens.timeline.success'), key: "timeline_check" });
       } else {
-        message.error({ content: "Chưa chính xác. Hãy thử lại!", key: "timeline_check" });
+        message.error({ content: t('gamePlay.screens.timeline.failure'), key: "timeline_check" });
       }
     } catch (error) {
       console.error(error);
-      message.error("Lỗi kiểm tra đáp án");
+      message.error(t('gamePlay.errors.general'));
     } finally {
       setSubmitting(false);
     }
@@ -144,8 +146,8 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
   if (events.length === 0) {
     return (
       <div style={{ padding: 24, textAlign: "center", color: "white" }}>
-        <h3>Không có dữ liệu sự kiện</h3>
-        <Button onClick={() => { playClick(); onNext(); }}>Bỏ qua</Button>
+        <h3>{t('gamePlay.errors.noData')}</h3>
+        <Button onClick={() => { playClick(); onNext(); }}>{t('gamePlay.common.skip')}</Button>
       </div>
     );
   }
@@ -164,10 +166,10 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
         <Card className="timeline-card">
           <div className="timeline-header">
             <Title level={3} style={{ margin: 0 }}>
-              {data.content?.title || "Dòng Chảy Lịch Sử"}
+              {data.content?.title || t('gamePlay.screens.timeline.title')}
             </Title>
             <Text type="secondary" style={{ display: "block", marginTop: 8, fontSize: 16 }}>
-              {data.content?.description || "Kéo thả các sự kiện để sắp xếp theo đúng trình tự thời gian."}
+              {data.content?.description || t('gamePlay.screens.timeline.description')}
             </Text>
           </div>
 
@@ -193,11 +195,11 @@ const TimelineScreen: React.FC<Props> = ({ data, onNext, onSubmit, fallbackImage
                 className="continue-btn"
                 disabled={loading}
               >
-                Tiếp tục hành trình
+                {t('gamePlay.screens.quiz.nextStep')}
               </Button>
             ) : (
               <Button type="primary" size="large" onClick={() => { playClick(); handleCheck(); }} loading={submitting} disabled={submitting}>
-                Kiểm tra kết quả
+                {t('gamePlay.screens.timeline.checkResult')}
               </Button>
             )}
           </div>

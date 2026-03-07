@@ -1,0 +1,43 @@
+{
+  "loading": "Đang chuẩn bị nhiệm vụ...",
+  "header": {
+    "title": "Đường đến Vinh quang",
+    "subtitle": "Hoàn thành thử thách, nhận báu vật di truyền và thăng cấp bản thân"
+  },
+  "stats": {
+    "all": "Tất cả",
+    "daily": "Hàng ngày",
+    "weekly": "Hàng tuần",
+    "achievement": "Thành tích"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "daily": "Hằng ngày",
+    "weekly": "Hằng tuần",
+    "achievement": "Thành tích",
+    "exploration": "Thám hiểm"
+  },
+  "empty": "Hiện không có nhiệm vụ nào trong mục này",
+  "card": {
+    "progress": "Tiến độ",
+    "locked": "Chăm chỉ học tập để mở khóa",
+    "start": "Bắt đầu",
+    "claim": "Nhận Thưởng",
+    "claimed": "Đã Hoàn Thành",
+    "detail": "Chi tiết",
+    "execute": "Thực hiện"
+  },
+  "modal": {
+    "requirements": "Yêu cầu",
+    "rewards": "Phần thưởng",
+    "understood": "Đã hiểu",
+    "units": {
+      "trophies": "Cúp",
+      "petals": "Cánh",
+      "coins": "Xu"
+    }
+  },
+  "messages": {
+    "claimSuccess": "Phần thưởng đã được chuyển vào túi đồ!"
+  }
+}

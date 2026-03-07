@@ -13,6 +13,7 @@ import {
   Badge,
   Space,
 } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import {
@@ -46,6 +47,7 @@ import { formatRelativeTime } from "@/utils/formatters";
 const { Title, Text } = Typography;
 
 const DashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -106,7 +108,7 @@ const DashboardPage: React.FC = () => {
       setNotificationPage(nextPage);
       setHasMoreNotifications((data.items || []).length === 5);
     } catch (error) {
-      message.error("Không thể tải thêm thông báo");
+      message.error(t('gameDashboard.notifications.errorLoad'));
     } finally {
       setLoadingMoreNotifications(false);
     }
@@ -118,17 +120,17 @@ const DashboardPage: React.FC = () => {
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
       dispatch(decrementGlobalUnreadCount());
     } catch (error) {
-      message.error("Thao tác thất bại");
+      message.error(t('gameDashboard.notifications.errorRead'));
     }
   };
 
   const handleClaim = async (questId: number) => {
     try {
       await dispatch(claimQuestRewards(questId) as any).unwrap();
-      message.success("Đã nhận thưởng thành công!");
+      message.success(t('gameDashboard.quests.successClaim'));
       fetchActiveQuests(); // Refresh
     } catch (error) {
-      message.error("Không thể nhận thưởng");
+      message.error(t('gameDashboard.quests.errorClaim'));
     }
   };
 
@@ -150,14 +152,14 @@ const DashboardPage: React.FC = () => {
           <Col xs={24} md={16}>
             <div className="hero-content">
               <Title level={2} style={{ color: "#fff", marginBottom: 8 }}>
-                Xin chào,{" "}
+                {t('gameDashboard.hero.welcome')}{" "}
                 <span style={{ color: "#ffd700", textShadow: "0 2px 8px rgba(255, 215, 0, 0.4)" }}>
-                  {user?.name || "Nhà thám hiểm"}
+                  {user?.name || t('gameDashboard.hero.defaultName')}
                 </span>
                 !
               </Title>
               <Text style={{ color: "rgba(255,255,255,0.9)", fontSize: 16 }}>
-                Hành trình khám phá di sản của bạn đang chờ đợi. Hãy tiếp tục chinh phục các thử thách!
+                {t('gameDashboard.hero.subtitle')}
               </Text>
               <div style={{ marginTop: 24, display: "flex", gap: 16 }}>
                 <Button
@@ -185,7 +187,7 @@ const DashboardPage: React.FC = () => {
                     transition: "all 0.15s ease",
                   }}
                 >
-                  Tiếp tục chơi
+                  {t('gameDashboard.hero.continue')}
                 </Button>
                 <Button
                   variant="outline"
@@ -204,7 +206,7 @@ const DashboardPage: React.FC = () => {
                     border: "2px solid rgba(255, 249, 230, 0.7)",
                   }}
                 >
-                  Xem nhiệm vụ
+                  {t('gameDashboard.hero.viewQuests')}
                 </Button>
               </div>
             </div>
@@ -218,12 +220,12 @@ const DashboardPage: React.FC = () => {
                   style={{ backgroundColor: "#fde3cf", color: "#f56a00", fontSize: 32 }}
                 />
                 <Title level={4} style={{ marginTop: 16, marginBottom: 4 }}>
-                  Hạng {progress?.currentRank || "Tập Sự"}
+                  {t('gameDashboard.rank.title', { rank: progress?.currentRank || t('gameDashboard.rank.defaultRank') })}
                 </Title>
                 <Text type="secondary">
                   {progress?.nextRankName
-                    ? `Cần ${progress.pointsToNextRank} 🏆 để lên hạng ${progress.nextRankName}`
-                    : "Bạn đã đạt hạng cao nhất! 🎉"}
+                    ? t('gameDashboard.rank.needPoints', { points: progress.pointsToNextRank, rank: progress.nextRankName })
+                    : t('gameDashboard.rank.maxRank')}
                 </Text>
                 <Progress
                   percent={progress?.progressPercent || 0}
@@ -242,7 +244,7 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card bordered={false} className="stat-card">
             <Statistic
-              title="Tổng cúp"
+              title={t('gameDashboard.stats.trophies')}
               value={progress?.totalPoints || 0}
               prefix={<TrophyOutlined style={{ color: "#faad14" }} />}
               valueStyle={{ color: "#3f8600" }}
@@ -252,7 +254,7 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card bordered={false} className="stat-card">
             <Statistic
-              title="Hoa Sen"
+              title={t('gameDashboard.stats.petals')}
               value={progress?.totalSenPetals || 0}
               prefix={<span style={{ fontSize: 20 }}>🌸</span>}
               valueStyle={{ color: "#cf1322" }}
@@ -262,7 +264,7 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card bordered={false} className="stat-card">
             <Statistic
-              title="Xu vàng"
+              title={t('gameDashboard.stats.coins')}
               value={progress?.coins || 0}
               prefix={<span style={{ fontSize: 20 }}>🪙</span>}
               valueStyle={{ color: "#d48806" }}
@@ -278,12 +280,12 @@ const DashboardPage: React.FC = () => {
             <Card
               title={
                 <>
-                  <FireOutlined style={{ color: "#ff4d4f" }} /> Nhiệm vụ đang làm
+                  <FireOutlined style={{ color: "#ff4d4f" }} /> {t('gameDashboard.quests.activeTitle')}
                 </>
               }
               extra={
                 <Button variant="ghost" onClick={() => navigate("/game/quests")}>
-                  Xem tất cả
+                  {t('gameDashboard.quests.viewAll')}
                 </Button>
               }
               bordered={false}
@@ -296,7 +298,7 @@ const DashboardPage: React.FC = () => {
                 itemLayout="horizontal"
                 dataSource={activeQuests}
                 locale={{
-                  emptyText: <Empty description="Chưa có nhiệm vụ nào" image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+                  emptyText: <Empty description={t('gameDashboard.quests.empty')} image={Empty.PRESENTED_IMAGE_SIMPLE} />,
                 }}
                 renderItem={(item: Quest) => {
                   const progressVal = item.progress?.currentValue || 0;
@@ -312,10 +314,10 @@ const DashboardPage: React.FC = () => {
                   const onStart = async () => {
                     try {
                       await questService.startQuest(item.id);
-                      message.success("Đã nhận nhiệm vụ!");
+                      message.success(t('gameDashboard.quests.successStart'));
                       fetchActiveQuests();
                     } catch (e) {
-                      message.error("Không thể nhận nhiệm vụ lúc này");
+                      message.error(t('gameDashboard.quests.errorStart'));
                     }
                   };
 
@@ -344,19 +346,19 @@ const DashboardPage: React.FC = () => {
                       actions={[
                         isNotStarted ? (
                           <Button buttonSize="small" variant="outline" onClick={onStart}>
-                            Nhận nhiệm vụ
+                            {t('gameDashboard.quests.start')}
                           </Button>
                         ) : isCompleted ? (
                           <Button buttonSize="small" variant="primary" onClick={() => handleClaim(item.id)}>
-                            Nhận thưởng
+                            {t('gameDashboard.quests.claim')}
                           </Button>
                         ) : isClaimed ? (
                           <Button buttonSize="small" disabled>
-                            Đã nhận
+                            {t('gameDashboard.quests.claimed')}
                           </Button>
                         ) : (
                           <Button variant="outline" buttonSize="small" onClick={onNavigate}>
-                            Thực hiện
+                            {t('gameDashboard.quests.execute')}
                           </Button>
                         ),
                       ]}
@@ -413,7 +415,7 @@ const DashboardPage: React.FC = () => {
             </Card>
           </Col>
           <Col xs={24} lg={8}>
-            <Card title="Tin tức & Sự kiện" bordered={false} className="content-card" style={{ height: "100%" }}>
+            <Card title={t('gameDashboard.news.title')} bordered={false} className="content-card" style={{ height: "100%" }}>
               <List
                 dataSource={[
                   { title: "Sự kiện: Mùa Sen Nở", date: "Còn 2 ngày" },
@@ -439,7 +441,7 @@ const DashboardPage: React.FC = () => {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span>
                     <BellOutlined style={{ color: "#f5222d", marginRight: 8 }} />
-                    Thông báo mới
+                    {t('gameDashboard.notifications.title')}
                   </span>
                   {globalUnreadCount > 0 && (
                     <Badge count={globalUnreadCount} overflowCount={10} style={{ backgroundColor: "#f5222d" }} />
@@ -452,7 +454,7 @@ const DashboardPage: React.FC = () => {
               bodyStyle={{ flex: 1, padding: 0, display: "flex", flexDirection: "column" }}
               extra={
                 <Button variant="ghost" buttonSize="small" onClick={() => navigate("/notifications")}>
-                  Tất cả
+                  {t('gameDashboard.notifications.viewAll')}
                 </Button>
               }
             >
@@ -469,13 +471,13 @@ const DashboardPage: React.FC = () => {
                           onClick={loadMoreNotifications}
                           disabled={loadingMoreNotifications}
                         >
-                          {loadingMoreNotifications ? "Đang tải..." : "Xem thêm"}
+                          {loadingMoreNotifications ? t('gameDashboard.notifications.loading') : t('gameDashboard.notifications.loadMore')}
                         </Button>
                       </div>
                     ) : null
                   }
                   locale={{
-                    emptyText: <Empty description="Không có thông báo mới" image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+                    emptyText: <Empty description={t('gameDashboard.notifications.empty')} image={Empty.PRESENTED_IMAGE_SIMPLE} />,
                   }}
                   renderItem={(item) => (
                     <List.Item
@@ -485,6 +487,7 @@ const DashboardPage: React.FC = () => {
                             variant="ghost"
                             icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
                             onClick={() => handleMarkAsRead(item.id)}
+                            title={t('gameDashboard.notifications.markRead')}
                           />
                         ),
                       ]}
@@ -525,7 +528,7 @@ const DashboardPage: React.FC = () => {
               title={
                 <span>
                   <HistoryOutlined style={{ color: "#722ed1", marginRight: 8 }} />
-                  Lịch sử hoạt động
+                  {t('gameDashboard.activity.title')}
                 </span>
               }
               bordered={false}
@@ -534,7 +537,7 @@ const DashboardPage: React.FC = () => {
               bodyStyle={{ flex: 1, padding: 0, display: "flex", flexDirection: "column" }}
             >
               <div style={{ flex: 1, overflowY: "auto", maxHeight: "400px", padding: "24px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Empty description="Tính năng đang cập nhật, Vui lòng đợi nhé" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <Empty description={t('gameDashboard.activity.updating')} image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             </Card>
           </Col>
@@ -542,7 +545,7 @@ const DashboardPage: React.FC = () => {
 
         {/* Lower Section: Shortcuts & Promo */}
         <Title level={4} style={{ marginTop: 24, marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>
-          Khám phá nhanh
+          {t('gameDashboard.quickExplore.title')}
         </Title>
         <Row gutter={[24, 24]}>
           <Col xs={24} lg={16}>
@@ -550,43 +553,43 @@ const DashboardPage: React.FC = () => {
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/learning"); }}>
                   <BookOutlined style={{ fontSize: 32, color: "#1890ff" }} />
-                  <div className="shortcut-title">Ôn tập</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.learning')}</div>
                 </Card>
               </Col>
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/museum"); }}>
                   <HistoryOutlined style={{ fontSize: 32, color: "#722ed1" }} />
-                  <div className="shortcut-title">Bảo tàng</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.museum')}</div>
                 </Card>
               </Col>
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/shop"); }}>
                   <ShopOutlined style={{ fontSize: 32, color: "#eb2f96" }} />
-                  <div className="shortcut-title">Cửa hàng</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.shop')}</div>
                 </Card>
               </Col>
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/leaderboard"); }}>
                   <TrophyOutlined style={{ fontSize: 32, color: "#faad14" }} />
-                  <div className="shortcut-title">Xếp hạng</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.leaderboard')}</div>
                 </Card>
               </Col>
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/map"); }}>
                   <CompassOutlined style={{ fontSize: 32, color: "#52c41a" }} />
-                  <div className="shortcut-title">Bản đồ</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.map')}</div>
                 </Card>
               </Col>
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/scan"); }}>
                   <QrcodeOutlined style={{ fontSize: 32, color: "#13c2c2" }} />
-                  <div className="shortcut-title">Tầm Bảo</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.scan')}</div>
                 </Card>
               </Col>
               <Col xs={12} sm={8} lg={6}>
                 <Card hoverable className="shortcut-card" onClick={() => { playClick(); navigate("/game/welfare"); }}>
                   <GiftOutlined style={{ fontSize: 32, color: "#f5222d" }} />
-                  <div className="shortcut-title">Đổi thưởng</div>
+                  <div className="shortcut-title">{t('gameDashboard.quickExplore.welfare')}</div>
                 </Card>
               </Col>
             </Row>
@@ -595,9 +598,9 @@ const DashboardPage: React.FC = () => {
           <Col xs={24} lg={8}>
             <Card className="promo-card" bordered={false} style={{ height: "100%" }}>
               <div style={{ textAlign: "center", padding: "12px 0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <Title level={4} style={{ marginBottom: 4 }}>Góp ý cho SEN 💌</Title>
+                <Title level={4} style={{ marginBottom: 4 }}>{t('gameDashboard.feedback.title')}</Title>
                 <Text style={{ fontSize: 13, marginBottom: 16, display: "block", color: "rgba(255,215,0,0.85)", lineHeight: "1.5" }}>
-                  SEN đang trong giai đoạn thử nghiệm. Mỗi ý kiến của bạn đều giúp chúng mình trở nên tốt hơn mỗi ngày!
+                  {t('gameDashboard.feedback.subtitle')}
                 </Text>
                 <Button
                   variant="primary"
@@ -608,7 +611,7 @@ const DashboardPage: React.FC = () => {
                     window.open("https://forms.gle/GM3N96UnPY2XmfYXA", "_blank");
                   }}
                 >
-                  Điền khảo sát ngay
+                  {t('gameDashboard.feedback.btn')}
                 </Button>
               </div>
             </Card>

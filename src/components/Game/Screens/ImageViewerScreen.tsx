@@ -1,9 +1,10 @@
 import React from "react";
-import {Button, Image} from "antd";
-import {ArrowRightOutlined, EyeOutlined} from "@ant-design/icons";
-import type {Screen} from "@/types/game.types";
+import { Button, Image } from "antd";
+import { ArrowRightOutlined, EyeOutlined } from "@ant-design/icons";
+import type { Screen } from "@/types/game.types";
+import { useTranslation } from "react-i18next";
 
-import {getImageUrl} from "@/utils/image.helper";
+import { getImageUrl } from "@/utils/image.helper";
 
 interface Props {
   data: Screen & {
@@ -17,16 +18,17 @@ interface Props {
   loading?: boolean;
 }
 
-const ImageViewerScreen: React.FC<Props> = ({data, onNext, loading}) => {
+const ImageViewerScreen: React.FC<Props> = ({ data, onNext, loading }) => {
+  const { t } = useTranslation();
   // Support multiple data structures
   const content = data.content || {};
 
   const imageUrl = content.imageUrl || data.backgroundImage;
-  const title = (data as any).caption || content.title || "Hình ảnh chi tiết";
+  const title = (data as any).caption || content.title || t('gamePlay.screens.imageViewer.fallbackTitle');
   const description =
     (data as any).description ||
     content.description ||
-    "Khám phá hình ảnh này để tìm hiểu thêm về di sản văn hóa Việt Nam.";
+    t('gamePlay.screens.imageViewer.fallbackDescription');
 
   const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -48,15 +50,15 @@ const ImageViewerScreen: React.FC<Props> = ({data, onNext, loading}) => {
                 alt={title}
                 preview={{
                   mask: (
-                    <div style={{display: "flex", alignItems: "center", gap: 8}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <EyeOutlined />
-                      <span>Phóng to</span>
+                      <span>{t('gamePlay.common.zoomIn')}</span>
                     </div>
                   ),
                 }}
               />
             ) : (
-              <div style={{color: "#8c8c8c"}}>Không có hình ảnh</div>
+              <div style={{ color: "#8c8c8c" }}>{t('gamePlay.screens.imageViewer.noImage')}</div>
             )}
           </div>
 
@@ -69,13 +71,13 @@ const ImageViewerScreen: React.FC<Props> = ({data, onNext, loading}) => {
                 </div>
                 {description.length > 150 && (
                   <Button type="link" size="small" onClick={() => setIsExpanded(!isExpanded)} className="toggle-btn">
-                    {isExpanded ? "Thu gọn" : "Xem thêm"}
+                    {isExpanded ? t('gamePlay.common.collapse') : t('gamePlay.common.expand')}
                   </Button>
                 )}
               </div>
             </div>
             <Button type="primary" size="large" icon={<ArrowRightOutlined />} onClick={onNext} disabled={loading}>
-              Tiếp tục
+              {t('gamePlay.common.continue')}
             </Button>
           </div>
         </div>

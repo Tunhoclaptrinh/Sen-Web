@@ -7,6 +7,7 @@ import {
   setCurrentLevel,
 } from "@/store/slices/gameSlice";
 import { Spin, Typography, Progress, Switch, Tooltip, message } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
@@ -20,6 +21,7 @@ const { Title } = Typography;
 import ChapterMap from "@/components/Game/ChapterMap";
 
 const LevelsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { chapterId } = useParams<{ chapterId: string }>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -55,7 +57,7 @@ const LevelsPage: React.FC = () => {
       dispatch(setCurrentLevel(level));
       navigate(`/game/play/${level.id}`);
     } else {
-      message.warning("Màn chơi này đang bị khóa!");
+      message.warning(t('gameLevels.messages.locked'));
     }
   };
 
@@ -88,7 +90,7 @@ const LevelsPage: React.FC = () => {
           icon={<span>←</span>}
           onClick={() => { navigate("/game/chapters"); }}
         >
-          Trở về
+          {t('gameLevels.header.back')}
         </Button>
 
         {currentChapter && (
@@ -108,8 +110,8 @@ const LevelsPage: React.FC = () => {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Typography.Text style={{ fontSize: 12 }}>Chi tiết</Typography.Text>
-          <Tooltip title="Bấm vào đây để thêm thẻ màn chơi"><Switch
+          <Typography.Text style={{ fontSize: 12 }}>{t('gameLevels.header.details')}</Typography.Text>
+          <Tooltip title={t('gameLevels.header.tooltip')}><Switch
             checkedChildren={<EyeOutlined />}
             unCheckedChildren={<EyeInvisibleOutlined />}
             checked={showDetailCards}

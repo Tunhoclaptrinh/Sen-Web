@@ -1,0 +1,35 @@
+{
+  "processing": "Đang giải mã mật văn...",
+  "card": {
+    "title": "Tầm Bảo & Ghi Danh"
+  },
+  "errors": {
+    "invalidCheckinCode": "Mã Check-in không hợp lệ!",
+    "notFound": "Không tìm thấy vật phẩm hoặc địa điểm này.",
+    "scanFailed": "Quét thất bại"
+  },
+  "actions": {
+    "retry": "Thử lại ngay",
+    "backHome": "Quay lại trang chủ",
+    "viewMap": "Xem bản đồ di tích",
+    "continueSearching": "Tiếp tục tầm bảo",
+    "continueFinding": "Tiếp tục tìm kiếm",
+    "goToLibrary": "Vào tàng kinh các"
+  },
+  "checkin": {
+    "success": "Ghi danh thành công!",
+    "description": "Tại hạ đã ghi danh bạn tại <strong>{{locationName}}</strong>",
+    "meritPoints": "+{{points}} Công đức",
+    "visitCount": "Đã ghé thăm: <strong>{{count}}</strong> lần"
+  },
+  "artifact": {
+    "newDiscovery": "Phát hiện Kỳ vật!",
+    "collect": "Thu thập Kỳ vật",
+    "new": "MỚI",
+    "badgesFound": "Danh hiệu đạt được:",
+    "rewards": {
+      "coins": "+{{count}} Xu",
+      "petals": "+{{count}} Cánh Sen"
+    }
+  }
+}

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SenChibi from "@/components/SenChibi";
 import type { DialogueScreen as DialogueScreenType } from "@/types/game.types";
 import { useGameSounds } from "@/hooks/useSound";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 
 import { getImageUrl } from "@/utils/image.helper";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -167,7 +169,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
           >
             <div className="dialogue-header">
               <span className="character-name">
-                {isUserSpeaking ? "Bạn" : currentDialogue.speaker === "AI" ? "Trợ lý Sen" : currentDialogue.speaker}
+                {isUserSpeaking ? t('gamePlay.screens.dialogue.user') : currentDialogue.speaker === "AI" ? t('gamePlay.screens.dialogue.ai') : currentDialogue.speaker}
               </span>
             </div>
             <div className="dialogue-text">
@@ -181,7 +183,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
                 animate={{ y: [0, 5, 0] }}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
-                Chạm để tiếp tục ▼
+                {t('gamePlay.screens.dialogue.nextIndicator')}
               </motion.div>
             )}
           </motion.div>

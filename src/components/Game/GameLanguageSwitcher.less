@@ -1,0 +1,99 @@
+.game-language-switcher {
+  display: flex;
+  align-items: center;
+  background: rgba(168, 7, 26, 0.1);
+  border: 1px solid rgba(197, 160, 101, 0.4);
+  border-radius: 6px;
+  padding: 0 4px;
+  transition: all 0.3s ease;
+  height: 32px;
+
+  &:hover {
+    background: rgba(168, 7, 26, 0.15);
+    border-color: rgba(197, 160, 101, 0.8);
+    box-shadow: 0 0 8px rgba(168, 7, 26, 0.2);
+  }
+
+  .game-lang-select {
+    min-width: 120px;
+
+    .ant-select-selector {
+      color: #c5a065 !important;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 0 8px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .ant-select-selection-item {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .flag-icon {
+      width: 18px;
+      height: 12px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .lang-label {
+      font-size: 13px;
+    }
+  }
+}
+
+/* Dropdown styling */
+.game-lang-dropdown {
+  background: #fdf8ef !important;
+  border: 1.5px solid #c5a065 !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+  box-shadow: 0 4px 12px rgba(168, 7, 26, 0.15) !important;
+
+  .ant-select-item {
+    border-radius: 4px;
+    margin-bottom: 2px;
+    color: #5d4037;
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+
+    &-option-selected {
+      background: rgba(168, 7, 26, 0.1) !important;
+      color: #a8071a !important;
+    }
+
+    &-option-active {
+      background: rgba(197, 160, 101, 0.1) !important;
+    }
+
+    .lang-label {
+      font-weight: 600;
+    }
+  }
+}
+
+/* Fullscreen mode adjustments */
+.fullscreen-mode {
+  .game-language-switcher {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+
+    .game-lang-select .ant-select-selector {
+      color: white !important;
+    }
+
+    .ant-select-arrow {
+      color: white !important;
+    }
+  }
+}

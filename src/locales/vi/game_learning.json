@@ -1,0 +1,108 @@
+{
+  "loading": {
+    "module": "Đang tải bài học...",
+    "path": "Đang tải lộ trình..."
+  },
+  "errors": {
+    "fetchPath": "Không thể tải lộ trình học tập",
+    "fetchModule": "Không thể tải nội dung bài học",
+    "submitQuiz": "Lỗi nộp bài"
+  },
+  "header": {
+    "title": "Ôn tập kiến thức",
+    "subtitle": "Ôn luyện và củng cố kiến thức về lịch sử văn hóa Việt Nam qua các bài học chuyên sâu"
+  },
+  "stats": {
+    "total": "Tổng bài học",
+    "completed": "Đã hoàn thành",
+    "progress": "Tiến độ",
+    "duration": "Thời lượng"
+  },
+  "difficulty": {
+    "easy": "DỄ",
+    "medium": "VỪA",
+    "hard": "KHÓ"
+  },
+  "card": {
+    "empty": "Chưa có bài học nào",
+    "completed": "Hoàn thành",
+    "rewardClaimed": "Đã nhận thưởng",
+    "lockMessage": "Yêu cầu hoàn thành bài trước",
+    "notStudied": "Chưa học",
+    "actions": {
+      "locked": "Chưa mở khóa",
+      "review": "Ôn lại",
+      "learnNow": "Học ngay"
+    }
+  },
+  "detail": {
+    "notFound": "Không tìm thấy bài học",
+    "backToLesson": "Trở về bài học",
+    "back": "Quay lại",
+    "contentType": {
+      "article": "BÀI VIẾT",
+      "video": "VIDEO"
+    },
+    "videoError": "Video không khả dụng hoặc Link lỗi",
+    "nextStep": {
+      "quiz": "Làm bài kiểm tra ngay",
+      "complete": "Hoàn thành bài học"
+    },
+    "rewards": "Thưởng",
+    "keyKnowledge": "Kiến thức trọng tâm",
+    "tooltips": {
+      "timer": "Thời gian còn lại",
+      "progress": "Tiến độ hoàn thành",
+      "rewards": "Phần thưởng bài học",
+      "passingScore": "Điểm số để đạt: {{score}}"
+    }
+  },
+  "quiz": {
+    "title": "KIỂM TRA KIẾN THỨC",
+    "description": "Hãy trả lời các câu hỏi sau để nhận thêm cúp.",
+    "startQuiz": "Bắt đầu làm bài",
+    "difficultyLabel": "ĐỘ KHÓ",
+    "questionLabel": "CÂU HỎI {{index}}",
+    "timer": {
+      "timeUp": "Hết giờ làm bài! Hệ thống đang tự động nộp bài làm của bạn."
+    },
+    "timerTooltip": "Thời gian làm bài còn lại",
+    "timerWarning": "Thời gian sắp hết! Bạn còn 1 phút để hoàn thành.",
+    "timeUp": "Hết giờ làm bài! Hệ thống đang tự động nộp bài làm của bạn.",
+    "submitting": "Đang nộp bài...",
+    "doneLabel": "Đã làm",
+    "doneUnit": "câu",
+    "rewardTooltip": "Phần thưởng",
+    "passingScoreTooltip": "Cần đạt",
+    "passingScoreUnit": "cúp",
+    "actions": {
+      "submit": "Nộp bài"
+    },
+    "hints": {
+      "completeAll": "Vui lòng hoàn thành tất cả câu hỏi"
+    },
+    "submitTooltip": {
+      "complete": "Vui lòng hoàn thành tất cả câu hỏi",
+      "submit": "Nộp bài"
+    },
+    "completion": {
+      "success": {
+        "title": "Xuất Sắc!",
+        "subtitle": "Bạn đã hoàn thành bài học",
+        "scoreLabel": "Phần trăm cúp",
+        "levelUp": "LEVEL UP!",
+        "pointsLabel": "CÚP",
+        "action": "Tiếp tục hành trình"
+      },
+      "failure": {
+        "title": "Cần Cố Gắng Hơn",
+        "neededScore": "Cần đạt: {{score}}/100 cúp",
+        "encouragement": "Đừng nản chí! Hãy ôn lại kiến thức và thử lại nhé.",
+        "action": "Thử lại ngay"
+      }
+    }
+  },
+  "units": {
+    "minutes": "phút"
+  }
+}

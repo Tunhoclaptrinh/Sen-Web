@@ -1,16 +1,16 @@
 import React from "react";
-import {Form, Input, Select, InputNumber, Button, Steps, Row, Col, DatePicker} from "antd";
-import {ReadOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, LinkOutlined} from "@ant-design/icons";
+import { Form, Input, Select, InputNumber, Button, Steps, Row, Col, DatePicker } from "antd";
+import { ReadOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, LinkOutlined } from "@ant-design/icons";
 import TinyEditor from "@/components/common/TinyEditor";
 import ImageUpload from "@/components/common/Upload/ImageUpload";
-import {FormModal, Button as StyledButton, DebounceSelect} from "@/components/common";
-import {useAuth} from "@/hooks/useAuth";
+import { FormModal, Button as StyledButton, DebounceSelect } from "@/components/common";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
-import categoryService, {Category} from "@/services/category.service";
+import categoryService, { Category } from "@/services/category.service";
 import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
-import {HeritageSite, Artifact, HistoryArticle} from "@/types";
+import { HeritageSite, Artifact, HistoryArticle } from "@/types";
 
 interface LearningFormProps {
   visible: boolean;
@@ -22,9 +22,9 @@ interface LearningFormProps {
 }
 
 // Custom component to handle both URL input and Upload
-const ThumbnailInput: React.FC<{value?: string; onChange?: (val: string) => void}> = ({value, onChange}) => {
+const ThumbnailInput: React.FC<{ value?: string; onChange?: (val: string) => void }> = ({ value, onChange }) => {
   return (
-    <div style={{display: "flex", flexDirection: "column", gap: 12}}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <ImageUpload
         value={value}
         onChange={(val: string | string[]) => {
@@ -42,15 +42,15 @@ const ThumbnailInput: React.FC<{value?: string; onChange?: (val: string) => void
   );
 };
 
-const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit, initialValues, loading, isEdit}) => {
+const LearningForm: React.FC<LearningFormProps> = ({ visible, onCancel, onSubmit, initialValues, loading, isEdit }) => {
   const [currentStep, setCurrentStep] = React.useState(0);
   const [form] = Form.useForm();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [categories, setCategories] = React.useState<Category[]>([]);
 
   React.useEffect(() => {
     const fetchCategories = async () => {
-      const res = await categoryService.getAll({limit: 100});
+      const res = await categoryService.getAll({ limit: 100 });
       if (res.success && Array.isArray(res.data)) {
         setCategories(res.data);
       }
@@ -64,7 +64,11 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
         difficulty: "easy",
         estimatedDuration: 30,
         contentType: "article",
-        quiz: {passingScore: 50, questions: []},
+        quiz: { passingScore: 50, questions: [] },
+        rewardPoints: 50,
+        rewardCoins: 0,
+        reviewRewardPoints: 10,
+        reviewRewardCoins: 0,
         author: user?.name,
       };
 
@@ -85,32 +89,32 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
             const [relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
               (initialValues.relatedHeritageIds?.length ?? 0) > 0
                 ? heritageService.getByIds(initialValues.relatedHeritageIds!)
-                : Promise.resolve({success: true, data: []}),
+                : Promise.resolve({ success: true, data: [] }),
               (initialValues.relatedArtifactIds?.length ?? 0) > 0
                 ? artifactService.getAll({
-                    ids: initialValues.relatedArtifactIds!.join(","),
-                  })
-                : Promise.resolve({success: true, data: []}),
+                  ids: initialValues.relatedArtifactIds!.join(","),
+                })
+                : Promise.resolve({ success: true, data: [] }),
               (initialValues.relatedHistoryIds?.length ?? 0) > 0
                 ? historyService.getAll({
-                    ids: initialValues.relatedHistoryIds!.join(","),
-                  })
-                : Promise.resolve({success: true, data: []}),
+                  ids: initialValues.relatedHistoryIds!.join(","),
+                })
+                : Promise.resolve({ success: true, data: [] }),
             ]);
 
             const formattedValues = {
               ...memoizedInitialValues,
               relatedHeritageIds: (initialValues.relatedHeritageIds || []).map((id: number) => {
                 const item = relHeritageRes.data?.find((h: HeritageSite) => h.id === id);
-                return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
+                return item ? { label: item.name, value: item.id } : { label: `ID: ${id}`, value: id };
               }),
               relatedArtifactIds: (initialValues.relatedArtifactIds || []).map((id: number) => {
                 const item = relArtifactsRes.data?.find((a: Artifact) => a.id === id);
-                return item ? {label: item.name, value: item.id} : {label: `ID: ${id}`, value: id};
+                return item ? { label: item.name, value: item.id } : { label: `ID: ${id}`, value: id };
               }),
               relatedHistoryIds: (initialValues.relatedHistoryIds || []).map((id: number) => {
                 const item = relHistoryRes.data?.find((h: HistoryArticle) => h.id === id);
-                return item ? {label: item.title, value: item.id} : {label: `ID: ${id}`, value: id};
+                return item ? { label: item.title, value: item.id } : { label: `ID: ${id}`, value: id };
               }),
             };
 
@@ -161,6 +165,10 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
           "contentUrl",
           "description",
           "categoryId",
+          "rewardPoints",
+          "rewardCoins",
+          "reviewRewardPoints",
+          "reviewRewardCoins",
         ]);
       }
       setCurrentStep(currentStep + 1);
@@ -171,18 +179,18 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
 
   // Fetch functions for DebounceSelect
   const fetchHeritageList = async (search: string) => {
-    const res = await heritageService.getAll({q: search, limit: 10});
-    return res.success && res.data ? res.data.map((h: HeritageSite) => ({label: h.name, value: h.id})) : [];
+    const res = await heritageService.getAll({ q: search, limit: 10 });
+    return res.success && res.data ? res.data.map((h: HeritageSite) => ({ label: h.name, value: h.id })) : [];
   };
 
   const fetchArtifactList = async (search: string) => {
-    const res = await artifactService.getAll({q: search, limit: 10});
-    return res.success && res.data ? res.data.map((a: Artifact) => ({label: a.name, value: a.id})) : [];
+    const res = await artifactService.getAll({ q: search, limit: 10 });
+    return res.success && res.data ? res.data.map((a: Artifact) => ({ label: a.name, value: a.id })) : [];
   };
 
   const fetchHistoryList = async (search: string) => {
-    const res = await historyService.getAll({q: search, limit: 10});
-    return res.success && res.data ? res.data.map((h: HistoryArticle) => ({label: h.title, value: h.id})) : [];
+    const res = await historyService.getAll({ q: search, limit: 10 });
+    return res.success && res.data ? res.data.map((h: HistoryArticle) => ({ label: h.title, value: h.id })) : [];
   };
 
   const prev = () => {
@@ -206,7 +214,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
       width={900}
       form={form} // Pass form instance to FormModal if supported, or just use it for styling
       footer={
-        <div style={{display: "flex", justifyContent: "center", gap: 12}}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
           <StyledButton variant="outline" onClick={onCancel}>
             Hủy bỏ
           </StyledButton>
@@ -228,7 +236,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
         </div>
       }
     >
-      <div style={{marginBottom: 24}}>
+      <div style={{ marginBottom: 24 }}>
         <Steps current={currentStep}>
           <Steps.Step title="Thông tin chung" description="Thiết lập nội dung" />
           <Steps.Step title="Cấu hình Quiz" description="Câu hỏi & Trắc nghiệm" />
@@ -237,15 +245,15 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
       </div>
 
       <Form form={form} layout="vertical" onFinish={handleFinish} initialValues={memoizedInitialValues}>
-        <div style={{display: currentStep === 0 ? "block" : "none"}}>
+        <div style={{ display: currentStep === 0 ? "block" : "none" }}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="title"
                 label="Tiêu đề bài học"
                 rules={[
-                  {required: true, message: "Vui lòng nhập tiêu đề"},
-                  {min: 5, message: "Tiêu đề bài học yêu cầu tối thiểu 5 ký tự"},
+                  { required: true, message: "Vui lòng nhập tiêu đề" },
+                  { min: 5, message: "Tiêu đề bài học yêu cầu tối thiểu 5 ký tự" },
                 ]}
               >
                 <Input prefix={<ReadOutlined />} placeholder="Ví dụ: Lịch sử nhà Đinh" />
@@ -255,7 +263,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
               <Form.Item
                 name="categoryId"
                 label="Danh mục Văn hóa"
-                rules={[{required: true, message: "Vui lòng chọn danh mục"}]}
+                rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
               >
                 <Select placeholder="Chọn danh mục" allowClear>
                   {categories.map((cat) => (
@@ -285,7 +293,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
             <Col span={12}>
               <Form.Item name="publishDate" label="Ngày xuất bản">
                 <DatePicker
-                  style={{width: "100%"}}
+                  style={{ width: "100%" }}
                   disabled
                   format="DD/MM/YYYY HH:mm"
                   showTime
@@ -307,7 +315,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
             </Col>
             <Col span={8}>
               <Form.Item name="estimatedDuration" label="Thời gian (phút)">
-                <InputNumber style={{width: "100%"}} min={1} />
+                <InputNumber style={{ width: "100%" }} min={1} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -323,10 +331,10 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
           </Row>
 
           <Form.Item noStyle shouldUpdate={(prev, current) => prev.contentType !== current.contentType}>
-            {({getFieldValue}) => {
+            {({ getFieldValue }) => {
               const type = getFieldValue("contentType");
               return type === "video" ? (
-                <Form.Item name="contentUrl" label="Video URL (Embed Link)" rules={[{required: true}]}>
+                <Form.Item name="contentUrl" label="Video URL (Embed Link)" rules={[{ required: true }]}>
                   <Input placeholder="https://www.youtube.com/embed/..." />
                 </Form.Item>
               ) : type === "article" ? (
@@ -336,14 +344,14 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                   trigger="onChange"
                   validateTrigger={["onChange", "onBlur"]}
                   rules={[
-                    {required: true, message: "Vui lòng nhập nội dung"},
-                    {min: 20, message: "Nội dung bài học yêu cầu tối thiểu 20 ký tự"},
+                    { required: true, message: "Vui lòng nhập nội dung" },
+                    { min: 20, message: "Nội dung bài học yêu cầu tối thiểu 20 ký tự" },
                   ]}
                 >
                   <TinyEditor height={400} placeholder="Soạn thảo nội dung bài học..." />
                 </Form.Item>
               ) : type === "interactive" ? (
-                <Form.Item name="contentUrl" label="Đường dẫn Game/App" rules={[{required: true}]}>
+                <Form.Item name="contentUrl" label="Đường dẫn Game/App" rules={[{ required: true }]}>
                   <Input placeholder="/game/..." />
                 </Form.Item>
               ) : null;
@@ -353,34 +361,64 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
           <Form.Item
             name="description"
             label="Mô tả ngắn"
-            rules={[{min: 10, message: "Mô tả ngắn yêu cầu tối thiểu 10 ký tự"}]}
+            rules={[{ min: 10, message: "Mô tả ngắn yêu cầu tối thiểu 10 ký tự" }]}
           >
             <Input.TextArea rows={2} />
           </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <div style={{ background: '#f6ffed', padding: 16, borderRadius: 8, border: '1px solid #b7eb8f', marginBottom: 16 }}>
+                <div style={{ fontWeight: 600, color: '#389e0d', marginBottom: 12 }}>Phần thưởng Lần Đầu Hoàn Thành</div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <Form.Item name="rewardPoints" label="Điểm (XP)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
+                  <Form.Item name="rewardCoins" label="Xu (Coins)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
+                </div>
+              </div>
+            </Col>
+
+            <Col span={12}>
+              <div style={{ background: '#e6f7ff', padding: 16, borderRadius: 8, border: '1px solid #91d5ff', marginBottom: 16 }}>
+                <div style={{ fontWeight: 600, color: '#096dd9', marginBottom: 12 }}>Phần thưởng Ôn Tập (Review)</div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <Form.Item name="reviewRewardPoints" label="Điểm (XP)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
+                  <Form.Item name="reviewRewardCoins" label="Xu (Coins)" style={{ flex: 1, marginBottom: 0 }} rules={[{ required: true }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
+                </div>
+              </div>
+            </Col>
+          </Row>
         </div>
 
         {/* Quiz Builder (Step 2) */}
-        <div style={{display: currentStep === 1 ? "block" : "none"}}>
-          <div style={{background: "#f9f9f9", padding: 24, borderRadius: 12, border: "1px solid #f0f0f0"}}>
-            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20}}>
+        <div style={{ display: currentStep === 1 ? "block" : "none" }}>
+          <div style={{ background: "#f9f9f9", padding: 24, borderRadius: 12, border: "1px solid #f0f0f0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <div>
-                <h3 style={{margin: 0, color: "#1f1f1f"}}>Cấu hình Quiz</h3>
-                <p style={{margin: "4px 0 0", color: "#8c8c8c", fontSize: 13}}>
+                <h3 style={{ margin: 0, color: "#1f1f1f" }}>Cấu hình Quiz</h3>
+                <p style={{ margin: "4px 0 0", color: "#8c8c8c", fontSize: 13 }}>
                   Thiết lập các câu hỏi kiểm tra kiến thức
                 </p>
               </div>
               <Form.Item
                 name={["quiz", "passingScore"]}
                 label="Điểm đạt (Passing Score)"
-                style={{margin: 0, width: 180}}
+                style={{ margin: 0, width: 180 }}
               >
                 <InputNumber min={0} max={100} addonAfter="điểm" />
               </Form.Item>
             </div>
 
             <Form.List name={["quiz", "questions"]}>
-              {(fields, {add, remove}) => (
-                <div style={{display: "flex", flexDirection: "column", gap: 24}}>
+              {(fields, { add, remove }) => (
+                <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                   {fields.length === 0 && (
                     <div
                       style={{
@@ -391,11 +429,11 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                         borderRadius: 8,
                       }}
                     >
-                      <QuestionCircleOutlined style={{fontSize: 32, marginBottom: 8}} />
+                      <QuestionCircleOutlined style={{ fontSize: 32, marginBottom: 8 }} />
                       <p>Chưa có câu hỏi nào. Hãy thêm câu hỏi mới!</p>
                     </div>
                   )}
-                  {fields.map(({key, name, ...restField}, index) => (
+                  {fields.map(({ key, name, ...restField }, index) => (
                     <div
                       key={key}
                       style={{
@@ -419,38 +457,38 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                         }}
                       />
 
-                      <div style={{display: "flex", justifyContent: "space-between", marginBottom: 16}}>
-                        <h4 style={{margin: 0, color: "#1890ff"}}>Câu hỏi #{index + 1}</h4>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                        <h4 style={{ margin: 0, color: "#1890ff" }}>Câu hỏi #{index + 1}</h4>
                         <Button type="text" danger icon={<DeleteOutlined />} onClick={() => remove(name)}>
                           Xóa câu hỏi
                         </Button>
                       </div>
 
-                      <div style={{display: "flex", gap: 16}}>
+                      <div style={{ display: "flex", gap: 16 }}>
                         <Form.Item
                           {...restField}
                           name={[name, "question"]}
                           label="Nội dung câu hỏi"
-                          rules={[{required: true, message: "Nhập câu hỏi"}]}
-                          style={{flex: 1}}
+                          rules={[{ required: true, message: "Nhập câu hỏi" }]}
+                          style={{ flex: 1 }}
                         >
-                          <Input.TextArea autoSize={{minRows: 2, maxRows: 4}} placeholder="Nhập nội dung câu hỏi..." />
+                          <Input.TextArea autoSize={{ minRows: 2, maxRows: 4 }} placeholder="Nhập nội dung câu hỏi..." />
                         </Form.Item>
                         <Form.Item
                           {...restField}
                           name={[name, "point"]}
                           label="Điểm số"
                           initialValue={10}
-                          rules={[{required: true, message: "Nhập điểm"}]}
-                          style={{width: 120}}
+                          rules={[{ required: true, message: "Nhập điểm" }]}
+                          style={{ width: 120 }}
                         >
-                          <InputNumber min={1} style={{width: "100%"}} />
+                          <InputNumber min={1} style={{ width: "100%" }} />
                         </Form.Item>
                       </div>
 
-                      <div style={{background: "#fcfcfc", padding: 16, borderRadius: 8, border: "1px solid #f0f0f0"}}>
+                      <div style={{ background: "#fcfcfc", padding: 16, borderRadius: 8, border: "1px solid #f0f0f0" }}>
                         <Form.List name={[name, "options"]}>
-                          {(optFields, {add: addOpt, remove: removeOpt}) => (
+                          {(optFields, { add: addOpt, remove: removeOpt }) => (
                             <>
                               <div
                                 style={{
@@ -460,16 +498,16 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                                   alignItems: "center",
                                 }}
                               >
-                                <span style={{fontWeight: 600, fontSize: 13, color: "#595959"}}>
+                                <span style={{ fontWeight: 600, fontSize: 13, color: "#595959" }}>
                                   CÁC LỰA CHỌN TRẢ LỜI
                                 </span>
                                 <Button type="dashed" size="small" onClick={() => addOpt()} icon={<PlusOutlined />}>
                                   Thêm lựa chọn
                                 </Button>
                               </div>
-                              <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16}}>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                                 {optFields.map((opt, optIdx) => (
-                                  <div key={opt.key} style={{display: "flex", alignItems: "center", gap: 8}}>
+                                  <div key={opt.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                     <div
                                       style={{
                                         width: 24,
@@ -490,7 +528,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                                       {...opt}
                                       name={[opt.name]}
                                       noStyle
-                                      rules={[{required: true, message: "Nhập lựa chọn"}]}
+                                      rules={[{ required: true, message: "Nhập lựa chọn" }]}
                                     >
                                       <Input placeholder={`Lựa chọn ${optIdx}`} />
                                     </Form.Item>
@@ -505,16 +543,16 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                         </Form.List>
                       </div>
 
-                      <div style={{marginTop: 16}}>
+                      <div style={{ marginTop: 16 }}>
                         <Form.Item
                           {...restField}
                           name={[name, "correctAnswer"]}
                           label="Đáp án đúng (Index)"
                           help="Nhập số thứ tự của đáp án đúng (bắt đầu từ 0)"
-                          rules={[{required: true}]}
-                          style={{marginBottom: 0, width: 200}}
+                          rules={[{ required: true }]}
+                          style={{ marginBottom: 0, width: 200 }}
                         >
-                          <InputNumber min={0} placeholder="VD: 0" style={{width: "100%"}} />
+                          <InputNumber min={0} placeholder="VD: 0" style={{ width: "100%" }} />
                         </Form.Item>
                       </div>
                     </div>
@@ -525,7 +563,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                     block
                     icon={<PlusOutlined />}
                     size="large"
-                    style={{height: 48}}
+                    style={{ height: 48 }}
                   >
                     Thêm câu hỏi mới
                   </Button>
@@ -536,16 +574,16 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
         </div>
 
         {/* Step 3: Related Content */}
-        <div style={{display: currentStep === 2 ? "block" : "none"}}>
-          <div style={{background: "#f9f9f9", padding: 24, borderRadius: 12, border: "1px solid #f0f0f0"}}>
-            <h3 style={{marginBottom: 20}}>Nội dung liên quan (Ngon Logic)</h3>
+        <div style={{ display: currentStep === 2 ? "block" : "none" }}>
+          <div style={{ background: "#f9f9f9", padding: 24, borderRadius: 12, border: "1px solid #f0f0f0" }}>
+            <h3 style={{ marginBottom: 20 }}>Nội dung liên quan (Ngon Logic)</h3>
 
             <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
               <DebounceSelect
                 mode="multiple"
                 placeholder="Tìm di sản..."
                 fetchOptions={fetchHeritageList}
-                style={{width: "100%"}}
+                style={{ width: "100%" }}
               />
             </Form.Item>
 
@@ -554,7 +592,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                 mode="multiple"
                 placeholder="Tìm hiện vật..."
                 fetchOptions={fetchArtifactList}
-                style={{width: "100%"}}
+                style={{ width: "100%" }}
               />
             </Form.Item>
 
@@ -563,7 +601,7 @@ const LearningForm: React.FC<LearningFormProps> = ({visible, onCancel, onSubmit,
                 mode="multiple"
                 placeholder="Tìm bài viết..."
                 fetchOptions={fetchHistoryList}
-                style={{width: "100%"}}
+                style={{ width: "100%" }}
               />
             </Form.Item>
           </div>

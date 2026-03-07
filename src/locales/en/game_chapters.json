@@ -1,0 +1,31 @@
+{
+  "loading": "Loading Sen Hoa...",
+  "header": {
+    "title": "Sen Hoa - Discovery Journey",
+    "subtitle": "Each lotus petal is a chapter in the journey to discover Vietnam's heritage. Complete levels to unlock new stories!"
+  },
+  "stats": {
+    "points": "Points",
+    "petals": "Lotus Petals",
+    "coins": "Coins",
+    "completion": "Completion"
+  },
+  "card": {
+    "playNow": "Play Now",
+    "theme": "Theme: {{theme}}",
+    "noTheme": "None",
+    "progress": "Progress",
+    "levelsCount": "{{completed}}/{{total}} levels",
+    "locked": "Locked",
+    "needPetals": "Need {{petals}} lotus petals",
+    "unlock": "Unlock"
+  },
+  "modal": {
+    "unlockSuccess": {
+      "title": "Unlock Successful!",
+      "content": "You have unlocked a new chapter and spent {{petals}} lotus petals."
+    },
+    "unlockError": "Cannot unlock this chapter",
+    "connectionError": "Connection error"
+  }
+}

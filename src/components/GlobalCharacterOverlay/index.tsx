@@ -14,6 +14,7 @@ import QuickActionButtons from "./QuickActionButtons";
 import { SenCustomizationSettings } from "@/components/common";
 import AIChat from "@/components/AIChat";
 import { setOverlayOpen } from "@/store/slices/aiSlice";
+import { useTranslation } from "react-i18next";
 
 import "./styles.less";
 import "./SenToggle.less"; // Import new toggle styles
@@ -21,6 +22,7 @@ import "./SenToggle.less"; // Import new toggle styles
 // Typography constants if needed
 
 const GlobalCharacterOverlay = () => {
+  const { t } = useTranslation();
   const globalChar = useGlobalCharacter();
   const dispatch = useAppDispatch();
   const { isOverlayOpen, layoutMode, senSettings } = useAppSelector((state) => state.ai);
@@ -178,7 +180,7 @@ const GlobalCharacterOverlay = () => {
                 color: "var(--seal-red, #a8071a)",
               }}>
                 <StarFilled style={{ color: "#faad14", fontSize: 14, marginRight: 8 }} />
-                Tùy chỉnh nhân vật SEN
+                {t('common.senSettings.title')}
                 <StarFilled style={{ color: "#faad14", fontSize: 14, marginLeft: 8 }} />
               </span>
             }
@@ -209,7 +211,7 @@ const GlobalCharacterOverlay = () => {
               alignItems: "center",
               justifyContent: "space-between",
             }}>
-              <span style={{ fontWeight: 600, color: "var(--text-color-primary, #3d1a02)" }}>Ẩn/Hiện Sen</span>
+              <span style={{ fontWeight: 600, color: "var(--text-color-primary, #3d1a02)" }}>{t('common.senSettings.toggleVisibility')}</span>
               <Switch
                 checked={isMinimized}
                 onChange={setIsMinimized}

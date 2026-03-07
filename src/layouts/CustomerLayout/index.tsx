@@ -24,8 +24,11 @@ import "./styles.less";
 import { customerMenu } from "@/config/menu.config";
 import NotificationPopover from "@/components/common/NotificationPopover";
 import DailyRewardModal from "@/components/common/DailyRewardModal";
+import GameLanguageSwitcher from "@/components/Game/GameLanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const CustomerLayout: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -178,13 +181,13 @@ const CustomerLayout: React.FC = () => {
     {
       key: "profile",
       icon: <UserOutlined />,
-      label: "Hồ sơ",
+      label: t('nav.profile'),
       onClick: () => navigate("/profile"),
     },
     {
       key: "collections",
       icon: <BookOutlined />,
-      label: "Bộ sưu tập",
+      label: t('nav.library'),
       onClick: () => navigate("/profile/library"),
     },
     {
@@ -195,12 +198,21 @@ const CustomerLayout: React.FC = () => {
   return (
     <div className="customer-layout-wrapper sen-hoa-premium">
       <UnifiedLayout
-        menu={{ request: async () => customerMenu }}
+        menu={{
+          request: async () => customerMenu.map(item => ({
+            ...item,
+            name: item.disabled && item.key?.startsWith('group-')
+              ? t(`gameMenu.groups.${item.key.replace('group-', '')}`)
+              : t(`gameMenu.items.${item.key}`)
+          }))
+        }}
         user={user || undefined}
         onLogout={handleLogout}
         userMenuExtraItems={userMenuExtraItems}
         navTheme="light"
         actionsRender={() => [
+          <GameLanguageSwitcher key="lang" />,
+
           <div
             className="progress-stats"
             key="stats"
@@ -219,6 +231,7 @@ const CustomerLayout: React.FC = () => {
               <span>{progress?.coins || 0}</span>
             </div>
           </div>,
+
           <Button
             key="gift"
             type="text"
@@ -245,7 +258,7 @@ const CustomerLayout: React.FC = () => {
               type="text"
               className="header-action-btn"
               icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
-              title="Cài đặt âm thanh"
+              title={t('header.audioSettings')}
             />
           </AudioSettingsPopover>,
         ]}

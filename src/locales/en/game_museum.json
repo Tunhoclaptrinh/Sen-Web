@@ -1,0 +1,50 @@
+{
+  "loading": "Loading data...",
+  "header": {
+    "title": "Museum",
+    "subtitle": "Preserve treasures - Collect essence"
+  },
+  "stats": {
+    "level": "Level",
+    "incomePerHour": "Income per hour",
+    "pendingIncome": "Pending",
+    "collect": "Collect"
+  },
+  "tabs": {
+    "all": "All",
+    "character": "Characters",
+    "artifact": "Artifacts"
+  },
+  "card": {
+    "noImage": "No image",
+    "collectDate": "Collected on {{date}}",
+    "charFallbackDesc": "Your companion character",
+    "itemFallbackDesc": "Collectible item",
+    "ownedCount": "Owned: {{count}}",
+    "empty": "Empty"
+  },
+  "types": {
+    "item": "Item",
+    "artifact": "Artifact",
+    "companion": "COMPANION",
+    "hint": "HINT",
+    "protection": "PROTECTION",
+    "interface": "INTERFACE",
+    "avatar": "AVATAR",
+    "decoration": "DECORATION",
+    "aivip": "AI VIP"
+  },
+  "modal": {
+    "confirmUse": {
+      "title": "Confirm Use",
+      "content": "Are you sure you want to use \"{{name}}\"?",
+      "ok": "Use",
+      "cancel": "Cancel"
+    },
+    "noDescription": "No description",
+    "typeLabel": "Type:",
+    "quantityLabel": "Quantity:",
+    "close": "Close",
+    "use": "Use"
+  }
+}

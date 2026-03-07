@@ -1,0 +1,10 @@
+{
+  "header": {
+    "back": "Trở về",
+    "details": "Chi tiết",
+    "tooltip": "Bấm vào đây để thêm thẻ màn chơi"
+  },
+  "messages": {
+    "locked": "Màn chơi này đang bị khóa!"
+  }
+}

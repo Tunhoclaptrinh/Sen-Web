@@ -1,0 +1,50 @@
+{
+  "loading": "Đang tải dữ liệu...",
+  "header": {
+    "title": "Bảo Tàng",
+    "subtitle": "Lưu giữ báu vật - Thu thập tinh hoa"
+  },
+  "stats": {
+    "level": "Cấp độ",
+    "incomePerHour": "Thu nhập trong 1 giờ",
+    "pendingIncome": "Chờ thu",
+    "collect": "Thu hoạch"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "character": "Nhân vật",
+    "artifact": "Hiện vật"
+  },
+  "card": {
+    "noImage": "Không có ảnh",
+    "collectDate": "Thu tập ngày {{date}}",
+    "charFallbackDesc": "Nhân vật đồng hành cùng bạn",
+    "itemFallbackDesc": "Vật phẩm sưu tầm",
+    "ownedCount": "Đang có: {{count}}",
+    "empty": "Trống trơn"
+  },
+  "types": {
+    "item": "Vật phẩm",
+    "artifact": "Hiện vật",
+    "companion": "ĐỒNG HÀNH",
+    "hint": "GỢI Ý",
+    "protection": "BẢO VỆ",
+    "interface": "GIAO DIỆN",
+    "avatar": "AVATAR",
+    "decoration": "TRANG TRÍ",
+    "aivip": "AI VIP"
+  },
+  "modal": {
+    "confirmUse": {
+      "title": "Xác nhận sử dụng",
+      "content": "Bạn có chắc chắn muốn sử dụng \"{{name}}\" không?",
+      "ok": "Sử dụng",
+      "cancel": "Hủy"
+    },
+    "noDescription": "Không có mô tả",
+    "typeLabel": "Loại:",
+    "quantityLabel": "Số lượng:",
+    "close": "Đóng",
+    "use": "Sử dụng"
+  }
+}

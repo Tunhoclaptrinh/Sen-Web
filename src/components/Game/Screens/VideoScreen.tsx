@@ -2,6 +2,7 @@ import React from "react";
 import Button from "@/components/common/Button";
 import { PlayCircleOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import type { Screen } from "@/types/game.types";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 import { getImageUrl } from "@/utils/image.helper";
 import { getYouTubeEmbedUrl } from "@/utils/youtube.helper";
@@ -21,11 +22,12 @@ interface Props {
 }
 
 const VideoScreen: React.FC<Props> = ({ data, onNext, loading }) => {
+  const { t } = useTranslation();
   const content = data.content || {};
   const videoUrl = (data as any).videoUrl || content.videoUrl || content.contentUrl || "";
-  const title = (data as any).caption || content.title || "Video";
+  const title = (data as any).caption || content.title || t('gamePlay.screens.video.fallbackTitle');
   const description =
-    (data as any).description || content.description || "Xem đoạn phim này để hiểu rõ hơn về câu chuyện.";
+    (data as any).description || content.description || t('gamePlay.screens.video.fallbackDescription');
 
   return (
     <div className="video-screen">
@@ -63,7 +65,7 @@ const VideoScreen: React.FC<Props> = ({ data, onNext, loading }) => {
           ) : (
             <div style={{ textAlign: "center", color: "rgba(255,255,255,0.5)" }}>
               <PlayCircleOutlined style={{ fontSize: 48, marginBottom: 16, display: "block" }} />
-              <span>Không có video</span>
+              <span>{t('gamePlay.screens.video.noVideo')}</span>
             </div>
           )}
         </div>
@@ -78,12 +80,12 @@ const VideoScreen: React.FC<Props> = ({ data, onNext, loading }) => {
           <Button
             variant="primary"
             buttonSize="large"
-            className="continue-btn"
+            className="continue-btn seal-button"
             onClick={onNext}
             icon={<ArrowRightOutlined />}
             disabled={loading}
           >
-            Tiếp tục
+            {t('gamePlay.common.continue')}
           </Button>
         </div>
       </div>

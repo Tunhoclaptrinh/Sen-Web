@@ -1,0 +1,35 @@
+{
+  "loading": "Loading data...",
+  "header": {
+    "title": "Leaderboard",
+    "subtitle": "Honoring the best explorers on the heritage journey"
+  },
+  "podium": {
+    "labels": {
+      "points": "Trophies",
+      "checkins": "Check-ins",
+      "level": "Level"
+    },
+    "level": "Level {{level}}",
+    "petals": "Petals"
+  },
+  "columns": {
+    "rank": "Rank",
+    "player": "Player",
+    "points": "Trophies",
+    "checkins": "Locations",
+    "level": "Level",
+    "petals": "Petals",
+    "characters": "Characters"
+  },
+  "table": {
+    "level": "Level {{level}}",
+    "checkinCount": "{{count}} locations",
+    "charactersCount": "{{count}} characters"
+  },
+  "tabs": {
+    "points": "Points (Trophies)",
+    "checkins": "Explorers (Check-ins)",
+    "level": "Level"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "loading": {
+    "module": "Loading lesson...",
+    "path": "Loading path..."
+  },
+  "errors": {
+    "fetchPath": "Cannot load learning path",
+    "fetchModule": "Cannot load lesson content",
+    "submitQuiz": "Error submitting quiz"
+  },
+  "header": {
+    "title": "Knowledge Review",
+    "subtitle": "Review and consolidate knowledge of Vietnamese history and culture through in-depth lessons"
+  },
+  "stats": {
+    "total": "Total Lessons",
+    "completed": "Completed",
+    "progress": "Progress",
+    "duration": "Duration"
+  },
+  "difficulty": {
+    "easy": "EASY",
+    "medium": "MEDIUM",
+    "hard": "HARD"
+  },
+  "card": {
+    "empty": "No lessons available",
+    "completed": "Completed",
+    "rewardClaimed": "Reward Claimed",
+    "lockMessage": "Complete previous lesson first",
+    "notStudied": "Not studied",
+    "actions": {
+      "locked": "Locked",
+      "review": "Review",
+      "learnNow": "Learn Now"
+    }
+  },
+  "detail": {
+    "notFound": "Lesson not found",
+    "backToLesson": "Back to Lesson",
+    "back": "Go Back",
+    "contentType": {
+      "article": "ARTICLE",
+      "video": "VIDEO"
+    },
+    "videoError": "Video not available or invalid link",
+    "nextStep": {
+      "quiz": "Take Quiz Now",
+      "complete": "Complete Lesson"
+    },
+    "rewards": "Rewards",
+    "keyKnowledge": "Key Knowledge",
+    "tooltips": {
+      "timer": "Time remaining",
+      "progress": "Completion progress",
+      "rewards": "Lesson rewards",
+      "passingScore": "Required score: {{score}}"
+    }
+  },
+  "quiz": {
+    "title": "KNOWLEDGE QUIZ",
+    "description": "Answer the following questions to earn more trophies.",
+    "startQuiz": "Start Quiz",
+    "difficultyLabel": "DIFFICULTY",
+    "questionLabel": "QUESTION {{index}}",
+    "timer": {
+      "timeUp": "Time's up! The system is automatically submitting your answers."
+    },
+    "timerTooltip": "Time remaining",
+    "timerWarning": "Time is running out! You have 1 minute left.",
+    "timeUp": "Time's up! The system is automatically submitting your answers.",
+    "submitting": "Submitting...",
+    "doneLabel": "Completed",
+    "doneUnit": "questions",
+    "rewardTooltip": "Reward",
+    "passingScoreTooltip": "Required",
+    "passingScoreUnit": "trophies",
+    "actions": {
+      "submit": "Submit"
+    },
+    "hints": {
+      "completeAll": "Please answer all questions"
+    },
+    "submitTooltip": {
+      "complete": "Please complete all questions before submitting",
+      "submit": "Submit your answers"
+    },
+    "completion": {
+      "success": {
+        "title": "Excellent!",
+        "subtitle": "You have completed the lesson",
+        "scoreLabel": "Trophy percentage",
+        "levelUp": "LEVEL UP!",
+        "pointsLabel": "TROPHIES",
+        "action": "Continue Journey"
+      },
+      "failure": {
+        "title": "Great Effort!",
+        "neededScore": "Need: {{score}}/100 trophies",
+        "encouragement": "Don't be discouraged! Review the content and try again.",
+        "action": "Retry Now"
+      }
+    }
+  },
+  "units": {
+    "minutes": "mins"
+  }
+}

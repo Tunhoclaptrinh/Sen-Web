@@ -4,6 +4,7 @@ import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import type { QuizScreen as QuizScreenType } from "@/types/game.types";
 import { useGameSounds } from "@/hooks/useSound";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 
 import { getImageUrl } from "@/utils/image.helper";
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackImage, loading }) => {
+  const { t } = useTranslation();
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [result, setResult] = useState<{ isCorrect: boolean; explanation?: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -55,12 +57,12 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
 
   const handleSubmit = async () => {
     if (selectedOptions.length === 0) {
-      message.warning("Vui lòng chọn đáp án");
+      message.warning(t('gamePlay.screens.quiz.selectOption'));
       return;
     }
 
     if (selectedOptions.length < requiredCount) {
-      message.warning(`Vui lòng chọn đủ ${requiredCount} đáp án`);
+      message.warning(t('gamePlay.screens.quiz.selectEnough', { count: requiredCount }));
       return;
     }
 
@@ -73,7 +75,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
       const response = await onSubmitAnswer(answerPayload);
       setResult(response);
     } catch (error) {
-      message.error("Có lỗi xảy ra khi gửi câu trả lời");
+      message.error(t('gamePlay.errors.general'));
     } finally {
       setSubmitting(false);
     }
@@ -101,7 +103,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
               </Title>
               {isMultiple && !result && (
                 <div className="quiz-subtitle" style={{ color: '#d48806', fontWeight: 600, marginTop: 12, fontFamily: "'Playfair Display', serif" }}>
-                  Hãy chọn đúng {requiredCount} đáp án ({selectedOptions.length}/{requiredCount})
+                  {t('gamePlay.screens.quiz.selectLabel', { count: requiredCount, current: selectedOptions.length, target: requiredCount })}
                 </div>
               )}
             </div>
@@ -163,7 +165,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                   <div className="quiz-feedback-box">
                     <div className={`feedback-header ${result.isCorrect ? 'correct' : 'wrong'}`}>
                       {result.isCorrect ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-                      {result.isCorrect ? "Câu trả lời chính xác!" : "Câu trả lời chưa đúng!"}
+                      {result.isCorrect ? t('gamePlay.screens.quiz.correct') : t('gamePlay.screens.quiz.wrong')}
                     </div>
                     {result.explanation && (
                       <div className="feedback-text">
@@ -181,7 +183,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                       disabled={loading}
                       className="seal-button"
                     >
-                      Tiếp tục hành trình
+                      {t('gamePlay.screens.quiz.nextStep')}
                     </Button>
                   ) : (
                     <Button
@@ -192,7 +194,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                       block
                       disabled={loading}
                     >
-                      Thử lại câu hỏi này
+                      {t('gamePlay.screens.quiz.retry')}
                     </Button>
                   )}
                 </motion.div>
@@ -210,7 +212,7 @@ const QuizScreen: React.FC<Props> = ({ data, onNext, onSubmitAnswer, fallbackIma
                   block
                   className="seal-button"
                 >
-                  Trả lời {isMultiple && selectedOptions.length > 0 && `(${selectedOptions.length}/{requiredCount})`}
+                  {t('gamePlay.screens.quiz.submit')} {isMultiple && selectedOptions.length > 0 && `(${selectedOptions.length}/${requiredCount})`}
                 </Button>
               </div>
             )}

@@ -1,0 +1,60 @@
+{
+  "header": {
+    "title": "Sen Shop",
+    "subtitle": "Exchange items - Enhance experience"
+  },
+  "tabs": {
+    "all": "All",
+    "powerups": "Support",
+    "characters": "Characters & AI",
+    "themes": "Themes"
+  },
+  "types": {
+    "item": "ITEM",
+    "support": "SUPPORT",
+    "decoration": "DECORATION",
+    "companion": "COMPANION",
+    "collectible": "COLLECTIBLE",
+    "owned": "OWNED"
+  },
+  "rarity": {
+    "common": "Common",
+    "rare": "Rare",
+    "epic": "Epic",
+    "legendary": "Legendary"
+  },
+  "card": {
+    "noImage": "No image",
+    "ownedCount": "Owned: {{count}}",
+    "priceLabel": "Price:",
+    "owned": "Owned",
+    "buyNow": "Buy Now"
+  },
+  "modal": {
+    "title": "Item Details",
+    "noDescription": "No detailed description available for this item.",
+    "ownedLabel": "You own: {{count}}",
+    "priceLabel": "Price:",
+    "quantityLabel": "Purchase quantity:",
+    "totalLabel": "Total:",
+    "insufficientBalance": "Insufficient balance",
+    "buyWithPrice": "Buy Now ({{cost}} {{currency}})",
+    "neededMore": "You need {{amount}} more {{currency}}"
+  },
+  "messages": {
+    "insufficientBalance": "You don't have enough {{currency}}!",
+    "insufficientCoinsForChar": "You don't have enough Coins to buy this character!",
+    "purchaseCharConfirm": {
+      "title": "Purchase Companion",
+      "content": "Do you want to buy {{name}} for {{price}} Coins?",
+      "ok": "Buy Now",
+      "cancel": "Cancel"
+    },
+    "purchaseCharSuccess": "Successfully purchased character {{name}}!"
+  },
+  "currencies": {
+    "petals": "Petals",
+    "coins": "Coins",
+    "sen": "Sen"
+  }
+}

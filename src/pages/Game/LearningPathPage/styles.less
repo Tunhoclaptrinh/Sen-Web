@@ -229,6 +229,10 @@
             }
           }
 
+          .ant-typography {
+            font-family: @font-serif !important;
+          }
+
           .score-display {
             margin-top: 16px;
             display: flex;
@@ -331,138 +335,317 @@
       padding: 0 !important;
     }
   }
+}
 
-  // LEARNING DETAIL PAGE STYLES
-  .learning-detail-page {
-    background-color: @paper-bg !important;
-    .game-page-background();
-    background-image:
-      radial-gradient(#c5a065 0.5px, transparent 0.5px), radial-gradient(#c5a065 0.5px, #f4efe4 0.5px) !important; // Override if mixin has specific priorities
+// End .learning-path-page
 
-    // Override Card Styles
-    .ant-card {
-      background: @paper-bg !important;
-      border: 2px solid @gold-border !important;
-      box-shadow: 6px 6px 0 rgba(93, 64, 55, 0.15) !important;
-      border-radius: 8px !important;
+// LEARNING DETAIL PAGE STYLES
+.learning-detail-page {
+  .game-page-background();
+  background-color: @paper-bg !important;
+  padding-bottom: 60px;
+  min-height: 100vh;
+  margin: -24px -24px -24px -24px; // Override customer-content margins
+  font-family: @font-serif;
 
-      // Remove glass effects if present
-      backdrop-filter: none !important;
-    }
+  * {
+    font-family: @font-serif;
+  }
 
-    // Video wrapper might need exclusion from card style overrides if it's special
-    .video-wrapper {
-      border: none !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-      border-radius: 16px !important;
-      background: black !important;
-    }
 
-    // Quiz/Content Title
-    h1.ant-typography,
-    h2.ant-typography {
-      font-family: @font-serif !important;
-      color: @seal-red !important;
-    }
+  .learning-loading-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: @paper-bg;
+  }
 
-    h1.ant-typography {
-      text-transform: uppercase;
-      border-bottom: 2px solid rgba(212, 165, 116, 0.3);
-      padding-bottom: 16px;
-      margin-bottom: 24px !important;
-    }
+  .learning-header-container {
+    padding: 24px 40px 0;
+    margin-bottom: 24px;
 
-    // Submit Button / Next Button
-    .action-btn {
-      height: 48px !important;
-      border-radius: 8px;
+    .back-btn {
       font-family: @font-serif;
+      color: @text-color-primary !important;
       font-weight: 700;
-      text-transform: uppercase;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-      // Primary style
-      background: @seal-red !important;
-      border: 2px solid @seal-border !important;
-      color: #fff9e6 !important;
-      box-shadow: 0 4px 0 @seal-border !important;
+      font-size: 16px;
 
       &:hover {
-        transform: translateY(2px);
-        box-shadow: 0 2px 0 @seal-border !important;
-      }
-
-      &:active {
-        transform: translateY(4px);
-        box-shadow: none !important;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none !important;
-        box-shadow: none !important;
-      }
-    }
-
-    .ant-btn-primary {
-      // Basic overrides if needed
-    }
-
-    // Back Button
-    .ant-btn-text {
-      font-family: @font-serif;
-      font-weight: 700;
-      color: @seal-red !important;
-
-      &:hover {
-        background: rgba(139, 29, 29, 0.1) !important;
-      }
-    }
-
-    // Tags
-    .ant-tag {
-      font-family: @font-serif;
-      border: 1px solid rgba(212, 165, 116, 0.5) !important;
-    }
-
-    // Radio Quiz
-    .custom-radio {
-      .ant-radio-wrapper {
-        span {
-          font-family: @font-serif;
-        }
+        background: rgba(93, 64, 55, 0.05) !important;
+        color: @seal-red !important;
       }
     }
   }
 
-  // Completion Modal
-  .completion-modal {
-    .ant-modal-content {
-      background: @paper-bg !important;
-      border: 2px solid @gold-border;
-      border-radius: 8px !important;
-      box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
-      padding: 0;
-      overflow: hidden;
-    }
+  .learning-content-container {
+    padding: 0 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 
-    .ant-modal-body {
-      padding: 24px;
-    }
+  // Card Styling
+  .detail-card {
+    .game-card-style();
+    border-radius: 8px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    background: white !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08) !important;
 
-    .ant-btn-primary {
-      .game-btn-primary();
-      height: 44px !important;
+    .ant-card-body {
+      padding: 48px !important;
 
-      &:hover {
-        transform: translateY(2px);
-        box-shadow: 0 2px 0 @seal-border !important;
+      @media (max-width: 768px) {
+        padding: 24px !important;
       }
+    }
+  }
+
+  // Article/Lesson Content
+  .article-content {
+    h1 {
+      .game-title-style();
+      font-size: 2.5rem !important;
+      text-align: left !important;
+      margin-bottom: 12px !important;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(139, 29, 29, 0.1);
+    }
+
+    .description {
+      font-size: 1.2rem;
+      color: @text-color-secondary;
+      margin-bottom: 32px;
+      font-family: @font-serif;
+      font-style: italic;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 3px solid @gold-border;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 24px rgba(139, 29, 29, 0.2);
+
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .rich-text-content {
+      font-size: 18px;
+      line-height: 1.8;
+      font-family: @font-serif;
+      color: @text-color-primary;
+
+      p {
+        margin-bottom: 1.5em;
+      }
+
+      h2 {
+        color: @seal-red;
+        margin-top: 1.8em;
+        margin-bottom: 0.8em;
+        font-weight: 800;
+        font-size: 24px;
+      }
+    }
+
+    .continue-btn {
+      .game-btn-primary();
+      height: 54px !important;
+      padding: 0 48px !important;
+      font-size: 18px !important;
+      margin-top: 24px;
+    }
+  }
+
+  // Quiz Content
+  .quiz-container {
+    .quiz-options-group {
+      width: 100%;
+
+      .quiz-option-wrapper {
+        width: 100%;
+        padding: 20px 24px !important;
+        border: 2px solid rgba(197, 160, 101, 0.2);
+        border-radius: 12px;
+        background: #fafafa;
+        transition: all 0.3s ease;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+          border-color: @gold-border;
+          background: #fffcf5;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(197, 160, 101, 0.1);
+        }
+
+        &.ant-radio-wrapper-checked {
+          border-color: @seal-red !important;
+          background: #fff3f3 !important;
+          box-shadow: 0 6px 16px rgba(139, 29, 29, 0.15);
+
+          .opt-index {
+            background: @seal-red !important;
+            border-color: @seal-red !important;
+            color: white !important;
+          }
+
+          .opt-text {
+            color: @seal-red !important;
+            font-weight: 700 !important;
+          }
+        }
+
+        .ant-radio {
+          display: none;
+        }
+
+        .opt-content {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .opt-index {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid #ddd;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-family: @font-serif;
+          color: #999;
+          background: white;
+          transition: all 0.3s ease;
+        }
+
+        .opt-text {
+          font-size: 18px;
+          font-family: @font-serif;
+          color: @text-color-primary;
+        }
+      }
+    }
+
+    .submit-quiz-btn {
+      .game-btn-primary();
+      height: 56px !important;
+      padding: 0 60px !important;
+      font-size: 1.1rem !important;
+    }
+  }
+
+  // Quiz Sidebar
+  .quiz-sidebar {
+    position: sticky;
+    top: 80px;
+    width: 100px;
+    .game-card-style();
+    border-radius: 20px !important;
+
+    padding: 32px 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    box-shadow: 0 12px 40px rgba(139, 29, 29, 0.2) !important;
+    border: 3px solid @gold-border !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+
+    .ant-divider {
+      margin: 0 !important;
+      width: 40px !important;
+      background: rgba(197, 160, 101, 0.15) !important;
+    }
+
+    .tool-icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 2px solid transparent;
+
+      &.timer {
+        border-color: @gold-border;
+        color: @text-color-primary;
+
+        &.warning {
+          border-color: @seal-red;
+          color: @seal-red;
+          background: #fffafa;
+        }
+      }
+
+      &.reward {
+        color: #faad14;
+        border-color: rgba(250, 173, 20, 0.3);
+      }
+
+      &.score {
+        border-color: rgba(139, 29, 29, 0.3);
+        color: @seal-red;
+      }
+    }
+
+    .tool-progress {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .custom-progress {
+        .ant-progress-inner {
+          background: #f5f5f5 !important;
+        }
+      }
+    }
+  }
+}
+
+// Completion Modal
+.completion-modal {
+  .ant-modal-content {
+    background: @paper-bg !important;
+    border: 2px solid @gold-border;
+    border-radius: 8px !important;
+    box-shadow: 8px 8px 0 rgba(93, 64, 55, 0.2) !important;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-btn-primary {
+    .game-btn-primary();
+    height: 44px !important;
+
+    &:hover {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 @seal-border !important;
     }
   }
 }

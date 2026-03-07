@@ -1,0 +1,21 @@
+{
+  "groups": {
+    "discovery": "DISCOVERY",
+    "activities": "ACTIVITIES",
+    "assets": "UTILITIES",
+    "community": "COMMUNITY"
+  },
+  "items": {
+    "dashboard": "Dashboard",
+    "chapters": "Sen Hoa Journey",
+    "map": "Heritage Map",
+    "scan": "QR Scan / Check-in",
+    "quests": "Quests",
+    "learning": "Review",
+    "books": "Books & Stories",
+    "shop": "Shop",
+    "museum": "Museum",
+    "welfare": "Welfare Rewards",
+    "leaderboard": "Leaderboard"
+  }
+}

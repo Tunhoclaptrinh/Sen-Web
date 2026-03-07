@@ -1,0 +1,43 @@
+{
+  "loading": "Preparing quests...",
+  "header": {
+    "title": "Road to Glory",
+    "subtitle": "Complete challenges, receive hereditary treasures, and level up yourself"
+  },
+  "stats": {
+    "all": "All",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "achievement": "Achievement"
+  },
+  "tabs": {
+    "all": "All",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "achievement": "Achievement",
+    "exploration": "Exploration"
+  },
+  "empty": "There are no quests in this category currently",
+  "card": {
+    "progress": "Progress",
+    "locked": "Study hard to unlock",
+    "start": "Start",
+    "claim": "Claim Rewards",
+    "claimed": "Completed",
+    "detail": "Details",
+    "execute": "Execute"
+  },
+  "modal": {
+    "requirements": "Requirements",
+    "rewards": "Rewards",
+    "understood": "Got it",
+    "units": {
+      "trophies": "Trophies",
+      "petals": "Petals",
+      "coins": "Coins"
+    }
+  },
+  "messages": {
+    "claimSuccess": "Rewards have been transferred to your inventory!"
+  }
+}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchChapters } from '@/store/slices/gameSlice';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { Card, Row, Col, Progress, Spin, Typography, Tag, Modal, message } from 'antd';
 import Button from '@/components/common/Button';
 import { useGameSounds } from '@/hooks/useSound';
@@ -16,6 +17,7 @@ import "./styles.less";
 const { Title, Text, Paragraph } = Typography;
 
 const ChaptersPage: React.FC = () => {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { user } = useAuth(); // Import useAuth
@@ -37,17 +39,17 @@ const ChaptersPage: React.FC = () => {
             const result = await gameService.unlockChapter(chapterId);
             if (result.success) {
                 Modal.success({
-                    title: 'Mở khóa thành công!',
-                    content: `Bạn đã mở khóa chương mới và chi tiêu ${result.data.petalsSpent} cánh sen.`,
+                    title: t('gameChapters.modal.unlockSuccess.title'),
+                    content: t('gameChapters.modal.unlockSuccess.content', { petals: result.data.petalsSpent }),
                     onOk: () => {
                         dispatch(fetchChapters());
                     }
                 });
             } else {
-                message.error(result.message || 'Không thể mở khóa chương này');
+                message.error(result.message || t('gameChapters.modal.unlockError'));
             }
         } catch (error: any) {
-            message.error(error.message || 'Lỗi kết nối');
+            message.error(error.message || t('gameChapters.modal.connectionError'));
         }
     };
 
@@ -65,7 +67,7 @@ const ChaptersPage: React.FC = () => {
     if (chaptersLoading || progressLoading) {
         return (
             <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                <Spin size="large" tip="Đang tải Sen Hoa..." />
+                <Spin size="large" tip={t('gameChapters.loading')} />
             </div>
         );
     }
@@ -79,11 +81,10 @@ const ChaptersPage: React.FC = () => {
             >
                 <div className="header-content">
                     <Title level={1} className="main-title">
-                        <TrophyOutlined className="title-icon" /> Sen Hoa - Hành trình khám phá
+                        <TrophyOutlined className="title-icon" /> {t('gameChapters.header.title')}
                     </Title>
                     <Paragraph className="subtitle">
-                        Mỗi cánh sen là một chương trong hành trình khám phá di sản Việt Nam.
-                        Hoàn thành các màn chơi để mở khóa những câu chuyện mới!
+                        {t('gameChapters.header.subtitle')}
                     </Paragraph>
                 </div>
             </motion.div>
@@ -93,25 +94,25 @@ const ChaptersPage: React.FC = () => {
                     <StatisticsCard
                         data={[
                             {
-                                title: "Điểm",
+                                title: t('gameChapters.stats.points'),
                                 value: progress.totalPoints,
                                 icon: <TrophyOutlined />,
                                 valueColor: "#1890ff",
                             },
                             {
-                                title: "Cánh Sen",
+                                title: t('gameChapters.stats.petals'),
                                 value: progress.totalSenPetals,
                                 icon: <span style={{ fontSize: 24, lineHeight: 1 }}>🌸</span>,
                                 valueColor: "#52c41a",
                             },
                             {
-                                title: "Xu",
+                                title: t('gameChapters.stats.coins'),
                                 value: progress.coins,
                                 icon: <DollarOutlined />,
                                 valueColor: "#faad14",
                             },
                             {
-                                title: "Hoàn thành",
+                                title: t('gameChapters.stats.completion'),
                                 value: `${progress.stats?.completionRate || 0}%`,
                                 icon: <CheckCircleOutlined />,
                                 valueColor: "#722ed1",
@@ -177,7 +178,7 @@ const ChaptersPage: React.FC = () => {
                                                         navigate(`/game/chapters/${chapter.id}/levels`);
                                                     }}
                                                 >
-                                                    Chơi ngay
+                                                    {t('gameChapters.card.playNow')}
                                                 </Button>
                                             ] : []}
                                             cover={
@@ -196,7 +197,7 @@ const ChaptersPage: React.FC = () => {
                                                     </div>
                                                     <div className="chapter-theme-tag">
                                                         <Tag color={getChapterColor(chapter)}>
-                                                            Chủ đề: {chapter.theme || "Không có"}
+                                                            {t('gameChapters.card.theme', { theme: chapter.theme || t('gameChapters.card.noTheme') })}
                                                         </Tag>
                                                     </div>
                                                 </div>
@@ -223,10 +224,10 @@ const ChaptersPage: React.FC = () => {
                                                         />
                                                     </div>
                                                     <div className="stat">
-                                                        <Text type="secondary">Tiến độ</Text>
+                                                        <Text type="secondary">{t('gameChapters.card.progress')}</Text>
 
                                                         <Text type="secondary">
-                                                            {chapter.completedLevels}/{chapter.totalLevels} màn
+                                                            {t('gameChapters.card.levelsCount', { completed: chapter.completedLevels, total: chapter.totalLevels })}
                                                         </Text>
                                                     </div>
                                                 </div>
@@ -237,11 +238,11 @@ const ChaptersPage: React.FC = () => {
                                                     <LockOutlined style={{ fontSize: 32, marginBottom: 8 }} />
                                                     {isHardLocked ? (
                                                         <>
-                                                            <Text>Chưa mở khóa</Text>
+                                                            <Text>{t('gameChapters.card.locked')}</Text>
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <Text>Cần {chapter.requiredPetals} cánh sen</Text>
+                                                            <Text>{t('gameChapters.card.needPetals', { petals: chapter.requiredPetals })}</Text>
                                                             <Button
                                                                 variant="primary"
                                                                 onClick={(e) => {
@@ -250,7 +251,7 @@ const ChaptersPage: React.FC = () => {
                                                                 }}
                                                                 style={{ marginTop: 12 }}
                                                             >
-                                                                Mở khóa
+                                                                {t('gameChapters.card.unlock')}
                                                             </Button>
                                                         </>
                                                     )}

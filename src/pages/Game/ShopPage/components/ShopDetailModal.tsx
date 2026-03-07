@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Typography, Button as AntButton, Tag, Divider, Row, Col } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import {
     ShoppingCartOutlined,
@@ -37,6 +38,7 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
     inventoryQuantity,
     userBalance
 }) => {
+    const { t } = useTranslation();
     if (!item) return null;
 
     const totalCost = item.price * quantity;
@@ -55,7 +57,7 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
             title={
                 <div style={{ fontFamily: 'var(--font-serif)', color: 'var(--seal-red)', fontSize: '1.2rem' }}>
                     <ShoppingCartOutlined style={{ marginRight: 8 }} />
-                    Chi tiết vật phẩm
+                    {t('gameShop.modal.title')}
                 </div>
             }
         >
@@ -92,17 +94,17 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         <div style={{ marginBottom: 16 }}>
                             {(() => {
                                 let color = "gold";
-                                let text = "VẬT PHẨM";
-                                if (["powerup", "hint", "boost"].includes(item.type)) { color = "blue"; text = "HỖ TRỢ"; }
-                                else if (["decoration", "theme"].includes(item.type)) { color = "purple"; text = "TRANG TRÍ"; }
-                                else if (["character", "character_skin", "premium_ai"].includes(item.type)) { color = "magenta"; text = "ĐỒNG HÀNH"; }
+                                let text = t('gameShop.types.item');
+                                if (["powerup", "hint", "boost"].includes(item.type)) { color = "blue"; text = t('gameShop.types.support'); }
+                                else if (["decoration", "theme"].includes(item.type)) { color = "purple"; text = t('gameShop.types.decoration'); }
+                                else if (["character", "character_skin", "premium_ai"].includes(item.type)) { color = "magenta"; text = t('gameShop.types.companion'); }
                                 return <Tag color={color} style={{ fontWeight: 600 }}>{text}</Tag>;
                             })()}
-                            {isOwned && <Tag color="green" style={{ fontWeight: 600 }}>ĐÃ SỞ HỮU</Tag>}
+                            {isOwned && <Tag color="green" style={{ fontWeight: 600 }}>{t('gameShop.types.owned')}</Tag>}
                         </div>
 
                         <Paragraph style={{ color: 'var(--text-color-primary)', fontSize: '1rem', lineHeight: '1.6', marginBottom: 20 }}>
-                            {item.description || "Chưa có mô tả chi tiết cho vật phẩm này."}
+                            {item.description || t('gameShop.modal.noDescription')}
                         </Paragraph>
 
                         {inventoryQuantity !== undefined && item.isConsumable && (
@@ -116,13 +118,13 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                                 fontWeight: 600,
                                 fontFamily: 'var(--font-serif)'
                             }}>
-                                Bạn đang sở hữu: {inventoryQuantity}
+                                {t('gameShop.modal.ownedLabel', { count: inventoryQuantity })}
                             </div>
                         )}
 
                         <div style={{ background: 'rgba(212, 165, 116, 0.1)', padding: 16, borderRadius: 12, border: '1px solid var(--gold-border)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                                <Text strong style={{ fontSize: '1.1rem' }}>Giá bán:</Text>
+                                <Text strong style={{ fontSize: '1.1rem' }}>{t('gameShop.modal.priceLabel')}</Text>
                                 <div style={{ color: 'var(--seal-red)', fontSize: '1.2rem', fontWeight: 700 }}>
                                     {item.currency === "petals" ? "🌸" : <DollarOutlined />} {item.price}
                                 </div>
@@ -132,7 +134,7 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                                 <>
                                     <Divider style={{ margin: '12px 0' }} />
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                                        <Text strong>Số lượng mua:</Text>
+                                        <Text strong>{t('gameShop.modal.quantityLabel')}</Text>
                                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                             <AntButton
                                                 shape="circle"
@@ -151,7 +153,7 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed var(--gold-border)', paddingTop: 12 }}>
-                                        <Text strong style={{ fontSize: '1.1rem' }}>Tổng cộng:</Text>
+                                        <Text strong style={{ fontSize: '1.1rem' }}>{t('gameShop.modal.totalLabel')}</Text>
                                         <div style={{ color: 'var(--seal-red)', fontSize: '1.4rem', fontWeight: 800 }}>
                                             {item.currency === "petals" ? "🌸" : <DollarOutlined />} {totalCost}
                                         </div>
@@ -176,11 +178,11 @@ const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                                     boxShadow: '0 4px 0 #a68654'
                                 }}
                             >
-                                {isOwned ? "Đã sở hữu" : !canAfford ? "Không đủ số dư" : `Mua ngay (${totalCost} ${item.currency === "petals" ? "Sen" : "Xu"})`}
+                                {isOwned ? t('gameShop.card.owned') : !canAfford ? t('gameShop.modal.insufficientBalance') : t('gameShop.modal.buyWithPrice', { cost: totalCost, currency: item.currency === "petals" ? t('gameShop.currencies.sen') : t('gameShop.currencies.coins') })}
                             </Button>
                             {!canAfford && !isOwned && (
                                 <Text type="danger" style={{ display: 'block', textAlign: 'center', marginTop: 8, fontSize: '0.85rem' }}>
-                                    Bạn còn thiếu {totalCost - userBalance} {item.currency === "petals" ? "Cánh Sen" : "Xu"}
+                                    {t('gameShop.modal.neededMore', { amount: totalCost - userBalance, currency: item.currency === "petals" ? t('gameShop.currencies.petals') : t('gameShop.currencies.coins') })}
                                 </Text>
                             )}
                         </div>

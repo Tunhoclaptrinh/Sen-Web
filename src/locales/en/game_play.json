@@ -1,0 +1,108 @@
+{
+  "loading": "Loading game data...",
+  "errors": {
+    "initGame": "Cannot start level. Please try again.",
+    "nextScreen": "Error navigating to next screen",
+    "finishLevel": "Error finishing level",
+    "invalidData": "Invalid data",
+    "noData": "No data",
+    "general": "An error occurred"
+  },
+  "adminMode": "Admin Mode: Results are not saved to the system.",
+  "common": {
+    "skip": "Skip",
+    "continue": "Continue",
+    "back": "Back",
+    "retry": "Retry",
+    "exit": "Exit",
+    "stay": "Stay",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "zoomIn": "Zoom In"
+  },
+  "header": {
+    "exitTitle": "Exit level?",
+    "exitContent": "Your current progress will be lost.",
+    "trophies": "Trophies: {{score}}",
+    "potentialTrophies": "Potential trophies",
+    "audio": "Audio",
+    "chat": "AI Chat",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit Fullscreen"
+  },
+  "screens": {
+    "comingSoon": "Coming Soon",
+    "development": "This screen type ({{type}}) is under development.",
+    "dialogue": {
+      "user": "You",
+      "ai": "Sen Assistant",
+      "nextIndicator": "Tap to continue ▼"
+    },
+    "quiz": {
+      "selectOption": "Please select an answer",
+      "selectEnough": "Please select enough {{count}} answers",
+      "selectLabel": "Select exactly {{count}} answers ({{current}}/{{target}})",
+      "correct": "Correct answer!",
+      "wrong": "Incorrect answer!",
+      "nextStep": "Continue Journey",
+      "retry": "Retry this question",
+      "submit": "Submit"
+    },
+    "hiddenObject": {
+      "foundTitle": "🎉 You found: {{name}}",
+      "great": "Great",
+      "allFoundTitle": "🏆 Level Completed!",
+      "allFoundContent": "You have found all mysterious items.",
+      "hudLabel": "Find items",
+      "fallbackFact": "Interesting fact!",
+      "nextStep": "Continue"
+    },
+    "timeline": {
+      "title": "The Flow of History",
+      "description": "Drag and drop events to arrange them in the correct chronological order.",
+      "success": "Correct! You have correctly arranged the timeline.",
+      "failure": "Incorrect. Please try again!",
+      "checkResult": "Check Result",
+      "nextStep": "Continue"
+    },
+    "imageViewer": {
+      "fallbackTitle": "Detailed Image",
+      "fallbackDescription": "Explore this image to learn more about Vietnamese cultural heritage.",
+      "noImage": "No image"
+    },
+    "video": {
+      "fallbackTitle": "Video",
+      "fallbackDescription": "Watch this video to better understand the story.",
+      "noVideo": "No video"
+    }
+  },
+  "completion": {
+    "titles": {
+      "success": "LEVEL COMPLETED!",
+      "failure": "OOMPH!"
+    },
+    "subtitles": {
+      "success": "You have excellently passed this level with: {{score}} 🏆",
+      "failure": "You don't have enough trophies to pass. Try again!"
+    },
+    "labels": {
+      "scoreEarned": "Trophies earned:",
+      "scoreRequired": "Required:",
+      "scoreBase": "Base Trophies:",
+      "scoreBonus": "Speed Bonus:",
+      "scoreTotal": "Total Trophies:",
+      "rewardsTitle": "Rewards received:",
+      "coins": "Coins",
+      "petals": "Petals"
+    },
+    "reviewMode": {
+      "title": "🔄 Review Mode",
+      "description": "You have already completed this level! <br /> No additional rewards this time."
+    },
+    "actions": {
+      "lobby": "Back to Lobby",
+      "replay": "Replay",
+      "map": "Back to Map"
+    }
+  }
+}

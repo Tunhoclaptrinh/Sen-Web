@@ -1,0 +1,64 @@
+{
+  "header": {
+    "title": "Sen Welfare Center",
+    "subtitle": "Exchange game resources for exciting Vouchers & Privileges"
+  },
+  "alert": {
+    "title": "Important Note",
+    "description": "This feature is currently under development and is not yet functional. We will update it soon."
+  },
+  "tabs": {
+    "exchange": "Convert P-Coin",
+    "store": "Voucher Shop",
+    "history": "Activity History"
+  },
+  "stats": {
+    "available": "Available P-Coin",
+    "viewDetail": "Click on image to see P-Coin details",
+    "previewMask": "Enlarge"
+  },
+  "exchange": {
+    "title": "Resource Conversion",
+    "subtitle": "Convert in-game items into P-Coin",
+    "coins": "Coins",
+    "petals": "Petals",
+    "rate": "Rate {{rate}}",
+    "action": "Exchange Now"
+  },
+  "store": {
+    "stock": "{{count}} left",
+    "action": "Redeem Voucher"
+  },
+  "history": {
+    "title": "Activity History",
+    "status": "Completed",
+    "items": {
+      "voucher": "Redeem {{name}}",
+      "fromCoins": "Converted from Coins",
+      "fromPetals": "Converted from Petals"
+    }
+  },
+  "modal": {
+    "confirmExchange": {
+      "title": "Confirm Conversion",
+      "content": "Do you want to convert {{amount}} {{resource}} to P-Coin?",
+      "ok": "Agree",
+      "cancel": "Cancel"
+    },
+    "confirmRedeem": {
+      "title": "Redeem Voucher",
+      "content": "Do you want to exchange {{price}} {{currency}} for {{name}}?",
+      "ok": "Redeem Now",
+      "cancel": "Cancel"
+    }
+  },
+  "messages": {
+    "exchangeSuccess": "Conversion successful!",
+    "redeemSuccess": "Voucher redeemed successfully! Check your Gift Box."
+  },
+  "currencies": {
+    "pcoin": "P-Coin",
+    "coins": "Coins",
+    "petals": "Petals"
+  }
+}

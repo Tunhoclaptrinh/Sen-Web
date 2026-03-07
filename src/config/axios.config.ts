@@ -1,6 +1,6 @@
-import axios, {AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError, AxiosRequestConfig} from "axios";
-import {message} from "antd";
-import {STORAGE_KEYS} from "./constants";
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import { message } from "antd";
+import { STORAGE_KEYS } from "./constants";
 // KHÔNG import store ở đây để tránh Circular Dependency
 
 // CONFIGURATION
@@ -54,6 +54,12 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Add Language Header for Backend Content Localization
+    const language = localStorage.getItem("i18nextLng") || "vi";
+    if (config.headers) {
+      config.headers["Accept-Language"] = language;
+    }
+
     if (import.meta.env.DEV) {
       console.log(`[API ${config.method?.toUpperCase()}] ${config.url}`);
     }
@@ -79,7 +85,7 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
-    const {response} = error;
+    const { response } = error;
 
     // === XỬ LÝ NETWORK ERROR ===
     if (!response) {
@@ -87,7 +93,7 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const {status, data} = response;
+    const { status, data } = response;
 
     // === XỬ LÝ 401: REFRESH TOKEN ===
     if (status === 401 && !originalRequest._retry) {
@@ -101,7 +107,7 @@ apiClient.interceptors.response.use(
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          failedQueue.push({resolve, reject});
+          failedQueue.push({ resolve, reject });
         })
           .then((token) => {
             if (originalRequest.headers) {
@@ -121,7 +127,7 @@ apiClient.interceptors.response.use(
         const refreshResponse = await axios.post(
           `${API_BASE_URL}/auth/refresh`,
           {},
-          {headers: {Authorization: `Bearer ${currentToken}`}},
+          { headers: { Authorization: `Bearer ${currentToken}` } },
         );
 
         const newToken = refreshResponse.data?.data?.token;
@@ -152,7 +158,7 @@ apiClient.interceptors.response.use(
 
         // Logout nếu refresh thất bại
         if (store) {
-          store.dispatch({type: "auth/forceLogout"});
+          store.dispatch({ type: "auth/forceLogout" });
         }
         handleForceLogout();
 

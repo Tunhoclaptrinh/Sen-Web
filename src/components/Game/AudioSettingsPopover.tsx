@@ -14,6 +14,7 @@ import {
 } from "@/store/slices/audioSlice";
 import { parseAudioInput, PLATFORM_META } from "@/utils/audioUrlUtils";
 import { useGameSounds } from "@/hooks/useSound";
+import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
 const MAX_CUSTOM_TRACKS = 10;
@@ -51,6 +52,7 @@ const SectionHeader: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 interface AudioSettingsProps { children?: React.ReactNode; }
 
 const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { isMuted, bgmVolume, sfxVolume, selectedBgmKey, customBgmTracks } = useAppSelector((s) => s.audio);
   const { playClick } = useGameSounds();
@@ -64,12 +66,12 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
 
   const handleAddTrack = () => {
     const trimmed = urlInput.trim();
-    if (!trimmed) { message.warning("Vui lòng nhập URL hoặc mã nhúng."); return; }
+    if (!trimmed) { message.warning(t('common.audioSettings.addTrackWarnEmpty')); return; }
     const result = parseAudioInput(trimmed);
-    if (!result) { message.error("URL không hợp lệ. Thử lại với link hoặc mã <iframe>."); return; }
+    if (!result) { message.error(t('common.audioSettings.addTrackWarnInvalid')); return; }
 
     if ((result.platform === 'zingmp3' || result.platform === 'nhaccuatoi') && !result.isIframe) {
-      message.warning(`${result.label}: Nền tảng này không hỗ trợ phát trực tiếp qua link. Hãy dùng mã nhúng <iframe> từ trang đó.`);
+      message.warning(t('common.audioSettings.addTrackWarnSupport', { label: result.label }));
       return;
     }
 
@@ -83,7 +85,7 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
 
     dispatch(addCustomBgmTrack(track));
     dispatch(setSelectedBgmKey(`CUSTOM_${track.id}`));
-    message.success(`Đã thêm và đang phát: ${track.label}`);
+    message.success(t('common.audioSettings.addTrackSuccess', { label: track.label }));
     setUrlInput(""); setLabelInput(""); setShowAddForm(false);
   };
 
@@ -105,7 +107,7 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
 
       {/* ── Master toggle ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <SectionHeader>Âm thanh</SectionHeader>
+        <SectionHeader>{t('common.audioSettings.title')}</SectionHeader>
         <Switch
           checked={!isMuted}
           onChange={() => { playClick(); dispatch(toggleMute()); }}
@@ -116,14 +118,14 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
       </div>
 
       {/* ── Volumes ── */}
-      <RowLabel right={`${Math.round(bgmVolume * 100)}%`}>🎼 Nhạc nền (BGM)</RowLabel>
+      <RowLabel right={`${Math.round(bgmVolume * 100)}%`}>🎼 {t('common.audioSettings.bgm')}</RowLabel>
       <Slider min={0} max={1} step={0.05} value={bgmVolume}
         onChange={(v) => dispatch(setBgmVolume(v))} disabled={isMuted}
         trackStyle={{ backgroundColor: "#a8071a" }} handleStyle={{ borderColor: "#a8071a" }}
         style={{ marginBottom: 10 }}
       />
 
-      <RowLabel right={`${Math.round(sfxVolume * 100)}%`}>🔊 Hiệu ứng (SFX)</RowLabel>
+      <RowLabel right={`${Math.round(sfxVolume * 100)}%`}>🔊 {t('common.audioSettings.sfx')}</RowLabel>
       <Slider min={0} max={1} step={0.05} value={sfxVolume}
         onChange={(v) => dispatch(setSfxVolume(v))} disabled={isMuted}
         trackStyle={{ backgroundColor: "#a8071a" }} handleStyle={{ borderColor: "#a8071a" }}
@@ -134,20 +136,20 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
 
       {/* ── Track selector ── */}
       <div style={{ marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <SectionHeader>Chọn bản nhạc</SectionHeader>
+        <SectionHeader>{t('common.audioSettings.selectTrack')}</SectionHeader>
         <Text style={{ fontSize: 10, color: "#999" }}>{customBgmTracks.length}/{MAX_CUSTOM_TRACKS}</Text>
       </div>
 
       <Select
         style={{ width: "100%" }} size="small"
-        placeholder="Chọn nhạc nền..."
+        placeholder={t('common.audioSettings.selectTrack')}
         value={selectedBgmKey || "BGM_HISTORICAL"}
         onChange={(v) => { playClick(); dispatch(setSelectedBgmKey(v)); }}
         disabled={isMuted}
         options={[
-          { label: "— Nhạc có sẵn —", options: builtInOptions },
+          { label: `— ${t('common.audioSettings.builtinTracks')} —`, options: builtInOptions },
           ...(customOptions.length > 0
-            ? [{ label: "— Nhạc của tôi —", options: customOptions }]
+            ? [{ label: `— ${t('common.audioSettings.myCustomTracks')} —`, options: customOptions }]
             : []),
         ]}
       />
@@ -164,10 +166,10 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
               <Text ellipsis style={{ flex: 1, fontSize: 11, color: "#5d4037" }}>
                 {track.label}
               </Text>
-              <Tooltip title="Xóa">
+              <Tooltip title={t('common.audioSettings.btnDelete')}>
                 <Button type="text" size="small" danger
                   icon={<DeleteOutlined style={{ fontSize: 10 }} />}
-                  onClick={() => { dispatch(removeCustomBgmTrack(track.id)); message.success("Đã xóa"); }}
+                  onClick={() => { dispatch(removeCustomBgmTrack(track.id)); message.success(t('common.audioSettings.msgDeleted')); }}
                   style={{ padding: "0 4px", height: 20 }}
                 />
               </Tooltip>
@@ -181,17 +183,17 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
         <Button type="dashed" size="small" block icon={<PlusOutlined />}
           style={{ marginTop: 8, borderColor: "#c5a065", color: "#a8071a", fontSize: 12 }}
           onClick={() => setShowAddForm(true)} disabled={isMuted}>
-          Thêm nhạc của tôi
+          {t('common.audioSettings.addTrackBtn')}
         </Button>
       ) : (
         <div style={{ marginTop: 8, borderRadius: 8, padding: "10px", border: "1px dashed rgba(197,160,101,0.5)", background: "rgba(253,248,239,0.8)" }}>
           <Text style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 6 }}>
-            Hỗ trợ: YouTube • Spotify • SoundCloud • Link nhạc mp3 • Mã nhúng &lt;iframe&gt;
+            {t('common.audioSettings.addTrackHint')}
           </Text>
 
           <Input.TextArea
             autoSize={{ minRows: 2, maxRows: 4 }}
-            placeholder={`Dán URL hoặc mã nhúng (<iframe ...>)\nVí dụ: https://youtu.be/... hoặc mã embed từ SoundCloud, ZingMP3...`}
+            placeholder={t('common.audioSettings.addTrackPlaceholder')}
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             style={{ fontSize: 12, marginBottom: 6 }}
@@ -204,11 +206,11 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
                 <Alert
                   type="warning" showIcon
                   style={{ fontSize: 11, padding: "3px 8px" }}
-                  message={`${parsed.label}: Dùng mã <iframe> từ trang này thay vì link thường.`}
+                  message={t('common.audioSettings.addTrackWarnSupport', { label: parsed.label })}
                 />
               ) : (
                 <Text style={{ fontSize: 11, color: PLATFORM_META[parsed.platform]?.color ?? '#888' }}>
-                  ✓ Nhận diện: <strong>{parsed.label}</strong>{parsed.isIframe ? " (embed)" : " (link nhạc)"}
+                  {t('common.audioSettings.badgeRecognized')}<strong>{parsed.label}</strong>{parsed.isIframe ? " (embed)" : " (link)"}
                 </Text>
               )}
             </div>
@@ -216,7 +218,7 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
 
           <Input
             size="small"
-            placeholder="Tên bản nhạc (tuỳ chọn)"
+            placeholder={t('common.audioSettings.trackNameOptional')}
             value={labelInput}
             onChange={(e) => setLabelInput(e.target.value)}
             onPressEnter={handleAddTrack}
@@ -227,12 +229,12 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
             <Button size="small" type="primary" icon={<CheckOutlined />}
               onClick={handleAddTrack}
               style={{ flex: 1, background: "#a8071a", borderColor: "#a8071a", fontSize: 11 }}>
-              Lưu
+              {t('common.audioSettings.btnSave')}
             </Button>
             <Button size="small" icon={<CloseOutlined />}
               onClick={() => { setShowAddForm(false); setUrlInput(""); setLabelInput(""); }}
               style={{ flex: 1, fontSize: 11 }}>
-              Hủy
+              {t('common.audioSettings.btnCancel')}
             </Button>
           </div>
         </div>
@@ -253,11 +255,13 @@ const AudioSettingsPopover: React.FC<AudioSettingsProps> = ({ children }) => {
       overlayStyle={{ padding: 0 }}
     >
       {children || (
-        <Button
-          icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
-          size="large" className="sound-button"
-          style={{ position: "absolute", bottom: 20, right: 80, zIndex: 100 }}
-        />
+        <Tooltip title={t('common.audioSettings.tooltipAudio')}>
+          <Button
+            icon={isMuted ? <MutedOutlined /> : <SoundOutlined />}
+            size="large" className="sound-button"
+            style={{ position: "absolute", bottom: 20, right: 80, zIndex: 100 }}
+          />
+        </Tooltip>
       )}
     </Popover>
   );

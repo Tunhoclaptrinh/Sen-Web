@@ -1,0 +1,10 @@
+{
+  "header": {
+    "back": "Back",
+    "details": "Details",
+    "tooltip": "Click here to show level cards"
+  },
+  "messages": {
+    "locked": "This level is locked!"
+  }
+}

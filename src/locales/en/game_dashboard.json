@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "welcome": "Hello,",
+    "defaultName": "Explorer",
+    "subtitle": "Your heritage exploration journey awaits. Continue to conquer the challenges!",
+    "continue": "Continue Playing",
+    "viewQuests": "View Quests"
+  },
+  "rank": {
+    "title": "Rank {{rank}}",
+    "defaultRank": "Novice",
+    "needPoints": "Need {{points}} 🏆 to reach rank {{rank}}",
+    "maxRank": "You've reached the highest rank! 🎉"
+  },
+  "stats": {
+    "trophies": "Total Trophies",
+    "petals": "Lotus Petals",
+    "coins": "Golden Coins"
+  },
+  "quests": {
+    "activeTitle": "Active Quests",
+    "viewAll": "View All",
+    "empty": "No active quests",
+    "start": "Start Quest",
+    "claim": "Claim Reward",
+    "claimed": "Claimed",
+    "execute": "Execute",
+    "successClaim": "Reward claimed successfully!",
+    "errorClaim": "Could not claim reward",
+    "successStart": "Quest started!",
+    "errorStart": "Could not start quest at this time"
+  },
+  "news": {
+    "title": "News & Events"
+  },
+  "notifications": {
+    "title": "New Notifications",
+    "viewAll": "All",
+    "empty": "No new notifications",
+    "markRead": "Mark as read",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "errorRead": "Action failed",
+    "errorLoad": "Could not load more notifications"
+  },
+  "activity": {
+    "title": "Activity History",
+    "updating": "Feature coming soon, please stay tuned"
+  },
+  "quickExplore": {
+    "title": "Quick Explore",
+    "learning": "Review",
+    "museum": "Museum",
+    "shop": "Shop",
+    "leaderboard": "Leaderboard",
+    "map": "Map",
+    "scan": "Treasure Hunt",
+    "welfare": "Redeem"
+  },
+  "feedback": {
+    "title": "Feedback for SEN 💌",
+    "subtitle": "SEN is in testing phase. Your feedback helps us get better every day!",
+    "btn": "Fill survey now"
+  }
+}

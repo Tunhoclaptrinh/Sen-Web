@@ -1,0 +1,108 @@
+{
+  "loading": "Đang tải dữ liệu game...",
+  "errors": {
+    "initGame": "Không thể bắt đầu màn chơi. Vui lòng thử lại.",
+    "nextScreen": "Lỗi khi chuyển màn",
+    "finishLevel": "Lỗi khi hoàn thành màn chơi",
+    "invalidData": "Dữ liệu không hợp lệ",
+    "noData": "Không có dữ liệu",
+    "general": "Có lỗi xảy ra"
+  },
+  "adminMode": "Admin Mode: Kết quả không được lưu vào hệ thống.",
+  "common": {
+    "skip": "Bỏ qua",
+    "continue": "Tiếp tục",
+    "back": "Quay lại",
+    "retry": "Thử lại",
+    "exit": "Thoát",
+    "stay": "Ở lại",
+    "expand": "Xem thêm",
+    "collapse": "Thu gọn",
+    "zoomIn": "Phóng to"
+  },
+  "header": {
+    "exitTitle": "Thoát màn chơi?",
+    "exitContent": "Tiến độ hiện tại của bạn sẽ bị mất.",
+    "trophies": "Cúp: {{score}}",
+    "potentialTrophies": "Cúp có thể đạt được",
+    "audio": "Âm thanh",
+    "chat": "AI Chat",
+    "fullscreen": "Toàn màn hình",
+    "exitFullscreen": "Thoát toàn màn hình"
+  },
+  "screens": {
+    "comingSoon": "Sắp ra mắt",
+    "development": "Loại màn hình này ({{type}}) đang được phát triển.",
+    "dialogue": {
+      "user": "Bạn",
+      "ai": "Trợ lý Sen",
+      "nextIndicator": "Chạm để tiếp tục ▼"
+    },
+    "quiz": {
+      "selectOption": "Vui lòng chọn đáp án",
+      "selectEnough": "Vui lòng chọn đủ {{count}} đáp án",
+      "selectLabel": "Hãy chọn đúng {{count}} đáp án ({{current}}/{{target}})",
+      "correct": "Câu trả lời chính xác!",
+      "wrong": "Câu trả lời chưa đúng!",
+      "nextStep": "Tiếp tục hành trình",
+      "retry": "Thử lại câu hỏi này",
+      "submit": "Trả lời"
+    },
+    "hiddenObject": {
+      "foundTitle": "🎉 Bạn đã tìm thấy: {{name}}",
+      "great": "Tuyệt vời",
+      "allFoundTitle": "🏆 Màn chơi hoàn thành!",
+      "allFoundContent": "Bạn đã tìm thấy tất cả các vật phẩm bí ẩn.",
+      "hudLabel": "Tìm vật phẩm",
+      "fallbackFact": "Thông tin thú vị!",
+      "nextStep": "Tiếp tục"
+    },
+    "timeline": {
+      "title": "Dòng Chảy Lịch Sử",
+      "description": "Kéo thả các sự kiện để sắp xếp theo đúng trình tự thời gian.",
+      "success": "Chính xác! Bạn đã sắp xếp đúng dòng lịch sử.",
+      "failure": "Chưa chính xác. Hãy thử lại!",
+      "checkResult": "Kiểm tra kết quả",
+      "nextStep": "Tiếp tục"
+    },
+    "imageViewer": {
+      "fallbackTitle": "Hình ảnh chi tiết",
+      "fallbackDescription": "Khám phá hình ảnh này để tìm hiểu thêm về di sản văn hóa Việt Nam.",
+      "noImage": "Không có hình ảnh"
+    },
+    "video": {
+      "fallbackTitle": "Video",
+      "fallbackDescription": "Xem đoạn phim này để hiểu rõ hơn về câu chuyện.",
+      "noVideo": "Không có video"
+    }
+  },
+  "completion": {
+    "titles": {
+      "success": "HOÀN THÀNH MÀN CHƠI!",
+      "failure": "RẤT TIẾC!"
+    },
+    "subtitles": {
+      "success": "Bạn đã xuất sắc vượt qua màn chơi này với: {{score}} 🏆",
+      "failure": "Bạn chưa đủ cúp để qua màn. Hãy thử lại nhé!"
+    },
+    "labels": {
+      "scoreEarned": "Cúp đạt được:",
+      "scoreRequired": "Cần đạt:",
+      "scoreBase": "Cúp màn chơi:",
+      "scoreBonus": "Thưởng tốc độ:",
+      "scoreTotal": "Tổng cúp:",
+      "rewardsTitle": "Phần thưởng nhận được:",
+      "coins": "Xu",
+      "petals": "Cánh Sen"
+    },
+    "reviewMode": {
+      "title": "🔄 Chế độ ôn tập",
+      "description": "Bạn đã hoàn thành màn chơi này rồi! <br /> Lần chơi này không nhận thêm phần thưởng."
+    },
+    "actions": {
+      "lobby": "Quay về Sảnh",
+      "replay": "Chơi Lại",
+      "map": "Về Bản đồ"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "groups": {
+    "discovery": "KHÁM PHÁ",
+    "activities": "HOẠT ĐỘNG",
+    "assets": "TIỆN ÍCH",
+    "community": "CỘNG ĐỒNG"
+  },
+  "items": {
+    "dashboard": "Dashboard",
+    "chapters": "Hành trình Sen Hoa",
+    "map": "Bản đồ Di sản",
+    "scan": "Quét QR / Check-in",
+    "quests": "Nhiệm vụ",
+    "learning": "Ôn tập",
+    "books": "Sách & Truyện",
+    "shop": "Cửa hàng",
+    "museum": "Bảo tàng",
+    "welfare": "Quy đổi phúc lợi",
+    "leaderboard": "Bảng xếp hạng"
+  }
+}

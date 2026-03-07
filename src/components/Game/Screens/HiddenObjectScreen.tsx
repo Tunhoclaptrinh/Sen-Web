@@ -3,6 +3,7 @@ import { Card, Typography, message, Modal, Button } from "antd";
 import { CheckCircleFilled, SearchOutlined } from "@ant-design/icons";
 import type { HiddenObjectScreen as HiddenObjectScreenType } from "@/types/game.types";
 import { useGameSounds } from "@/hooks/useSound";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 import { getImageUrl } from "@/utils/image.helper";
 
@@ -44,6 +45,7 @@ interface HiddenObjectScreenProps {
 }
 
 const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, onCollect, loading }) => {
+  const { t } = useTranslation();
   const items: HiddenItem[] = transformItems(data.items);
   const requiredItems = data.requiredItems || items.length;
 
@@ -120,19 +122,19 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
       setProgress(result.progress);
 
       Modal.success({
-        title: `🎉 Bạn đã tìm thấy: ${result.item.name}`,
+        title: t('gamePlay.screens.hiddenObject.foundTitle', { name: result.item.name }),
         content: <p>{result.item.factPopup}</p>,
-        okText: "Tuyệt vời",
+        okText: t('gamePlay.screens.hiddenObject.great'),
         onOk: () => {
           if (result.progress.allCollected) {
             // Play success sound or delay?
             Modal.success({
-              title: "🏆 Màn chơi hoàn thành!",
-              content: "Bạn đã tìm thấy tất cả các vật phẩm bí ẩn.",
+              title: t('gamePlay.screens.hiddenObject.allFoundTitle'),
+              content: t('gamePlay.screens.hiddenObject.allFoundContent'),
               onOk: () => {
                 if (!loading) onNext();
               },
-              okText: "Tiếp tục hành trình",
+              okText: t('gamePlay.screens.hiddenObject.nextStep'),
             });
           }
         },
@@ -147,9 +149,9 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
   if (!items || items.length === 0) {
     return (
       <Card style={{ margin: 20, textAlign: "center" }}>
-        <Title level={4}>Dữ liệu không hợp lệ</Title>
+        <Title level={4}>{t('gamePlay.errors.invalidData')}</Title>
         <Button type="primary" onClick={() => { playClick(); onNext(); }}>
-          Bỏ qua
+          {t('gamePlay.common.skip')}
         </Button>
       </Card>
     );
@@ -200,7 +202,7 @@ const HiddenObjectScreen: React.FC<HiddenObjectScreenProps> = ({ data, onNext, o
       <div className="hidden-object-hud">
         <div className="hud-info">
           <span className="label">
-            <SearchOutlined /> Tìm vật phẩm
+            <SearchOutlined /> {t('gamePlay.screens.hiddenObject.hudLabel')}
           </span>
           <span className="count">
             {progress.collected} / {progress.required}

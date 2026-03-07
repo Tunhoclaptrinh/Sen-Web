@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { fetchLeaderboard } from "@/store/slices/gameSlice";
 import { Card, Table, Avatar, Tag, Tabs, Spin, Typography } from "antd";
+import { useTranslation } from "react-i18next";
 import { TrophyOutlined, CrownOutlined, UserOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameSounds } from "@/hooks/useSound";
@@ -16,13 +17,14 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number; activeTab: "
   rank,
   activeTab,
 }) => {
+  const { t } = useTranslation();
   const isCheckins = activeTab === "checkins";
   const isLevel = activeTab === "level";
 
   const mainStatValue = isCheckins ? entry.checkinCount || 0 : isLevel ? entry.level : entry.totalPoints;
 
   const mainStatIcon = isCheckins ? "📍" : isLevel ? "⭐" : "🏆";
-  const mainStatLabel = isCheckins ? "Check-in" : isLevel ? "LeveL" : "Cúp";
+  const mainStatLabel = isCheckins ? t('gameLeaderboard.podium.labels.checkins') : isLevel ? t('gameLeaderboard.podium.labels.level') : t('gameLeaderboard.podium.labels.points');
 
   return (
     <motion.div
@@ -43,7 +45,7 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number; activeTab: "
         />
         <div className="player-info">
           <span className="player-name">{entry.userName}</span>
-          <span className="player-level">Cấp độ {entry.level}</span>
+          <span className="player-level">{t('gameLeaderboard.podium.level', { level: entry.level })}</span>
         </div>
         <div className="stats-grid">
           <div className="stat-item">
@@ -53,7 +55,7 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number; activeTab: "
             </span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">Cánh Sen</span>
+            <span className="stat-label">{t('gameLeaderboard.podium.petals')}</span>
             <span className="stat-value">🌸 {entry.senPetals}</span>
           </div>
         </div>
@@ -63,6 +65,7 @@ const PodiumItem: React.FC<{ entry: LeaderboardEntry; rank: number; activeTab: "
 };
 
 const LeaderboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { leaderboard, leaderboardLoading } = useAppSelector((state) => state.game);
   const [activeTab, setActiveTab] = useState<"points" | "checkins" | "level">("points");
@@ -79,7 +82,7 @@ const LeaderboardPage: React.FC = () => {
 
   const columns = [
     {
-      title: "Hạng",
+      title: t('gameLeaderboard.columns.rank'),
       dataIndex: "rank",
       key: "rank",
       width: 80,
@@ -90,20 +93,20 @@ const LeaderboardPage: React.FC = () => {
       ),
     },
     {
-      title: "Người chơi",
+      title: t('gameLeaderboard.columns.player'),
       key: "player",
       render: (_: unknown, record: LeaderboardEntry) => (
         <div className="player-info-cell">
           <Avatar src={getImageUrl(record.userAvatar)} icon={<UserOutlined />} />
           <div className="user-info">
             <div className="user-name">{record.userName}</div>
-            <div className="user-level">Cấp {record.level}</div>
+            <div className="user-level">{t('gameLeaderboard.table.level', { level: record.level })}</div>
           </div>
         </div>
       ),
     },
     {
-      title: activeTab === "checkins" ? "Địa điểm" : activeTab === "level" ? "Cấp độ" : "Cúp",
+      title: activeTab === "checkins" ? t('gameLeaderboard.columns.checkins') : activeTab === "level" ? t('gameLeaderboard.columns.level') : t('gameLeaderboard.columns.points'),
       dataIndex: activeTab === "checkins" ? "checkinCount" : activeTab === "level" ? "level" : "totalPoints",
       key: "score",
       render: (value: number) => (
@@ -120,12 +123,12 @@ const LeaderboardPage: React.FC = () => {
           }
           style={{ borderRadius: 12, padding: "2px 12px" }}
         >
-          {(value || 0).toLocaleString()} {activeTab === "checkins" ? "địa điểm" : ""}
+          {(value || 0).toLocaleString()} {activeTab === "checkins" ? t('gameLeaderboard.columns.checkins').toLowerCase() : ""}
         </Tag>
       ),
     },
     {
-      title: "Cánh Sen",
+      title: t('gameLeaderboard.columns.petals'),
       dataIndex: "senPetals",
       key: "senPetals",
       align: "center" as const,
@@ -136,13 +139,13 @@ const LeaderboardPage: React.FC = () => {
       ),
     },
     {
-      title: "Nhân vật",
+      title: t('gameLeaderboard.columns.characters'),
       dataIndex: "charactersCount",
       key: "charactersCount",
       align: "center" as const,
       render: (count: number) => (
         <Tag color="purple" style={{ borderRadius: 12 }}>
-          {count} nhân vật
+          {t('gameLeaderboard.table.charactersCount', { count })}
         </Tag>
       ),
     },
@@ -155,14 +158,14 @@ const LeaderboardPage: React.FC = () => {
     <motion.div className="leaderboard-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <div className="leaderboard-header">
         <Title level={1} className="main-title">
-          <TrophyOutlined className="title-icon" /> Bảng xếp hạng
+          <TrophyOutlined className="title-icon" /> {t('gameLeaderboard.header.title')}
         </Title>
-        <Paragraph className="subtitle">Vinh danh những nhà thám hiểm xuất sắc nhất trên hành trình di sản</Paragraph>
+        <Paragraph className="subtitle">{t('gameLeaderboard.header.subtitle')}</Paragraph>
       </div>
 
       {leaderboardLoading ? (
         <div className="leaderboard-loading">
-          <Spin size="large" tip="Đang tải dữ liệu..." />
+          <Spin size="large" tip={t('gameLeaderboard.loading')} />
         </div>
       ) : (
         <>
@@ -187,9 +190,9 @@ const LeaderboardPage: React.FC = () => {
               onChange={handleTabChange}
               centered
               items={[
-                { key: "points", label: "Điểm số (Cúp)" },
-                { key: "checkins", label: "Nhà thám hiểm (Check-in)" },
-                { key: "level", label: "Cấp độ" },
+                { key: "points", label: t('gameLeaderboard.tabs.points') },
+                { key: "checkins", label: t('gameLeaderboard.tabs.checkins') },
+                { key: "level", label: t('gameLeaderboard.tabs.level') },
               ]}
             />
           </div>

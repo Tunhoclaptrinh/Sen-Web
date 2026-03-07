@@ -14,6 +14,7 @@ import {
 import senHead from "@/assets/images/SenChibi/face.png";
 import { setOverlayOpen } from "@/store/slices/aiSlice";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import "./QuickActions.less";
 
 /**
@@ -32,6 +33,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { isOverlayOpen, layoutMode } = useSelector((state: RootState) => state.ai);
   const [isMenuExpanded, setIsMenuExpanded] = React.useState(false);
@@ -76,8 +78,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
       case "admin":
         return (
           <div className="speed-dial-item">
-            <span className="speed-dial-label">Dashboard</span>
-            <Tooltip title="Dashboard" placement="left" open={false}>
+            <span className="speed-dial-label">{t('common.quickActions.dashboard')}</span>
+            <Tooltip title={t('common.quickActions.dashboard')} placement="left" open={false}>
               <button
                 className="quick-action-btn quick-action-btn--dashboard"
                 onClick={() => navigate("/admin/dashboard")}
@@ -94,8 +96,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
 
         return (
           <div className="speed-dial-item">
-            <span className="speed-dial-label">Khám phá game</span>
-            <Tooltip title="Khám phá game" placement="left" open={false}>
+            <span className="speed-dial-label">{t('common.quickActions.exploreGame')}</span>
+            <Tooltip title={t('common.quickActions.exploreGame')} placement="left" open={false}>
               <button
                 className="quick-action-btn quick-action-btn--game"
                 onClick={() => navigate("/game/dashboard")}
@@ -110,8 +112,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
         return (
           <>
             <div className="speed-dial-item">
-              <span className="speed-dial-label">Nội dung của tôi</span>
-              <Tooltip title="Nội dung của tôi" placement="left" open={false}>
+              <span className="speed-dial-label">{t('common.quickActions.myContent')}</span>
+              <Tooltip title={t('common.quickActions.myContent')} placement="left" open={false}>
                 <button
                   className="quick-action-btn quick-action-btn--research"
                   onClick={() => navigate("/researcher/heritage-sites")}
@@ -123,8 +125,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
             {/* Show Game button for researcher if not already in game module */}
             {!location.pathname.startsWith("/game") && (
               <div className="speed-dial-item">
-                <span className="speed-dial-label">Khám phá game</span>
-                <Tooltip title="Khám phá game" placement="left" open={false}>
+                <span className="speed-dial-label">{t('common.quickActions.exploreGame')}</span>
+                <Tooltip title={t('common.quickActions.exploreGame')} placement="left" open={false}>
                   <button
                     className="quick-action-btn quick-action-btn--game"
                     onClick={() => navigate("/game/dashboard")}
@@ -141,8 +143,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
         return (
           <>
             <div className="speed-dial-item">
-              <span className="speed-dial-label">Bộ sưu tập</span>
-              <Tooltip title="Bộ sưu tập" placement="left" open={false}>
+              <span className="speed-dial-label">{t('common.quickActions.collection')}</span>
+              <Tooltip title={t('common.quickActions.collection')} placement="left" open={false}>
                 <button
                   className="quick-action-btn quick-action-btn--collection"
                   onClick={() => navigate("/profile/library")}
@@ -152,8 +154,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
               </Tooltip>
             </div>
             <div className="speed-dial-item">
-              <span className="speed-dial-label">Khám phá</span>
-              <Tooltip title="Khám phá" placement="left" open={false}>
+              <span className="speed-dial-label">{t('common.quickActions.explore')}</span>
+              <Tooltip title={t('common.quickActions.explore')} placement="left" open={false}>
                 <button
                   className="quick-action-btn quick-action-btn--explore"
                   onClick={() => navigate("/heritage-sites")}
@@ -183,8 +185,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
         {/* AI Chat Button */}
         {!isGameplayRoute && (
           <div className="speed-dial-item">
-            <span className="speed-dial-label">Chat với AI Hub</span>
-            <Tooltip title="Chat với AI Hub" placement="left" open={false}>
+            <span className="speed-dial-label">{t('common.quickActions.chatAI')}</span>
+            <Tooltip title={t('common.quickActions.chatAI')} placement="left" open={false}>
               <button
                 className="quick-action-btn quick-action-btn--ai"
                 onClick={() => {
@@ -208,8 +210,8 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
 
         {/* Sen Visibility Toggle (Moved inside menu) */}
         <div className="speed-dial-item">
-          <span className="speed-dial-label">{isMinimized ? "Gọi Sen" : "Ẩn Sen"}</span>
-          <Tooltip title={isMinimized ? "Hiện Sen" : "Ẩn Sen"} placement="left" open={false}>
+          <span className="speed-dial-label">{isMinimized ? t('common.quickActions.callSen') : t('common.quickActions.hideSen')}</span>
+          <Tooltip title={isMinimized ? t('common.quickActions.showSen') : t('common.quickActions.hideSen')} placement="left" open={false}>
             <button
               className={`quick-action-btn quick-action-btn--toggle-sen ${!isMinimized ? "active" : ""}`}
               onClick={() => {
@@ -224,7 +226,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
       </div>
 
       {/* Main Trigger Button */}
-      <Tooltip title={isMenuExpanded ? "Đóng menu" : "Tiện ích nhanh"} placement="left">
+      <Tooltip title={isMenuExpanded ? t('common.quickActions.closeMenu') : t('common.quickActions.quickMenu')} placement="left">
         <button
           className={`main-fab-trigger ${isMenuExpanded ? "active" : ""}`}
           onClick={() => setIsMenuExpanded(!isMenuExpanded)}

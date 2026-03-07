@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Typography, Result, Spin, message, Tag, Space } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import { QrcodeOutlined, GiftOutlined, ArrowLeftOutlined, ReloadOutlined, EnvironmentFilled, StarFilled } from "@ant-design/icons";
@@ -13,6 +14,7 @@ import "./styles.less";
 const { Text } = Typography;
 
 const ScanPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [scanning, setScanning] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -37,7 +39,7 @@ const ScanPage: React.FC = () => {
             data: res,
           });
         } else {
-          message.error("Mã Check-in không hợp lệ!");
+          message.error(t('gameScan.errors.invalidCheckinCode'));
           setScanning(true);
         }
       }
@@ -55,7 +57,7 @@ const ScanPage: React.FC = () => {
       // If error is 404/400, show failure result
       setResult({
         success: false,
-        message: error.response?.data?.message || "Không tìm thấy vật phẩm hoặc địa điểm này.",
+        message: error.response?.data?.message || t('gameScan.errors.notFound'),
       });
     } finally {
       setProcessing(false);
@@ -74,14 +76,14 @@ const ScanPage: React.FC = () => {
       return (
         <Result
           status="error"
-          title="Quét thất bại"
+          title={t('gameScan.errors.scanFailed')}
           subTitle={result.message}
           extra={[
             <Button variant="primary" key="retry" icon={<ReloadOutlined />} onClick={handleReset}>
-              Thử lại ngay
+              {t('gameScan.actions.retry')}
             </Button>,
             <Button key="back" variant="outline" onClick={() => navigate(-1)}>
-              Quay lại trang chủ
+              {t('gameScan.actions.backHome')}
             </Button>,
           ]}
         />
@@ -106,10 +108,10 @@ const ScanPage: React.FC = () => {
                 <EnvironmentFilled style={{ color: "#8b1d1d", fontSize: 64 }} />
               </motion.div>
             }
-            title="Ghi danh thành công!"
+            title={t('gameScan.checkin.success')}
             subTitle={
               <span>
-                Tại hạ đã ghi danh bạn tại <strong>{locationName}</strong>
+                {t('gameScan.checkin.description', { locationName: locationName })}
               </span>
             }
             extra={[
@@ -120,18 +122,18 @@ const ScanPage: React.FC = () => {
                   transition={{ delay: 0.4 }}
                 >
                   <Text strong style={{ fontSize: 22, color: "#faad14", display: "block", marginBottom: 8 }}>
-                    +{pointsEarned} Công đức
+                    {t('gameScan.checkin.meritPoints', { points: pointsEarned })}
                   </Text>
                 </motion.div>
                 <Text type="secondary">
-                  Đã ghé thăm: <strong>{totalCheckins}</strong> lần
+                  {t('gameScan.checkin.visitCount', { count: totalCheckins })}
                 </Text>
               </div>,
               <Button variant="primary" key="map" onClick={() => navigate("/map")}>
-                Xem bản đồ di tích
+                {t('gameScan.actions.viewMap')}
               </Button>,
               <Button key="continue" variant="outline" onClick={handleReset}>
-                Tiếp tục tầm bảo
+                {t('gameScan.actions.continueSearching')}
               </Button>,
             ]}
           />
@@ -157,7 +159,7 @@ const ScanPage: React.FC = () => {
                 <GiftOutlined style={{ color: "#c5a065", fontSize: 64 }} />
               </motion.div>
             }
-            title={isNewDiscovery ? "Phát hiện Kỳ vật!" : "Thu thập Kỳ vật"}
+            title={isNewDiscovery ? t('gameScan.artifact.newDiscovery') : t('gameScan.artifact.collect')}
             subTitle={artifact.name}
             extra={[
               <motion.div
@@ -166,7 +168,7 @@ const ScanPage: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
               >
                 <img src={artifact.image} alt={artifact.name} />
-                {isNewDiscovery && <div className="new-badge-tag">MỚI</div>}
+                {isNewDiscovery && <div className="new-badge-tag">{t('gameScan.artifact.new')}</div>}
               </motion.div>,
 
               <div key="stats" className="result-stats">
@@ -182,7 +184,7 @@ const ScanPage: React.FC = () => {
                     className="reward-item"
                   >
                     <StarFilled style={{ color: '#faad14' }} />
-                    <Text strong style={{ fontSize: 20, color: "#faad14" }}> +{rewards.coins} Xu</Text>
+                    <Text strong style={{ fontSize: 20, color: "#faad14" }}> {t('gameScan.artifact.rewards.coins', { count: rewards.coins })}</Text>
                   </motion.div>
 
                   <motion.div
@@ -192,13 +194,13 @@ const ScanPage: React.FC = () => {
                     className="reward-item"
                   >
                     <div className="petal-icon-mini" />
-                    <Text strong style={{ fontSize: 20, color: "#eb2f96" }}> +{rewards.petals} Cánh Sen</Text>
+                    <Text strong style={{ fontSize: 20, color: "#eb2f96" }}> {t('gameScan.artifact.rewards.petals', { count: rewards.petals })}</Text>
                   </motion.div>
                 </Space>
 
                 {newBadges && newBadges.length > 0 && (
                   <div style={{ marginTop: 16 }}>
-                    <Text type="secondary">Danh hiệu đạt được:</Text>
+                    <Text type="secondary">{t('gameScan.artifact.badgesFound')}</Text>
                     <div style={{ marginTop: 8 }}>
                       {newBadges.map((b: any) => (
                         <Tag key={b.id} color="purple">{b.name}</Tag>
@@ -209,10 +211,10 @@ const ScanPage: React.FC = () => {
               </div>,
 
               <Button variant="primary" key="collection" onClick={() => navigate("/profile/library")}>
-                Vào tàng kinh các
+                {t('gameScan.actions.goToLibrary')}
               </Button>,
               <Button key="continue" variant="outline" onClick={handleReset}>
-                Tiếp tục tìm kiếm
+                {t('gameScan.actions.continueFinding')}
               </Button>,
             ]}
           />
@@ -234,7 +236,7 @@ const ScanPage: React.FC = () => {
         title={
           <span>
             <QrcodeOutlined style={{ marginRight: 10 }} />
-            Tầm Bảo & Ghi Danh
+            {t('gameScan.card.title')}
           </span>
         }
       >
@@ -247,7 +249,7 @@ const ScanPage: React.FC = () => {
               exit={{ opacity: 0 }}
               className="processing-container"
             >
-              <Spin size="large" tip="Đang giải mã mật văn..." />
+              <Spin size="large" tip={t('gameScan.processing')} />
             </motion.div>
           ) : result ? (
             <div key="result">{renderResult()}</div>

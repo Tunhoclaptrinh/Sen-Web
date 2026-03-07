@@ -1,0 +1,31 @@
+{
+  "loading": "Đang tải Sen Hoa...",
+  "header": {
+    "title": "Sen Hoa - Hành trình khám phá",
+    "subtitle": "Mỗi cánh sen là một chương trong hành trình khám phá di sản Việt Nam. Hoàn thành các màn chơi để mở khóa những câu chuyện mới!"
+  },
+  "stats": {
+    "points": "Điểm",
+    "petals": "Cánh Sen",
+    "coins": "Xu",
+    "completion": "Hoàn thành"
+  },
+  "card": {
+    "playNow": "Chơi ngay",
+    "theme": "Chủ đề: {{theme}}",
+    "noTheme": "Không có",
+    "progress": "Tiến độ",
+    "levelsCount": "{{completed}}/{{total}} màn",
+    "locked": "Chưa mở khóa",
+    "needPetals": "Cần {{petals}} cánh sen",
+    "unlock": "Mở khóa"
+  },
+  "modal": {
+    "unlockSuccess": {
+      "title": "Mở khóa thành công!",
+      "content": "Bạn đã mở khóa chương mới và chi tiêu {{petals}} cánh sen."
+    },
+    "unlockError": "Không thể mở khóa chương này",
+    "connectionError": "Lỗi kết nối"
+  }
+}

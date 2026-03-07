@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, message, Spin, Modal, Typography, Card, Col, Tag, Row } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import { ShopOutlined, DollarOutlined } from "@ant-design/icons";
@@ -16,6 +17,7 @@ import ShopDetailModal from "./components/ShopDetailModal";
 const { Title } = Typography;
 
 const ShopPage: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { items = [], inventory = [], loading, purchaseLoading, error, successMessage } = useSelector(
     (state: RootState) => state.shop,
@@ -114,7 +116,7 @@ const ShopPage: React.FC = () => {
     const balance = selectedItem.currency === "petals" ? progress?.totalSenPetals || 0 : progress?.coins || 0;
 
     if (balance < totalCost) {
-      message.warning(`Bạn không đủ ${selectedItem.currency === "petals" ? "Cánh Sen" : "Xu"}!`);
+      message.warning(t('gameShop.messages.insufficientBalance', { currency: selectedItem.currency === "petals" ? t('gameShop.currencies.petals') : t('gameShop.currencies.coins') }));
       return;
     }
 
@@ -175,7 +177,7 @@ const ShopPage: React.FC = () => {
                     background: "#f5f5f5",
                   }}
                 >
-                  No image
+                  {t('gameShop.card.noImage')}
                 </div>
               )}
               {/* Fallback container hidden by default unless image error */}
@@ -191,26 +193,26 @@ const ShopPage: React.FC = () => {
                   background: "#f5f5f5",
                 }}
               >
-                No image
+                {t('gameShop.card.noImage')}
               </div>
 
               <div className="item-type-tag">
                 {(() => {
                   let color = "gold";
-                  let text = "VẬT PHẨM";
+                  let text = t('gameShop.types.item');
 
                   if (["powerup", "hint", "boost"].includes(item.type)) {
                     color = "blue";
-                    text = "HỖ TRỢ";
+                    text = t('gameShop.types.support');
                   } else if (["decoration", "theme"].includes(item.type)) {
                     color = "purple";
-                    text = "TRANG TRÍ";
+                    text = t('gameShop.types.decoration');
                   } else if (["character", "character_skin", "premium_ai"].includes(item.type)) {
                     color = "magenta";
-                    text = "ĐỒNG HÀNH";
+                    text = t('gameShop.types.companion');
                   } else if ((item.type as string) === "collectible") {
                     color = "cyan";
-                    text = "SƯU TẦM";
+                    text = t('gameShop.types.collectible');
                   } else {
                     text = item.type.toUpperCase();
                   }
@@ -244,7 +246,7 @@ const ShopPage: React.FC = () => {
                   width: "fit-content",
                 }}
               >
-                Đang có: {ownedItem.quantity}
+                {t('gameShop.card.ownedCount', { count: ownedItem.quantity })}
               </div>
             )}
 
@@ -274,7 +276,7 @@ const ShopPage: React.FC = () => {
                 }}
                 disabled={isOwned}
               >
-                {isOwned ? "Đã sở hữu" : "Mua ngay"}
+                {isOwned ? t('gameShop.card.owned') : t('gameShop.card.buyNow')}
               </Button>
             </div>
           </div>
@@ -288,29 +290,29 @@ const ShopPage: React.FC = () => {
     // Use COINS for characters
     const balance = progress?.coins || 0;
     if (balance < (character.price || 0)) {
-      message.warning("Bạn không đủ Xu để mua nhân vật này!");
+      message.warning(t('gameShop.messages.insufficientCoinsForChar'));
       return;
     }
 
     Modal.confirm({
-      title: "Mua nhân vật đồng hành",
-      content: `Bạn muốn mua ${character.name} với giá ${character.price} Xu?`,
-      okText: "Mua ngay",
-      cancelText: "Hủy",
+      title: t('gameShop.messages.purchaseCharConfirm.title'),
+      content: t('gameShop.messages.purchaseCharConfirm.content', { name: character.name, price: character.price }),
+      okText: t('gameShop.messages.purchaseCharConfirm.ok'),
+      cancelText: t('gameShop.messages.purchaseCharConfirm.cancel'),
       onOk: async () => {
         playClick();
         setPurchasingCharacterId(character.id);
         try {
           const result = await aiService.purchaseCharacter(character.id);
           if (result.success) {
-            message.success(`Đã mua thành công nhân vật ${character.name}!`);
+            message.success(t('gameShop.messages.purchaseCharSuccess', { name: character.name }));
             fetchAvailableCharacters(); // Refresh list
             dispatch(fetchProgress() as any); // Refresh user coins
           } else {
-            message.error(result.message || "Không thể mua nhân vật");
+            message.error(result.message || t('gameShop.messages.purchaseCharError'));
           }
         } catch (err: any) {
-          message.error(err.message || "Lỗi khi mua nhân vật");
+          message.error(err.message || t('gameShop.messages.purchaseCharError'));
         } finally {
           setPurchasingCharacterId(null);
         }
@@ -327,10 +329,10 @@ const ShopPage: React.FC = () => {
       legendary: "gold",
     };
     const rarityLabels: Record<string, string> = {
-      common: "Phổ thông",
-      rare: "Hiếm",
-      epic: "Sử thi",
-      legendary: "Huyền thoại",
+      common: t('gameShop.rarity.common'),
+      rare: t('gameShop.rarity.rare'),
+      epic: t('gameShop.rarity.epic'),
+      legendary: t('gameShop.rarity.legendary'),
     };
 
     const characterImage = character.avatar ? getImageUrl(character.avatar) : null;
@@ -370,7 +372,7 @@ const ShopPage: React.FC = () => {
                 </div>
               )}
               <div className="item-type-tag">
-                <Tag color="magenta">ĐỒNG HÀNH</Tag>
+                <Tag color="magenta">{t('gameShop.types.companion')}</Tag>
               </div>
               {character.rarity && (
                 <div style={{ position: "absolute", top: 8, left: 8 }}>
@@ -407,7 +409,7 @@ const ShopPage: React.FC = () => {
                 loading={purchasingCharacterId === character.id}
                 disabled={character.isOwned || purchasingCharacterId === character.id}
               >
-                {character.isOwned ? "Đã sở hữu" : "Mua ngay"}
+                {character.isOwned ? t('gameShop.card.owned') : t('gameShop.card.buyNow')}
               </Button>
             </div>
           </div>
@@ -420,9 +422,9 @@ const ShopPage: React.FC = () => {
     <div className="shop-page">
       <div className="shop-header">
         <Title level={1} className="main-title">
-          <ShopOutlined className="title-icon" /> Cửa Hàng Sen
+          <ShopOutlined className="title-icon" /> {t('gameShop.header.title')}
         </Title>
-        <div className="shop-subtitle">Trao đổi vật phẩm - Nâng tầm trải nghiệm</div>
+        <div className="shop-subtitle">{t('gameShop.header.subtitle')}</div>
       </div>
 
       <div className="tabs-container">
@@ -431,10 +433,10 @@ const ShopPage: React.FC = () => {
           onChange={(key) => { playClick(); setActiveTab(key); }}
           centered
           items={[
-            { label: <span>Tất cả</span>, key: "all" },
-            { label: <span>Hỗ trợ</span>, key: "powerups" },
-            { label: <span>Nhân vật & AI</span>, key: "characters" },
-            { label: <span>Giao diện</span>, key: "themes" },
+            { label: <span>{t('gameShop.tabs.all')}</span>, key: "all" },
+            { label: <span>{t('gameShop.tabs.powerups')}</span>, key: "powerups" },
+            { label: <span>{t('gameShop.tabs.characters')}</span>, key: "characters" },
+            { label: <span>{t('gameShop.tabs.themes')}</span>, key: "themes" },
           ]}
         />
       </div>

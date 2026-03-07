@@ -1,0 +1,60 @@
+{
+  "header": {
+    "title": "Cửa Hàng Sen",
+    "subtitle": "Trao đổi vật phẩm - Nâng tầm trải nghiệm"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "powerups": "Hỗ trợ",
+    "characters": "Nhân vật & AI",
+    "themes": "Giao diện"
+  },
+  "types": {
+    "item": "VẬT PHẨM",
+    "support": "HỖ TRỢ",
+    "decoration": "TRANG TRÍ",
+    "companion": "ĐỒNG HÀNH",
+    "collectible": "SƯU TẦM",
+    "owned": "ĐÃ SỞ HỮU"
+  },
+  "rarity": {
+    "common": "Phổ thông",
+    "rare": "Hiếm",
+    "epic": "Sử thi",
+    "legendary": "Huyền thoại"
+  },
+  "card": {
+    "noImage": "Không có ảnh",
+    "ownedCount": "Đang có: {{count}}",
+    "priceLabel": "Giá bán:",
+    "owned": "Đã sở hữu",
+    "buyNow": "Mua ngay"
+  },
+  "modal": {
+    "title": "Chi tiết vật phẩm",
+    "noDescription": "Chưa có mô tả chi tiết cho vật phẩm này.",
+    "ownedLabel": "Bạn đang sở hữu: {{count}}",
+    "priceLabel": "Giá bán:",
+    "quantityLabel": "Số lượng mua:",
+    "totalLabel": "Tổng cộng:",
+    "insufficientBalance": "Không đủ số dư",
+    "buyWithPrice": "Mua ngay ({{cost}} {{currency}})",
+    "neededMore": "Bạn còn thiếu {{amount}} {{currency}}"
+  },
+  "messages": {
+    "insufficientBalance": "Bạn không đủ {{currency}}!",
+    "insufficientCoinsForChar": "Bạn không đủ Xu để mua nhân vật này!",
+    "purchaseCharConfirm": {
+      "title": "Mua nhân vật đồng hành",
+      "content": "Bạn muốn mua {{name}} với giá {{price}} Xu?",
+      "ok": "Mua ngay",
+      "cancel": "Hủy"
+    },
+    "purchaseCharSuccess": "Đã mua thành công nhân vật {{name}}!"
+  },
+  "currencies": {
+    "petals": "Cánh Sen",
+    "coins": "Xu",
+    "sen": "Sen"
+  }
+}

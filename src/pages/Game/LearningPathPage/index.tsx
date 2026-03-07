@@ -18,6 +18,7 @@ import {
   Tag,
   message,
 } from "antd";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
 import {
@@ -40,6 +41,7 @@ const LearningDetail = lazy(() => import("./LearningDetail"));
 const { Title, Paragraph } = Typography;
 
 const LearningPathPage: React.FC = () => {
+  const { t } = useTranslation();
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
@@ -53,7 +55,7 @@ const LearningPathPage: React.FC = () => {
     if (!id) {
       fetchLearningPath();
     }
-  }, [id]);
+  }, [id, location.pathname]); // Expanded dependencies for safer re-fetching
 
   const fetchLearningPath = async () => {
     try {
@@ -62,7 +64,7 @@ const LearningPathPage: React.FC = () => {
       setLearningPath(response.data || []);
       setProgress(response.progress);
     } catch (error) {
-      message.error("Không thể tải lộ trình học tập");
+      message.error(t('gameLearning.errors.fetchPath'));
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ const LearningPathPage: React.FC = () => {
           <div className="loading-overlay">
             <div className="loading-content">
               <Spin size="large" />
-              <p>Đang tải bài học...</p>
+              <p>{t('gameLearning.loading.module')}</p>
             </div>
           </div>
         }
@@ -104,7 +106,7 @@ const LearningPathPage: React.FC = () => {
   if (loading) {
     return (
       <div className="loading-container">
-        <Spin size="large" tip="Đang tải lộ trình..." />
+        <Spin size="large" tip={t('gameLearning.loading.path')} />
       </div>
     );
   }
@@ -117,10 +119,10 @@ const LearningPathPage: React.FC = () => {
         className="page-header"
       >
         <Title level={1} className="main-title">
-          <BookOutlined className="title-icon" /> Ôn tập kiến thức
+          <BookOutlined className="title-icon" /> {t('gameLearning.header.title')}
         </Title>
         <Paragraph className="subtitle">
-          Ôn luyện và củng cố kiến thức về lịch sử văn hóa Việt Nam qua các bài học chuyên sâu
+          {t('gameLearning.header.subtitle')}
         </Paragraph>
       </motion.div>
 
@@ -129,25 +131,25 @@ const LearningPathPage: React.FC = () => {
           <StatisticsCard
             data={[
               {
-                title: "Tổng bài học",
+                title: t('gameLearning.stats.total'),
                 value: progress.total || 0,
                 icon: <BookOutlined />,
                 valueColor: "#1890ff",
               },
               {
-                title: "Đã hoàn thành",
+                title: t('gameLearning.stats.completed'),
                 value: progress.completed || 0,
                 icon: <CheckCircleOutlined />,
                 valueColor: "#52c41a",
               },
               {
-                title: "Tiến độ",
+                title: t('gameLearning.stats.progress'),
                 icon: <TrophyOutlined />,
                 valueColor: "#faad14",
                 value: `${progress.percentage || 0}%`,
               },
               {
-                title: "Thời lượng",
+                title: t('gameLearning.stats.duration'),
                 value: `${learningPath.reduce((sum, m) => sum + (m.estimatedDuration || 0), 0)}'`,
                 icon: <ClockCircleOutlined />,
                 valueColor: "#722ed1",
@@ -176,7 +178,7 @@ const LearningPathPage: React.FC = () => {
           className="learning-content"
         >
           {learningPath.length === 0 ? (
-            <Empty description="Chưa có bài học nào" />
+            <Empty description={t('gameLearning.card.empty')} />
           ) : (
             <Row gutter={[24, 24]} className="learning-grid">
               {learningPath.map((module, index) => {
@@ -242,7 +244,7 @@ const LearningPathPage: React.FC = () => {
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                                 display: 'flex', alignItems: 'center', gap: 6
                               }}>
-                                <CheckCircleOutlined /> Hoàn thành
+                                <CheckCircleOutlined /> {t('gameLearning.card.completed')}
                               </div>
                             )}
                             {isLocked && (
@@ -272,10 +274,10 @@ const LearningPathPage: React.FC = () => {
                                 fontWeight: 600, fontSize: 11
                               }}
                             >
-                              {module.difficulty?.toUpperCase() || 'EASY'}
+                              {t(`gameLearning.difficulty.${module.difficulty?.toLowerCase() || 'easy'}`)}
                             </Tag>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#8c8c8c' }}>
-                              <ClockCircleOutlined /> {module.estimatedDuration} phút
+                              <ClockCircleOutlined /> {module.estimatedDuration} {t('gameLearning.units.minutes')}
                             </div>
                           </div>
 
@@ -285,18 +287,24 @@ const LearningPathPage: React.FC = () => {
 
                           <div style={{ marginTop: 'auto' }}>
                             {module.isCompleted ? (
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-                                <Tag color="success" style={{ borderRadius: 6, border: 'none', padding: '2px 10px', background: 'rgba(82, 196, 26, 0.1)', color: '#52c41a' }}>
-                                  Đã nhận thưởng
-                                </Tag>
-                                <div style={{ fontSize: 24, fontWeight: 800, color: module.score && module.score >= 80 ? '#52c41a' : '#faad14', lineHeight: 1 }}>
-                                  {module.score}<span style={{ fontSize: 12, fontWeight: 500, color: '#8c8c8c', marginLeft: 4 }}>/100</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <span style={{ fontSize: 13, color: '#8c8c8c', fontWeight: 500 }}>Lịch sử cao nhất:</span>
+                                  <div style={{ fontSize: 20, fontWeight: 800, color: (module.score ?? 0) >= (module.passingScore || 70) ? '#52c41a' : '#faad14', lineHeight: 1 }}>
+                                    {module.score ?? 0}<span style={{ fontSize: 12, fontWeight: 500, color: '#8c8c8c', marginLeft: 2 }}>/100</span>
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f5f5f5', padding: '6px 10px', borderRadius: 6 }}>
+                                  <span style={{ fontSize: 12, color: '#595959', fontWeight: 500 }}>Điểm yêu cầu:</span>
+                                  <div style={{ fontSize: 14, fontWeight: 700, color: '#595959' }}>
+                                    {module.passingScore || 70}
+                                  </div>
                                 </div>
                               </div>
                             ) : (
                               <div style={{ height: 28, marginBottom: 20 }}>
-                                {isLocked && <div style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}><LockOutlined /> Yêu cầu hoàn thành bài trước</div>}
-                                {!isLocked && <Tag color="processing" style={{ borderRadius: 6, border: 'none' }}>Chưa học</Tag>}
+                                {isLocked && <div style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}><LockOutlined /> {t('gameLearning.card.lockMessage')}</div>}
+                                {!isLocked && <Tag color="processing" style={{ borderRadius: 6, border: 'none' }}>{t('gameLearning.card.notStudied')}</Tag>}
                               </div>
                             )}
 
@@ -312,7 +320,7 @@ const LearningPathPage: React.FC = () => {
                               className="action-button action-btn"
                               icon={isLocked ? <LockOutlined /> : (module.isCompleted ? <BookOutlined /> : <PlayCircleOutlined />)}
                             >
-                              {isLocked ? "Chưa mở khóa" : (module.isCompleted ? "Ôn lại" : "Học ngay")}
+                              {isLocked ? t('gameLearning.card.actions.locked') : (module.isCompleted ? t('gameLearning.card.actions.review') : t('gameLearning.card.actions.learnNow'))}
                             </Button>
                           </div>
                         </div>

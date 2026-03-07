@@ -96,19 +96,20 @@
   border: 2px solid @seal-border;
   color: #fff9e6; // Vàng nhạt
   box-shadow: 0 4px 0 @seal-border;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Springy!
 
   &:hover,
   &:focus {
     background: @seal-red-light;
-    transform: translateY(2px); // Nhấn xuống hiệu ứng cơ học
+    transform: translateY(2px); // Sinks slightly on hover
     box-shadow: 0 2px 0 @seal-border;
     color: white !important;
-    border-color: @seal-border; // Maintain border color
+    border-color: @seal-border;
   }
 
   &:active {
-    transform: translateY(4px);
-    box-shadow: none;
+    transform: translateY(4px) scale(0.98); // Sinks fully and shrinks for tactile feel
+    box-shadow: 0 0 0 @seal-border;
   }
 
   &[disabled] {
@@ -118,6 +119,11 @@
     color: #666 !important;
     transform: none !important;
   }
+}
+
+// SEAL BUTTON - Global Utility
+.seal-button {
+  .game-btn-primary() !important;
 }
 
 .hover-lift-shadow() {
