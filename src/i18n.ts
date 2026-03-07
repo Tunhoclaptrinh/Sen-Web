@@ -9,6 +9,7 @@ import viHeader from './locales/vi/header.json';
 import viCommon from './locales/vi/common.json';
 import viHeritage from './locales/vi/heritage.json';
 import viArtifact from './locales/vi/artifact.json';
+import viMap from './locales/vi/map.json';
 
 import enNav from './locales/en/nav.json';
 import enHome from './locales/en/home.json';
@@ -17,6 +18,7 @@ import enHeader from './locales/en/header.json';
 import enCommon from './locales/en/common.json';
 import enHeritage from './locales/en/heritage.json';
 import enArtifact from './locales/en/artifact.json';
+import enMap from './locales/en/map.json';
 
 i18n
   .use(LanguageDetector)
@@ -32,6 +34,7 @@ i18n
           common: viCommon,
           heritage: viHeritage,
           artifact: viArtifact,
+          map: viMap,
         },
       },
       en: {
@@ -43,6 +46,7 @@ i18n
           common: enCommon,
           heritage: enHeritage,
           artifact: enArtifact,
+          map: enMap,
         },
       },
     },

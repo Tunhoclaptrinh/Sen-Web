@@ -1,0 +1,74 @@
+{
+  "title": "SEN Cultural Map",
+  "subtitle": "Showing {{count}} locations",
+  "searchPlaceholder": "Search...",
+  "filter": {
+    "itemType": "Content Type",
+    "all": "All ({{count}})",
+    "heritage": "Heritage ({{count}})",
+    "artifact": "Artifact ({{count}})",
+    "province": "Province/City",
+    "type": "Type"
+  },
+  "viewMode": {
+    "google": "Google Maps",
+    "simple": "Simple Map"
+  },
+  "actions": {
+    "viewDetails": "View Details",
+    "checkin": "Check-in here",
+    "huntBtn": "Hunt now",
+    "startHunt": "Start hunting",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "loadError": {
+      "title": "Google Maps Load Error",
+      "desc": "Failed to load Google Maps. System has automatically switched to Simple Map for you to continue the experience."
+    },
+    "authError": {
+      "title": "Google Maps Auth Error",
+      "desc": "Invalid or restricted API Key. System is switching to backup Map."
+    },
+    "huntActive": {
+      "title": "🎯 Treasure Hunt Mode",
+      "desc": "You have activated Treasure Hunt mode at this location. Move closer to start!"
+    },
+    "checkinReady": {
+      "title": "📍 Ready for Check-in",
+      "desc": "Location marked. You can check-in when you reach the correct coordinates!"
+    },
+    "loginRequired": {
+      "title": "Login Required",
+      "checkinDesc": "Please login to perform Check-in!",
+      "huntDesc": "Please login to join Treasure Hunt!"
+    },
+    "checkinSuccess": {
+      "title": "Check-in successful!",
+      "desc": "Congratulations! You received {{points}} points at {{location}}."
+    },
+    "checkinFailed": {
+      "title": "Check-in failed",
+      "alreadyChecked": "You have already checked in at this location today."
+    },
+    "huntStart": {
+      "title": "Preparing for hunt",
+      "desc": "Starting to search for {{name}}. Radar effect activated!"
+    },
+    "loading": "Loading data and map...",
+    "preparingFallback": "Preparing backup map...",
+    "initializing": "Initializing Google Maps...",
+    "searching": "Searching"
+  },
+  "layers": {
+    "title": "Map Layers",
+    "traffic": "Traffic",
+    "transit": "Transit",
+    "bicycling": "Bicycling"
+  },
+  "legend": {
+    "title": "Legend",
+    "heritage": "Heritage ({{count}})",
+    "artifact": "Artifact ({{count}})"
+  }
+}

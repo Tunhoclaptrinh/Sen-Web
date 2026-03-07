@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow, OverlayView } from "@react-google-maps/api";
+import { useTranslation } from "react-i18next";
 import { Spin, Typography, Select, Input, Tag, Space, Dropdown, Radio, notification, Modal } from "antd";
 import Button from "@/components/common/Button";
 import { useGameSounds } from "@/hooks/useSound";
@@ -23,8 +24,9 @@ import {
   MAP_VIEW_MODES,
   ItemType,
   MapViewMode,
-  HERITAGE_TYPE_LABELS,
-  ARTIFACT_TYPE_LABELS,
+  // HERITAGE_TYPE_LABELS,
+  // ARTIFACT_TYPE_LABELS,
+  // vì đã dùng i18n nên không cần dùng các hằng số này nữa
   MAP_ZOOM_DEFAULT,
 } from "@/config/constants";
 import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
@@ -81,6 +83,7 @@ const containerStyle = {
 const center = MAP_CENTER;
 
 const MapPage: React.FC = () => {
+  const { t, i18n: i18nInstance } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [locations, setLocations] = useState<Location[]>([]);
@@ -126,7 +129,7 @@ const MapPage: React.FC = () => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-    language: "vi",
+    language: i18nInstance.language === 'vi' ? 'vi' : 'en',
     region: "VN",
   });
 
@@ -135,8 +138,8 @@ const MapPage: React.FC = () => {
     if (loadError) {
       console.error("Google Maps Load Error:", loadError);
       notification.warning({
-        message: "Lỗi tải Google Maps",
-        description: "Không thể tải Google Maps. Hệ thống đã tự động chuyển sang Bản đồ Đơn giản để bạn tiếp tục trải nghiệm.",
+        message: t("map.messages.loadError.title"),
+        description: t("map.messages.loadError.desc"),
         placement: "topRight",
         duration: 5,
       });
@@ -171,8 +174,8 @@ const MapPage: React.FC = () => {
     (window as any).gm_authFailure = () => {
       console.error("Google Maps Authentication Failed!");
       notification.error({
-        message: "Lỗi xác thực Google Maps",
-        description: "API Key không hợp lệ hoặc bị giới hạn. Hệ thống đang chuyển sang Bản đồ dự phòng.",
+        message: t("map.messages.authError.title"),
+        description: t("map.messages.authError.desc"),
         placement: "topRight",
         duration: 10,
       });
@@ -193,15 +196,15 @@ const MapPage: React.FC = () => {
       // For now, let's show a notification if there's an action
       if (actionParam === "hunt") {
         notification.info({
-          message: "🎯 Chế độ Tầm bảo",
-          description: "Bạn đã kích hoạt chế độ Tầm bảo tại địa điểm này. Hãy di chuyển đến gần để bắt đầu!",
+          message: t("map.messages.huntActive.title"),
+          description: t("map.messages.huntActive.desc"),
           placement: "top",
           icon: <RocketOutlined style={{ color: '#1890ff' }} />,
         });
       } else if (actionParam === "checkin") {
         notification.success({
-          message: "📍 Sẵn sàng Check-in",
-          description: "Vị trí đã được đánh dấu. Bạn có thể check-in khi đến đúng tọa độ!",
+          message: t("map.messages.checkinReady.title"),
+          description: t("map.messages.checkinReady.desc"),
           placement: "top",
         });
       }
@@ -366,7 +369,7 @@ const MapPage: React.FC = () => {
               name: h.name,
               lat: lat,
               lng: lng,
-              type: h.type || "Di sản",
+              type: h.type || t("common.heritage"),
               province: h.province,
               thumbnail: getFullImageUrl(h.mainImage || h.image || h.thumbnail) || "/images/placeholder-heritage.jpg",
               itemType: ITEM_TYPES.HERITAGE,
@@ -402,8 +405,8 @@ const MapPage: React.FC = () => {
                     name: a.name,
                     lat: lat,
                     lng: lng,
-                    type: a.artifactType || "Hiện vật",
-                    province: a.province || heritage.province || "Chưa xác định",
+                    type: a.artifactType || t("common.artifact"),
+                    province: a.province || heritage.province || t("common.noInfo"),
                     thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
                     itemType: ITEM_TYPES.ARTIFACT,
                     relatedLevelIds: a.relatedLevelIds,
@@ -418,8 +421,8 @@ const MapPage: React.FC = () => {
                     name: a.name,
                     lat: lat,
                     lng: lng,
-                    type: a.artifactType || "Hiện vật",
-                    province: a.province || "Chưa xác định",
+                    type: a.artifactType || t("common.artifact"),
+                    province: a.province || t("common.noInfo"),
                     thumbnail: getFullImageUrl(a.mainImage || a.image || a.thumbnail) || "/images/placeholder-artifact.jpg",
                     itemType: ITEM_TYPES.ARTIFACT,
                     relatedLevelIds: a.relatedLevelIds,
@@ -475,8 +478,8 @@ const MapPage: React.FC = () => {
   const handleCheckIn = async (locId: number) => {
     if (!user) {
       notification.warning({
-        message: "Yêu cầu đăng nhập",
-        description: "Vui lòng đăng nhập để thực hiện Check-in!",
+        message: t("map.messages.loginRequired.title"),
+        description: t("map.messages.loginRequired.checkinDesc"),
       });
       return;
     }
@@ -486,15 +489,15 @@ const MapPage: React.FC = () => {
       const res = await gameService.checkIn(locId);
       playClick();
       notification.success({
-        message: "Check-in thành công!",
-        description: `Chúc mừng! Bạn đã nhận được ${res.pointsEarned} điểm cúp tại ${res.locationName}.`,
+        message: t("map.messages.checkinSuccess.title"),
+        description: t("map.messages.checkinSuccess.desc", { points: res.pointsEarned, location: res.locationName }),
         icon: <CheckOutlined style={{ color: "#52c41a" }} />,
       });
     } catch (error: any) {
       console.error("Check-in error:", error);
       notification.error({
-        message: "Check-in thất bại",
-        description: error.response?.data?.message || "Bạn đã check-in tại địa điểm này hôm nay rồi.",
+        message: t("map.messages.checkinFailed.title"),
+        description: error.response?.data?.message || t("map.messages.checkinFailed.alreadyChecked"),
       });
     } finally {
       setCheckingIn(false);
@@ -504,8 +507,8 @@ const MapPage: React.FC = () => {
   const handleHunt = (loc: Location) => {
     if (!user) {
       notification.warning({
-        message: "Yêu cầu đăng nhập",
-        description: "Vui lòng đăng nhập để tham gia Tầm bảo!",
+        message: t("map.messages.loginRequired.title"),
+        description: t("map.messages.loginRequired.huntDesc"),
       });
       return;
     }
@@ -519,8 +522,8 @@ const MapPage: React.FC = () => {
         _map.setZoom(18);
       }
       notification.info({
-        message: "Chuẩn bị tầm bảo",
-        description: `Bắt đầu tìm kiếm ${loc.name}. Hiệu ứng radar đã được kích hoạt!`,
+        message: t("map.messages.huntStart.title"),
+        description: t("map.messages.huntStart.desc", { name: loc.name }),
         icon: <RocketOutlined style={{ color: "#faad14" }} />,
       });
     }
@@ -530,7 +533,7 @@ const MapPage: React.FC = () => {
   const types = Array.from(new Set(locations.map((l) => l.type).filter(Boolean))).sort();
 
   const getTypeLabel = (type: string) => {
-    return (HERITAGE_TYPE_LABELS as any)[type] || (ARTIFACT_TYPE_LABELS as any)[type] || type;
+    return t(`common.heritageTypes.${type}`, { defaultValue: t(`common.artifactTypes.${type}`, { defaultValue: type }) });
   };
 
   const heritageCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.HERITAGE).length;
@@ -552,7 +555,7 @@ const MapPage: React.FC = () => {
     if (loading || (!isLoaded && !loadError)) {
       return (
         <div className="loading-overlay">
-          <Spin size="large" tip="Đang tải dữ liệu và bản đồ..." />
+          <Spin size="large" tip={t("map.messages.loading")} />
         </div>
       );
     }
@@ -563,7 +566,7 @@ const MapPage: React.FC = () => {
       if (!mapData) {
         return (
           <div className="loading-overlay">
-            <Spin size="large" tip="Đang chuẩn bị bản đồ dự phòng..." />
+            <Spin size="large" tip={t("map.messages.preparingFallback")} />
           </div>
         );
       }
@@ -591,7 +594,7 @@ const MapPage: React.FC = () => {
       if (typeof google === 'undefined') {
         return (
           <div className="loading-overlay">
-            <Spin size="large" tip="Đang khởi tạo Google Maps..." />
+            <Spin size="large" tip={t("map.messages.initializing")} />
           </div>
         );
       }
@@ -677,7 +680,7 @@ const MapPage: React.FC = () => {
                 </Typography.Title>
                 <Space size={[0, 8]} wrap className="popup-tags">
                   <Tag color={selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "warning" : "error"}>
-                    {selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? "Hiện vật" : getTypeLabel(selectedMarker.type)}
+                    {selectedMarker.itemType === ITEM_TYPES.ARTIFACT ? t("common.artifact") : getTypeLabel(selectedMarker.type)}
                   </Tag>
                   {selectedMarker.province && <Tag color="green">{selectedMarker.province}</Tag>}
                 </Space>
@@ -693,7 +696,7 @@ const MapPage: React.FC = () => {
                       )
                     }
                   >
-                    Xem chi tiết
+                    {t("map.actions.viewDetails")}
                   </Button>
 
                   {selectedMarker.itemType === ITEM_TYPES.HERITAGE ? (
@@ -705,7 +708,7 @@ const MapPage: React.FC = () => {
                       onClick={() => handleCheckIn(selectedMarker.id)}
                       style={{ background: "#52c41a", color: "white", borderColor: "#52c41a" }}
                     >
-                      Check-in tại đây
+                      {t("map.actions.checkin")}
                     </Button>
                   ) : (
                     <Button
@@ -715,7 +718,7 @@ const MapPage: React.FC = () => {
                       onClick={() => { playClick(); handleHunt(selectedMarker); }}
                       style={{ background: "#faad14", color: "white", borderColor: "#faad14" }}
                     >
-                      Tầm bảo ngay
+                      {t("map.actions.huntBtn")}
                     </Button>
                   )}
                 </Space>
@@ -736,14 +739,14 @@ const MapPage: React.FC = () => {
         <div className="header-left">
           <EnvironmentOutlined className="map-icon" />
           <div className="discovery-header">
-            <Typography.Title level={2}>Bản đồ Văn hóa SEN</Typography.Title>
-            <Typography.Text className="map-subtitle">Đang hiển thị {filteredLocations.length} địa điểm</Typography.Text>
+            <Typography.Title level={2}>{t("map.title")}</Typography.Title>
+            <Typography.Text className="map-subtitle">{t("map.subtitle", { count: filteredLocations.length })}</Typography.Text>
           </div>
         </div>
 
         <div className="filter-section">
           <Input
-            placeholder="Tìm kiếm..."
+            placeholder={t("map.searchPlaceholder")}
             prefix={<SearchOutlined />}
             className="filter-input"
             onChange={(e) => setSearchText(e.target.value)}
@@ -751,22 +754,22 @@ const MapPage: React.FC = () => {
           />
 
           <Select
-            placeholder="Loại nội dung"
+            placeholder={t("map.filter.itemType")}
             className="filter-select-item-type"
             value={itemTypeFilter}
             onChange={(v) => setItemTypeFilter(v as any)}
           >
-            <Option value="all">Tất cả ({locations.length})</Option>
+            <Option value="all">{t("map.filter.all", { count: locations.length })}</Option>
             <Option value={ITEM_TYPES.HERITAGE}>
-              Di sản ({locations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE).length})
+              {t("map.filter.heritage", { count: locations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE).length })}
             </Option>
             <Option value={ITEM_TYPES.ARTIFACT}>
-              Hiện vật ({locations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT).length})
+              {t("map.filter.artifact", { count: locations.filter((l) => l.itemType === ITEM_TYPES.ARTIFACT).length })}
             </Option>
           </Select>
 
           <Select
-            placeholder="Tỉnh/Thành phố"
+            placeholder={t("map.filter.province")}
             className="filter-select-province"
             allowClear
             onChange={setProvinceFilter}
@@ -779,7 +782,7 @@ const MapPage: React.FC = () => {
             ))}
           </Select>
 
-          <Select placeholder="Loại hình" className="filter-select-type" allowClear onChange={setTypeFilter}>
+          <Select placeholder={t("map.filter.type")} className="filter-select-type" allowClear onChange={setTypeFilter}>
             {types.map((t) => (
               <Option key={t} value={t}>
                 {getTypeLabel(t)}
@@ -796,8 +799,8 @@ const MapPage: React.FC = () => {
               size="middle"
               className="custom-radio-group"
               options={[
-                { label: "Google Maps", value: MAP_VIEW_MODES.GOOGLE },
-                { label: "Simple Map", value: MAP_VIEW_MODES.SIMPLE },
+                { label: t("map.viewMode.google"), value: MAP_VIEW_MODES.GOOGLE },
+                { label: t("map.viewMode.simple"), value: MAP_VIEW_MODES.SIMPLE },
               ]}
             />
           </div>
@@ -816,7 +819,7 @@ const MapPage: React.FC = () => {
                   className="hunt-target-img"
                 />
                 <div className="hunt-text">
-                  <span className="target-label">Đang tìm kiếm</span>
+                  <span className="target-label">{t("map.messages.searching")}</span>
                   <h3 className="target-name">{activeHunt.name}</h3>
                 </div>
               </div>
@@ -828,7 +831,7 @@ const MapPage: React.FC = () => {
                   className="hunt-start-btn"
                   onClick={() => { playClick(); handleHunt(activeHunt!); }}
                 >
-                  Bắt đầu tầm bảo
+                  {t("map.actions.startHunt")}
                 </Button>
                 <Button
                   ghost
@@ -836,7 +839,7 @@ const MapPage: React.FC = () => {
                   icon={<CheckOutlined />}
                   onClick={() => setActiveHunt(null)}
                 >
-                  Hủy
+                  {t("map.actions.cancel")}
                 </Button>
               </div>
             </div>
@@ -860,7 +863,7 @@ const MapPage: React.FC = () => {
                           minWidth: "200px",
                         }}
                       >
-                        <span>🚗 Giao thông</span>
+                        <span>🚗 {t("map.layers.traffic")}</span>
                         {showTraffic && <CheckOutlined style={{ color: "#1890ff" }} />}
                       </div>
                     ),
@@ -877,7 +880,7 @@ const MapPage: React.FC = () => {
                           minWidth: "200px",
                         }}
                       >
-                        <span>🚊 Phương tiện công cộng</span>
+                        <span>🚊 {t("map.layers.transit")}</span>
                         {showTransit && <CheckOutlined style={{ color: "#1890ff" }} />}
                       </div>
                     ),
@@ -894,7 +897,7 @@ const MapPage: React.FC = () => {
                           minWidth: "200px",
                         }}
                       >
-                        <span>🚴 Xe đạp</span>
+                        <span>🚴 {t("map.layers.bicycling")}</span>
                         {showBicycling && <CheckOutlined style={{ color: "#1890ff" }} />}
                       </div>
                     ),
@@ -906,7 +909,7 @@ const MapPage: React.FC = () => {
               placement="bottomRight"
             >
               <Button className="layers-control-button" icon={<AppstoreOutlined />} buttonSize="large">
-                Lớp bản đồ
+                {t("map.layers.title")}
               </Button>
             </Dropdown>
           </div>
@@ -915,15 +918,15 @@ const MapPage: React.FC = () => {
         {!loading && !loadError && (
           <div className="map-legend">
             <div className="legend-title">
-              <EnvironmentOutlined /> Chú giải
+              <EnvironmentOutlined /> {t("map.legend.title")}
             </div>
             <div className="legend-item">
               <div className="legend-icon heritage-icon"></div>
-              <span>Di sản ({heritageCount})</span>
+              <span>{t("map.legend.heritage", { count: heritageCount })}</span>
             </div>
             <div className="legend-item">
               <div className="legend-icon artifact-icon"></div>
-              <span>Hiện vật ({artifactCount})</span>
+              <span>{t("map.legend.artifact", { count: artifactCount })}</span>
             </div>
           </div>
         )}

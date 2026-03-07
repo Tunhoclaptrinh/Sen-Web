@@ -1,0 +1,74 @@
+{
+  "title": "Bản đồ Văn hóa SEN",
+  "subtitle": "Đang hiển thị {{count}} địa điểm",
+  "searchPlaceholder": "Tìm kiếm...",
+  "filter": {
+    "itemType": "Loại nội dung",
+    "all": "Tất cả ({{count}})",
+    "heritage": "Di sản ({{count}})",
+    "artifact": "Hiện vật ({{count}})",
+    "province": "Tỉnh/Thành phố",
+    "type": "Loại hình"
+  },
+  "viewMode": {
+    "google": "Google Maps",
+    "simple": "Simple Map"
+  },
+  "actions": {
+    "viewDetails": "Xem chi tiết",
+    "checkin": "Check-in tại đây",
+    "huntBtn": "Tầm bảo ngay",
+    "startHunt": "Bắt đầu tầm bảo",
+    "cancel": "Hủy"
+  },
+  "messages": {
+    "loadError": {
+      "title": "Lỗi tải Google Maps",
+      "desc": "Không thể tải Google Maps. Hệ thống đã tự động chuyển sang Bản đồ Đơn giản để bạn tiếp tục trải nghiệm."
+    },
+    "authError": {
+      "title": "Lỗi xác thực Google Maps",
+      "desc": "API Key không hợp lệ hoặc bị giới hạn. Hệ thống đang chuyển sang Bản đồ dự phòng."
+    },
+    "huntActive": {
+      "title": "🎯 Chế độ Tầm bảo",
+      "desc": "Bạn đã kích hoạt chế độ Tầm bảo tại địa điểm này. Hãy di chuyển đến gần để bắt đầu!"
+    },
+    "checkinReady": {
+      "title": "📍 Sẵn sàng Check-in",
+      "desc": "Vị trí đã được đánh dấu. Bạn có thể check-in khi đến đúng tọa độ!"
+    },
+    "loginRequired": {
+      "title": "Yêu cầu đăng nhập",
+      "checkinDesc": "Vui lòng đăng nhập để thực hiện Check-in!",
+      "huntDesc": "Vui lòng đăng nhập để tham gia Tầm bảo!"
+    },
+    "checkinSuccess": {
+      "title": "Check-in thành công!",
+      "desc": "Chúc mừng! Bạn đã nhận được {{points}} điểm cúp tại {{location}}."
+    },
+    "checkinFailed": {
+      "title": "Check-in thất bại",
+      "alreadyChecked": "Bạn đã check-in tại địa điểm này hôm nay rồi."
+    },
+    "huntStart": {
+      "title": "Chuẩn bị tầm bảo",
+      "desc": "Bắt đầu tìm kiếm {{name}}. Hiệu ứng radar đã được kích hoạt!"
+    },
+    "loading": "Đang tải dữ liệu và bản đồ...",
+    "preparingFallback": "Đang chuẩn bị bản đồ dự phòng...",
+    "initializing": "Đang khởi tạo Google Maps...",
+    "searching": "Đang tìm kiếm"
+  },
+  "layers": {
+    "title": "Lớp bản đồ",
+    "traffic": "Giao thông",
+    "transit": "Phương tiện công cộng",
+    "bicycling": "Xe đạp"
+  },
+  "legend": {
+    "title": "Chú giải",
+    "heritage": "Di sản ({{count}})",
+    "artifact": "Hiện vật ({{count}})"
+  }
+}
