@@ -20,6 +20,8 @@ import {
 import exhibitionService, { Exhibition } from '@/services/exhibition.service';
 import ArticleCard from '@/components/common/cards/ArticleCard';
 import DiscoveryCard from '@/components/common/cards/DiscoveryCard';
+import SeoHead from '@/components/common/SeoHead';
+import { usePrerenderReady } from '@/hooks/usePrerenderReady';
 import './styles.less';
 
 const { Title } = Typography;
@@ -50,6 +52,8 @@ const ExhibitionBrowsePage: React.FC = () => {
     useEffect(() => {
         fetchExhibitions();
     }, [pagination.current, filters]);
+
+    usePrerenderReady(!loading);
 
     const fetchExhibitions = async () => {
         try {
@@ -91,6 +95,14 @@ const ExhibitionBrowsePage: React.FC = () => {
 
     return (
         <div className="exhibition-browse-page">
+            <SeoHead
+                title={t('exhibition.browse.title')}
+                description={t('exhibition.browse.subtitle')}
+                path="/exhibitions"
+                image="/images/Zero_home.png"
+                keywords={["trien lam", "bao tang ao", "van hoa", "nghe thuat", "exhibition"]}
+            />
+
             {/* 1. Hero Section */}
             <section className="hero-section">
                 <div className="hero-content">

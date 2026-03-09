@@ -17,6 +17,7 @@ import CustomBgmPlayer from "./components/Game/CustomBgmPlayer";
 import MobileAppPromotion from "./components/common/MobileAppPromotion";
 import { initGA, sendPageView } from "./utils/analytics";
 import { useLocation } from "react-router-dom";
+import { isPrerenderMode, notifyPrerenderReady } from "./hooks/usePrerenderReady";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,6 +45,21 @@ const App: React.FC = () => {
   useEffect(() => {
     sendPageView(location.pathname + location.search);
   }, [location]);
+
+  // Fallback signal for prerender routes that do not have explicit data-ready hooks.
+  useEffect(() => {
+    if (!isPrerenderMode()) {
+      return;
+    }
+
+    const fallbackTimer = window.setTimeout(() => {
+      notifyPrerenderReady();
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+    };
+  }, [location.pathname]);
 
   // Listen for Storage Changes (Multi-tab Logout)
   useEffect(() => {

@@ -38,14 +38,26 @@ import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { Artifact, HeritageSite, HistoryArticle } from "@/types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
+import SeoHead from "@/components/common/SeoHead";
 import { useViewTracker } from "@/hooks/useViewTracker";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import { trackViewProduct } from "@/utils/analytics";
+import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
 import "./styles.less";
 
 const { Title } = Typography;
+
+type DiscoveryLevel = {
+  id: number;
+  name?: string;
+  description?: string;
+  thumbnail?: string;
+  backgroundImage?: string;
+  image?: string;
+};
 
 const ArtifactDetailPage = () => {
   const { t } = useTranslation();
@@ -58,7 +70,7 @@ const ArtifactDetailPage = () => {
   const [relatedArtifacts, setRelatedArtifacts] = useState<Artifact[]>([]);
   const [relatedHeritage, setRelatedHeritage] = useState<HeritageSite[]>([]);
   const [relatedHistory, setRelatedHistory] = useState<HistoryArticle[]>([]);
-  const [discoveryLevels, setDiscoveryLevels] = useState<any[]>([]);
+  const [discoveryLevels, setDiscoveryLevels] = useState<DiscoveryLevel[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [showGame, setShowGame] = useState(false);
@@ -235,6 +247,8 @@ const ArtifactDetailPage = () => {
     }
   }, [error, navigate]);
 
+  usePrerenderReady(!loading);
+
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
       message.warning(t('artifact.detail.messages.unauthorizedFavorite'));
@@ -278,12 +292,31 @@ const ArtifactDetailPage = () => {
 
   if (loading)
     return (
-      <div className="loading-container">
-        <Spin size="large" />
-      </div>
+      <>
+        <SeoHead
+          title={t("artifact.browse.heroTitle")}
+          description={t("artifact.browse.heroSubtitle")}
+          path={id ? `/artifacts/${id}` : "/artifacts"}
+          image="/images/Zero_home.png"
+        />
+        <div className="loading-container">
+          <Spin size="large" />
+        </div>
+      </>
     );
 
-  if (!artifact) return <Empty description={t('artifact.detail.messages.unknownArtifact')} />;
+  if (!artifact)
+    return (
+      <>
+        <SeoHead
+          title={t("artifact.browse.heroTitle")}
+          description={t("artifact.browse.heroSubtitle")}
+          path="/artifacts"
+          image="/images/Zero_home.png"
+        />
+        <Empty description={t('artifact.detail.messages.unknownArtifact')} />
+      </>
+    );
 
   // Image helpers
   const rawMainImage =
@@ -305,9 +338,31 @@ const ArtifactDetailPage = () => {
     ? t(`common.artifactTypes.${artifact.artifactType}`) || artifact.artifactType
     : t('artifact.detail.messages.unknownLocation');
   const conditionLabel = artifact.condition ? t(`common.artifactConditions.${artifact.condition.toLowerCase()}`) || artifact.condition : t('artifact.detail.messages.noInfo');
+  const detailPath = id ? `/artifacts/${id}` : "/artifacts";
+  const seoDescription = toMetaDescription(
+    artifact.shortDescription || artifact.description || `${artifact.name} - thong tin hien vat van hoa`
+  );
+  const artifactJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: artifact.name,
+    description: seoDescription,
+    url: buildAbsoluteUrl(detailPath),
+    image: [mainImage],
+  };
 
   return (
     <div className="artifact-detail-page">
+      <SeoHead
+        title={artifact.name}
+        description={seoDescription}
+        path={detailPath}
+        image={mainImage}
+        type="article"
+        keywords={["hien vat", "co vat", "lich su", artifact.name]}
+        jsonLd={artifactJsonLd}
+      />
+
       {/* 0. Nav Back */}
       <div className="nav-back-wrapper">
         <Button
@@ -705,7 +760,7 @@ const ArtifactDetailPage = () => {
                     ) : (
                       <Row gutter={[24, 24]}>
                         {discoveryLevels && discoveryLevels.length > 0 ? (
-                          discoveryLevels.map((level: any) => (
+                          discoveryLevels.map((level) => (
                             <Col xs={24} md={12} key={level.id}>
                               <div className="game-card-mini">
                                 <div

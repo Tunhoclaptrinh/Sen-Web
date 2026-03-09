@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /researcher
+Disallow: /profile
+Disallow: /game
+Disallow: /notifications
+Disallow: /login
+
+Sitemap: https://sen.vn/sitemap.xml

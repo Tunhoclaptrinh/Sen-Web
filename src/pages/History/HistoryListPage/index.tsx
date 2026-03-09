@@ -6,6 +6,8 @@ import historyService from "@/services/history.service";
 import ArticleCard from "@/components/common/cards/ArticleCard";
 import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
 import { useCategories } from "@/hooks/useCategories";
+import SeoHead from "@/components/common/SeoHead";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -36,6 +38,8 @@ const HistoryListPage: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [pagination.current, filters]);
+
+  usePrerenderReady(!loading);
 
   const fetchData = async () => {
     try {
@@ -75,6 +79,14 @@ const HistoryListPage: React.FC = () => {
 
   return (
     <div className="heritage-browse-page history-list-page">
+      <SeoHead
+        title={t("history.list.title")}
+        description={t("history.list.subtitle")}
+        path="/history"
+        image="/images/Zero_home.png"
+        keywords={["bai viet lich su", "lich su viet nam", "van hoa", "history"]}
+      />
+
       {/* 1. Hero Section - Reusing heritage styling classes */}
       <section className="hero-section">
         <div className="hero-content">

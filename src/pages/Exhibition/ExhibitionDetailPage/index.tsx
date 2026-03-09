@@ -24,6 +24,9 @@ import dayjs from "dayjs";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import { trackViewProduct } from "@/utils/analytics";
+import SeoHead from "@/components/common/SeoHead";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
+import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -106,21 +109,70 @@ const ExhibitionDetailPage: React.FC = () => {
     });
   }, [exhibition?.id, exhibition?.name]);
 
+  usePrerenderReady(!loading);
+
   if (loading)
     return (
-      <div className="exhibition-detail-page">
-        <div className="loading-container">
-          <Spin size="large" />
+      <>
+        <SeoHead
+          title={t("exhibition.browse.title")}
+          description={t("exhibition.browse.subtitle")}
+          path={id ? `/exhibitions/${id}` : "/exhibitions"}
+          image="/images/Zero_home.png"
+        />
+        <div className="exhibition-detail-page">
+          <div className="loading-container">
+            <Spin size="large" />
+          </div>
         </div>
-      </div>
+      </>
     );
-  if (!exhibition) return <Empty description={t('exhibition.detail.messages.notFound')} />;
+  if (!exhibition)
+    return (
+      <>
+        <SeoHead
+          title={t("exhibition.browse.title")}
+          description={t("exhibition.browse.subtitle")}
+          path="/exhibitions"
+          image="/images/Zero_home.png"
+        />
+        <Empty description={t('exhibition.detail.messages.notFound')} />
+      </>
+    );
 
   const rawImage = resolveImage(exhibition.image);
   const heroImage = getImageUrl(rawImage, "/images/Zero_home.png"); // Fallback to generic if empty
+  const detailPath = id ? `/exhibitions/${id}` : "/exhibitions";
+  const seoDescription = toMetaDescription(
+    exhibition.description || `${exhibition.name} - trien lam van hoa`
+  );
+  const exhibitionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ExhibitionEvent",
+    name: exhibition.name,
+    description: seoDescription,
+    image: [heroImage],
+    startDate: exhibition.startDate,
+    endDate: exhibition.endDate,
+    url: buildAbsoluteUrl(detailPath),
+    organizer: {
+      "@type": "Organization",
+      name: exhibition.curator || "SEN",
+    },
+  };
 
   return (
     <div className="exhibition-detail-page">
+      <SeoHead
+        title={exhibition.name}
+        description={seoDescription}
+        path={detailPath}
+        image={heroImage}
+        type="article"
+        keywords={["trien lam", "bao tang", "van hoa", exhibition.name]}
+        jsonLd={exhibitionJsonLd}
+      />
+
       {/* 0. Nav Back */}
       <div className="nav-back-wrapper">
         <Button

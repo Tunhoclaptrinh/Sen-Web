@@ -1,0 +1,290 @@
+{
+  "tagline": "Reimagining history and culture learning with technology",
+  "sections": {
+    "problem": "Problem",
+    "valueProposition": "Value Proposition",
+    "solution": "Solution",
+    "businessModel": "Business Model",
+    "roadmap": "Traction / Roadmap",
+    "team": "Team"
+  },
+  "labels": {
+    "sectionProblem": "Problem",
+    "sectionValueProposition": "Value Proposition",
+    "sectionBusinessModel": "Business Model",
+    "sectionSolution": "Solution"
+  },
+  "solutionOverview": {
+    "title": "Experience-driven learning platform",
+    "summary": "SEN combines gamification, AI, and curated data to bridge classroom history learning with real-world heritage experiences.",
+    "details": [
+      "Increase engagement in history learning through missions, challenges, and AI conversations.",
+      "Connect classroom learning with museums and heritage sites through QR and on-site activities.",
+      "Ensure historical content is accurate and aligned with educational goals in Vietnam."
+    ]
+  },
+  "revenueTarget": "Break even Y3, VND 7B revenue by Y5",
+  "footer": {
+    "qrGroupLabel": "PITCH DECK / DEMO",
+    "impactText": "A place where history is not only remembered, but relived!"
+  },
+  "modal": {
+    "qrTitle": "QR Details",
+    "qrTitlePrefix": "QR Details",
+    "destinationLabel": "Destination",
+    "pasteLinkLabel": "Paste a link to generate QR automatically",
+    "pasteLinkPlaceholder": "https://your-link-here",
+    "usageTitle": "Usage notes",
+    "detailTitle": "Details",
+    "detailInfoTitle": "Detail information",
+    "memberTitle": "Member information",
+    "memberFallbackRole": "Project member",
+    "departmentLabel": "Department",
+    "specializationLabel": "Specialization",
+    "contactLabel": "Contact",
+    "avatarPreviewMask": "View large image"
+  },
+  "problemItems": [
+    {
+      "id": 1,
+      "title": "Learning history and culture lacks interaction and real experience",
+      "summary": "History content in schools is mostly delivered through theory, making it harder for students to stay engaged and proactively explore.",
+      "details": [
+        "Learning methods are still memory-focused and lack hands-on experiences.",
+        "Students struggle to visualize historical context when learning only from books and lectures.",
+        "Self-learning motivation decreases without continuous interaction and feedback."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "One-way learning limits learner initiative",
+      "summary": "Content is often delivered in a passive, note-taking format, reducing long-term engagement and retention.",
+      "details": [
+        "Content is often taught in a read-and-copy format that is hard to sustain engagement.",
+        "Learners have limited opportunities to connect knowledge with real contexts at heritage sites and museums.",
+        "Retention decreases when interactive activities and direct feedback are missing."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Gap between theory and real-world experience",
+      "summary": "Students have limited opportunities to connect textbook knowledge with real historical and cultural places.",
+      "details": [
+        "Learner initiative is still limited, and out-of-class heritage exploration remains low.",
+        "Learning activities linked to heritage spaces are not yet frequent enough.",
+        "Students struggle to relate historical lessons to local cultural contexts.",
+        "Knowledge can become fragmented without contextual real-world experiences."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Passive observation at museums and heritage sites",
+      "summary": "Many museums and heritage sites are still mostly static displays, lacking interactive technology to attract younger audiences.",
+      "details": [
+        "Many destinations still lack digital interaction mechanisms to increase immersion.",
+        "On-site learning missions are often missing, making exploration less goal-oriented.",
+        "Young visitors find it hard to stay interested if experiences remain purely observational."
+      ]
+    }
+  ],
+  "roadmapStages": [
+    {
+      "id": 1,
+      "phase": "Phase 1 (6 months)",
+      "milestone": "Pilot implementation at PTIT"
+    },
+    {
+      "id": 2,
+      "phase": "Phase 2 (6 months)",
+      "milestone": "Middle-school pilot (Grade 6)"
+    },
+    {
+      "id": 3,
+      "phase": "Phase 3 (2 years)",
+      "milestone": "Expand B2B deployment in schools"
+    },
+    {
+      "id": 4,
+      "phase": "Phase 4 (2 years)",
+      "milestone": "B2C rollout and cultural tourism expansion"
+    }
+  ],
+  "valuePropositionItems": [
+    {
+      "id": 1,
+      "title": "A specialized platform for cultural learning",
+      "summary": "Built for culture, tourism, and education with digital learning content, gamification, and AI guidance.",
+      "details": [
+        "Shift from rote memorization to mission-based exploration.",
+        "AI supports contextual questions and responses in historical learning.",
+        "Digital content enables students to explore proactively at their own pace."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Connecting physical and digital learning",
+      "summary": "Connect classroom knowledge (via QR + missions) with museum and heritage-site experiences to understand history in real context.",
+      "details": [
+        "Connect classroom lessons with activities at museums and heritage sites.",
+        "QR and interactive missions bridge theory with practice.",
+        "Teachers can organize project-based learning tied to heritage spaces."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "AI historical characters",
+      "summary": "Responses are generated from curated internal data with contextual limits to avoid historical misinformation.",
+      "details": [
+        "Answers are generated from an approved knowledge base by topic.",
+        "Conversational style stays friendly while preserving factual accuracy.",
+        "Historical characters can be expanded across different time periods."
+      ]
+    }
+  ],
+  "businessModelItems": [
+    {
+      "id": 1,
+      "title": "Target customers",
+      "points": [
+        "Schools / Educational organizations",
+        "Museums, heritage sites, tourism destinations",
+        "Tourists and individuals interested in culture"
+      ],
+      "details": [
+        "The product serves both in-school learning and out-of-school heritage contexts.",
+        "Deployment can be organized by class, by school, or by experience program.",
+        "It can gradually expand to self-driven history learners outside formal education."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Revenue streams",
+      "points": [
+        "SaaS deployment fee",
+        "Content licensing (games, learning materials, assessments, etc.)",
+        "Commission from service delivery and promotion"
+      ],
+      "details": [
+        "Charge by platform package and number of users.",
+        "Monetize licensed learning content and digital history scenarios.",
+        "Combine revenue sharing from destination services and experiences."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Cost structure",
+      "points": [
+        "Platform development and operations",
+        "Content creation and curation (gamification and digital learning assets)",
+        "Marketing and pilot deployment in schools and museums"
+      ],
+      "details": [
+        "Prioritize investment in core technology, stable operations, and data security.",
+        "Content budget focuses on learning quality and historical verification.",
+        "Market expansion costs align with field pilots and user growth."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Key partners",
+      "points": [
+        "Schools and educational organizations",
+        "Teachers and history-education experts",
+        "Museums, heritage sites, and cultural locations",
+        "Travel and tour operators"
+      ],
+      "details": [
+        "Technology partners support infrastructure deployment and integrations.",
+        "Education partners ensure fit with real teaching programs.",
+        "Cultural partners create real-world history touchpoints beyond classrooms."
+      ]
+    }
+  ],
+  "solutionFeatureItems": [
+    {
+      "id": 1,
+      "icon": "✨",
+      "title": "Gamified Learning",
+      "summary": "Multimedia missions and challenges boost proactive cultural exploration.",
+      "details": [
+        "Design level-based learning journeys to sustain exploration motivation.",
+        "Combine points, badges, and challenges in historical contexts.",
+        "Increase learner initiative with instant feedback after each mission."
+      ]
+    },
+    {
+      "id": 2,
+      "icon": "🤖",
+      "title": "AI Chatbot Assistant",
+      "summary": "Chat with AI/historical characters in context to better understand events.",
+      "details": [
+        "Learners can ask natural questions across specific historical milestones.",
+        "Answers rely on curated data to ensure trustworthiness.",
+        "Supports deeper understanding instead of fragmented memorization."
+      ]
+    },
+    {
+      "id": 3,
+      "icon": "🏛️",
+      "title": "Personal Digital Museum",
+      "summary": "Collect artifacts and check in at locations via on-site QR codes.",
+      "details": [
+        "Each QR scan unlocks digital artifacts, stories, and on-site missions.",
+        "Experience data is stored as a personal learning portfolio.",
+        "Helps students connect textbook knowledge with real historical contexts."
+      ]
+    },
+    {
+      "id": 4,
+      "icon": "⚙️",
+      "title": "Content CMS",
+      "summary": "Manage assets and build learning scenarios easily with review workflows.",
+      "details": [
+        "Create and update lessons and mission scenarios by topic.",
+        "Integrate review workflows to ensure content quality.",
+        "Scale content quickly across multiple schools and heritage sites."
+      ]
+    }
+  ],
+  "qrItems": [
+    {
+      "id": 1,
+      "label": "APP(Android)",
+      "badge": "SCAN APP",
+      "title": "Android App QR",
+      "summary": "This QR links to the SEN Android app experience.",
+      "destination": "Android app download and demo page",
+      "details": [
+        "Use your camera or QR scanner app to open the link.",
+        "Scanning with an Android device is recommended for quick installation.",
+        "Can be used for live demos of SEN core features."
+      ]
+    },
+    {
+      "id": 2,
+      "label": "WEBSITE",
+      "badge": "SCAN WEB",
+      "title": "Website Experience QR",
+      "summary": "This QR links to the SEN project website experience.",
+      "destination": "SEN landing page / website demo",
+      "details": [
+        "Useful for quick showcase on displays or printed posters.",
+        "Lets viewers instantly access introduction content and demos.",
+        "Can be widely shared at events and pitching sessions."
+      ]
+    },
+    {
+      "id": 3,
+      "label": "FANPAGE",
+      "badge": "SCAN FB",
+      "title": "SEN Fanpage QR",
+      "summary": "This QR links to SEN's official Facebook fanpage.",
+      "destination": "SEN Facebook fanpage",
+      "details": [
+        "Scan to open the fanpage directly in browser or Facebook app.",
+        "Great for helping viewers follow project updates.",
+        "Can be used in posters, slides, and communication materials."
+      ]
+    }
+  ]
+}

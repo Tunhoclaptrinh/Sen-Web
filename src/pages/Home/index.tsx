@@ -11,6 +11,9 @@ import FeatureCard from "@/components/common/cards/FeatureCard";
 import HomeMapSection from "@/components/Home/HomeMapSection";
 import HomeLeaderboardSection from "@/components/Home/HomeLeaderboardSection";
 import { ITEM_TYPES } from "@/config/constants";
+import SeoHead from "@/components/common/SeoHead";
+import { buildAbsoluteUrl } from "@/utils/seo.utils";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import "./styles.less";
 import brandTitle from "../../assets/images/logo2.png";
 import headerLogo from "../../assets/images/logo.png";
@@ -24,6 +27,7 @@ const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { items: sites } = useSelector((state: RootState) => state.heritage);
   const { items: artifacts } = useSelector((state: RootState) => state.artifact);
+  const [isSeoReady, setIsSeoReady] = useState(false);
 
   // State for background animation
   const [isShaking, setIsShaking] = useState(false);
@@ -49,12 +53,62 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchHeritageSites({ _limit: 4 }));
-    dispatch(fetchArtifacts({ _limit: 4 }));
+    let isMounted = true;
+
+    const loadInitialData = async () => {
+      await Promise.allSettled([
+        dispatch(fetchHeritageSites({ _limit: 4 })),
+        dispatch(fetchArtifacts({ _limit: 4 })),
+      ]);
+
+      if (isMounted) {
+        setIsSeoReady(true);
+      }
+    };
+
+    void loadInitialData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [dispatch]);
+
+  usePrerenderReady(isSeoReady);
+
+  const homeJsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "SEN",
+      url: buildAbsoluteUrl("/"),
+      logo: buildAbsoluteUrl("/images/logo.png"),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "SEN",
+      url: buildAbsoluteUrl("/"),
+      inLanguage: "vi-VN",
+    },
+  ];
 
   return (
     <div className="home-page">
+      <SeoHead
+        title="SEN - Kham pha di san van hoa Viet Nam"
+        description={t("home.heroSubtitle")}
+        path="/"
+        image="/images/Zero_home.png"
+        keywords={[
+          "di san van hoa",
+          "lich su viet nam",
+          "kham pha di tich",
+          "hien vat lich su",
+          "sen",
+        ]}
+        jsonLd={homeJsonLd}
+      />
+
       {/* 1. Hero Section */}
       <Background className="hero-section">
         <section className="hero-sections">

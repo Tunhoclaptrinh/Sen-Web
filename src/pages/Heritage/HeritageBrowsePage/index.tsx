@@ -8,6 +8,8 @@ import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
 import { ITEM_TYPES } from "@/config/constants";
 import { useCategories } from "@/hooks/useCategories";
 import { HeritageSite } from "@/types/heritage.types";
+import SeoHead from "@/components/common/SeoHead";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -41,6 +43,8 @@ const HeritageBrowsePage: React.FC = () => {
   useEffect(() => {
     fetchSites();
   }, [pagination.current, filters]);
+
+  usePrerenderReady(!loading);
 
   const fetchSites = async () => {
     try {
@@ -81,6 +85,14 @@ const HeritageBrowsePage: React.FC = () => {
 
   return (
     <div className="heritage-browse-page">
+      <SeoHead
+        title={t("heritage.browse.heroTitle")}
+        description={t("heritage.browse.heroSubtitle")}
+        path="/heritage-sites"
+        image="/images/Zero_home.png"
+        keywords={["di tich", "di san", "van hoa viet nam", "du lich", "heritage"]}
+      />
+
       {/* 1. Hero Section */}
       <section className="hero-section">
         <div className="hero-content">

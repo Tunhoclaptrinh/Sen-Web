@@ -31,6 +31,9 @@ import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import { trackViewProduct } from "@/utils/analytics";
+import SeoHead from "@/components/common/SeoHead";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
+import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -81,6 +84,8 @@ const HistoryDetailPage = () => {
       sourceScreen: "HistoryDetailPage",
     });
   }, [article?.id, article?.title]);
+
+  usePrerenderReady(!loading);
 
   const fetchData = async (currentId: string) => {
     try {
@@ -176,11 +181,30 @@ const HistoryDetailPage = () => {
 
   if (loading)
     return (
-      <div className="loading-container">
-        <Spin size="large" />
-      </div>
+      <>
+        <SeoHead
+          title={t("history.list.title")}
+          description={t("history.list.subtitle")}
+          path={id ? `/history/${id}` : "/history"}
+          image="/images/Zero_home.png"
+        />
+        <div className="loading-container">
+          <Spin size="large" />
+        </div>
+      </>
     );
-  if (!article) return <Empty description={t('history.detail.messages.notFound')} />;
+  if (!article)
+    return (
+      <>
+        <SeoHead
+          title={t("history.list.title")}
+          description={t("history.list.subtitle")}
+          path="/history"
+          image="/images/Zero_home.png"
+        />
+        <Empty description={t('history.detail.messages.notFound')} />
+      </>
+    );
 
   const mainImage = article.image || "https://images.unsplash.com/photo-1555921015-5532091f6026?w=1200";
   const publishDate = article.publishDate || article.createdAt;
@@ -188,9 +212,36 @@ const HistoryDetailPage = () => {
   const normalizedTitle = normalizeVietnamese(article.title);
   const normalizedShortDescription = normalizeVietnamese(article.shortDescription || "");
   const normalizedContent = normalizeVietnamese(article.content || "");
+  const detailPath = id ? `/history/${id}` : "/history";
+  const seoDescription = toMetaDescription(
+    normalizedShortDescription || normalizedContent || `${normalizedTitle} - bai viet lich su`
+  );
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: normalizedTitle,
+    description: seoDescription,
+    image: [mainImage],
+    datePublished: publishDate,
+    author: {
+      "@type": "Person",
+      name: authorName,
+    },
+    mainEntityOfPage: buildAbsoluteUrl(detailPath),
+  };
 
   return (
     <div className="heritage-blog-page history-detail-page">
+      <SeoHead
+        title={normalizedTitle}
+        description={seoDescription}
+        path={detailPath}
+        image={mainImage}
+        type="article"
+        keywords={["bai viet lich su", "lich su viet nam", "van hoa", normalizedTitle]}
+        jsonLd={articleJsonLd}
+      />
+
       {/* 0. Nav Back (Added on top of Hero) */}
       <div className="nav-back-wrapper">
         <Button

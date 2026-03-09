@@ -43,11 +43,14 @@ import ArticleCard from "@/components/common/cards/ArticleCard";
 import type { HeritageSite, TimelineEvent, Artifact, HistoryArticle } from "@/types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import AddToCollectionModal from "@/components/common/AddToCollectionModal";
+import SeoHead from "@/components/common/SeoHead";
 import { useViewTracker } from "@/hooks/useViewTracker";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import { trackViewProduct } from "@/utils/analytics";
+import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -214,6 +217,8 @@ const HeritageDetailPage = () => {
     }
   }, [error, navigate]);
 
+  usePrerenderReady(!loading);
+
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
       message.warning(t('common.reviews.loginRequired'));
@@ -260,11 +265,30 @@ const HeritageDetailPage = () => {
 
   if (loading)
     return (
-      <div className="loading-container">
-        <Spin size="large" tip={t('common.loading')} />
-      </div>
+      <>
+        <SeoHead
+          title={t("heritage.browse.heroTitle")}
+          description={t("heritage.browse.heroSubtitle")}
+          path={id ? `/heritage-sites/${id}` : "/heritage-sites"}
+          image="/images/Zero_home.png"
+        />
+        <div className="loading-container">
+          <Spin size="large" tip={t('common.loading')} />
+        </div>
+      </>
     );
-  if (!site) return <Empty description={t('heritage.browse.empty')} />;
+  if (!site)
+    return (
+      <>
+        <SeoHead
+          title={t("heritage.browse.heroTitle")}
+          description={t("heritage.browse.heroSubtitle")}
+          path="/heritage-sites"
+          image="/images/Zero_home.png"
+        />
+        <Empty description={t('heritage.browse.empty')} />
+      </>
+    );
 
   const relatedHistory = relatedHistoryArr.length > 0 ? relatedHistoryArr : site.relatedHistory || [];
 
@@ -273,9 +297,32 @@ const HeritageDetailPage = () => {
   const mainImage = getImageUrl(rawImage, "https://images.unsplash.com/photo-1599525281489-0824b223c285?w=1200");
   const publishDate = site.publishDate || site.createdAt || new Date().toISOString();
   const authorName = site.authorName || site.author || "Hệ thống";
+  const detailPath = id ? `/heritage-sites/${id}` : "/heritage-sites";
+  const seoDescription = toMetaDescription(
+    site.shortDescription || site.description || `${site.name} - thong tin di san van hoa Viet Nam`
+  );
+  const heritageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    name: site.name,
+    description: seoDescription,
+    url: buildAbsoluteUrl(detailPath),
+    image: [mainImage],
+    address: site.address || site.region,
+  };
 
   return (
     <div className="heritage-blog-page">
+      <SeoHead
+        title={site.name}
+        description={seoDescription}
+        path={detailPath}
+        image={mainImage}
+        type="article"
+        keywords={["di san", "di tich", "van hoa viet nam", site.name]}
+        jsonLd={heritageJsonLd}
+      />
+
       {/* 0. Nav Back */}
       <div className="nav-back-wrapper">
         <Button

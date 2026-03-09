@@ -8,6 +8,8 @@ import DiscoveryCard from "@/components/common/cards/DiscoveryCard";
 import { ITEM_TYPES } from "@/config/constants";
 import { useCategories } from "@/hooks/useCategories";
 import { Artifact } from "@/types/artifact.types";
+import SeoHead from "@/components/common/SeoHead";
+import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -41,6 +43,8 @@ const ArtifactBrowsePage: React.FC = () => {
   useEffect(() => {
     fetchArtifacts();
   }, [pagination.current, filters]);
+
+  usePrerenderReady(!loading);
 
   const fetchArtifacts = async () => {
     try {
@@ -80,6 +84,14 @@ const ArtifactBrowsePage: React.FC = () => {
 
   return (
     <div className="artifact-browse-page">
+      <SeoHead
+        title={t("artifact.browse.heroTitle")}
+        description={t("artifact.browse.heroSubtitle")}
+        path="/artifacts"
+        image="/images/Zero_home.png"
+        keywords={["hien vat", "co vat", "lich su", "bao tang", "artifact"]}
+      />
+
       {/* 1. Hero Section */}
       <section className="hero-section">
         <div className="hero-content">

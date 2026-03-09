@@ -1,13 +1,69 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig({
-  plugins: [react()],
+const DEFAULT_PRERENDER_ROUTES = [
+  "/",
+  "/heritage-sites",
+  "/artifacts",
+  "/history",
+  "/exhibitions",
+];
+
+const loadPrerenderRoutes = () => {
+  const routeFilePath = path.resolve(__dirname, "./scripts/prerender-routes.json");
+
+  try {
+    const fileContent = fs.readFileSync(routeFilePath, "utf8");
+    const parsed = JSON.parse(fileContent);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+  } catch (error) {
+    console.warn("[seo] prerender-routes.json is missing or invalid. Falling back to defaults.");
+  }
+
+  return DEFAULT_PRERENDER_ROUTES;
+};
+
+export default defineConfig(async ({ command }) => {
+  const plugins = [react()];
+
+  if (command === "build") {
+    try {
+      const prerenderModule = await import("vite-plugin-prerender");
+      const vitePrerender = prerenderModule.default;
+
+      plugins.push(
+        vitePrerender({
+          staticDir: path.join(__dirname, "dist"),
+          routes: loadPrerenderRoutes(),
+          renderer: new vitePrerender.PuppeteerRenderer({
+            maxConcurrentRoutes: 4,
+            renderAfterDocumentEvent: "prerender-ready",
+            skipThirdPartyRequests: true,
+            injectProperty: "__PRERENDER_INJECTED",
+            inject: {
+              prerender: true,
+            },
+            headless: true,
+          }),
+        })
+      );
+    } catch (error) {
+      throw new Error(
+        "Missing dependency 'vite-plugin-prerender'. Run 'npm install' in Web before 'npm run build'."
+      );
+    }
+  }
+
+  return {
+    plugins,
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -68,4 +124,5 @@ export default defineConfig({
       },
     },
   },
+  };
 });

@@ -172,12 +172,31 @@ npm run preview
 | Command              | Mô tả                                     |
 | -------------------- | ----------------------------------------- |
 | `npm run dev`        | Chạy Vite development server (hot-reload) |
-| `npm run build`      | Build production (TypeScript + Vite)      |
+| `npm run build`      | Build production + SEO prerender + sitemap |
 | `npm run preview`    | Preview production build locally          |
+| `npm run seo:routes` | Sinh danh sách route prerender (`scripts/prerender-routes.json`) |
+| `npm run seo:sitemap`| Sinh `public/sitemap.xml` từ route public |
 | `npm run lint`       | Lint code với ESLint                      |
 | `npm run format`     | Format code với Prettier                  |
 | `npm run type-check` | TypeScript type checking                  |
 | `npm test`           | Chạy tests với Vitest                     |
+
+### 🔎 SEO Prerender Pipeline (Option 2)
+
+- Build hiện tại đã gồm:
+  - Sinh route prerender từ API và route tĩnh.
+  - Sinh sitemap tự động.
+  - Prerender các route public bằng `vite-plugin-prerender`.
+  - Chụp HTML theo event `prerender-ready` (chỉ chụp sau khi trang báo dữ liệu đã sẵn sàng).
+- Biến môi trường cần có:
+  - `VITE_SITE_URL` (vd: `https://sen.vn`) để tạo canonical/sitemap chuẩn.
+  - `VITE_API_BASE_URL` để script SEO gọi API lấy ID route detail.
+
+Ví dụ build SEO:
+
+```bash
+npm run build
+```
 
 ---
 
