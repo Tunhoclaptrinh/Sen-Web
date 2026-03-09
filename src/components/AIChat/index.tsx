@@ -38,6 +38,7 @@ import type { SenChibiGesture, SenChibiMouthState, SenChibiEyeState } from "@/co
 import SenCharacter from "@/components/SenCharacter";
 import { SenCustomizationSettings } from "@/components/common";
 import { useTranslation } from "react-i18next";
+import { trackChatAiStarted } from "@/utils/analytics";
 import "./styles.less";
 
 interface AIChatProps {
@@ -318,6 +319,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   const [pendingSwitchCharacter, setPendingSwitchCharacter] = useState<typeof currentCharacter>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const wasOpenRef = useRef(false);
   const [streamingText, setStreamingText] = useState("");
   const [dimensions, setDimensions] = useState({
     width: 1000, // Default fallback
@@ -378,6 +380,17 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   };
 
   const [streamingRecommendation, setStreamingRecommendation] = useState<{ title: string, url: string } | undefined>(undefined);
+
+  useEffect(() => {
+    if (open && !wasOpenRef.current) {
+      trackChatAiStarted({
+        source: activeContext?.levelId ? "gameplay_chat_overlay" : "ai_chat_overlay",
+        hasContext: Boolean(activeContext),
+      });
+    }
+
+    wasOpenRef.current = open;
+  }, [open, activeContext]);
 
   // File Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

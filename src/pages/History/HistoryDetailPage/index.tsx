@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline } from "antd";
 import { useTranslation } from "react-i18next";
@@ -30,6 +30,7 @@ import { HistoryArticle, HeritageSite, Artifact, TimelineEvent } from "@/types";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
+import { trackViewProduct } from "@/utils/analytics";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -44,6 +45,7 @@ const HistoryDetailPage = () => {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
+  const trackedProductIdRef = useRef<string | null>(null);
 
   // Track view
   useViewTracker("history", id);
@@ -64,6 +66,21 @@ const HistoryDetailPage = () => {
       window.scrollTo(0, 0);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (!article?.id) return;
+
+    const normalizedId = String(article.id);
+    if (trackedProductIdRef.current === normalizedId) return;
+
+    trackedProductIdRef.current = normalizedId;
+    trackViewProduct({
+      itemId: normalizedId,
+      itemName: article.title,
+      itemType: "history_article",
+      sourceScreen: "HistoryDetailPage",
+    });
+  }, [article?.id, article?.title]);
 
   const fetchData = async (currentId: string) => {
     try {

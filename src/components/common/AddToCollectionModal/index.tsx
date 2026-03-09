@@ -3,6 +3,7 @@ import {Modal, List, Button, message, Empty, Spin, Input} from "antd";
 import {PlusOutlined, CheckOutlined, FolderAddOutlined} from "@ant-design/icons";
 import collectionService from "@/services/collection.service";
 import {Collection} from "@/types/collection.types";
+import { trackAddToCart } from "@/utils/analytics";
 
 interface AddToCollectionModalProps {
   visible: boolean;
@@ -58,6 +59,13 @@ const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({visible, onC
       });
 
       if (res.success) {
+        trackAddToCart({
+          itemId: item.id,
+          itemType: item.type,
+          quantity: 1,
+          cartType: "collection",
+          cartId: collectionId,
+        });
         message.success("Đã thêm vào bộ sưu tập");
         // Opt: update local state to show "Added"
         // But simplified: just close or show success

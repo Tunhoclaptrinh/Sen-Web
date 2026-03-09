@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Timeline, Dropdown } from "antd";
@@ -47,6 +47,7 @@ import { useViewTracker } from "@/hooks/useViewTracker";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
+import { trackViewProduct } from "@/utils/analytics";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -68,6 +69,7 @@ const HeritageDetailPage = () => {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
+  const trackedProductIdRef = useRef<string | null>(null);
 
   // Track view
   useViewTracker(ITEM_TYPES.HERITAGE, id);
@@ -87,6 +89,21 @@ const HeritageDetailPage = () => {
       }
     }
   }, [site, isAuthenticated]);
+
+  useEffect(() => {
+    if (!site?.id) return;
+
+    const normalizedId = String(site.id);
+    if (trackedProductIdRef.current === normalizedId) return;
+
+    trackedProductIdRef.current = normalizedId;
+    trackViewProduct({
+      itemId: normalizedId,
+      itemName: site.name,
+      itemType: "heritage",
+      sourceScreen: "HeritageDetailPage",
+    });
+  }, [site?.id, site?.name]);
 
   const checkFavoriteStatus = async (siteId: number) => {
     try {
