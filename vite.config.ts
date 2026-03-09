@@ -33,11 +33,16 @@ const loadPrerenderRoutes = () => {
 
 export default defineConfig(async ({ command }) => {
   const plugins = [react()];
+  const requirePrerender = process.env.VITE_REQUIRE_PRERENDER === "true";
 
   if (command === "build") {
     try {
       const prerenderModule = await import("vite-plugin-prerender");
       const vitePrerender = prerenderModule.default;
+
+      if (!vitePrerender || typeof vitePrerender !== "function" || !vitePrerender.PuppeteerRenderer) {
+        throw new Error("Invalid 'vite-plugin-prerender' export shape.");
+      }
 
       plugins.push(
         vitePrerender({
@@ -56,9 +61,15 @@ export default defineConfig(async ({ command }) => {
         })
       );
     } catch (error) {
-      throw new Error(
-        "Missing dependency 'vite-plugin-prerender'. Run 'npm install' in Web before 'npm run build'."
-      );
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      if (requirePrerender) {
+        throw new Error(
+          `Prerender is required but unavailable: ${errorMessage}. Install dependencies in Web before build.`
+        );
+      }
+
+      console.warn(`[seo] Skipping prerender step: ${errorMessage}`);
     }
   }
 

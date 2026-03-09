@@ -412,6 +412,47 @@
             margin: 0;
             letter-spacing: 1px;
           }
+
+          &.poster-section-header--team {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            padding-right: 0;
+
+            .poster-team-mode-select {
+              width: 108px;
+
+              .ant-select-selector {
+                height: 22px !important;
+                padding: 0 6px !important;
+                border: 1px solid #d1c5b7 !important;
+                border-radius: 6px !important;
+                background: #faf7f1 !important;
+                box-shadow: none !important;
+              }
+
+              .ant-select-selection-item {
+                line-height: 20px !important;
+                font-size: 9px;
+                font-weight: 600;
+                color: #6b5a47;
+                letter-spacing: 0;
+              }
+
+              .ant-select-arrow {
+                color: #9f8e78;
+                font-size: 9px;
+              }
+
+              &:hover .ant-select-selector,
+              &.ant-select-focused .ant-select-selector {
+                border-color: #bca68d !important;
+                background: #fffdf9 !important;
+                box-shadow: 0 0 0 1px rgba(188, 166, 141, 0.16) !important;
+              }
+            }
+          }
         }
       }
 

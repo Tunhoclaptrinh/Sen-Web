@@ -1,6 +1,6 @@
 import React from "react";
 import { Stage } from "@pixi/react";
-import { Image, Modal } from "antd";
+import { Image, Modal, Select } from "antd";
 import { QRCodeSVG } from "qrcode.react";
 import { useTranslation } from "react-i18next";
 import "./styles.less";
@@ -82,6 +82,8 @@ interface InsightDetail {
   summary?: string;
   details: string[];
 }
+
+type TeamDisplayMode = "sv-startup" | "p-innovation";
 
 const toTranslatedArray = <T,>(value: unknown, fallback: T[]): T[] => {
   return Array.isArray(value) ? (value as T[]) : fallback;
@@ -373,12 +375,6 @@ const qrItems: QrItem[] = [
   },
 ];
 
-const topRowCount = teamMembers.length > 4 ? 3 : Math.ceil(teamMembers.length / 2);
-const topRowTeamMembers = teamMembers.slice(0, topRowCount);
-const bottomRowTeamMembers = teamMembers.slice(topRowCount);
-const isTopRowThreeMembers = topRowTeamMembers.length === 3;
-const isTopRowTwoMembers = topRowTeamMembers.length === 2;
-
 const getMemberNameClass = (name: string) => {
   const compactNameLength = name.replace(/\s+/g, "").length;
 
@@ -399,6 +395,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
+  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("sv-startup");
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
   const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
@@ -453,6 +450,18 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       })),
     [translatedQrItems]
   );
+
+  const visibleTeamMembers = React.useMemo(
+    () => (teamDisplayMode === "p-innovation" ? teamMembers.filter((member) => member.id !== 5) : teamMembers),
+    [teamDisplayMode]
+  );
+
+  const topRowCount = visibleTeamMembers.length > 4 ? 3 : Math.ceil(visibleTeamMembers.length / 2);
+  const topRowTeamMembers = visibleTeamMembers.slice(0, topRowCount);
+  const bottomRowTeamMembers = visibleTeamMembers.slice(topRowCount);
+  const isTopRowThreeMembers = topRowTeamMembers.length === 3;
+  const isTopRowTwoMembers = topRowTeamMembers.length === 2;
+  const shouldShowPinovationLogo = teamDisplayMode === "p-innovation";
 
   const mockupGalleryEntries = React.useMemo(() => {
     const sortedEntries = Object.entries(imageProdModules).sort(([pathA], [pathB]) => pathA.localeCompare(pathB));
@@ -664,7 +673,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           </div>
 
           <div className="p-innovation-logo">
-            <img src={PINNOVATION_LOGO} alt="P-INNOVATION" className="pitching-logo-img" />
+            {shouldShowPinovationLogo && <img src={PINNOVATION_LOGO} alt="P-INNOVATION" className="pitching-logo-img" />}
             <img src={logoPng} alt="SEN Logo" className="sen-logo-img" />
           </div>
           <div className="poster-tagline">{t("poster.tagline", { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
@@ -808,8 +817,19 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
           {/* TEAM */}
           <section className="poster-section team-section">
-            <div className="poster-section-header">
+            <div className="poster-section-header poster-section-header--team">
               <h2>{t("poster.sections.team", { defaultValue: "Team" })}</h2>
+              <Select
+                size="small"
+                className="poster-team-mode-select"
+                value={teamDisplayMode}
+                onChange={(value: TeamDisplayMode) => setTeamDisplayMode(value)}
+                options={[
+                  { value: "sv-startup", label: "SV Startup" },
+                  { value: "p-innovation", label: "P-Innovation" },
+                ]}
+                style={{ width: 93 }}
+              />
             </div>
             <div className="poster-team-grid">
               <div
