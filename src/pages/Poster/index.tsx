@@ -1,10 +1,10 @@
 import React from "react";
 import { Stage } from "@pixi/react";
 import { Image, Modal } from "antd";
+import { QRCodeSVG } from "qrcode.react";
+import { useTranslation } from "react-i18next";
 import "./styles.less";
 import SenChibi from "@/components/SenChibi";
-import androidAppQr from "./QR/Android_App_QR.png";
-import websiteQr from "./QR/Website_QR.png";
 
 // Import brand assets
 import logoPng from "../../assets/images/logo.png";
@@ -15,7 +15,7 @@ import lotus1 from "../../assets/images/background/lotus-1.png";
 import lotus2 from "../../assets/images/background/lotus-2.png";
 import lotus3 from "../../assets/images/background/lotus-3.png";
 import bronzeDrum from "../../assets/images/background/bronze-drum.png";
-import backgroundFull from "../../assets/images/background/background-full.png";
+import Mockup from "./Mockup.png";
 
 interface PosterPageProps {
   standalone?: boolean;
@@ -66,7 +66,7 @@ interface QrItem {
   title: string;
   summary: string;
   destination: string;
-  image: string;
+  defaultUrl: string;
   details: string[];
 }
 
@@ -83,6 +83,14 @@ interface InsightDetail {
   summary?: string;
   details: string[];
 }
+
+const toTranslatedArray = <T,>(value: unknown, fallback: T[]): T[] => {
+  return Array.isArray(value) ? (value as T[]) : fallback;
+};
+
+const QR_FALLBACK_VALUE = "https://sen.vn";
+const defaultPosterAppUrl = import.meta.env.VITE_POSTER_ANDROID_URL || "https://example.com/sen-android-app";
+const defaultPosterWebsiteUrl = import.meta.env.VITE_POSTER_WEBSITE_URL || import.meta.env.VITE_SITE_URL || QR_FALLBACK_VALUE;
 
 const teamMembers: TeamMember[] = [
   {
@@ -121,21 +129,32 @@ const teamMembers: TeamMember[] = [
     specialization: "UI/UX và truyền thông nội dung",
     contact: "nguyet@sengame.vn",
   },
-  {
-    id: 5,
-    name: "Bùi Thị Yến",
-    role: "Business/Marketing",
-    department: "Kinh doanh",
-    specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
-    contact: "yen@sengame.vn",
-  },
+  // {
+  //   id: 5,
+  //   name: "Bùi Thị Yến",
+  //   role: "Business/Marketing",
+  //   department: "Kinh doanh",
+  //   specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
+  //   contact: "yen@sengame.vn",
+  // },
 ];
 
 const problemItems: ProblemItem[] = [
   {
     id: 1,
-    title: "Tiếp cận một chiều",
-    summary: "Việc học chủ yếu dựa trên truyền đạt lý thuyết, thiếu cơ hội tương tác và trải nghiệm thực tế.",
+    title: "Việc tìm hiểu văn hóa, lịch sử thiếu tương tác, trải nghiệm",
+    summary:
+      "Nội dung lịch sử trong trường học chủ yếu được truyền đạt qua lý thuyết, khiến học sinh khó hứng thú và ít chủ động khám phá.",
+    details: [
+      "Phương pháp học còn thiên về ghi nhớ, thiếu hoạt động trải nghiệm thực tế.",
+      "Học sinh khó hình dung bối cảnh lịch sử khi chỉ tiếp cận qua sách và bài giảng.",
+      "Động lực tự học giảm khi thiếu cơ chế tương tác và phản hồi liên tục.",
+    ],
+  },
+  {
+    id: 2,
+    title: "Tiếp cận một chiều, hạn chế chủ động",
+    summary: "Nội dung chủ yếu đi theo hình thức đọc - chép, khó tạo hứng thú lâu dài, Mức độ ghi nhớ giảm khi thiếu hoạt động tương tác và phản hồi trực tiếp.",
     details: [
       "Nội dung chủ yếu đi theo hình thức đọc - chép, khó tạo hứng thú lâu dài.",
       "Người học ít cơ hội gắn kiến thức với bối cảnh thực tế tại di tích, bảo tàng.",
@@ -143,63 +162,65 @@ const problemItems: ProblemItem[] = [
     ],
   },
   {
-    id: 2,
-    title: "Hạn chế chủ động",
-    summary: "Tìm hiểu di sản ngoài lớp học còn thấp, lịch sử trở thành môn học để thi hơn là để khám phá.",
+    id: 3,
+    title: "Khoảng cách lý thuyết & thực tế",
+    summary: "Học sinh ít có cơ hội kết nối kiến thức trong sách với các địa điểm lịch sử và văn hóa ngoài đời.",
     details: [
-      "Thói quen tự tìm hiểu ngoài giờ học chưa hình thành rõ ở phần lớn học sinh.",
-      "Di sản văn hóa thường bị xem là kiến thức khô, không gắn với trải nghiệm cá nhân.",
-      "Động lực học tập giảm khi thiếu cơ chế khuyến khích khám phá.",
+      "Hạn chế chủ động, Tìm hiểu di sản ngoài lớp học còn thấp, lịch sử trở thành môn học để thi hơn là để khám phá.",
+      "Hoạt động học tập gắn với di sản ngoài lớp học còn chưa thường xuyên.",
+      "Người học khó liên hệ bài học lịch sử với bối cảnh văn hóa tại địa phương.",
+      "Kiến thức dễ rời rạc nếu thiếu trải nghiệm theo ngữ cảnh thực tế.",
     ],
   },
   {
-    id: 3,
-    title: "Khoảng cách lý thuyết & thực tế",
-    summary: "Biết tên di tích nhưng chưa hiểu bối cảnh, ý nghĩa và giá trị trong đời sống hiện đại.",
+    id: 4,
+    title: "Chiêm ngưỡng thụ động tại bảo tàng, di tích",
+    summary:
+      "Nhiều bảo tàng và di tích vẫn chủ yếu trưng bày tĩnh, thiếu công nghệ tương tác để thu hút người trẻ.",
     details: [
-      "Kiến thức rời rạc khiến người học khó liên kết các sự kiện lịch sử.",
-      "Nội dung học thiếu cầu nối giữa bài giảng và không gian văn hóa ngoài đời thực.",
-      "Giá trị ứng dụng của lịch sử trong tư duy hiện đại chưa được làm nổi bật.",
+      "Nhiều điểm tham quan chưa có cơ chế tương tác số để tăng mức độ nhập vai.",
+      "Thiếu nhiệm vụ học tập tại chỗ để dẫn dắt người học khám phá có mục tiêu.",
+      "Người trẻ khó duy trì hứng thú nếu trải nghiệm chỉ dừng ở quan sát thụ động.",
     ],
   },
 ];
 
 const roadmapStages: RoadmapStage[] = [
-  { id: 1, phase: "GĐ 1 (6th)", milestone: "Chạy thử nghiệm tại PTIT" },
-  { id: 2, phase: "GĐ 2 (6th)", milestone: "Thí điểm tại THCS" },
-  { id: 3, phase: "GĐ 3 (2n)", milestone: "Mở rộng B2B trường học" },
-  { id: 4, phase: "GĐ 4 (2n)", milestone: "B2C & Du lịch văn hóa" },
+  { id: 1, phase: "GĐ 1 (6 tháng)", milestone: "Chạy thử nghiệm tại PTIT" },
+  { id: 2, phase: "GĐ 2 (6 tháng)", milestone: "Thí điểm THCS (khối 6)" },
+  { id: 3, phase: "GĐ 3 (2 năm)", milestone: "Mở rộng B2B trường học" },
+  { id: 4, phase: "GĐ 4 (2 năm)", milestone: "B2C & Du lịch văn hóa" },
 ];
 
 const valuePropositionItems: ValuePropositionItem[] = [
   {
     id: 1,
-    title: "Nền tảng chuyên biệt",
-    summary: "Dành riêng cho văn hóa & du lịch, tích hợp học liệu số + game hóa + AI kiểm soát dữ liệu.",
+    title: "Nền tảng chuyên biệt tìm hiểu văn hóa",
+    summary: "Dành riêng cho văn hóa, du lịch và giáo dục; tích hợp học liệu số + game hóa + AI hướng dẫn.",
     details: [
-      "Thiết kế theo ngữ cảnh giáo dục, bảo tàng và du lịch trải nghiệm.",
-      "Cho phép triển khai học liệu theo chủ đề, tuyến tham quan và nhiệm vụ.",
-      "Cơ chế quản trị nội dung tập trung giúp chuẩn hóa thông tin.",
+      "Chuyển từ học thuộc lòng sang học qua nhiệm vụ và thử thách.",
+      "AI hỗ trợ đặt câu hỏi và phản hồi theo ngữ cảnh lịch sử.",
+      "Nội dung số giúp học sinh chủ động khám phá theo tốc độ cá nhân.",
     ],
   },
   {
     id: 2,
-    title: "AI Nhân vật lịch sử",
-    summary: "Phản hồi dựa trên dữ liệu nội bộ được kiểm duyệt, tránh sai lệch thông tin lịch sử.",
+    title: "Kết nối Thực - Số",
+    summary: "Liên kết kiến thức (Qua mã QR + nhiệm vụ) với trải nghiệm tại bảo tàng và di tích, giúp hiểu lịch sử trong bối cảnh thực.",
     details: [
-      "Dữ liệu trả lời được xây từ kho tri thức đã duyệt theo từng chủ điểm.",
-      "Giữ phong cách đối thoại gần gũi nhưng vẫn đảm bảo chính xác nội dung.",
-      "Có thể mở rộng thêm nhân vật theo các giai đoạn lịch sử khác nhau.",
+      "Kết nối bài học trên lớp với hoạt động tại bảo tàng và di tích.",
+      "QR và nhiệm vụ tương tác tạo cầu nối giữa lý thuyết và thực hành.",
+      "Giáo viên có thể tổ chức học tập theo dự án gắn với không gian di sản.",
     ],
   },
   {
     id: 3,
-    title: "Kết nối Thực - Số",
-    summary: "Liên kết kiến thức lớp học với trải nghiệm trực tiếp tại bảo tàng, di tích qua mã QR & nhiệm vụ.",
+    title: "AI Nhân vật lịch sử",
+    summary: "Phản hồi dựa trên dữ liệu nội bộ được kiểm duyệt, phản hồi dựa trên ngữ cảnh hiện tại có giới hạn phạm vi, tránh sai lệch thông tin lịch sử.",
     details: [
-      "Mỗi điểm chạm thực tế có thể gắn QR để mở bài học, nhiệm vụ và hiện vật.",
-      "Học sinh ghi nhận tiến trình khám phá theo thời gian thực.",
-      "Giúp chuyển từ học thụ động sang học qua trải nghiệm có dẫn dắt.",
+      "Dữ liệu trả lời được xây từ kho tri thức đã duyệt theo từng chủ điểm.",
+      "Giữ phong cách đối thoại gần gũi nhưng vẫn đảm bảo chính xác nội dung.",
+      "Có thể mở rộng thêm nhân vật theo các giai đoạn lịch sử khác nhau.",
     ],
   },
 ];
@@ -208,41 +229,50 @@ const businessModelItems: BusinessModelItem[] = [
   {
     id: 1,
     title: "Khách hàng mục tiêu",
-    points: ["Trường học & Phụ huynh", "Học sinh THCS - THPT", "Du khách văn hóa"],
+    points: ["Trường học / Tổ chức giáo dục", "Bảo tàng, khu di tích, khu du lịch", "Du khách, cá nhân yêu thích văn hóa"],
     details: [
-      "Tập trung nhóm người dùng có nhu cầu học lịch sử qua trải nghiệm.",
-      "Mô hình có thể triển khai theo lớp, theo trường hoặc theo tour.",
-      "Có khả năng mở rộng sang các đối tượng khách quốc tế quan tâm văn hóa Việt.",
+      "Sản phẩm phục vụ cả bối cảnh học tập trong trường và ngoài không gian di sản.",
+      "Có thể triển khai theo lớp học, theo trường hoặc theo chương trình trải nghiệm.",
+      "Mở rộng dần sang nhóm người học lịch sử tự nguyện ngoài nhà trường.",
     ],
   },
   {
     id: 2,
     title: "Nguồn doanh thu",
-    points: ["Phí triển khai SaaS", "Bản quyền nội dung", "Hoa hồng từ dịch vụ"],
+    points: ["Phí triển khai SaaS", "Bản quyền nội dung (game, học liệu, đánh giá,...)", "Hoa hồng từ cung cấp dịch vụ và tiếp thị"],
     details: [
       "Thu phí theo gói sử dụng nền tảng và số lượng người dùng.",
-      "Khai thác bản quyền học liệu và kịch bản trải nghiệm số.",
-      "Kết hợp doanh thu chia sẻ từ đối tác du lịch và sự kiện văn hóa.",
+      "Khai thác doanh thu từ bản quyền học liệu và kịch bản lịch sử số.",
+      "Kết hợp doanh thu chia sẻ từ các dịch vụ và trải nghiệm tại điểm đến.",
     ],
   },
   {
     id: 3,
     title: "Cấu trúc chi phí",
-    points: ["Phát triển nền tảng", "Sản xuất nội dung", "Hạ tầng & Marketing"],
+    points: [
+      "Phát triển, vận hành nền tảng",
+      "Xây dựng và kiểm duyệt nội dung (Game hóa và học liệu số)",
+      "Marketing, Triển khai tại trường học, bảo tàng",
+    ],
     details: [
-      "Chi phí công nghệ tập trung vào sản phẩm lõi và tích hợp AI.",
-      "Ngân sách nội dung dành cho chuẩn hóa dữ liệu và biên tập học liệu.",
-      "Chi phí vận hành ưu tiên hạ tầng ổn định và tăng trưởng người dùng bền vững.",
+      "Ưu tiên đầu tư cho công nghệ lõi, vận hành ổn định và bảo mật dữ liệu.",
+      "Ngân sách nội dung tập trung vào chất lượng học liệu và kiểm duyệt lịch sử.",
+      "Chi phí mở rộng thị trường gắn với thử nghiệm thực địa và tăng trưởng người dùng.",
     ],
   },
   {
     id: 4,
     title: "Đối tác then chốt",
-    points: ["Bảo tàng, Khu di tích", "Học viện PTIT", "Đơn vị lữ hành"],
+    points: [
+      "Trường học, tổ chức giáo dục",
+      "Giáo viên, chuyên gia lịch sử - giáo dục",
+      "Bảo tàng, di tích và địa điểm văn hóa",
+      "Đơn vị lữ hành"
+    ],
     details: [
-      "Đối tác học thuật giúp đảm bảo tính chính xác và chiều sâu nội dung.",
-      "Đối tác văn hóa giúp mở rộng điểm chạm thực tế ngoài lớp học.",
-      "Đối tác lữ hành tạo kênh thương mại hóa các gói trải nghiệm.",
+      "Đối tác công nghệ hỗ trợ triển khai hạ tầng và tích hợp hệ thống.",
+      "Đối tác giáo dục đảm bảo sản phẩm phù hợp chương trình học thực tế.",
+      "Đối tác văn hóa tạo điểm chạm trải nghiệm lịch sử ngoài lớp học.",
     ],
   },
 ];
@@ -251,45 +281,45 @@ const solutionFeatureItems: SolutionFeatureItem[] = [
   {
     id: 1,
     icon: "✨",
-    title: "Hệ thống Gamification",
-    summary: "Thử thách, nhiệm vụ đa phương tiện tăng động lực khám phá.",
+    title: "Gamified Learning",
+    summary: "Thử thách, nhiệm vụ đa phương tiện tăng động lực khám phá văn hóa chủ động.",
     details: [
-      "Xây dựng chuỗi nhiệm vụ theo cấp độ để tạo động lực tiến bộ.",
-      "Áp dụng điểm thưởng và huy hiệu cho hành vi học tập tích cực.",
-      "Tăng mức độ gắn kết nhờ trải nghiệm học tập có phản hồi ngay.",
+      "Thiết kế hành trình học theo cấp độ để duy trì động lực khám phá.",
+      "Kết hợp điểm thưởng, huy hiệu và thử thách theo bối cảnh lịch sử.",
+      "Tăng chủ động học tập nhờ cơ chế phản hồi tức thời sau mỗi nhiệm vụ.",
     ],
   },
   {
     id: 2,
     icon: "🤖",
-    title: "AI Chatbot Trợ lý",
-    summary: "Hỏi đáp cùng nhân vật lịch sử để hiểu sâu bối cảnh sự kiện.",
+    title: "AI Chatbot trợ lý",
+    summary: "Hỏi đáp cùng AI/nhân vật lịch sử theo ngữ cảnh kiến thức để hiểu sâu bối cảnh sự kiện.",
     details: [
-      "Trợ lý đối thoại giúp người học đặt câu hỏi theo ngữ cảnh bài học.",
-      "Câu trả lời được chuẩn hóa theo nguồn dữ liệu đã kiểm duyệt.",
-      "Hỗ trợ mở rộng thảo luận và củng cố kiến thức sau trải nghiệm.",
+      "Người học có thể đặt câu hỏi tự nhiên theo từng mốc sự kiện.",
+      "Câu trả lời dựa trên dữ liệu đã kiểm duyệt để đảm bảo độ tin cậy.",
+      "Hỗ trợ đào sâu kiến thức thay vì chỉ ghi nhớ thông tin rời rạc.",
     ],
   },
   {
     id: 3,
     icon: "🏛️",
     title: "Bảo tàng số cá nhân",
-    summary: "Sưu tầm hiện vật từ mã QR tại thực địa.",
+    summary: "Sưu tầm hiện vật, checkin địa điểm từ mã QR tại thực địa.",
     details: [
-      "Mỗi hiện vật số được lưu theo hồ sơ học tập của từng người dùng.",
-      "Tạo động lực khám phá thực tế thông qua cơ chế sưu tầm có mục tiêu.",
-      "Dữ liệu sưu tầm hỗ trợ giáo viên theo dõi tiến trình học sinh.",
+      "Mỗi lượt quét QR mở ra hiện vật số, câu chuyện và nhiệm vụ tại chỗ.",
+      "Dữ liệu trải nghiệm được lưu thành hồ sơ học tập cá nhân.",
+      "Giúp học sinh kết nối kiến thức trong sách với bối cảnh lịch sử ngoài đời.",
     ],
   },
   {
     id: 4,
     icon: "⚙️",
-    title: "Game CMS Linh hoạt",
-    summary: "Quản lý tài nguyên và xây dựng màn chơi dễ dàng.",
+    title: "CMS xây dựng nội dung",
+    summary: "Quản lý tài nguyên và xây dựng màn chơi dễ dàng, có kiểm duyệt.",
     details: [
-      "Cho phép tạo và chỉnh sửa kịch bản học tập theo từng chủ đề.",
-      "Quản trị tập trung giúp cập nhật nội dung nhanh và nhất quán.",
-      "Mở rộng dễ dàng khi thêm tuyến trải nghiệm hoặc bộ nội dung mới.",
+      "Cho phép tạo và cập nhật bài học, kịch bản nhiệm vụ theo từng chủ đề.",
+      "Tích hợp quy trình kiểm duyệt để đảm bảo chất lượng học liệu.",
+      "Giúp mở rộng nội dung nhanh khi triển khai tại nhiều trường và di tích.",
     ],
   },
 ];
@@ -302,7 +332,7 @@ const qrItems: QrItem[] = [
     title: "QR Ứng dụng Android",
     summary: "QR này dẫn tới bản trải nghiệm ứng dụng SEN trên thiết bị Android.",
     destination: "Trang tải và demo bản app Android",
-    image: androidAppQr,
+    defaultUrl: defaultPosterAppUrl,
     details: [
       "Dùng camera hoặc ứng dụng quét mã QR để mở liên kết.",
       "Khuyến nghị quét bằng điện thoại Android để cài đặt nhanh.",
@@ -316,22 +346,28 @@ const qrItems: QrItem[] = [
     title: "QR Website Trải nghiệm",
     summary: "QR này dẫn đến website trải nghiệm của dự án SEN.",
     destination: "Landing page / website demo SEN",
-    image: websiteQr,
+    defaultUrl: defaultPosterWebsiteUrl,
     details: [
       "Phù hợp khi trình bày nhanh trên màn hình hoặc poster in.",
       "Cho phép người xem truy cập ngay nội dung giới thiệu và demo.",
       "Có thể chia sẻ rộng rãi trong sự kiện hoặc pitching day.",
     ],
   },
+  {
+    id: 3,
+    label: "FANPAGE",
+    badge: "SCAN FB",
+    title: "QR Fanpage SEN",
+    summary: "QR này dẫn tới fanpage chính thức của SEN trên Facebook.",
+    destination: "Fanpage SEN trên Facebook",
+    defaultUrl: "https://www.facebook.com/profile.php?id=61586454543352",
+    details: [
+      "Quét QR để mở fanpage trực tiếp trên trình duyệt hoặc ứng dụng Facebook.",
+      "Phù hợp để người xem theo dõi thông tin cập nhật của dự án.",
+      "Có thể dùng trong poster, slide và tài liệu truyền thông.",
+    ],
+  },
 ];
-
-const roadmapStageCount = Math.max(roadmapStages.length, 1);
-const roadmapContainerClassName = `poster-roadmap-container${
-  roadmapStageCount <= 3 ? " poster-roadmap-container--few" : ""
-}${roadmapStageCount >= 6 ? " poster-roadmap-container--many" : ""}`;
-const roadmapContainerStyle = {
-  ["--roadmap-columns" as string]: roadmapStageCount,
-} as React.CSSProperties;
 
 const topRowCount = teamMembers.length > 4 ? 3 : Math.ceil(teamMembers.length / 2);
 const topRowTeamMembers = teamMembers.slice(0, topRowCount);
@@ -354,9 +390,125 @@ const getMemberNameClass = (name: string) => {
 };
 
 const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
+  const { t } = useTranslation();
+
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
+  const [qrLinks, setQrLinks] = React.useState<Record<number, string>>(() =>
+    qrItems.reduce<Record<number, string>>((accumulator, item) => {
+      accumulator[item.id] = item.defaultUrl;
+      return accumulator;
+    }, {})
+  );
+
+  const localizedProblemItems = React.useMemo(
+    () => toTranslatedArray<ProblemItem>(t("poster.problemItems", { returnObjects: true }), problemItems),
+    [t]
+  );
+
+  const localizedRoadmapStages = React.useMemo(
+    () => toTranslatedArray<RoadmapStage>(t("poster.roadmapStages", { returnObjects: true }), roadmapStages),
+    [t]
+  );
+
+  const localizedValuePropositionItems = React.useMemo(
+    () =>
+      toTranslatedArray<ValuePropositionItem>(
+        t("poster.valuePropositionItems", { returnObjects: true }),
+        valuePropositionItems
+      ),
+    [t]
+  );
+
+  const localizedBusinessModelItems = React.useMemo(
+    () =>
+      toTranslatedArray<BusinessModelItem>(
+        t("poster.businessModelItems", { returnObjects: true }),
+        businessModelItems
+      ),
+    [t]
+  );
+
+  const localizedSolutionFeatureItems = React.useMemo(
+    () =>
+      toTranslatedArray<SolutionFeatureItem>(
+        t("poster.solutionFeatureItems", { returnObjects: true }),
+        solutionFeatureItems
+      ),
+    [t]
+  );
+
+  const translatedQrItems = React.useMemo(
+    () => toTranslatedArray<Partial<QrItem>>(t("poster.qrItems", { returnObjects: true }), []),
+    [t]
+  );
+
+  const localizedQrItems = React.useMemo(
+    () =>
+      qrItems.map((item, index) => ({
+        ...item,
+        ...(translatedQrItems[index] || {}),
+        defaultUrl: item.defaultUrl,
+      })),
+    [translatedQrItems]
+  );
+
+  const roadmapStageCount = Math.max(localizedRoadmapStages.length, 1);
+  const roadmapContainerClassName = `poster-roadmap-container${
+    roadmapStageCount <= 3 ? " poster-roadmap-container--few" : ""
+  }${roadmapStageCount >= 6 ? " poster-roadmap-container--many" : ""}`;
+  const roadmapContainerStyle = {
+    ["--roadmap-columns" as string]: roadmapStageCount,
+  } as React.CSSProperties;
+
+  const solutionOverviewDetails = React.useMemo(
+    () =>
+      toTranslatedArray<string>(
+        t("poster.solutionOverview.details", { returnObjects: true }),
+        [
+          "Tăng tương tác trong học lịch sử qua nhiệm vụ, thử thách và đối thoại AI.",
+          "Kết nối lớp học với bảo tàng, di tích bằng QR và hoạt động tại chỗ.",
+          "Đảm bảo nội dung lịch sử chính xác, phù hợp mục tiêu giáo dục tại Việt Nam.",
+        ]
+      ),
+    [t]
+  );
+
+  React.useEffect(() => {
+    if (!selectedQr) {
+      return;
+    }
+
+    const matchedItem = localizedQrItems.find((item) => item.id === selectedQr.id);
+    if (matchedItem) {
+      setSelectedQr(matchedItem);
+    }
+  }, [localizedQrItems, selectedQr]);
+
+  const normalizeQrLink = (rawValue: string) => {
+    const trimmedValue = rawValue.trim();
+
+    if (!trimmedValue) {
+      return "";
+    }
+
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmedValue)) {
+      return trimmedValue;
+    }
+
+    return `https://${trimmedValue}`;
+  };
+
+  const getQrLink = (item: QrItem) => normalizeQrLink(qrLinks[item.id] ?? item.defaultUrl);
+  const getQrCodeValue = (item: QrItem) => getQrLink(item) || QR_FALLBACK_VALUE;
+
+  const handleQrLinkChange = (itemId: number, rawValue: string) => {
+    setQrLinks((previousLinks) => ({
+      ...previousLinks,
+      [itemId]: rawValue,
+    }));
+  };
 
   const handleMemberClick = (member: TeamMember) => {
     setSelectedMember(member);
@@ -383,7 +535,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openValueDetail = (item: ValuePropositionItem) => {
     setSelectedInsight({
-      sectionLabel: "Value Proposition",
+      sectionLabel: t("poster.labels.sectionValueProposition", { defaultValue: "Value Proposition" }),
       title: item.title,
       summary: item.summary,
       details: item.details,
@@ -392,7 +544,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openProblemDetail = (item: ProblemItem) => {
     setSelectedInsight({
-      sectionLabel: "Problem",
+      sectionLabel: t("poster.labels.sectionProblem", { defaultValue: "Problem" }),
       title: item.title,
       summary: item.summary,
       details: item.details,
@@ -401,7 +553,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openBusinessDetail = (item: BusinessModelItem) => {
     setSelectedInsight({
-      sectionLabel: "Business Model",
+      sectionLabel: t("poster.labels.sectionBusinessModel", { defaultValue: "Business Model" }),
       title: item.title,
       summary: item.points.join(" • "),
       details: item.details,
@@ -410,20 +562,19 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openSolutionOverviewDetail = () => {
     setSelectedInsight({
-      sectionLabel: "Solution",
-      title: "Nền tảng kiến tạo trải nghiệm",
-      summary: "Kết hợp game, AI và dữ liệu học liệu để biến kiến thức lịch sử thành trải nghiệm tương tác.",
-      details: [
-        "Trải nghiệm học tập kết hợp giữa nội dung lý thuyết và hoạt động tương tác.",
-        "Liên thông giữa lớp học, bảo tàng số và điểm chạm thực địa.",
-        "Tạo hệ sinh thái học tập có thể đo lường, mở rộng và cá nhân hóa.",
-      ],
+      sectionLabel: t("poster.labels.sectionSolution", { defaultValue: "Solution" }),
+      title: t("poster.solutionOverview.title", { defaultValue: "Nền tảng kiến tạo trải nghiệm" }),
+      summary: t("poster.solutionOverview.summary", {
+        defaultValue:
+          "SEN kết hợp game hóa, AI và dữ liệu kiểm duyệt để giải quyết khoảng cách giữa học lịch sử trên lớp và trải nghiệm ngoài thực tế.",
+      }),
+      details: solutionOverviewDetails,
     });
   };
 
   const openSolutionFeatureDetail = (item: SolutionFeatureItem) => {
     setSelectedInsight({
-      sectionLabel: "Solution",
+      sectionLabel: t("poster.labels.sectionSolution", { defaultValue: "Solution" }),
       title: item.title,
       summary: item.summary,
       details: item.details,
@@ -514,17 +665,17 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             <img src={PINNOVATION_LOGO} alt="P-INNOVATION" className="pitching-logo-img" />
             <img src={logoPng} alt="SEN Logo" className="sen-logo-img" />
           </div>
-          <div className="poster-tagline">Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ</div>
+          <div className="poster-tagline">{t("poster.tagline", { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
         </header>
 
         <div className="poster-content-grid">
           {/* PROBLEM */}
           <section className="poster-section problem-section">
             <div className="poster-section-header">
-              <h2>Problem (Vấn đề)</h2>
+              <h2>{t("poster.sections.problem", { defaultValue: "Problem" })}</h2>
             </div>
             <div className="poster-problem-list">
-              {problemItems.map((item, index) => (
+              {localizedProblemItems.map((item, index) => (
                 <div
                   key={item.id}
                   className="poster-problem-item poster-problem-item--interactive"
@@ -547,10 +698,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* VALUE PROPOSITION */}
           <section className="poster-section value-proposition">
             <div className="poster-section-header">
-              <h2>Value Proposition</h2>
+              <h2>{t("poster.sections.valueProposition", { defaultValue: "Value Proposition" })}</h2>
             </div>
             <div className="poster-value-grid">
-              {valuePropositionItems.map((item) => (
+              {localizedValuePropositionItems.map((item) => (
                 <div
                   key={item.id}
                   className="poster-value-card poster-value-card--interactive"
@@ -570,7 +721,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* SOLUTION */}
           <section className="poster-section solution-section">
             <div className="poster-section-header">
-              <h2>Solution (Giải pháp)</h2>
+              <h2>{t("poster.sections.solution", { defaultValue: "Solution" })}</h2>
             </div>
             <div
               className="poster-mockup-placeholder poster-mockup-placeholder--interactive"
@@ -580,11 +731,11 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               onClick={openSolutionOverviewDetail}
               onKeyDown={(event) => handleInsightKeyDown(event, openSolutionOverviewDetail)}
             >
-              <img src={backgroundFull} alt="SEN Game Mockup" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
-              <div className="mockup-text">Nền tảng kiến tạo trải nghiệm</div>
+              <img src={Mockup} alt="SEN Game Mockup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {/* <div className="mockup-text">Nền tảng kiến tạo trải nghiệm</div> */}
             </div>
             <div className="poster-feature-grid">
-              {solutionFeatureItems.map((item) => (
+              {localizedSolutionFeatureItems.map((item) => (
                 <div
                   key={item.id}
                   className="poster-feature-item poster-feature-item--interactive"
@@ -607,10 +758,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* BUSINESS MODEL */}
           <section className="poster-section business-model">
             <div className="poster-section-header">
-              <h2>Business Model</h2>
+              <h2>{t("poster.sections.businessModel", { defaultValue: "Business Model" })}</h2>
             </div>
             <div className="poster-biz-grid">
-              {businessModelItems.map((item) => (
+              {localizedBusinessModelItems.map((item) => (
                 <div
                   key={item.id}
                   className="poster-biz-box poster-biz-box--interactive"
@@ -630,19 +781,19 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               ))}
             </div>
             <div className="poster-revenue-target">
-              Mục tiêu 7 tỷ doanh thu sau 5 năm
+              {t("poster.revenueTarget", { defaultValue: "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
             </div>
           </section>
 
           {/* ROADMAP */}
           <section className="poster-section roadmap-section">
             <div className="poster-section-header">
-              <h2>Traction / Roadmap</h2>
+              <h2>{t("poster.sections.roadmap", { defaultValue: "Traction / Roadmap" })}</h2>
             </div>
             <div className={roadmapContainerClassName} style={roadmapContainerStyle}>
               <div className="poster-roadmap-line"></div>
               <div className="poster-roadmap-steps">
-                {roadmapStages.map((stage) => (
+                {localizedRoadmapStages.map((stage) => (
                   <div key={stage.id} className="roadmap-step">
                     <div className="step-node"></div>
                     <h5>{stage.phase}</h5>
@@ -656,7 +807,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* TEAM */}
           <section className="poster-section team-section">
             <div className="poster-section-header">
-              <h2>Team</h2>
+              <h2>{t("poster.sections.team", { defaultValue: "Team" })}</h2>
             </div>
             <div className="poster-team-grid">
               <div
@@ -718,10 +869,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
         <footer className="poster-footer">
           <div className="poster-qr-area">
-            <div className="qr-group-label">PITCH DECK / DEMO</div>
+            <div className="qr-group-label">{t("poster.footer.qrGroupLabel", { defaultValue: "PITCH DECK / DEMO" })}</div>
 
             <div className="qr-grid">
-              {qrItems.map((item) => (
+              {localizedQrItems.map((item) => (
                 <div
                   key={item.id}
                   className="qr-item qr-item--interactive"
@@ -732,13 +883,14 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   onKeyDown={(event) => handleQrKeyDown(event, item)}
                 >
                   <div className="qr-placeholder">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      preview={false}
-                      className="qr-placeholder-image"
-                      width="100%"
-                      height="100%"
+                    <QRCodeSVG
+                      value={getQrCodeValue(item)}
+                      size={56}
+                      level="M"
+                      includeMargin={false}
+                      bgColor="#ffffff"
+                      fgColor="#111111"
+                      className="qr-code-svg"
                     />
                   </div>
                   <div className="qr-info">
@@ -750,13 +902,17 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             </div>
           </div>
           <div className="poster-impact-text">
-            Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!
+            {t("poster.footer.impactText", { defaultValue: "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!" })}
           </div>
         </footer>
       </div>
 
       <Modal
-        title={selectedQr ? `QR Chi tiết - ${selectedQr.label}` : "QR Chi tiết"}
+        title={
+          selectedQr
+            ? `${t("poster.modal.qrTitlePrefix", { defaultValue: "QR Chi tiết" })} - ${selectedQr.label}`
+            : t("poster.modal.qrTitle", { defaultValue: "QR Chi tiết" })
+        }
         open={Boolean(selectedQr)}
         onCancel={closeQrModal}
         footer={null}
@@ -778,25 +934,48 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   boxShadow: "2px 2px 0 rgba(197, 160, 101, 0.35)",
                 }}
               >
-                <Image
-                  src={selectedQr.image}
-                  alt={selectedQr.title}
-                  width={180}
-                  height={180}
-                  preview={{ mask: "Xem QR lớn" }}
-                  style={{ display: "block" }}
+                <QRCodeSVG
+                  value={getQrCodeValue(selectedQr)}
+                  size={164}
+                  level="M"
+                  includeMargin={true}
+                  bgColor="#ffffff"
+                  fgColor="#111111"
+                  className="qr-code-svg"
                 />
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 18, fontWeight: 800, color: "#3f1e1e", marginBottom: 6 }}>{selectedQr.title}</div>
                 <div style={{ fontSize: 14, color: "#6b4b3b", lineHeight: 1.45 }}>{selectedQr.summary}</div>
                 <div style={{ marginTop: 8, fontSize: 13, color: "#4b3a2a" }}>
-                  <strong>Đích đến:</strong> {selectedQr.destination}
+                  <strong>{t("poster.modal.destinationLabel", { defaultValue: "Đích đến" })}:</strong> {getQrCodeValue(selectedQr)}
+                </div>
+                <div style={{ marginTop: 10 }}>
+                  <label htmlFor={`qr-link-${selectedQr.id}`} style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#8b1d1d", marginBottom: 4 }}>
+                    {t("poster.modal.pasteLinkLabel", { defaultValue: "Dán link để tạo QR tự động" })}
+                  </label>
+                  <input
+                    id={`qr-link-${selectedQr.id}`}
+                    type="text"
+                    value={qrLinks[selectedQr.id] ?? ""}
+                    onChange={(event) => handleQrLinkChange(selectedQr.id, event.target.value)}
+                    placeholder={t("poster.modal.pasteLinkPlaceholder", { defaultValue: "https://your-link-here" })}
+                    style={{
+                      width: "100%",
+                      border: "1px solid #d9b267",
+                      borderRadius: 6,
+                      padding: "6px 8px",
+                      fontSize: 13,
+                      color: "#3f1e1e",
+                    }}
+                  />
                 </div>
               </div>
             </div>
             <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>Thông tin sử dụng</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
+                {t("poster.modal.usageTitle", { defaultValue: "Thông tin sử dụng" })}
+              </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 6, color: "#4b3a2a", fontSize: 14 }}>
                 {selectedQr.details.map((detail, index) => (
                   <li key={index}>{detail}</li>
@@ -808,7 +987,11 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       </Modal>
 
       <Modal
-        title={selectedInsight ? `${selectedInsight.sectionLabel} - Chi tiet` : "Chi tiet"}
+        title={
+          selectedInsight
+            ? `${selectedInsight.sectionLabel} - ${t("poster.modal.detailTitle", { defaultValue: "Chi tiết" })}`
+            : t("poster.modal.detailTitle", { defaultValue: "Chi tiết" })
+        }
         open={Boolean(selectedInsight)}
         onCancel={closeInsightModal}
         footer={null}
@@ -824,7 +1007,9 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               )}
             </div>
             <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>Thông tin chi tiết</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
+                {t("poster.modal.detailInfoTitle", { defaultValue: "Thông tin chi tiết" })}
+              </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 6, color: "#4b3a2a", fontSize: 14 }}>
                 {selectedInsight.details.map((detail, index) => (
                   <li key={index}>{detail}</li>
@@ -836,7 +1021,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       </Modal>
 
       <Modal
-        title="Thong tin thanh vien"
+        title={t("poster.modal.memberTitle", { defaultValue: "Thông tin thành viên" })}
         open={Boolean(selectedMember)}
         onCancel={closeMemberModal}
         footer={null}
@@ -869,7 +1054,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                     alt={selectedMember.name}
                     width={136}
                     height={136}
-                    preview={{ mask: "Xem anh lon" }}
+                    preview={{ mask: t("poster.modal.avatarPreviewMask", { defaultValue: "Xem ảnh lớn" }) }}
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
                 ) : (
@@ -879,20 +1064,20 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#3f1e1e" }}>{selectedMember.name}</div>
                 <div style={{ fontSize: 15, color: "#8b1d1d", fontWeight: 600 }}>
-                  {selectedMember.role || "Thanh vien du an"}
+                  {selectedMember.role || t("poster.modal.memberFallbackRole", { defaultValue: "Thành viên dự án" })}
                 </div>
               </div>
             </div>
 
             <div style={{ display: "grid", rowGap: 8, fontSize: 14, color: "#4b3a2a" }}>
               <div>
-                <strong>Bo phan:</strong> {selectedMember.department}
+                <strong>{t("poster.modal.departmentLabel", { defaultValue: "Bộ phận" })}:</strong> {selectedMember.department}
               </div>
               <div>
-                <strong>Chuyen mon:</strong> {selectedMember.specialization}
+                <strong>{t("poster.modal.specializationLabel", { defaultValue: "Chuyên môn" })}:</strong> {selectedMember.specialization}
               </div>
               <div>
-                <strong>Lien he:</strong> {selectedMember.contact}
+                <strong>{t("poster.modal.contactLabel", { defaultValue: "Liên hệ" })}:</strong> {selectedMember.contact}
               </div>
             </div>
           </div>

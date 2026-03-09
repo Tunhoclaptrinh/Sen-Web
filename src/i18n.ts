@@ -27,6 +27,7 @@ import viGamePlay from './locales/vi/game_play.json';
 import viProfile from './locales/vi/profile.json';
 import viNotifications from './locales/vi/notifications.json';
 import viChat from './locales/vi/chat.json';
+import viPoster from './locales/vi/poster.json';
 
 import enNav from './locales/en/nav.json';
 import enHome from './locales/en/home.json';
@@ -53,6 +54,7 @@ import enGamePlay from './locales/en/game_play.json';
 import enProfile from './locales/en/profile.json';
 import enNotifications from './locales/en/notifications.json';
 import enChat from './locales/en/chat.json';
+import enPoster from './locales/en/poster.json';
 
 i18n
   .use(LanguageDetector)
@@ -86,6 +88,7 @@ i18n
           profile: viProfile,
           notifications: viNotifications,
           chat: viChat,
+          poster: viPoster,
         },
       },
       en: {
@@ -115,6 +118,7 @@ i18n
           profile: enProfile,
           notifications: enNotifications,
           chat: enChat,
+          poster: enPoster,
         },
       },
     },

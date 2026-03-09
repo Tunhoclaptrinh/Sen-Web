@@ -47,12 +47,12 @@
   "problemItems": [
     {
       "id": 1,
-      "title": "Learning history and culture lacks interaction and real experience",
+      "title": "Learning history, culture lacks interaction and real experience",
       "summary": "History content in schools is mostly delivered through theory, making it harder for students to stay engaged and proactively explore.",
       "details": [
-        "Learning methods are still memory-focused and lack hands-on experiences.",
-        "Students struggle to visualize historical context when learning only from books and lectures.",
-        "Self-learning motivation decreases without continuous interaction and feedback."
+        "Learning is still memory-focused with limited hands-on practice.",
+        "Students struggle to visualize context from books and lectures only.",
+        "Self-learning drops without regular interaction and feedback."
       ]
     },
     {
@@ -60,9 +60,9 @@
       "title": "One-way learning limits learner initiative",
       "summary": "Content is often delivered in a passive, note-taking format, reducing long-term engagement and retention.",
       "details": [
-        "Content is often taught in a read-and-copy format that is hard to sustain engagement.",
-        "Learners have limited opportunities to connect knowledge with real contexts at heritage sites and museums.",
-        "Retention decreases when interactive activities and direct feedback are missing."
+        "Read-and-copy teaching is hard to keep engaging over time.",
+        "Learners have few chances to connect lessons to real heritage places.",
+        "Retention drops when interaction and direct feedback are missing."
       ]
     },
     {
@@ -70,20 +70,20 @@
       "title": "Gap between theory and real-world experience",
       "summary": "Students have limited opportunities to connect textbook knowledge with real historical and cultural places.",
       "details": [
-        "Learner initiative is still limited, and out-of-class heritage exploration remains low.",
-        "Learning activities linked to heritage spaces are not yet frequent enough.",
-        "Students struggle to relate historical lessons to local cultural contexts.",
-        "Knowledge can become fragmented without contextual real-world experiences."
+        "Out-of-class heritage exploration is still limited.",
+        "Heritage-linked learning activities are not frequent enough.",
+        "Students struggle to link lessons to local cultural contexts.",
+        "Knowledge becomes fragmented without contextual real experiences."
       ]
     },
     {
       "id": 4,
       "title": "Passive observation at museums and heritage sites",
-      "summary": "Many museums and heritage sites are still mostly static displays, lacking interactive technology to attract younger audiences.",
+      "summary": "Many museums and sites are still static, lacking interactive tech for youth.",
       "details": [
-        "Many destinations still lack digital interaction mechanisms to increase immersion.",
-        "On-site learning missions are often missing, making exploration less goal-oriented.",
-        "Young visitors find it hard to stay interested if experiences remain purely observational."
+        "Many destinations still lack digital interaction for immersion.",
+        "On-site learning missions are often missing.",
+        "Young visitors lose interest when experiences stay purely observational."
       ]
     }
   ],
@@ -146,14 +146,14 @@
       "id": 1,
       "title": "Target customers",
       "points": [
-        "Schools / Educational organizations",
-        "Museums, heritage sites, tourism destinations",
-        "Tourists and individuals interested in culture"
+        "Schools / Education orgs",
+        "Museums, heritage sites, tourism",
+        "Tourists and culture lovers"
       ],
       "details": [
-        "The product serves both in-school learning and out-of-school heritage contexts.",
-        "Deployment can be organized by class, by school, or by experience program.",
-        "It can gradually expand to self-driven history learners outside formal education."
+        "Serves both in-school learning and out-of-school heritage contexts.",
+        "Can deploy by class, by school, or by experience program.",
+        "Can expand to self-driven learners beyond formal education."
       ]
     },
     {
@@ -161,13 +161,13 @@
       "title": "Revenue streams",
       "points": [
         "SaaS deployment fee",
-        "Content licensing (games, learning materials, assessments, etc.)",
-        "Commission from service delivery and promotion"
+        "Content licensing (games, learning, assessment)",
+        "Commission from services and promotion"
       ],
       "details": [
-        "Charge by platform package and number of users.",
-        "Monetize licensed learning content and digital history scenarios.",
-        "Combine revenue sharing from destination services and experiences."
+        "Charge by package and number of users.",
+        "Monetize licensed learning content and digital scenarios.",
+        "Combine revenue share from destination services."
       ]
     },
     {
@@ -175,28 +175,28 @@
       "title": "Cost structure",
       "points": [
         "Platform development and operations",
-        "Content creation and curation (gamification and digital learning assets)",
-        "Marketing and pilot deployment in schools and museums"
+        "Content creation and review (game + learning assets)",
+        "Marketing and pilots in schools, museums"
       ],
       "details": [
-        "Prioritize investment in core technology, stable operations, and data security.",
-        "Content budget focuses on learning quality and historical verification.",
-        "Market expansion costs align with field pilots and user growth."
+        "Prioritize core tech, stable operations, and data security.",
+        "Content budget focuses on quality and history verification.",
+        "Expansion costs align with pilots and user growth."
       ]
     },
     {
       "id": 4,
       "title": "Key partners",
       "points": [
-        "Schools and educational organizations",
+        "Schools and education orgs",
         "Teachers and history-education experts",
-        "Museums, heritage sites, and cultural locations",
+        "Museums, heritage sites, cultural locations",
         "Travel and tour operators"
       ],
       "details": [
-        "Technology partners support infrastructure deployment and integrations.",
+        "Tech partners support infrastructure and integrations.",
         "Education partners ensure fit with real teaching programs.",
-        "Cultural partners create real-world history touchpoints beyond classrooms."
+        "Cultural partners create real history touchpoints beyond class."
       ]
     }
   ],
