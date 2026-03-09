@@ -6,6 +6,10 @@
 
 SEN là một ứng dụng web kết hợp giữa hệ thống quản lý di sản văn hóa và game giáo dục tương tác, giúp người dùng khám phá và học tập về văn hóa Việt Nam một cách sinh động.
 
+### GA4 Funnel Mapping
+
+- Event -> KPI -> source mapping cho Marketing: `./ANALYTICS_FUNNEL_MAPPING.md`
+
 ### Tính Năng Chính
 
 - 🏛️ **Quản lý Di Sản**: Khám phá các di tích văn hóa và hiện vật lịch sử
