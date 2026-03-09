@@ -15,7 +15,6 @@ import lotus1 from "../../assets/images/background/lotus-1.png";
 import lotus2 from "../../assets/images/background/lotus-2.png";
 import lotus3 from "../../assets/images/background/lotus-3.png";
 import bronzeDrum from "../../assets/images/background/bronze-drum.png";
-import Mockup from "./Mockup.png";
 
 interface PosterPageProps {
   standalone?: boolean;
@@ -91,6 +90,11 @@ const toTranslatedArray = <T,>(value: unknown, fallback: T[]): T[] => {
 const QR_FALLBACK_VALUE = "https://sen.vn";
 const defaultPosterAppUrl = import.meta.env.VITE_POSTER_ANDROID_URL || "https://example.com/sen-android-app";
 const defaultPosterWebsiteUrl = import.meta.env.VITE_POSTER_WEBSITE_URL || import.meta.env.VITE_SITE_URL || QR_FALLBACK_VALUE;
+const imageProdModules = import.meta.glob("./ImageProd/**/*.{png,jpg,jpeg,webp,avif,gif}", {
+  eager: true,
+  import: "default",
+}) as Record<string, string>;
+const defaultMockupImage = new URL("./ImageProd/Mockup.png", import.meta.url).href;
 
 const teamMembers: TeamMember[] = [
   {
@@ -100,7 +104,7 @@ const teamMembers: TeamMember[] = [
     avatar: new URL("./Photo/Hieu.JPG", import.meta.url).href,
     department: "Công nghệ",
     specialization: "AI, tích hợp mô hình và tối ưu hội thoại",
-    contact: "hieu@sengame.vn",
+    contact: "0917579522 | nguyenhieu32005@gmail.com",
   },
   {
     id: 2,
@@ -108,8 +112,8 @@ const teamMembers: TeamMember[] = [
     role: "Lead/Tech/Product",
     avatar: new URL("./Photo/Tuan.jpg", import.meta.url).href,
     department: "Sản phẩm",
-    specialization: "Định hướng sản phẩm, giao diện, kiến trúc hệ thống",
-    contact: "tuan@sengame.vn",
+    specialization: "Dẫn dắt đội nhóm, định hướng sản phẩm, phát giao diện, kiến trúc hệ thống,...",
+    contact: "0945650883 | tuannguyentien16@gmail.com",
   },
   {
     id: 3,
@@ -118,7 +122,7 @@ const teamMembers: TeamMember[] = [
     avatar: new URL("./Photo/Duy.JPG", import.meta.url).href,
     department: "Phát triển",
     specialization: "Vận hành, giao diện, demo sản phẩm và trình bày",
-    contact: "duy@sengame.vn",
+    contact: "0866028877 | dandythenubit@gmail.com",
   },
   {
     id: 4,
@@ -127,16 +131,16 @@ const teamMembers: TeamMember[] = [
     avatar: new URL("./Photo/Nguyet.jpg", import.meta.url).href,
     department: "Thiết kế",
     specialization: "UI/UX và truyền thông nội dung",
-    contact: "nguyet@sengame.vn",
+    contact: "0389829196 | phanthithunguyet628@gmail.com",
   },
-  // {
-  //   id: 5,
-  //   name: "Bùi Thị Yến",
-  //   role: "Business/Marketing",
-  //   department: "Kinh doanh",
-  //   specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
-  //   contact: "yen@sengame.vn",
-  // },
+  {
+    id: 5,
+    name: "Bùi Thị Yến",
+    role: "Business/Marketing",
+    department: "Kinh doanh",
+    specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
+    contact: "0389829196 | buiyen2004yen@gmail.com",
+  },
 ];
 
 const problemItems: ProblemItem[] = [
@@ -395,12 +399,8 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
-  const [qrLinks, setQrLinks] = React.useState<Record<number, string>>(() =>
-    qrItems.reduce<Record<number, string>>((accumulator, item) => {
-      accumulator[item.id] = item.defaultUrl;
-      return accumulator;
-    }, {})
-  );
+  const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
+  const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
   const localizedProblemItems = React.useMemo(
     () => toTranslatedArray<ProblemItem>(t("poster.problemItems", { returnObjects: true }), problemItems),
@@ -454,6 +454,36 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
     [translatedQrItems]
   );
 
+  const mockupGalleryEntries = React.useMemo(() => {
+    const sortedEntries = Object.entries(imageProdModules).sort(([pathA], [pathB]) => pathA.localeCompare(pathB));
+
+    if (sortedEntries.length === 0) {
+      return [{ path: "./ImageProd/Mockup.png", url: defaultMockupImage }];
+    }
+
+    return sortedEntries.map(([path, url]) => ({ path, url }));
+  }, []);
+
+  const mockupDefaultIndex = React.useMemo(() => {
+    const exactRootMockupIndex = mockupGalleryEntries.findIndex(({ path }) => path === "./ImageProd/Mockup.png");
+    if (exactRootMockupIndex >= 0) {
+      return exactRootMockupIndex;
+    }
+
+    const mockupByNameIndex = mockupGalleryEntries.findIndex(({ path }) =>
+      /\/mockup\.(png|jpe?g|webp|avif|gif)$/i.test(path.replace(/\\/g, "/"))
+    );
+
+    return mockupByNameIndex >= 0 ? mockupByNameIndex : 0;
+  }, [mockupGalleryEntries]);
+
+  const mockupGalleryImages = React.useMemo(
+    () => mockupGalleryEntries.map(({ url }) => url),
+    [mockupGalleryEntries]
+  );
+
+  const mockupCoverImage = mockupGalleryEntries[mockupDefaultIndex]?.url || defaultMockupImage;
+
   const roadmapStageCount = Math.max(localizedRoadmapStages.length, 1);
   const roadmapContainerClassName = `poster-roadmap-container${
     roadmapStageCount <= 3 ? " poster-roadmap-container--few" : ""
@@ -461,19 +491,6 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const roadmapContainerStyle = {
     ["--roadmap-columns" as string]: roadmapStageCount,
   } as React.CSSProperties;
-
-  const solutionOverviewDetails = React.useMemo(
-    () =>
-      toTranslatedArray<string>(
-        t("poster.solutionOverview.details", { returnObjects: true }),
-        [
-          "Tăng tương tác trong học lịch sử qua nhiệm vụ, thử thách và đối thoại AI.",
-          "Kết nối lớp học với bảo tàng, di tích bằng QR và hoạt động tại chỗ.",
-          "Đảm bảo nội dung lịch sử chính xác, phù hợp mục tiêu giáo dục tại Việt Nam.",
-        ]
-      ),
-    [t]
-  );
 
   React.useEffect(() => {
     if (!selectedQr) {
@@ -500,15 +517,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
     return `https://${trimmedValue}`;
   };
 
-  const getQrLink = (item: QrItem) => normalizeQrLink(qrLinks[item.id] ?? item.defaultUrl);
-  const getQrCodeValue = (item: QrItem) => getQrLink(item) || QR_FALLBACK_VALUE;
-
-  const handleQrLinkChange = (itemId: number, rawValue: string) => {
-    setQrLinks((previousLinks) => ({
-      ...previousLinks,
-      [itemId]: rawValue,
-    }));
-  };
+  const getQrCodeValue = (item: QrItem) => normalizeQrLink(item.defaultUrl) || QR_FALLBACK_VALUE;
 
   const handleMemberClick = (member: TeamMember) => {
     setSelectedMember(member);
@@ -561,15 +570,8 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   };
 
   const openSolutionOverviewDetail = () => {
-    setSelectedInsight({
-      sectionLabel: t("poster.labels.sectionSolution", { defaultValue: "Solution" }),
-      title: t("poster.solutionOverview.title", { defaultValue: "Nền tảng kiến tạo trải nghiệm" }),
-      summary: t("poster.solutionOverview.summary", {
-        defaultValue:
-          "SEN kết hợp game hóa, AI và dữ liệu kiểm duyệt để giải quyết khoảng cách giữa học lịch sử trên lớp và trải nghiệm ngoài thực tế.",
-      }),
-      details: solutionOverviewDetails,
-    });
+    setMockupPreviewIndex(mockupDefaultIndex);
+    setIsMockupPreviewOpen(true);
   };
 
   const openSolutionFeatureDetail = (item: SolutionFeatureItem) => {
@@ -727,11 +729,11 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               className="poster-mockup-placeholder poster-mockup-placeholder--interactive"
               role="button"
               tabIndex={0}
-              aria-label="Xem chi tiet tong quan giai phap"
+              aria-label="Xem bo anh mockup"
               onClick={openSolutionOverviewDetail}
               onKeyDown={(event) => handleInsightKeyDown(event, openSolutionOverviewDetail)}
             >
-              <img src={Mockup} alt="SEN Game Mockup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={mockupCoverImage} alt="SEN Game Mockup" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               {/* <div className="mockup-text">Nền tảng kiến tạo trải nghiệm</div> */}
             </div>
             <div className="poster-feature-grid">
@@ -905,6 +907,21 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             {t("poster.footer.impactText", { defaultValue: "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!" })}
           </div>
         </footer>
+
+        <div style={{ width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
+          <Image.PreviewGroup
+            preview={{
+              visible: isMockupPreviewOpen,
+              current: mockupPreviewIndex,
+              onVisibleChange: (visible) => setIsMockupPreviewOpen(visible),
+              onChange: (current) => setMockupPreviewIndex(current),
+            }}
+          >
+            {mockupGalleryImages.map((imageSrc, index) => (
+              <Image key={imageSrc} src={imageSrc} alt={`mockup-${index + 1}`} />
+            ))}
+          </Image.PreviewGroup>
+        </div>
       </div>
 
       <Modal
@@ -917,26 +934,29 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
         onCancel={closeQrModal}
         footer={null}
         centered
-        width={560}
+        width={720}
       >
         {selectedQr && (
           <div style={{ display: "grid", rowGap: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ display: "grid", justifyItems: "center", rowGap: 12 }}>
               <div
                 style={{
-                  width: 180,
-                  height: 180,
+                  width: 320,
+                  height: 320,
                   border: "2px solid #c5a065",
                   borderRadius: 8,
                   overflow: "hidden",
                   flexShrink: 0,
                   background: "#fff",
                   boxShadow: "2px 2px 0 rgba(197, 160, 101, 0.35)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <QRCodeSVG
                   value={getQrCodeValue(selectedQr)}
-                  size={164}
+                  size={288}
                   level="M"
                   includeMargin={true}
                   bgColor="#ffffff"
@@ -944,31 +964,11 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="qr-code-svg"
                 />
               </div>
-              <div style={{ minWidth: 0 }}>
+              <div style={{ minWidth: 0, textAlign: "center" }}>
                 <div style={{ fontSize: 18, fontWeight: 800, color: "#3f1e1e", marginBottom: 6 }}>{selectedQr.title}</div>
                 <div style={{ fontSize: 14, color: "#6b4b3b", lineHeight: 1.45 }}>{selectedQr.summary}</div>
                 <div style={{ marginTop: 8, fontSize: 13, color: "#4b3a2a" }}>
                   <strong>{t("poster.modal.destinationLabel", { defaultValue: "Đích đến" })}:</strong> {getQrCodeValue(selectedQr)}
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <label htmlFor={`qr-link-${selectedQr.id}`} style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#8b1d1d", marginBottom: 4 }}>
-                    {t("poster.modal.pasteLinkLabel", { defaultValue: "Dán link để tạo QR tự động" })}
-                  </label>
-                  <input
-                    id={`qr-link-${selectedQr.id}`}
-                    type="text"
-                    value={qrLinks[selectedQr.id] ?? ""}
-                    onChange={(event) => handleQrLinkChange(selectedQr.id, event.target.value)}
-                    placeholder={t("poster.modal.pasteLinkPlaceholder", { defaultValue: "https://your-link-here" })}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #d9b267",
-                      borderRadius: 6,
-                      padding: "6px 8px",
-                      fontSize: 13,
-                      color: "#3f1e1e",
-                    }}
-                  />
                 </div>
               </div>
             </div>
@@ -1070,9 +1070,6 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             </div>
 
             <div style={{ display: "grid", rowGap: 8, fontSize: 14, color: "#4b3a2a" }}>
-              <div>
-                <strong>{t("poster.modal.departmentLabel", { defaultValue: "Bộ phận" })}:</strong> {selectedMember.department}
-              </div>
               <div>
                 <strong>{t("poster.modal.specializationLabel", { defaultValue: "Chuyên môn" })}:</strong> {selectedMember.specialization}
               </div>
