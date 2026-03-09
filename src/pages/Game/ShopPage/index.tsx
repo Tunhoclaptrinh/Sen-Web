@@ -13,6 +13,7 @@ import { aiService, AICharacter } from "@/services/ai.service";
 import "./styles.less";
 import { getImageUrl } from "@/utils/image.helper";
 import ShopDetailModal from "./components/ShopDetailModal";
+import { trackBeginCheckout, trackPurchase } from "@/utils/analytics";
 
 const { Title } = Typography;
 
@@ -120,9 +121,26 @@ const ShopPage: React.FC = () => {
       return;
     }
 
+    trackBeginCheckout({
+      itemId: selectedItem.id,
+      itemName: selectedItem.name,
+      itemType: selectedItem.type || "shop_item",
+      value: totalCost,
+      currency: selectedItem.currency,
+      checkoutType: "shop_item_purchase",
+    });
+
     dispatch(purchaseItem({ itemId: selectedItem.id, quantity: purchaseQuantity }) as any)
       .unwrap()
       .then(() => {
+        trackPurchase({
+          itemId: selectedItem.id,
+          itemName: selectedItem.name,
+          itemType: selectedItem.type || "shop_item",
+          transactionId: `shop_${selectedItem.id}_${Date.now()}`,
+          value: totalCost,
+          currency: selectedItem.currency,
+        });
         setPurchaseModalVisible(false);
       })
       .catch(() => { });
@@ -294,6 +312,15 @@ const ShopPage: React.FC = () => {
       return;
     }
 
+    trackBeginCheckout({
+      itemId: character.id,
+      itemName: character.name,
+      itemType: "ai_character",
+      value: character.price || 0,
+      currency: "coins",
+      checkoutType: "ai_character_purchase",
+    });
+
     Modal.confirm({
       title: t('gameShop.messages.purchaseCharConfirm.title'),
       content: t('gameShop.messages.purchaseCharConfirm.content', { name: character.name, price: character.price }),
@@ -305,6 +332,14 @@ const ShopPage: React.FC = () => {
         try {
           const result = await aiService.purchaseCharacter(character.id);
           if (result.success) {
+            trackPurchase({
+              itemId: character.id,
+              itemName: character.name,
+              itemType: "ai_character",
+              transactionId: `ai_char_${character.id}_${Date.now()}`,
+              value: character.price || 0,
+              currency: "coins",
+            });
             message.success(t('gameShop.messages.purchaseCharSuccess', { name: character.name }));
             fetchAvailableCharacters(); // Refresh list
             dispatch(fetchProgress() as any); // Refresh user coins

@@ -36,6 +36,7 @@ import { useGameSounds } from "@/hooks/useSound";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
 import { SoundOutlined, MutedOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
+import { trackCompleteLevel } from "@/utils/analytics";
 
 import "./styles.less";
 
@@ -223,6 +224,14 @@ const GamePlayPage: React.FC = () => {
       const result = await gameService.completeLevel(parseInt(levelId), score, timeSpent);
       if (result.passed !== false) {
         playWin();
+
+        trackCompleteLevel({
+          levelId: parseInt(levelId),
+          chapterId: levelInfo?.chapterId,
+          score: result.score,
+          pointsEarned: result.rewards?.trophies ?? result.rewards?.points ?? 0,
+          passed: result.passed,
+        });
 
         if (result.newTotals) {
           dispatch(

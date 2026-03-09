@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown } from "antd";
@@ -42,6 +42,7 @@ import { useViewTracker } from "@/hooks/useViewTracker";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
+import { trackViewProduct } from "@/utils/analytics";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -62,6 +63,7 @@ const ArtifactDetailPage = () => {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
+  const trackedProductIdRef = useRef<string | null>(null);
 
   // Track view
   useViewTracker(ITEM_TYPES.ARTIFACT, id);
@@ -81,6 +83,21 @@ const ArtifactDetailPage = () => {
       }
     }
   }, [artifact, isAuthenticated]);
+
+  useEffect(() => {
+    if (!artifact?.id) return;
+
+    const normalizedId = String(artifact.id);
+    if (trackedProductIdRef.current === normalizedId) return;
+
+    trackedProductIdRef.current = normalizedId;
+    trackViewProduct({
+      itemId: normalizedId,
+      itemName: artifact.name,
+      itemType: "artifact",
+      sourceScreen: "ArtifactDetailPage",
+    });
+  }, [artifact?.id, artifact?.name]);
 
   const checkFavoriteStatus = async (artifactId: number) => {
     try {

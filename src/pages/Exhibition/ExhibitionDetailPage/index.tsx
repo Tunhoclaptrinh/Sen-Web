@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spin, Row, Col, Typography, Empty, Button, Tag, Tabs, message } from "antd";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,7 @@ import {
 } from "@ant-design/icons";
 import exhibitionService, { Exhibition } from "@/services/exhibition.service";
 import artifactService from "@/services/artifact.service";
+import type { Artifact } from "@/types";
 import { getImageUrl, resolveImage } from "@/utils/image.helper";
 import { useAuth } from "@/hooks/useAuth";
 import ArticleCard from "@/components/common/cards/ArticleCard";
@@ -22,6 +23,7 @@ import AddToCollectionModal from "@/components/common/AddToCollectionModal";
 import dayjs from "dayjs";
 import { ITEM_TYPES } from "@/config/constants";
 import ReviewSection from "@/components/common/Review/ReviewSection";
+import { trackViewProduct } from "@/utils/analytics";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -33,9 +35,10 @@ const ExhibitionDetailPage: React.FC = () => {
   const { user } = useAuth();
 
   const [exhibition, setExhibition] = useState<Exhibition | null>(null);
-  const [artifacts, setArtifacts] = useState<any[]>([]);
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const trackedProductIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,7 +89,22 @@ const ExhibitionDetailPage: React.FC = () => {
     };
     fetchData();
     window.scrollTo(0, 0);
-  }, [id, user]); // Added user dependency to re-run check if auth loads late
+  }, [id, user, navigate, t]); // Added user dependency to re-run check if auth loads late
+
+  useEffect(() => {
+    if (!exhibition?.id) return;
+
+    const normalizedId = String(exhibition.id);
+    if (trackedProductIdRef.current === normalizedId) return;
+
+    trackedProductIdRef.current = normalizedId;
+    trackViewProduct({
+      itemId: normalizedId,
+      itemName: exhibition.name,
+      itemType: "exhibition",
+      sourceScreen: "ExhibitionDetailPage",
+    });
+  }, [exhibition?.id, exhibition?.name]);
 
   if (loading)
     return (
