@@ -1,11 +1,13 @@
-import { defineConfig } from "vite";
+import { defineConfig, type PluginOption, type UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 const DEFAULT_PRERENDER_ROUTES = [
   "/",
@@ -31,25 +33,28 @@ const loadPrerenderRoutes = () => {
   return DEFAULT_PRERENDER_ROUTES;
 };
 
-export default defineConfig(async ({ command }) => {
-  const plugins = [react()];
+export default defineConfig(({ command }) => {
+  const plugins: PluginOption[] = [...react()];
   const requirePrerender = process.env.VITE_REQUIRE_PRERENDER === "true";
 
   if (command === "build") {
     try {
-      const prerenderModule = await import("vite-plugin-prerender");
-      const vitePrerender = prerenderModule.default;
+      const prerenderPackageName = "vite-plugin-prerender";
+      const prerenderModule = require(prerenderPackageName);
+      // Handle both default and named exports for ESM compatibility
+      const vitePrerender = prerenderModule?.default || prerenderModule?.vitePrerender;
+      const PuppeteerRenderer = prerenderModule?.PuppeteerRenderer || vitePrerender?.PuppeteerRenderer;
 
-      if (!vitePrerender || typeof vitePrerender !== "function" || !vitePrerender.PuppeteerRenderer) {
-        throw new Error("Invalid 'vite-plugin-prerender' export shape.");
+      if (!vitePrerender || typeof vitePrerender !== "function" || !PuppeteerRenderer) {
+        throw new Error("Invalid 'vite-plugin-prerender' export. Please check version compatibility.");
       }
 
       plugins.push(
         vitePrerender({
           staticDir: path.join(__dirname, "dist"),
           routes: loadPrerenderRoutes(),
-          renderer: new vitePrerender.PuppeteerRenderer({
-            maxConcurrentRoutes: 4,
+          renderer: new PuppeteerRenderer({
+            maxConcurrentRoutes: 1, // Reduced for CI environments like Vercel
             renderAfterDocumentEvent: "prerender-ready",
             skipThirdPartyRequests: true,
             injectProperty: "__PRERENDER_INJECTED",
@@ -57,6 +62,7 @@ export default defineConfig(async ({ command }) => {
               prerender: true,
             },
             headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Required for many CI environments
           }),
         })
       );
@@ -64,16 +70,19 @@ export default defineConfig(async ({ command }) => {
       const errorMessage = error instanceof Error ? error.message : String(error);
 
       if (requirePrerender) {
+        console.error("Critical SEO Error: Prerendering failed.");
+        console.error("REASON:", errorMessage);
+        console.error("TIP: If you are deploying to Vercel/CI, ensure Puppeteer is supported or set VITE_REQUIRE_PRERENDER=false.");
         throw new Error(
-          `Prerender is required but unavailable: ${errorMessage}. Install dependencies in Web before build.`
+          `Prerender is required but failed: ${errorMessage}`
         );
       }
 
-      console.warn(`[seo] Skipping prerender step: ${errorMessage}`);
+      console.warn(`[seo] Skipping prerender step (VITE_REQUIRE_PRERENDER is false): ${errorMessage}`);
     }
   }
 
-  return {
+  const config: UserConfig = {
     plugins,
   resolve: {
     alias: {
@@ -136,4 +145,6 @@ export default defineConfig(async ({ command }) => {
     },
   },
   };
+
+  return config;
 });

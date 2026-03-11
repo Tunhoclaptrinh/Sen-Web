@@ -1,5 +1,18 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { readFileSync, existsSync } from "node:fs";
+
+// Simple .env loader for Node scripts
+const envPath = path.resolve(process.cwd(), ".env");
+if (existsSync(envPath)) {
+  const envContent = readFileSync(envPath, "utf-8");
+  envContent.split("\n").forEach((line) => {
+    const [key, ...value] = line.split("=");
+    if (key && value.length > 0) {
+      process.env[key.trim()] = value.join("=").trim().replace(/^['"]|['"]$/g, "");
+    }
+  });
+}
 
 export const STATIC_PUBLIC_ROUTES = [
   "/",
