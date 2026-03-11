@@ -1,4 +1,4 @@
-import { defineConfig, type PluginOption, type UserConfig } from "vite";
+import { defineConfig, loadEnv, type PluginOption, type UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -33,12 +33,17 @@ const loadPrerenderRoutes = () => {
   return DEFAULT_PRERENDER_ROUTES;
 };
 
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv(mode, process.cwd(), "");
+  
   const plugins: PluginOption[] = [...react()];
-  const requirePrerender = process.env.VITE_REQUIRE_PRERENDER === "true";
+  const requirePrerender = env.VITE_REQUIRE_PRERENDER === "true";
 
   if (command === "build") {
-    const isVercel = !!process.env.VERCEL || !!process.env.CI;
+    // Strengthen environment detection
+    const isVercel = !!env.VERCEL || !!env.NOW_BUILDER || !!process.env.VERCEL || !!process.env.CI;
     
     // DECISION: On Vercel, we go "normal" (skip Puppeteer) to avoid environment crashes.
     // On other platforms (Local, Private Servers), we run the full SEO "separate" logic.
