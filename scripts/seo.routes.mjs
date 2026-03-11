@@ -110,7 +110,7 @@ export const buildSeoRoutes = async () => {
     fetchList("heritage-sites", { status: "published", isActive: true, limit: 1000 }),
     fetchList("artifacts", { status: "published", limit: 1000 }),
     fetchList("history", { status: "published", limit: 1000 }),
-    fetchList("exhibitions", { status: "published", isActive: true, _limit: 1000 }),
+    fetchList("exhibitions", { status: "published", isActive: true, limit: 1000 }),
   ]);
 
   for (const item of heritages) {

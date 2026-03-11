@@ -41,11 +41,16 @@ export default defineConfig(({ command }) => {
     try {
       const prerenderPackageName = "vite-plugin-prerender";
       const prerenderModule = require(prerenderPackageName);
-      // Handle both default and named exports for ESM compatibility
-      const vitePrerender = prerenderModule?.default || prerenderModule?.vitePrerender;
+      
+      // The plugin often exports the main function directly or via .default
+      const vitePrerender = typeof prerenderModule === 'function' 
+        ? prerenderModule 
+        : (prerenderModule?.default || prerenderModule?.vitePrerender);
+        
+      // PuppeteerRenderer is usually a property of the main function or the module
       const PuppeteerRenderer = prerenderModule?.PuppeteerRenderer || vitePrerender?.PuppeteerRenderer;
 
-      if (!vitePrerender || typeof vitePrerender !== "function" || !PuppeteerRenderer) {
+      if (!vitePrerender || typeof vitePrerender !== "function") {
         throw new Error("Invalid 'vite-plugin-prerender' export. Please check version compatibility.");
       }
 
@@ -54,7 +59,7 @@ export default defineConfig(({ command }) => {
           staticDir: path.join(__dirname, "dist"),
           routes: loadPrerenderRoutes(),
           renderer: new PuppeteerRenderer({
-            maxConcurrentRoutes: 1, // Reduced for CI environments like Vercel
+            maxConcurrentRoutes: 3, // Reduced for CI environments like Vercel
             renderAfterDocumentEvent: "prerender-ready",
             skipThirdPartyRequests: true,
             injectProperty: "__PRERENDER_INJECTED",
@@ -62,7 +67,7 @@ export default defineConfig(({ command }) => {
               prerender: true,
             },
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Required for many CI environments
+            // args: ['--no-sandbox', '--disable-setuid-sandbox'], // Required for many CI environments
           }),
         })
       );
