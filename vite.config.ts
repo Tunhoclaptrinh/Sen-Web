@@ -38,52 +38,53 @@ export default defineConfig(({ command }) => {
   const requirePrerender = process.env.VITE_REQUIRE_PRERENDER === "true";
 
   if (command === "build") {
-    try {
-      const prerenderPackageName = "vite-plugin-prerender";
-      const prerenderModule = require(prerenderPackageName);
-      
-      // The plugin often exports the main function directly or via .default
-      const vitePrerender = typeof prerenderModule === 'function' 
-        ? prerenderModule 
-        : (prerenderModule?.default || prerenderModule?.vitePrerender);
+    const isVercel = !!process.env.VERCEL || !!process.env.CI;
+    
+    // DECISION: On Vercel, we go "normal" (skip Puppeteer) to avoid environment crashes.
+    // On other platforms (Local, Private Servers), we run the full SEO "separate" logic.
+    const runPrerender = !isVercel || requirePrerender;
+
+    if (runPrerender) {
+      try {
+        const prerenderPackageName = "vite-plugin-prerender";
+        const prerenderModule = require(prerenderPackageName);
         
-      // PuppeteerRenderer is usually a property of the main function or the module
-      const PuppeteerRenderer = prerenderModule?.PuppeteerRenderer || vitePrerender?.PuppeteerRenderer;
+        // Plugin resolution: support ESM default or direct CommonJS export
+        const vitePrerender = typeof prerenderModule === 'function' 
+          ? prerenderModule 
+          : (prerenderModule?.default || prerenderModule?.vitePrerender || prerenderModule);
+          
+        const PuppeteerRenderer = vitePrerender?.PuppeteerRenderer || prerenderModule?.PuppeteerRenderer;
 
-      if (!vitePrerender || typeof vitePrerender !== "function") {
-        throw new Error("Invalid 'vite-plugin-prerender' export. Please check version compatibility.");
-      }
+        if (!vitePrerender || typeof vitePrerender !== "function" || !PuppeteerRenderer) {
+          throw new Error("Could not find a valid Prerenderer export in vite-plugin-prerender.");
+        }
 
-      plugins.push(
-        vitePrerender({
-          staticDir: path.join(__dirname, "dist"),
-          routes: loadPrerenderRoutes(),
-          renderer: new PuppeteerRenderer({
-            maxConcurrentRoutes: 3, // Reduced for CI environments like Vercel
-            renderAfterDocumentEvent: "prerender-ready",
-            skipThirdPartyRequests: true,
-            injectProperty: "__PRERENDER_INJECTED",
-            inject: {
-              prerender: true,
-            },
-            headless: true,
-            // args: ['--no-sandbox', '--disable-setuid-sandbox'], // Required for many CI environments
-          }),
-        })
-      );
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-
-      if (requirePrerender) {
-        console.error("Critical SEO Error: Prerendering failed.");
-        console.error("REASON:", errorMessage);
-        console.error("TIP: If you are deploying to Vercel/CI, ensure Puppeteer is supported or set VITE_REQUIRE_PRERENDER=false.");
-        throw new Error(
-          `Prerender is required but failed: ${errorMessage}`
+        plugins.push(
+          vitePrerender({
+            staticDir: path.join(__dirname, "dist"),
+            routes: loadPrerenderRoutes(),
+            renderer: new PuppeteerRenderer({
+              maxConcurrentRoutes: isVercel ? 1 : 3,
+              renderAfterDocumentEvent: "prerender-ready",
+              skipThirdPartyRequests: true,
+              injectProperty: "__PRERENDER_INJECTED",
+              inject: { prerender: true },
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            }),
+          })
         );
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (requirePrerender) {
+          console.error("Critical SEO Error: Prerendering is required but failed.");
+          throw new Error(`Prerender failed: ${errorMessage}`);
+        }
+        console.warn(`[seo] Prerendering skipped (Normal build mode): ${errorMessage}`);
       }
-
-      console.warn(`[seo] Skipping prerender step (VITE_REQUIRE_PRERENDER is false): ${errorMessage}`);
+    } else {
+      console.log("[seo] Vercel environment detected. Running normal build without Puppeteer.");
     }
   }
 
