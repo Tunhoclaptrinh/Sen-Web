@@ -36,7 +36,7 @@ export const toAbsoluteImageUrl = (image?: string): string => {
  * Ideally, this would be a specialized API or a cloud function.
  */
 export const getBrandedOgImage = (title: string, backgroundImage?: string): string => {
-  const brand = "SEN Heritage";
+  const brand = "SEN Culture";
   const titleParam = encodeURIComponent(title);
   const brandParam = encodeURIComponent(brand);
   const bgParam = backgroundImage ? encodeURIComponent(toAbsoluteImageUrl(backgroundImage)) : "";
