@@ -71,7 +71,11 @@ export default defineConfig(({ command }) => {
               injectProperty: "__PRERENDER_INJECTED",
               inject: { prerender: true },
               headless: true,
-              args: ['--no-sandbox', '--disable-setuid-sandbox'],
+              // For security, only disable sandbox on Vercel/CI or if explicitly requested.
+              // Real servers should try to run with the sandbox active.
+              args: (isVercel || process.env.VITE_PUPPETEER_NO_SANDBOX === 'true')
+                ? ['--no-sandbox', '--disable-setuid-sandbox']
+                : [],
             }),
           })
         );
