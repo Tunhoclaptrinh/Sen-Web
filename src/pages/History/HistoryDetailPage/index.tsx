@@ -34,6 +34,8 @@ import { trackViewProduct } from "@/utils/analytics";
 import SeoHead from "@/components/common/SeoHead";
 import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
+import { injectContextualLinks } from "@/utils/seo.linker";
+import env from "@/config/env.config";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -230,6 +232,14 @@ const HistoryDetailPage = () => {
     mainEntityOfPage: buildAbsoluteUrl(detailPath),
   };
 
+  // Prepare dictionary for SEO Linker - Filter out items with missing names
+  const linkableItems = [
+    ...relatedHeritage.filter(h => h && h.name).map(h => ({ id: h.id, name: h.name, type: 'heritage' as const })),
+    ...relatedArtifacts.filter(a => a && a.name).map(a => ({ id: a.id, name: a.name, type: 'artifact' as const }))
+  ];
+
+  const enhancedContent = injectContextualLinks(article.content || "", linkableItems, article.id);
+
   return (
     <div className="heritage-blog-page history-detail-page">
       <SeoHead
@@ -237,6 +247,8 @@ const HistoryDetailPage = () => {
         description={seoDescription}
         path={detailPath}
         image={mainImage}
+        preloadImage={env.SEO_PRELOAD_HERO ? mainImage : undefined}
+        useBrandedOg={env.SEO_BRANDED_OG}
         type="article"
         keywords={["bai viet lich su", "lich su viet nam", "van hoa", normalizedTitle]}
         jsonLd={articleJsonLd}
@@ -297,7 +309,7 @@ const HistoryDetailPage = () => {
 
                   {/* Abstract/Short Description */}
                   {normalizedShortDescription && <blockquote>{normalizedShortDescription}</blockquote>}
-                  <div className="article-body-content" dangerouslySetInnerHTML={{ __html: normalizedContent || `<p>${t('history.detail.content.noContent')}</p>` }} />
+                  <div className="article-body-content" dangerouslySetInnerHTML={{ __html: enhancedContent || `<p>${t('history.detail.content.noContent')}</p>` }} />
 
                   {article.references && (
                     <div className="references-section">
