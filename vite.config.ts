@@ -42,12 +42,22 @@ export default defineConfig(({ command, mode }) => {
   const requirePrerender = env.VITE_REQUIRE_PRERENDER === "true";
 
   if (command === "build") {
-    // Strengthen environment detection
-    const isVercel = !!env.VERCEL || !!env.NOW_BUILDER || !!process.env.VERCEL || !!process.env.CI;
+    // Harden environment detection - Vercel sets VERCEL, CI, and other vars.
+    // We also check process.env directly since loadEnv might not have everything.
+    const isVercel = !!env.VERCEL || !!process.env.VERCEL || !!env.CI || !!process.env.CI;
+    const isForced = requirePrerender || env.VITE_FORCE_PRERENDER === "true";
     
-    // DECISION: On Vercel, we go "normal" (skip Puppeteer) to avoid environment crashes.
-    // On other platforms (Local, Private Servers), we run the full SEO "separate" logic.
-    const runPrerender = !isVercel || requirePrerender;
+    // DECISION: On Vercel, we skip Puppeteer by default to avoid environment crashes.
+    const runPrerender = !isVercel || isForced;
+
+    if (isVercel) {
+      console.log(`[seo] Vercel environment detected (VERCEL=${isVercel}, CI=${!!(env.CI || process.env.CI)}).`);
+      if (!isForced) {
+        console.log("[seo] Skipping Puppeteer prererendering to avoid build failure.");
+      } else {
+        console.log("[seo] Forced prerendering enabled on Vercel.");
+      }
+    }
 
     if (runPrerender) {
       try {
