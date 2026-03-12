@@ -27,6 +27,8 @@ import { trackViewProduct } from "@/utils/analytics";
 import SeoHead from "@/components/common/SeoHead";
 import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
+import { injectContextualLinks } from "@/utils/seo.linker";
+import env from "@/config/env.config";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -161,6 +163,13 @@ const ExhibitionDetailPage: React.FC = () => {
     },
   };
 
+  // Prepare dictionary for SEO Linker - Filter out items with missing names
+  const linkableItems = artifacts
+    .filter(a => a && a.name)
+    .map(a => ({ id: a.id, name: a.name, type: 'artifact' as const }));
+
+  const enhancedDescription = injectContextualLinks(exhibition.description || "", linkableItems, exhibition.id);
+
   return (
     <div className="exhibition-detail-page">
       <SeoHead
@@ -168,6 +177,8 @@ const ExhibitionDetailPage: React.FC = () => {
         description={seoDescription}
         path={detailPath}
         image={heroImage}
+        preloadImage={env.SEO_PRELOAD_HERO ? heroImage : undefined}
+        useBrandedOg={env.SEO_BRANDED_OG}
         type="article"
         keywords={["trien lam", "bao tang", "van hoa", exhibition.name]}
         jsonLd={exhibitionJsonLd}
@@ -232,7 +243,7 @@ const ExhibitionDetailPage: React.FC = () => {
                       <div
                         className="article-body-content"
                         dangerouslySetInnerHTML={{
-                          __html: exhibition.description || `<p>${t('exhibition.detail.content.noDescription')}</p>`,
+                          __html: enhancedDescription || `<p>${t('exhibition.detail.content.noDescription')}</p>`,
                         }}
                       />
 

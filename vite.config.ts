@@ -1,11 +1,13 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv, type PluginOption, type UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 const DEFAULT_PRERENDER_ROUTES = [
   "/",
@@ -31,49 +33,81 @@ const loadPrerenderRoutes = () => {
   return DEFAULT_PRERENDER_ROUTES;
 };
 
-export default defineConfig(async ({ command }) => {
-  const plugins = [react()];
-  const requirePrerender = process.env.VITE_REQUIRE_PRERENDER === "true";
+export default defineConfig(({ command, mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv(mode, process.cwd(), "");
+  
+  const plugins: PluginOption[] = [...react()];
+  const requirePrerender = env.VITE_REQUIRE_PRERENDER === "true";
 
   if (command === "build") {
-    try {
-      const prerenderModule = await import("vite-plugin-prerender");
-      const vitePrerender = prerenderModule.default;
+    // Harden environment detection - Vercel sets VERCEL, CI, and other vars.
+    // We also check process.env directly since loadEnv might not have everything.
+    const isVercel = !!env.VERCEL || !!process.env.VERCEL || !!env.CI || !!process.env.CI;
+    const isForced = requirePrerender || env.VITE_FORCE_PRERENDER === "true";
+    
+    // DECISION: On Vercel, we skip Puppeteer by default to avoid environment crashes.
+    const runPrerender = !isVercel || isForced;
 
-      if (!vitePrerender || typeof vitePrerender !== "function" || !vitePrerender.PuppeteerRenderer) {
-        throw new Error("Invalid 'vite-plugin-prerender' export shape.");
+    if (isVercel) {
+      console.log(`[seo] Vercel environment detected (VERCEL=${isVercel}, CI=${!!(env.CI || process.env.CI)}).`);
+      if (!isForced) {
+        console.log("[seo] Skipping Puppeteer prererendering to avoid build failure.");
+      } else {
+        console.log("[seo] Forced prerendering enabled on Vercel.");
       }
+    }
 
-      plugins.push(
-        vitePrerender({
-          staticDir: path.join(__dirname, "dist"),
-          routes: loadPrerenderRoutes(),
-          renderer: new vitePrerender.PuppeteerRenderer({
-            maxConcurrentRoutes: 4,
-            renderAfterDocumentEvent: "prerender-ready",
-            skipThirdPartyRequests: true,
-            injectProperty: "__PRERENDER_INJECTED",
-            inject: {
-              prerender: true,
-            },
-            headless: true,
-          }),
-        })
-      );
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+    if (runPrerender) {
+      try {
+        const prerenderPackageName = "vite-plugin-prerender";
+        const prerenderModule = require(prerenderPackageName);
+        
+        // Plugin resolution: support ESM default or direct CommonJS export
+        const vitePrerender = typeof prerenderModule === 'function' 
+          ? prerenderModule 
+          : (prerenderModule?.default || prerenderModule?.vitePrerender || prerenderModule);
+          
+        const PuppeteerRenderer = vitePrerender?.PuppeteerRenderer || prerenderModule?.PuppeteerRenderer;
 
-      if (requirePrerender) {
-        throw new Error(
-          `Prerender is required but unavailable: ${errorMessage}. Install dependencies in Web before build.`
+        if (!vitePrerender || typeof vitePrerender !== "function" || !PuppeteerRenderer) {
+          throw new Error("Could not find a valid Prerenderer export in vite-plugin-prerender.");
+        }
+
+        plugins.push(
+          vitePrerender({
+            staticDir: path.join(__dirname, "dist"),
+            routes: loadPrerenderRoutes(),
+            renderer: new PuppeteerRenderer({
+              maxConcurrentRoutes: isVercel ? 1 : 3,
+              renderAfterDocumentEvent: "prerender-ready",
+              skipThirdPartyRequests: true,
+              injectProperty: "__PRERENDER_INJECTED",
+              inject: { prerender: true },
+              headless: true,
+              // For security, only disable sandbox on Vercel/CI or if explicitly requested.
+              // Real servers should try to run with the sandbox active.
+              args: (isVercel || process.env.VITE_PUPPETEER_NO_SANDBOX === 'true')
+                ? ['--no-sandbox', '--disable-setuid-sandbox']
+                : [],
+            }),
+          })
         );
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (requirePrerender) {
+          console.error("Critical SEO Error: Prerendering is required but failed.");
+          throw new Error(`Prerender failed: ${errorMessage}`);
+        }
+        console.warn(`[seo] Prerendering skipped (Normal build mode): ${errorMessage}`);
       }
-
-      console.warn(`[seo] Skipping prerender step: ${errorMessage}`);
+    } else {
+      console.log("[seo] Vercel environment detected. Running normal build without Puppeteer.");
     }
   }
 
-  return {
+  const config: UserConfig = {
     plugins,
   resolve: {
     alias: {
@@ -136,4 +170,6 @@ export default defineConfig(async ({ command }) => {
     },
   },
   };
+
+  return config;
 });

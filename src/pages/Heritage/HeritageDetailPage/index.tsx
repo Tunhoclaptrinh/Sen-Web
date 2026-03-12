@@ -51,6 +51,8 @@ import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import { trackViewProduct } from "@/utils/analytics";
 import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
+import { injectContextualLinks } from "@/utils/seo.linker";
+import env from "@/config/env.config";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -62,6 +64,7 @@ const HeritageDetailPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { currentItem: site, loading, error } = useSelector((state: RootState) => state.heritage);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth); // Get auth state
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [relatedSites, setRelatedSites] = useState<HeritageSite[]>([]);
   const [siteArtifacts, setSiteArtifacts] = useState<Artifact[]>([]);
@@ -301,6 +304,15 @@ const HeritageDetailPage = () => {
   const seoDescription = toMetaDescription(
     site.shortDescription || site.description || `${site.name} - thong tin di san van hoa Viet Nam`
   );
+
+  // Prepare dictionary for SEO Linker - Filter out items with missing names
+  const linkableItems = [
+    ...relatedSites.filter(h => h && h.name).map(h => ({ id: h.id, name: h.name, type: 'heritage' as const })),
+    ...siteArtifacts.filter(a => a && a.name).map(a => ({ id: a.id, name: a.name, type: 'artifact' as const }))
+  ];
+
+  const enhancedDescription = injectContextualLinks(site.description || "", linkableItems, site.id);
+
   const heritageJsonLd = {
     "@context": "https://schema.org",
     "@type": "TouristAttraction",
@@ -308,7 +320,20 @@ const HeritageDetailPage = () => {
     description: seoDescription,
     url: buildAbsoluteUrl(detailPath),
     image: [mainImage],
-    address: site.address || site.region,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: site.address || "",
+      addressLocality: site.region || "",
+      addressCountry: "VN",
+    },
+    author: {
+      "@type": "Organization",
+      name: authorName,
+    },
+    copyrightHolder: {
+      "@type": "Organization",
+      name: authorName,
+    },
   };
 
   return (
@@ -318,7 +343,9 @@ const HeritageDetailPage = () => {
         description={seoDescription}
         path={detailPath}
         image={mainImage}
+        preloadImage={env.SEO_PRELOAD_HERO ? mainImage : undefined}
         type="article"
+        useBrandedOg={env.SEO_BRANDED_OG}
         keywords={["di san", "di tich", "van hoa viet nam", site.name]}
         jsonLd={heritageJsonLd}
       />
@@ -448,7 +475,7 @@ const HeritageDetailPage = () => {
 
                   {/* Main Title */}
                   <h2 className="article-main-title">{site.name}</h2>
-                  <div className="article-body-content" dangerouslySetInnerHTML={{ __html: site.description || "" }} />
+                  <div className="article-body-content" dangerouslySetInnerHTML={{ __html: enhancedDescription || "" }} />
 
                   {site.references && (
                     <div className="references-section">
@@ -705,6 +732,12 @@ const HeritageDetailPage = () => {
                       <Title level={3}>
                         <ReadOutlined /> {t('heritage.detail.relatedArtifacts')}
                       </Title>
+                      <div
+                        className="article-body-content"
+                        dangerouslySetInnerHTML={{
+                          __html: enhancedDescription || `<p>${t('heritage.detail.tabs.noDescription') || 'No description available'}</p>`,
+                        }}
+                      />
                       <p>{t('heritage.detail.artifactsSubtitle', { defaultValue: 'Những bảo vật quý giá gắn liền với di tích này.' })}</p>
                       <Row gutter={[24, 24]}>
                         {siteArtifacts.map((artifact: Artifact) => (

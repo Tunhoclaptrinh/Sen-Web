@@ -142,6 +142,7 @@ const teamMembers: TeamMember[] = [
     department: "Kinh doanh",
     specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
     contact: "0389829196 | buiyen2004yen@gmail.com",
+    avatar: new URL("./Photo/Yen.jpg", import.meta.url).href,
   },
 ];
 

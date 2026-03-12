@@ -46,6 +46,8 @@ import ReviewSection from "@/components/common/Review/ReviewSection";
 import EmbeddedGameZone from "@/components/Game/EmbeddedGameZone";
 import { trackViewProduct } from "@/utils/analytics";
 import { buildAbsoluteUrl, toMetaDescription } from "@/utils/seo.utils";
+import { injectContextualLinks } from "@/utils/seo.linker";
+import env from "@/config/env.config";
 import "./styles.less";
 
 const { Title } = Typography;
@@ -342,6 +344,15 @@ const ArtifactDetailPage = () => {
   const seoDescription = toMetaDescription(
     artifact.shortDescription || artifact.description || `${artifact.name} - thong tin hien vat van hoa`
   );
+
+  // Prepare dictionary for SEO Linker - Filter out items with missing names
+  const linkableItems = [
+    ...relatedHeritage.filter(h => h && h.name).map(h => ({ id: h.id, name: h.name, type: 'heritage' as const })),
+    ...relatedArtifacts.filter(a => a && a.name).map(a => ({ id: a.id, name: a.name, type: 'artifact' as const }))
+  ];
+
+  const enhancedDescription = injectContextualLinks(artifact.description || "", linkableItems, artifact.id);
+
   const artifactJsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -349,6 +360,20 @@ const ArtifactDetailPage = () => {
     description: seoDescription,
     url: buildAbsoluteUrl(detailPath),
     image: [mainImage],
+    material: artifact.material,
+    creator: {
+      "@type": "Person",
+      name: authorName,
+    },
+    author: {
+      "@type": "Person",
+      name: authorName,
+    },
+    dateCreated: artifact.yearCreated,
+    contentLocation: {
+      "@type": "Place",
+      name: artifact.locationInSite || artifact.currentLocation || "",
+    },
   };
 
   return (
@@ -358,7 +383,9 @@ const ArtifactDetailPage = () => {
         description={seoDescription}
         path={detailPath}
         image={mainImage}
+        preloadImage={env.SEO_PRELOAD_HERO ? mainImage : undefined}
         type="article"
+        useBrandedOg={env.SEO_BRANDED_OG}
         keywords={["hien vat", "co vat", "lich su", artifact.name]}
         jsonLd={artifactJsonLd}
       />
@@ -476,7 +503,7 @@ const ArtifactDetailPage = () => {
                   <h2 className="article-main-title">{artifact.name}</h2>
                   <div className="article-body-content">
                     <h3 className="content-section-title">{t('artifact.detail.sections.details')}</h3>
-                    <div dangerouslySetInnerHTML={{ __html: artifact.description || "" }} />
+                    <div dangerouslySetInnerHTML={{ __html: enhancedDescription || "" }} />
 
                     {artifact.historicalContext && (
                       <>
