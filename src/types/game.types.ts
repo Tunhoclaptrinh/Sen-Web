@@ -53,6 +53,9 @@ export interface Chapter {
   completionRate: number;
   canUnlock: boolean;
   isActive: boolean;
+  relatedHeritageIds?: number[];
+  relatedArtifactIds?: number[];
+  relatedHistoryIds?: number[];
   levels?: Level[];
 }
 

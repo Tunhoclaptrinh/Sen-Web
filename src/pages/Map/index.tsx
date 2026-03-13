@@ -124,6 +124,7 @@ const MapPage: React.FC = () => {
   const [showTraffic, setShowTraffic] = useState(false);
   const [showTransit, setShowTransit] = useState(false);
   const [showBicycling, setShowBicycling] = useState(false);
+  const [mapType, setMapType] = useState<"roadmap" | "satellite">("roadmap");
 
   // Load Google Maps API
   const { isLoaded, loadError } = useJsApiLoader({
@@ -607,8 +608,8 @@ const MapPage: React.FC = () => {
           onLoad={onLoad}
           onUnmount={onUnmount}
           options={{
-            mapTypeId: 'roadmap',
-            mapTypeControl: true,
+            mapTypeId: mapType,
+            mapTypeControl: false,
             streetViewControl: true,
             fullscreenControl: true,
             zoomControl: true,
@@ -847,11 +848,31 @@ const MapPage: React.FC = () => {
         )}
         {renderMap()}
 
-        {!loading && !loadError && (
+        {viewMode === MAP_VIEW_MODES.GOOGLE && isLoaded && !loadError && (
           <div className="layers-control-wrapper">
             <Dropdown
               menu={{
                 items: [
+                  {
+                    key: "satellite",
+                    label: (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          minWidth: "200px",
+                        }}
+                      >
+                        <span>🛰️ {t("map.layers.satellite")}</span>
+                        {mapType === "satellite" && <CheckOutlined style={{ color: "#1890ff" }} />}
+                      </div>
+                    ),
+                    onClick: () => setMapType(mapType === "roadmap" ? "satellite" : "roadmap"),
+                  },
+                  {
+                    type: "divider",
+                  },
                   {
                     key: "traffic",
                     label: (

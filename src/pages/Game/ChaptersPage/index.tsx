@@ -10,6 +10,7 @@ import { useGameSounds } from '@/hooks/useSound';
 import { LockOutlined, CheckCircleOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import type { Chapter } from '@/types';
 import { StatisticsCard } from "@/components/common";
+import { getImageUrl } from "@/utils/image.helper";
 import { motion, AnimatePresence } from 'framer-motion';
 import "./styles.less";
 
@@ -55,7 +56,7 @@ const ChaptersPage: React.FC = () => {
     };
 
     const getChapterImage = (chapter: Chapter) => {
-        if (chapter.image) return chapter.image;
+        if (chapter.image) return getImageUrl(chapter.image);
 
         // Return a default image if no image is set
         return "https://media.licdn.com/dms/image/v2/D5612AQE8NiooxTxA3w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1695825196046?e=1770249600&v=beta&t=Oy9UgJswkfS4zaALRlZyxKH9xh3Cga6Mb5aWMOSJBtw";

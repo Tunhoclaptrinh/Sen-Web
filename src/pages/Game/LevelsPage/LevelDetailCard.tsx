@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Typography } from "antd";
 import { CaretRightFilled } from "@ant-design/icons";
 import type { Level } from "@/types";
+import { getImageUrl } from "@/utils/image.helper";
 import "./styles.less";
 
 interface LevelDetailCardProps {
@@ -18,7 +19,7 @@ const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }
   // Fallback placeholder logic
   const renderThumbnail = () => {
     // Check for thumbnail, or potentially other image fields from API that might not be in strict type yet
-    const imgSrc = thumbnail || (level as any).image;
+    const imgSrc = getImageUrl(thumbnail || level.backgroundImage || (level as any).image);
     
     if (imgSrc && !imageError) {
       return (

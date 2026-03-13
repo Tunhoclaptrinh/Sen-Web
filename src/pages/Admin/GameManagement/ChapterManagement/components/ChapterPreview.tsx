@@ -11,6 +11,7 @@ import { Level } from "@/types";
 import "@/pages/Game/LevelsPage/styles.less"; 
 import GameSimulator from "@/pages/Admin/GameManagement/LevelManagement/components/GameSimulator";
 import adminScreenService from "@/services/admin-screen.service"; 
+import { getImageUrl } from "@/utils/image.helper";
 
 interface ChapterPreviewProps {
     chapterId: number;
@@ -85,7 +86,7 @@ const ChapterPreview: React.FC<ChapterPreviewProps> = ({
                     is_completed: false,
                     player_best_score: 0,
                     // If backend doesn't return image/thumbnail, mock it?
-                    thumbnail: l.thumbnail || "https://via.placeholder.com/150",
+                    thumbnail: getImageUrl(l.thumbnail),
                 }));
                 setLevels(previewLevels);
             }
