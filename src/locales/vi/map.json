@@ -62,6 +62,7 @@
   },
   "layers": {
     "title": "Lớp bản đồ",
+    "satellite": "Vệ tinh",
     "traffic": "Giao thông",
     "transit": "Phương tiện công cộng",
     "bicycling": "Xe đạp"
