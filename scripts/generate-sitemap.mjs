@@ -24,12 +24,7 @@ const getPriority = (route) => {
 };
 
 const getChangeFreq = (route) => {
-  if (route === "/") return "daily";
-  if (route.startsWith("/heritage-sites/") || route.startsWith("/artifacts/") || route.startsWith("/history/") || route.startsWith("/exhibitions/")) {
-    return "weekly";
-  }
-
-  return "weekly";
+  return "daily";
 };
 
 const routes = await buildSeoRoutes();

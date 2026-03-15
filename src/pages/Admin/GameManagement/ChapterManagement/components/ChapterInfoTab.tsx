@@ -1,8 +1,14 @@
-import { Form, Input, InputNumber, ColorPicker, Descriptions, Space, Row, Col, message, Select } from "antd";
-import { Button } from "@/components/common";
-import { Chapter } from "@/types";
+import { Form, Input, InputNumber, ColorPicker, Descriptions, Space, Row, Col, message, Select, Switch, Divider } from "antd";
+import { LinkOutlined } from "@ant-design/icons";
+import { Button, DebounceSelect } from "@/components/common";
+import { Chapter, HeritageSite, Artifact, HistoryArticle } from "@/types";
 import { useState, useEffect } from "react";
 import adminChapterService from "@/services/admin-chapter.service";
+import ImageUpload from "@/components/common/Upload/ImageUpload";
+import heritageService from "@/services/heritage.service";
+import artifactService from "@/services/artifact.service";
+import historyService from "@/services/history.service";
+import { getImageUrl } from "@/utils/image.helper";
 
 interface ChapterInfoTabProps {
   data: Chapter | null;
@@ -19,18 +25,60 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({ data, mode, onUpdate, o
   const [chapters, setChapters] = useState<Chapter[]>([]);
 
   useEffect(() => {
-    const fetchChapters = async () => {
+    const initData = async () => {
       try {
         const response = await adminChapterService.getAll({ limit: 100 });
         if (response.success && response.data) {
           setChapters(response.data);
         }
+
+        if (data && mode !== "view") {
+          // Fetch labels for related IDs if editing
+          const [relHeritageRes, relArtifactsRes, relHistoryRes] = await Promise.all([
+            (data.relatedHeritageIds?.length ?? 0) > 0
+              ? heritageService.getByIds(data.relatedHeritageIds!)
+              : Promise.resolve({ success: true, data: [] }),
+            (data.relatedArtifactIds?.length ?? 0) > 0
+              ? artifactService.getAll({
+                ids: data.relatedArtifactIds!.join(","),
+              })
+              : Promise.resolve({ success: true, data: [] }),
+            (data.relatedHistoryIds?.length ?? 0) > 0
+              ? historyService.getAll({
+                ids: data.relatedHistoryIds!.join(","),
+              })
+              : Promise.resolve({ success: true, data: [] }),
+          ]);
+
+          form.setFieldsValue({
+            ...data,
+            relatedHeritageIds: (data.relatedHeritageIds || []).map((id: number) => {
+              const item = relHeritageRes.data?.find((h: HeritageSite) => h.id === id);
+              return item ? { label: item.name, value: item.id } : { label: `ID: ${id}`, value: id };
+            }),
+            relatedArtifactIds: (data.relatedArtifactIds || []).map((id: number) => {
+              const item = relArtifactsRes.data?.find((a: Artifact) => a.id === id);
+              return item ? { label: item.name, value: item.id } : { label: `ID: ${id}`, value: id };
+            }),
+            relatedHistoryIds: (data.relatedHistoryIds || []).map((id: number) => {
+              const item = relHistoryRes.data?.find((h: HistoryArticle) => h.id === id);
+              return item ? { label: item.title, value: item.id } : { label: `ID: ${id}`, value: id };
+            }),
+          });
+        } else if (mode === "create") {
+          form.resetFields();
+          form.setFieldsValue({
+            requiredPetals: 0,
+            isActive: true,
+            color: "#1890ff",
+          });
+        }
       } catch (error) {
-        console.error("Fetch chapters error:", error);
+        console.error("Init chapter data error:", error);
       }
     };
-    fetchChapters();
-  }, []);
+    initData();
+  }, [data, mode, form]);
 
   const handleSubmit = async () => {
     try {
@@ -38,7 +86,14 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({ data, mode, onUpdate, o
       setLoading(true);
 
       if (onSubmit) {
-        const success = await onSubmit(values);
+        // Transform related fields back to array of IDs
+        const submitData = {
+          ...values,
+          relatedHeritageIds: values.relatedHeritageIds?.map((item: any) => typeof item === 'object' ? item.value : item) || [],
+          relatedArtifactIds: values.relatedArtifactIds?.map((item: any) => typeof item === 'object' ? item.value : item) || [],
+          relatedHistoryIds: values.relatedHistoryIds?.map((item: any) => typeof item === 'object' ? item.value : item) || [],
+        };
+        const success = await onSubmit(submitData);
         if (success) {
           onSuccess();
         }
@@ -99,13 +154,39 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({ data, mode, onUpdate, o
             ? chapters.find((c) => c.id === data.requiredChapterId)?.name || `Mã chương: ${data.requiredChapterId}`
             : "Không có"}
         </Descriptions.Item>
+        <Descriptions.Item label="Hình ảnh">
+          {data.image ? (
+            <img src={getImageUrl(data.image)} alt={data.name} style={{ maxWidth: 200, borderRadius: 8 }} />
+          ) : (
+            "Chưa có ảnh"
+          )}
+        </Descriptions.Item>
+        <Descriptions.Item label="Trạng thái">
+          <Switch checked={data.isActive} disabled />
+        </Descriptions.Item>
       </Descriptions>
     );
   }
 
+  // Related content fetchers
+  const fetchHeritageList = async (search: string) => {
+    const res = await heritageService.getAll({ q: search, limit: 10 });
+    return res.success && res.data ? res.data.map((h: HeritageSite) => ({ label: h.name, value: h.id })) : [];
+  };
+
+  const fetchArtifactList = async (search: string) => {
+    const res = await artifactService.getAll({ q: search, limit: 10 });
+    return res.success && res.data ? res.data.map((a: Artifact) => ({ label: a.name, value: a.id })) : [];
+  };
+
+  const fetchHistoryList = async (search: string) => {
+    const res = await historyService.getAll({ q: search, limit: 10 });
+    return res.success && res.data ? res.data.map((h: HistoryArticle) => ({ label: h.title, value: h.id })) : [];
+  };
+
   // Edit/Create mode: Display as Form
   return (
-    <Form form={form} layout="vertical" initialValues={data || { requiredPetals: 0 }}>
+    <Form form={form} layout="vertical">
       <Form.Item
         name="name"
         label="Tên Chương"
@@ -146,6 +227,23 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({ data, mode, onUpdate, o
       </Row>
 
       <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item name="isActive" label="Trạng thái hoạt động" valuePropName="checked">
+            <Switch checkedChildren="Bật" unCheckedChildren="Tắt" />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="image" label="Hình ảnh Chapter">
+            <ImageUpload 
+              value={form.getFieldValue('image')} 
+              onChange={(val) => form.setFieldsValue({ image: Array.isArray(val) ? val[0] : val })}
+              maxCount={1}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
         {mode === "edit" && (
           <Col span={12}>
             <Form.Item name="order" label="Thứ tự" rules={[{ required: true, message: "Vui lòng nhập thứ tự" }]}>
@@ -173,6 +271,30 @@ const ChapterInfoTab: React.FC<ChapterInfoTabProps> = ({ data, mode, onUpdate, o
                   value: c.id,
                 }))}
             />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Divider orientation="left">
+        <Space>
+          <LinkOutlined /> Nội dung liên quan
+        </Space>
+      </Divider>
+
+      <Row gutter={16}>
+        <Col span={8}>
+          <Form.Item label="Di sản liên quan" name="relatedHeritageIds">
+            <DebounceSelect mode="multiple" placeholder="Tìm di sản..." fetchOptions={fetchHeritageList} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="Hiện vật liên quan" name="relatedArtifactIds">
+            <DebounceSelect mode="multiple" placeholder="Tìm hiện vật..." fetchOptions={fetchArtifactList} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="Bài viết lịch sử liên quan" name="relatedHistoryIds">
+            <DebounceSelect mode="multiple" placeholder="Tìm bài viết..." fetchOptions={fetchHistoryList} />
           </Form.Item>
         </Col>
       </Row>

@@ -69,7 +69,8 @@ const LevelForm: React.FC<LevelFormProps> = ({
       ...initialValues,
       publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
       // Sync thumbnail from backgroundImage if needed
-      thumbnail: initialValues.thumbnail || initialValues.backgroundImage,
+      thumbnail: initialValues.thumbnail || initialValues.backgroundImage || initialValues.image,
+      backgroundImage: initialValues.backgroundImage || initialValues.thumbnail || initialValues.image,
       // Handle rewards initialization
       rewards: Array.isArray(initialValues.rewards) ? initialValues.rewards[0] : (initialValues.rewards || {}),
     };
@@ -186,6 +187,7 @@ const LevelForm: React.FC<LevelFormProps> = ({
     // Transform related IDs back to numbers
     const submitData = {
       ...values,
+      backgroundImage: values.thumbnail, // Ensure dual fields for compatibility
       publishDate: values.publishDate ? dayjs(values.publishDate).toISOString() : undefined,
       relatedHeritageIds:
         values.relatedHeritageIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],

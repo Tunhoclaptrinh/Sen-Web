@@ -732,12 +732,7 @@ const HeritageDetailPage = () => {
                       <Title level={3}>
                         <ReadOutlined /> {t('heritage.detail.relatedArtifacts')}
                       </Title>
-                      <div
-                        className="article-body-content"
-                        dangerouslySetInnerHTML={{
-                          __html: enhancedDescription || `<p>${t('heritage.detail.tabs.noDescription') || 'No description available'}</p>`,
-                        }}
-                      />
+
                       <p>{t('heritage.detail.artifactsSubtitle', { defaultValue: 'Những bảo vật quý giá gắn liền với di tích này.' })}</p>
                       <Row gutter={[24, 24]}>
                         {siteArtifacts.map((artifact: Artifact) => (

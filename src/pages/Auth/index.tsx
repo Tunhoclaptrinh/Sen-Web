@@ -16,17 +16,17 @@ import {
   EyeTwoTone,
   FacebookFilled,
   GoogleCircleFilled,
-  InfoCircleOutlined,
+  PhoneOutlined,
 } from "@ant-design/icons";
 import { useAppDispatch } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../store/slices/authSlice";
+import { login, register } from "../../store/slices/authSlice";
 import logo from "@/assets/images/logo2.png";
 import { motion, AnimatePresence } from "framer-motion";
 import Background from "@/components/Background";
 import "./styles.less";
 
-const { Text, Paragraph, Title } = Typography;
+const { Text, Paragraph } = Typography;
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -37,6 +37,13 @@ const AuthPage = () => {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  // Registration state
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPhone, setRegisterPhone] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -79,6 +86,49 @@ const AuthPage = () => {
       navigate("/"); // tự chuyển trang
     } catch (error: any) {
       message.error(`❌ ${error || "Đăng nhập thất bại"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    const newErrors: Record<string, string> = {};
+    if (!registerName) newErrors.registerName = "Vui lòng nhập họ tên";
+    if (!registerEmail) newErrors.registerEmail = "Vui lòng nhập email";
+    else if (!validateEmail(registerEmail))
+      newErrors.registerEmail = "Email không hợp lệ";
+
+    if (!registerPhone) newErrors.registerPhone = "Vui lòng nhập số điện thoại";
+    if (!registerPassword) newErrors.registerPassword = "Vui lòng nhập mật khẩu";
+    else if (registerPassword.length < 6)
+      newErrors.registerPassword = "Mật khẩu phải ít nhất 6 ký tự";
+
+    if (registerPassword !== registerConfirmPassword) {
+      newErrors.registerConfirmPassword = "Mật khẩu xác nhận không khớp";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+
+    try {
+      await dispatch(
+        register({
+          name: registerName,
+          email: registerEmail,
+          phone: registerPhone,
+          password: registerPassword,
+        }),
+      ).unwrap();
+
+      message.success("Đăng ký thành công! Vui lòng đăng nhập.");
+      setIsLogin(true);
+    } catch (error: any) {
+      message.error(`❌ ${error || "Đăng ký thất bại"}`);
     } finally {
       setLoading(false);
     }
@@ -277,43 +327,178 @@ const AuthPage = () => {
                 variants={formVariants}
                 style={{ width: "100%" }}
               >
-                <div style={{ padding: '24px 0', textAlign: 'center' }}>
-                  <div style={{
-                    background: 'rgba(212, 165, 116, 0.1)',
-                    border: '1px solid rgba(212, 165, 116, 0.3)',
-                    borderRadius: 12,
-                    padding: 24,
-                    marginBottom: 20
-                  }}>
-                    <InfoCircleOutlined style={{ fontSize: 32, color: '#d4a574', marginBottom: 16 }} />
-                    <Title level={4} style={{ color: '#d4a574', marginBottom: 16 }}>Thông báo đăng ký</Title>
-                    <Paragraph style={{ color: '#fff', fontSize: 15, lineHeight: '1.6' }}>
-                      Chức năng đăng ký đang tạm thời bị vô hiệu hóa, chỉ những người đăng ký form trước đó mới được cấp tài khoản.
-                    </Paragraph>
-                    <Paragraph style={{ color: '#fff', fontSize: 15, lineHeight: '1.6' }}>
-                      Để được trải nghiệm bạn vui lòng điền vào form sau đây:
-                    </Paragraph>
-                    <Button
-                      type="primary"
-                      href="https://forms.gle/cwdik45vbWVNfbJ98"
-                      target="_blank"
+                <div>
+                  <div style={{ marginBottom: 16 }}>
+                    <Input
+                      prefix={<UserOutlined />}
+                      placeholder="Họ và tên"
+                      size="large"
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
+                      status={errors.registerName ? "error" : ""}
                       style={{
-                        background: '#d4a574',
-                        borderColor: '#d4a574',
-                        height: 'auto',
-                        padding: '10px 24px',
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        marginTop: 8,
-                        borderRadius: 8
+                        borderRadius: 8,
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "#fff",
                       }}
-                    >
-                      Điền Form Đăng Ký
-                    </Button>
+                    />
+                    {errors.registerName && (
+                      <Text
+                        style={{
+                          color: "#ff6b6b",
+                          fontSize: 12,
+                          display: "block",
+                          marginTop: 4,
+                        }}
+                      >
+                        {errors.registerName}
+                      </Text>
+                    )}
                   </div>
-                  <Text style={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Chúng tôi sẽ liên hệ với bạn sau khi tài khoản được phê duyệt.
-                  </Text>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <Input
+                      prefix={<UserOutlined />}
+                      placeholder="Email"
+                      size="large"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      status={errors.registerEmail ? "error" : ""}
+                      style={{
+                        borderRadius: 8,
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "#fff",
+                      }}
+                    />
+                    {errors.registerEmail && (
+                      <Text
+                        style={{
+                          color: "#ff6b6b",
+                          fontSize: 12,
+                          display: "block",
+                          marginTop: 4,
+                        }}
+                      >
+                        {errors.registerEmail}
+                      </Text>
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <Input
+                      prefix={<PhoneOutlined />}
+                      placeholder="Số điện thoại"
+                      size="large"
+                      value={registerPhone}
+                      onChange={(e) => setRegisterPhone(e.target.value)}
+                      status={errors.registerPhone ? "error" : ""}
+                      style={{
+                        borderRadius: 8,
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "#fff",
+                      }}
+                    />
+                    {errors.registerPhone && (
+                      <Text
+                        style={{
+                          color: "#ff6b6b",
+                          fontSize: 12,
+                          display: "block",
+                          marginTop: 4,
+                        }}
+                      >
+                        {errors.registerPhone}
+                      </Text>
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Mật khẩu"
+                      size="large"
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      status={errors.registerPassword ? "error" : ""}
+                      style={{
+                        borderRadius: 8,
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "#fff",
+                      }}
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                    />
+                    {errors.registerPassword && (
+                      <Text
+                        style={{
+                          color: "#ff6b6b",
+                          fontSize: 12,
+                          display: "block",
+                          marginTop: 4,
+                        }}
+                      >
+                        {errors.registerPassword}
+                      </Text>
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: 24 }}>
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Xác nhận mật khẩu"
+                      size="large"
+                      value={registerConfirmPassword}
+                      onChange={(e) =>
+                        setRegisterConfirmPassword(e.target.value)
+                      }
+                      status={errors.registerConfirmPassword ? "error" : ""}
+                      style={{
+                        borderRadius: 8,
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "#fff",
+                      }}
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                    />
+                    {errors.registerConfirmPassword && (
+                      <Text
+                        style={{
+                          color: "#ff6b6b",
+                          fontSize: 12,
+                          display: "block",
+                          marginTop: 4,
+                        }}
+                      >
+                        {errors.registerConfirmPassword}
+                      </Text>
+                    )}
+                  </div>
+
+                  <Button
+                    onClick={handleRegister}
+                    loading={loading}
+                    block
+                    size="large"
+                    style={{
+                      color: "white",
+                      background: "linear-gradient(135deg, #d4a574, #c27d4f)",
+                      border: "none",
+                      fontWeight: 600,
+                      borderRadius: 8,
+                      boxShadow: "0 4px 12px rgba(212, 165, 116, 0.45)",
+                      transition: "0.25s",
+                      marginBottom: 10,
+                    }}
+                  >
+                    {loading ? "Đang xử lý..." : "Đăng Ký"}
+                  </Button>
                 </div>
               </motion.div>
             )}

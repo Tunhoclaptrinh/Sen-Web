@@ -62,6 +62,7 @@
   },
   "layers": {
     "title": "Map Layers",
+    "satellite": "Satellite",
     "traffic": "Traffic",
     "transit": "Transit",
     "bicycling": "Bicycling"

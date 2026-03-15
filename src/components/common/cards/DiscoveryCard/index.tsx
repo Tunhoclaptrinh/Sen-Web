@@ -97,7 +97,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
                     <EnvironmentOutlined /> {data.address || (data.region ? t(`common.regions.${data.region}`, { defaultValue: data.region }) : "")}
                   </span>
                 )}
-                {data.rating && (
+                {data.rating > 0 && (
                   <span className="meta-item">
                     <StarFilled style={{ color: "var(--gold-color)" }} /> {data.rating.toFixed(1)}
                   </span>

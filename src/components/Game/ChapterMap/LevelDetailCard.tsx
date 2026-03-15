@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 // Let's change the import to point to that for now to avoid duplication, or rely on global styles if loaded.
 // But to be safe and "correct", let's import the specific less file from the page location
 import "@/pages/Game/LevelsPage/styles.less"; 
+import { getImageUrl } from "@/utils/image.helper";
 
 interface LevelDetailCardProps {
   level: Level;
@@ -27,7 +28,8 @@ const LevelDetailCard: React.FC<LevelDetailCardProps> = ({ level, onPlay, side }
   // Fallback placeholder logic
   const renderThumbnail = () => {
     // Check for thumbnail, or potentially other image fields from API that might not be in strict type yet
-    const imgSrc = thumbnail || (level as any).image;
+    const rawImgSrc = thumbnail || (level as any).image;
+    const imgSrc = getImageUrl(rawImgSrc);
     
     if (imgSrc && !imageError) {
       return (

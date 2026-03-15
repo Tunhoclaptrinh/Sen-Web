@@ -44,7 +44,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ data, cardType = ITEM_TYPES.H
                 : t(`common.artifactTypes.${data.type}`, { defaultValue: t("common.artifact") })}
             </Tag>
 
-            {data.rating && (
+            {data.rating !== undefined && data.rating > 0 && (
               <div className="card-rating">
                 <StarFilled style={{ color: "#faad14" }} />
                 <span className="rating-value">{data.rating.toFixed(1)}</span>
