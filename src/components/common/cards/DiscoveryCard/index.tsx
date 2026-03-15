@@ -38,7 +38,7 @@ const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ data, type }) => {
   };
 
   const rawImage = data.mainImage || data.image || (data.images && data.images[0]);
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+  const apiBase = import.meta.env.VITE_API_BASE_URL;
   const apiHost = apiBase.replace(/\/api$/, "");
   const imageUrl = rawImage
     ? rawImage.startsWith("http") || rawImage.startsWith("blob")

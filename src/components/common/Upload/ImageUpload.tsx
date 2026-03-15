@@ -50,7 +50,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const urls = rawUrls.filter(
       (url) => typeof url === "string" && !url.includes("fakepath")
     );
-    const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+    const apiBase = import.meta.env.VITE_API_BASE_URL;
     const apiHost = apiBase.replace(/\/api$/, "");
 
     const newFileList: UploadFile[] = urls.map((url, index) => ({
@@ -85,7 +85,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       .map((file) => {
         if (file.response) return file.response.data.url;
         if (file.url) {
-          const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+          const apiBase = import.meta.env.VITE_API_BASE_URL;
           const apiHost = apiBase.replace(/\/api$/, "");
           if (file.url.startsWith(apiHost)) return file.url.substring(apiHost.length);
           return file.url;
@@ -110,7 +110,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     try {
       const token = localStorage.getItem("sen_token");
       const xhr = new XMLHttpRequest();
-      const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+      const apiBase = import.meta.env.VITE_API_BASE_URL;
       const url = `${apiBase}/upload/file`;
       xhr.open("POST", url);
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);

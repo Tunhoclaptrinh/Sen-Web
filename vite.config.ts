@@ -138,12 +138,12 @@ export default defineConfig(({ command, mode }) => {
     },
     proxy: {
       "/api": {
-        target: "http://sen-backend-dev:3000",
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,
       },
       "/uploads": {
-        target: "http://sen-backend-dev:3000",
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,
       },
