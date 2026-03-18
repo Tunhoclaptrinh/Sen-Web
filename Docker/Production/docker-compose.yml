@@ -42,5 +42,4 @@ services:
 
 networks:
   sen-network:
-    name: sen-network
-    driver: bridge
+    external: true

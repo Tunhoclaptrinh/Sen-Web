@@ -25,7 +25,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (isUploading) return;
 
     if (value) {
-      const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+      const apiBase = import.meta.env.VITE_API_BASE_URL;
       const apiHost = apiBase.replace(/\/api$/, "");
       
       const fileName = value.split('/').pop() || "file";
@@ -64,7 +64,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     try {
       const token = localStorage.getItem("sen_token");
       const xhr = new XMLHttpRequest();
-      const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+      const apiBase = import.meta.env.VITE_API_BASE_URL;
       const url = `${apiBase}/upload/file`;
       
       xhr.open("POST", url);

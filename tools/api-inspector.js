@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.VITE_API_BASE_URL;
 
 /**
  * Simple API Inspector for SEN Backend

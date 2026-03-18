@@ -1,4 +1,10 @@
 import { useState } from "react";
+import { useAppDispatch } from "../../store/hooks";
+import { useNavigate } from "react-router-dom";
+import { login, register, googleLogin } from "../../store/slices/authSlice";
+import logo from "@/assets/images/logo2.png";
+import { motion, AnimatePresence } from "framer-motion";
+import Background from "@/components/Background";
 import {
   Input,
   Button,
@@ -9,22 +15,16 @@ import {
   Typography,
   Divider,
 } from "antd";
+import { useGoogleLogin } from "@react-oauth/google";
 import {
   UserOutlined,
   LockOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
-  FacebookFilled,
-  GoogleCircleFilled,
   PhoneOutlined,
+  FacebookFilled,
+  GoogleOutlined,
 } from "@ant-design/icons";
-import { useAppDispatch } from "../../store/hooks";
-import { useNavigate } from "react-router-dom";
-import { login, register } from "../../store/slices/authSlice";
-import logo from "@/assets/images/logo2.png";
-import { motion, AnimatePresence } from "framer-motion";
-import Background from "@/components/Background";
-import "./styles.less";
 
 const { Text, Paragraph } = Typography;
 
@@ -38,17 +38,20 @@ const AuthPage = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Registration state
-  const [registerName, setRegisterName] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPhone, setRegisterPhone] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  // Register state
+  const [regName, setRegName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePhone = (phone: string) => /^[0-9]{10,11}$/.test(phone);
 
   const formVariants = {
     initial: { opacity: 0, y: 10 },
@@ -93,18 +96,31 @@ const AuthPage = () => {
 
   const handleRegister = async () => {
     const newErrors: Record<string, string> = {};
-    if (!registerName) newErrors.registerName = "Vui lòng nhập họ tên";
-    if (!registerEmail) newErrors.registerEmail = "Vui lòng nhập email";
-    else if (!validateEmail(registerEmail))
-      newErrors.registerEmail = "Email không hợp lệ";
 
-    if (!registerPhone) newErrors.registerPhone = "Vui lòng nhập số điện thoại";
-    if (!registerPassword) newErrors.registerPassword = "Vui lòng nhập mật khẩu";
-    else if (registerPassword.length < 6)
-      newErrors.registerPassword = "Mật khẩu phải ít nhất 6 ký tự";
+    if (!regName) newErrors.regName = "Vui lòng nhập họ tên";
+    else if (regName.length < 2)
+      newErrors.regName = "Họ tên phải có ít nhất 2 ký tự";
 
-    if (registerPassword !== registerConfirmPassword) {
-      newErrors.registerConfirmPassword = "Mật khẩu xác nhận không khớp";
+    if (!regEmail) newErrors.regEmail = "Vui lòng nhập email";
+    else if (!validateEmail(regEmail))
+      newErrors.regEmail = "Email không hợp lệ";
+
+    if (!regPhone) newErrors.regPhone = "Vui lòng nhập số điện thoại";
+    else if (!validatePhone(regPhone))
+      newErrors.regPhone = "Số điện thoại phải có 10-11 chữ số";
+
+    if (!regPassword) newErrors.regPassword = "Vui lòng nhập mật khẩu";
+    else if (regPassword.length < 6)
+      newErrors.regPassword = "Mật khẩu phải ít nhất 6 ký tự";
+
+    if (!regConfirmPassword)
+      newErrors.regConfirmPassword = "Vui lòng xác nhận mật khẩu";
+    else if (regPassword !== regConfirmPassword)
+      newErrors.regConfirmPassword = "Mật khẩu không khớp";
+
+    if (!agreeTerms) {
+      message.error("Bạn phải đồng ý với điều khoản dịch vụ");
+      return;
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -116,23 +132,55 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
+      // gọi API register thật
       await dispatch(
         register({
-          name: registerName,
-          email: registerEmail,
-          phone: registerPhone,
-          password: registerPassword,
+          name: regName,
+          email: regEmail,
+          phone: regPhone,
+          // address: regAddress, // Removed because regAddress is unused in UI form input
+          password: regPassword,
         }),
       ).unwrap();
 
-      message.success("Đăng ký thành công! Vui lòng đăng nhập.");
+      message.success("✅ Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
+
+      // Switch to login form instead of auto-login
       setIsLogin(true);
+      setLoginEmail(regEmail);
+      setLoginPassword("");
+
+      // Clear register form
+      setRegName("");
+      setRegEmail("");
+      setRegPhone("");
+      setRegPassword("");
+      setRegConfirmPassword("");
+      setAgreeTerms(false);
     } catch (error: any) {
       message.error(`❌ ${error || "Đăng ký thất bại"}`);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleGoogleLoginCustom = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        await dispatch(
+          googleLogin({ accessToken: tokenResponse.access_token }),
+        ).unwrap();
+        message.success("Đăng nhập Google thành công!");
+        navigate("/");
+      } catch (err: any) {
+        message.error(err || "Đăng nhập Google thất bại");
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => message.error("Đăng nhập Google thất bại"),
+  });
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -187,7 +235,6 @@ const AuthPage = () => {
                 fontWeight: 500,
                 marginBottom: 0,
                 marginTop: 12,
-                fontSize: 16,
               }}
             >
               Kiến tạo trải nghiệm lịch sử, văn hoá bằng công nghệ
@@ -283,19 +330,19 @@ const AuthPage = () => {
                     </Checkbox>
                     <Button
                       type="link"
-                      style={{ color: "#d4a574", padding: 0 }}
+                      style={{ color: "#ffb38a", padding: 0 }}
                     >
                       Quên mật khẩu?
                     </Button>
                   </Row>
 
                   <Button
+                    type="primary"
                     onClick={handleLogin}
                     loading={loading}
                     block
                     size="large"
                     style={{
-                      color: "white",
                       background: "linear-gradient(135deg, #d4a574, #c27d4f)",
                       border: "none",
                       fontWeight: 600,
@@ -333,9 +380,9 @@ const AuthPage = () => {
                       prefix={<UserOutlined />}
                       placeholder="Họ và tên"
                       size="large"
-                      value={registerName}
-                      onChange={(e) => setRegisterName(e.target.value)}
-                      status={errors.registerName ? "error" : ""}
+                      value={regName}
+                      onChange={(e) => setRegName(e.target.value)}
+                      status={errors.regName ? "error" : ""}
                       style={{
                         borderRadius: 8,
                         border: "1px solid rgba(255,255,255,0.4)",
@@ -343,7 +390,7 @@ const AuthPage = () => {
                         color: "#fff",
                       }}
                     />
-                    {errors.registerName && (
+                    {errors.regName && (
                       <Text
                         style={{
                           color: "#ff6b6b",
@@ -352,77 +399,78 @@ const AuthPage = () => {
                           marginTop: 4,
                         }}
                       >
-                        {errors.registerName}
+                        {errors.regName}
                       </Text>
                     )}
                   </div>
-
-                  <div style={{ marginBottom: 16 }}>
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Email"
-                      size="large"
-                      value={registerEmail}
-                      onChange={(e) => setRegisterEmail(e.target.value)}
-                      status={errors.registerEmail ? "error" : ""}
-                      style={{
-                        borderRadius: 8,
-                        border: "1px solid rgba(255,255,255,0.4)",
-                        background: "rgba(255,255,255,0.2)",
-                        color: "#fff",
-                      }}
-                    />
-                    {errors.registerEmail && (
-                      <Text
+                  <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                    <div style={{ flex: 1 }}>
+                      <Input
+                        prefix={<UserOutlined />}
+                        placeholder="Nhập email"
+                        size="large"
+                        value={regEmail}
+                        onChange={(e) => setRegEmail(e.target.value)}
+                        status={errors.regEmail ? "error" : ""}
                         style={{
-                          color: "#ff6b6b",
-                          fontSize: 12,
-                          display: "block",
-                          marginTop: 4,
+                          borderRadius: 8,
+                          border: "1px solid rgba(255,255,255,0.4)",
+                          background: "rgba(255,255,255,0.2)",
+                          color: "#fff",
                         }}
-                      >
-                        {errors.registerEmail}
-                      </Text>
-                    )}
-                  </div>
+                      />
+                      {errors.regEmail && (
+                        <Text
+                          style={{
+                            color: "#ff6b6b",
+                            fontSize: 12,
+                            display: "block",
+                            marginTop: 4,
+                          }}
+                        >
+                          {errors.regEmail}
+                        </Text>
+                      )}
+                    </div>
 
-                  <div style={{ marginBottom: 16 }}>
-                    <Input
-                      prefix={<PhoneOutlined />}
-                      placeholder="Số điện thoại"
-                      size="large"
-                      value={registerPhone}
-                      onChange={(e) => setRegisterPhone(e.target.value)}
-                      status={errors.registerPhone ? "error" : ""}
-                      style={{
-                        borderRadius: 8,
-                        border: "1px solid rgba(255,255,255,0.4)",
-                        background: "rgba(255,255,255,0.2)",
-                        color: "#fff",
-                      }}
-                    />
-                    {errors.registerPhone && (
-                      <Text
+                    <div style={{ flex: 1 }}>
+                      <Input
+                        prefix={<PhoneOutlined />}
+                        placeholder="Số điện thoại"
+                        size="large"
+                        value={regPhone}
+                        onChange={(e) => setRegPhone(e.target.value)}
+                        status={errors.regPhone ? "error" : ""}
                         style={{
-                          color: "#ff6b6b",
-                          fontSize: 12,
-                          display: "block",
-                          marginTop: 4,
+                          borderRadius: 8,
+                          border: "1px solid rgba(255,255,255,0.4)",
+                          background: "rgba(255,255,255,0.2)",
+                          color: "#fff",
                         }}
-                      >
-                        {errors.registerPhone}
-                      </Text>
-                    )}
+                      />
+                      {errors.regPhone && (
+                        <Text
+                          style={{
+                            color: "#ff6b6b",
+                            fontSize: 12,
+                            display: "block",
+                            marginTop: 4,
+                          }}
+                        >
+                          {errors.regPhone}
+                        </Text>
+                      )}
+                    </div>
                   </div>
 
                   <div style={{ marginBottom: 16 }}>
                     <Input.Password
                       prefix={<LockOutlined />}
-                      placeholder="Mật khẩu"
+                      placeholder="Nhập mật khẩu"
                       size="large"
-                      value={registerPassword}
-                      onChange={(e) => setRegisterPassword(e.target.value)}
-                      status={errors.registerPassword ? "error" : ""}
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      status={errors.regPassword ? "error" : ""}
                       style={{
                         borderRadius: 8,
                         border: "1px solid rgba(255,255,255,0.4)",
@@ -433,7 +481,7 @@ const AuthPage = () => {
                         visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                       }
                     />
-                    {errors.registerPassword && (
+                    {errors.regPassword && (
                       <Text
                         style={{
                           color: "#ff6b6b",
@@ -442,21 +490,20 @@ const AuthPage = () => {
                           marginTop: 4,
                         }}
                       >
-                        {errors.registerPassword}
+                        {errors.regPassword}
                       </Text>
                     )}
                   </div>
 
-                  <div style={{ marginBottom: 24 }}>
+                  <div style={{ marginBottom: 16 }}>
                     <Input.Password
                       prefix={<LockOutlined />}
                       placeholder="Xác nhận mật khẩu"
                       size="large"
-                      value={registerConfirmPassword}
-                      onChange={(e) =>
-                        setRegisterConfirmPassword(e.target.value)
-                      }
-                      status={errors.registerConfirmPassword ? "error" : ""}
+                      value={regConfirmPassword}
+                      onChange={(e) => setRegConfirmPassword(e.target.value)}
+                      onPressEnter={handleRegister}
+                      status={errors.regConfirmPassword ? "error" : ""}
                       style={{
                         borderRadius: 8,
                         border: "1px solid rgba(255,255,255,0.4)",
@@ -467,7 +514,7 @@ const AuthPage = () => {
                         visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                       }
                     />
-                    {errors.registerConfirmPassword && (
+                    {errors.regConfirmPassword && (
                       <Text
                         style={{
                           color: "#ff6b6b",
@@ -476,28 +523,52 @@ const AuthPage = () => {
                           marginTop: 4,
                         }}
                       >
-                        {errors.registerConfirmPassword}
+                        {errors.regConfirmPassword}
                       </Text>
                     )}
                   </div>
 
+                  <div style={{ marginBottom: 20 }}>
+                    <Checkbox
+                      style={{ color: "white" }}
+                      checked={agreeTerms}
+                      onChange={(e) => setAgreeTerms(e.target.checked)}
+                    >
+                      Tôi đồng ý với{" "}
+                      <Button
+                        type="link"
+                        style={{ color: "#ffcf9e", padding: 0, height: "auto" }}
+                      >
+                        Điều khoản dịch vụ
+                      </Button>
+                    </Checkbox>
+                  </div>
+
                   <Button
+                    type="primary"
                     onClick={handleRegister}
                     loading={loading}
                     block
                     size="large"
                     style={{
-                      color: "white",
                       background: "linear-gradient(135deg, #d4a574, #c27d4f)",
                       border: "none",
                       fontWeight: 600,
                       borderRadius: 8,
                       boxShadow: "0 4px 12px rgba(212, 165, 116, 0.45)",
                       transition: "0.25s",
-                      marginBottom: 10,
+                      marginBottom: 20,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow =
+                        "0 0 18px rgba(212,165,116,0.75)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 12px rgba(212,165,116,0.45)";
                     }}
                   >
-                    {loading ? "Đang xử lý..." : "Đăng Ký"}
+                    {loading ? "Đang đăng ký..." : "Đăng Ký"}
                   </Button>
                 </div>
               </motion.div>
@@ -521,21 +592,49 @@ const AuthPage = () => {
                 flex: 1,
                 borderRadius: 8,
                 background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.25)",
+                border: "1px solid rgba(255,255,255,0.3)",
                 color: "#fff",
+                height: 40,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+                transition: "all 0.3s",
+                position: "relative",
+                zIndex: 9999,
+                pointerEvents: "all"
               }}
-              disabled
+              className="social-button google btn-premium-nhun"
+              onClick={() => {
+                console.log("Premium Google Login Clicked");
+                handleGoogleLoginCustom();
+              }}
+              icon={<GoogleOutlined style={{ fontSize: 20 }} />}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.3)";
+                e.currentTarget.style.borderColor = "rgba(212, 165, 116, 0.8)";
+                e.currentTarget.style.transform = "translateY(-1px) scale(1.02)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+                e.currentTarget.style.transform = "none";
+              }}
             >
-              <GoogleCircleFilled style={{ fontSize: 20 }} /> Google
+              Google
             </Button>
 
             <Button
               style={{
                 flex: 1,
                 borderRadius: 8,
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.25)",
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.2)",
                 color: "#fff",
+                height: 40,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
               disabled
             >
@@ -551,7 +650,7 @@ const AuthPage = () => {
             <Button
               type="link"
               onClick={toggleForm}
-              style={{ color: "#d4a574", fontWeight: "bold", padding: 0 }}
+              style={{ color: "#ffcf9e", fontWeight: "bold", padding: 0 }}
             >
               {isLogin ? "Đăng ký ngay" : "Đăng nhập"}
             </Button>

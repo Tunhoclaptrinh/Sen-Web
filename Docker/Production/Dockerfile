@@ -11,13 +11,25 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies for build)
+# Skip chromium download for puppeteer during install
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Install all dependencies
 RUN npm ci && npm cache clean --force
 
 # ============================================
 # Stage 2: Build
 # ============================================
 FROM node:20-alpine AS builder
+
+# Install chromium and dependencies for prerendering
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 
 WORKDIR /app
 
@@ -33,6 +45,10 @@ ARG VITE_API_TIMEOUT=30000
 
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_API_TIMEOUT=$VITE_API_TIMEOUT
+
+# Puppeteer configuration for Docker/Alpine
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV VITE_PUPPETEER_NO_SANDBOX=true
 
 # Build the application
 RUN npm run build

@@ -15,7 +15,13 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
     "test": "vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prod:build": "docker compose -f Docker/Production/docker-compose.yml build",
+    "prod:start": "docker compose -f Docker/Production/docker-compose.yml up",
+    "prod:stop": "docker compose -f Docker/Production/docker-compose.yml down",
+    "tunnel:start": "docker compose -f Docker/Tunnel/docker-compose.yml up",
+    "tunnel:stop": "docker compose -f Docker/Tunnel/docker-compose.yml down",
+    "tunnel:logs": "docker compose -f Docker/Tunnel/docker-compose.yml logs -f"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
@@ -25,6 +31,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@pixi/react": "^7.1.2",
     "@react-google-maps/api": "^2.20.8",
+    "@react-oauth/google": "^0.13.4",
     "@reduxjs/toolkit": "^2.0.1",
     "@tinymce/tinymce-react": "^4.3.2",
     "antd": "^5.12.0",
@@ -43,6 +50,7 @@
     "polished": "^4.3.1",
     "proj4": "^2.20.2",
     "prop-types": "^15.8.1",
+    "puppeteer": "^24.39.1",
     "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",

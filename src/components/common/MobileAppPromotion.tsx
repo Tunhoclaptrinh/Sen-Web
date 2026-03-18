@@ -3,26 +3,42 @@ import { Modal, Button, Typography } from "antd";
 import { MobileOutlined, DownloadOutlined } from "@ant-design/icons";
 import { isMobile } from "@/utils/helpers";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Paragraph, Text } = Typography;
 
 const APP_LINK = "https://drive.google.com/drive/folders/1zWg8dKGNLPvaB-_EK-dfb5wFvWIzQUc7?usp=sharing";
+const MOBILE_REDIRECT_KEY = "sen_has_seen_poster";
 
 const MobileAppPromotion: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isMobile()) {
-      // Small delay for better UX
+      const hasSeenPoster = localStorage.getItem(MOBILE_REDIRECT_KEY);
+      
+      if (!hasSeenPoster) {
+        // First time mobile visit: redirect to poster
+        localStorage.setItem(MOBILE_REDIRECT_KEY, "true");
+        navigate("/poster");
+        return;
+      }
+
+      // Subsequent visits: show the modal with a small delay for better UX
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [navigate]);
 
   const handleDownload = () => {
     window.open(APP_LINK, "_blank");
+  };
+
+  const handleClose = () => {
+    setIsVisible(false);
   };
 
   return (
@@ -30,10 +46,11 @@ const MobileAppPromotion: React.FC = () => {
       {isVisible && (
         <Modal
           open={isVisible}
+          onCancel={handleClose}
           footer={null}
-          closable={false}
-          maskClosable={false}
-          keyboard={false}
+          closable={true}
+          maskClosable={true}
+          keyboard={true}
           centered
           width={340}
           zIndex={20000}

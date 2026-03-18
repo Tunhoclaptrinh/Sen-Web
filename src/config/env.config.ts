@@ -10,7 +10,7 @@ interface EnvConfig {
 }
 
 const env: EnvConfig = {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+    API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
     API_TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 30000,
     ENABLE_MOCK: import.meta.env.VITE_ENABLE_MOCK === 'true',
     ENABLE_LOGGING: import.meta.env.VITE_ENABLE_LOGGING === 'true' || import.meta.env.DEV,

@@ -113,7 +113,7 @@ const MapPage: React.FC = () => {
       return url;
     }
     // Assume relative path from API base (without /api)
-    const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api").split("/api")[0];
+    const baseUrl = (import.meta.env.VITE_API_BASE_URL).split("/api")[0];
     return `${baseUrl}/${url}`;
   };
 

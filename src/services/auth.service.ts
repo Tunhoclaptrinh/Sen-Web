@@ -266,6 +266,22 @@ class AuthService {
       return false;
     }
   }
+
+  async googleLogin(token: string | { idToken?: string; accessToken?: string }): Promise<AuthResponse> {
+    try {
+      const payload = typeof token === 'string' ? { idToken: token } : token;
+      const response = await apiClient.post<AuthResponse>("/auth/google", payload);
+
+      if (!response.success) {
+        throw new Error(response.message || "Đăng nhập Google thất bại");
+      }
+
+      return response;
+    } catch (error: any) {
+      logger.error("[Auth] googleLogin error:", error);
+      throw error;
+    }
+  }
 }
 
 export default new AuthService();

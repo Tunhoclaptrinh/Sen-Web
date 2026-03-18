@@ -37,7 +37,7 @@ export default defineConfig(({ command, mode }) => {
   // Load env file based on `mode` in the current working directory.
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), "");
-  
+
   const plugins: PluginOption[] = [...react()];
   const requirePrerender = env.VITE_REQUIRE_PRERENDER === "true";
 
@@ -46,9 +46,14 @@ export default defineConfig(({ command, mode }) => {
     // We also check process.env directly since loadEnv might not have everything.
     const isVercel = !!env.VERCEL || !!process.env.VERCEL || !!env.CI || !!process.env.CI;
     const isForced = requirePrerender || env.VITE_FORCE_PRERENDER === "true";
-    
-    // DECISION: On Vercel, we skip Puppeteer by default to avoid environment crashes.
-    const runPrerender = !isVercel || isForced;
+
+    // DECISION: Only run Prerender if strictly forced via env vars.
+    // Locally (Linux), Puppeteer often hangs without a proper display server or config.
+    const runPrerender = isForced;
+
+    if (!runPrerender) {
+      console.log("[seo] Skipping Puppeteer prererendering locally (Run with VITE_FORCE_PRERENDER=true to enable).");
+    }
 
     if (isVercel) {
       console.log(`[seo] Vercel environment detected (VERCEL=${isVercel}, CI=${!!(env.CI || process.env.CI)}).`);
@@ -63,12 +68,12 @@ export default defineConfig(({ command, mode }) => {
       try {
         const prerenderPackageName = "vite-plugin-prerender";
         const prerenderModule = require(prerenderPackageName);
-        
+
         // Plugin resolution: support ESM default or direct CommonJS export
-        const vitePrerender = typeof prerenderModule === 'function' 
-          ? prerenderModule 
+        const vitePrerender = typeof prerenderModule === 'function'
+          ? prerenderModule
           : (prerenderModule?.default || prerenderModule?.vitePrerender || prerenderModule);
-          
+
         const PuppeteerRenderer = vitePrerender?.PuppeteerRenderer || prerenderModule?.PuppeteerRenderer;
 
         if (!vitePrerender || typeof vitePrerender !== "function" || !PuppeteerRenderer) {
@@ -86,11 +91,9 @@ export default defineConfig(({ command, mode }) => {
               injectProperty: "__PRERENDER_INJECTED",
               inject: { prerender: true },
               headless: true,
-              // For security, only disable sandbox on Vercel/CI or if explicitly requested.
-              // Real servers should try to run with the sandbox active.
-              args: (isVercel || process.env.VITE_PUPPETEER_NO_SANDBOX === 'true')
-                ? ['--no-sandbox', '--disable-setuid-sandbox']
-                : [],
+              // For Linux environments, it is often required to disable sandbox, 
+              // otherwise Chromium might hang indefinitely.
+              args: ['--no-sandbox', '--disable-setuid-sandbox'],
             }),
           })
         );
@@ -109,66 +112,66 @@ export default defineConfig(({ command, mode }) => {
 
   const config: UserConfig = {
     plugins,
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@components": path.resolve(__dirname, "./src/components"),
-      "@pages": path.resolve(__dirname, "./src/pages"),
-      "@services": path.resolve(__dirname, "./src/services"),
-      "@utils": path.resolve(__dirname, "./src/utils"),
-      "@hooks": path.resolve(__dirname, "./src/hooks"),
-      "@store": path.resolve(__dirname, "./src/store"),
-      "@layouts": path.resolve(__dirname, "./src/layouts"),
-      "@assets": path.resolve(__dirname, "./src/assets"),
-      "@contexts": path.resolve(__dirname, "./src/contexts"),
-      "@config": path.resolve(__dirname, "./src/config"),
-      "@types": path.resolve(__dirname, "./src/types"),
-    },
-  },
-  server: {
-    port: 3001,
-    open: false, // Disabled for Docker compatibility
-    host: true, // Listen on all interfaces for Docker
-    watch: {
-      usePolling: true, // Required for Docker on Windows/WSL
-      interval: 1000, // Check for changes every second
-    },
-    hmr: {
-      overlay: true,
-    },
-    proxy: {
-      "/api": {
-        target: "http://sen-backend-dev:3000",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/uploads": {
-        target: "http://sen-backend-dev:3000",
-        changeOrigin: true,
-        secure: false,
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+        "@components": path.resolve(__dirname, "./src/components"),
+        "@pages": path.resolve(__dirname, "./src/pages"),
+        "@services": path.resolve(__dirname, "./src/services"),
+        "@utils": path.resolve(__dirname, "./src/utils"),
+        "@hooks": path.resolve(__dirname, "./src/hooks"),
+        "@store": path.resolve(__dirname, "./src/store"),
+        "@layouts": path.resolve(__dirname, "./src/layouts"),
+        "@assets": path.resolve(__dirname, "./src/assets"),
+        "@contexts": path.resolve(__dirname, "./src/contexts"),
+        "@config": path.resolve(__dirname, "./src/config"),
+        "@types": path.resolve(__dirname, "./src/types"),
       },
     },
-    allowedHosts: true,
-  },
-  optimizeDeps: {
-    include: ["pixi.js", "@pixi/react"],
-    force: true,
-  },
-  build: {
-    outDir: "dist",
-    sourcemap: false,
-    chunkSizeWarningLimit: 1600,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "ui-vendor": ["antd", "@ant-design/icons", "framer-motion"],
-          "utils-vendor": ["axios", "dayjs", "lodash"],
-          "game-vendor": ["pixi.js", "@pixi/react"],
+    server: {
+      port: 3001,
+      open: false, // Disabled for Docker compatibility
+      host: true, // Listen on all interfaces for Docker
+      watch: {
+        usePolling: true, // Required for Docker on Windows/WSL
+        interval: 1000, // Check for changes every second
+      },
+      hmr: {
+        overlay: true,
+      },
+      proxy: {
+        "/api": {
+          target: "http://localhost:3000",
+          changeOrigin: true,
+          secure: false,
+        },
+        "/uploads": {
+          target: "http://localhost:3000",
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+      allowedHosts: true,
+    },
+    optimizeDeps: {
+      include: ["pixi.js", "@pixi/react"],
+      force: true,
+    },
+    build: {
+      outDir: "dist",
+      sourcemap: false,
+      chunkSizeWarningLimit: 1600,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            "react-vendor": ["react", "react-dom", "react-router-dom"],
+            "ui-vendor": ["antd", "@ant-design/icons", "framer-motion"],
+            "utils-vendor": ["axios", "dayjs", "lodash"],
+            "game-vendor": ["pixi.js", "@pixi/react"],
+          },
         },
       },
     },
-  },
   };
 
   return config;
