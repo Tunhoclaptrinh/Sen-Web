@@ -91,8 +91,9 @@ const CustomerLayout: React.FC = () => {
 
     const bgmUrl = getImageUrl(musicPath);
     const fullUrl = new URL(bgmUrl, window.location.origin).href;
-    const isGamePlayPath = location.pathname.startsWith('/game/play/');
-    const targetVolume = (isMuted || !isGamePlayPath || (hasLevelMusic ? false : isBgmAutoMuted)) ? 0 : bgmVolume;
+    const isGamePath = location.pathname.startsWith('/game/');
+    const targetVolume = (isMuted || !isGamePath || (hasLevelMusic ? false : isBgmAutoMuted)) ? 0 : bgmVolume;
+
 
 
     const fadeTo = (audio: HTMLAudioElement, target: number, onComplete?: () => void) => {

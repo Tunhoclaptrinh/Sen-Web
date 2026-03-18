@@ -94,8 +94,8 @@ const CustomBgmPlayer: React.FC = () => {
   // Sync audio element volume/mute for direct audio tracks
   useEffect(() => {
     if (!audioRef.current || !activeTrack || activeTrack.isIframe) return;
-    const isGamePlayPath = window.location.pathname.startsWith('/game/play/');
-    const shouldPlay = isGamePlayPath || isEmbeddedZoneActive;
+    const isGamePath = window.location.pathname.startsWith('/game/');
+    const shouldPlay = isGamePath || isEmbeddedZoneActive;
     const effectiveMuted = isMuted || isBgmAutoMuted || !shouldPlay;
     audioRef.current.volume = effectiveMuted ? 0 : bgmVolume;
 
@@ -109,8 +109,8 @@ const CustomBgmPlayer: React.FC = () => {
   const finalEmbedUrl = React.useMemo(() => {
     if (!activeTrack?.url) return "";
     let url = activeTrack.url;
-    const isGamePlayPath = window.location.pathname.startsWith('/game/play/');
-    const shouldPlay = isGamePlayPath || isEmbeddedZoneActive;
+    const isGamePath = window.location.pathname.startsWith('/game/');
+    const shouldPlay = isGamePath || isEmbeddedZoneActive;
     
     if (isBgmAutoMuted || isMuted || !shouldPlay) {
       // Try to force mute via URL params for common platforms

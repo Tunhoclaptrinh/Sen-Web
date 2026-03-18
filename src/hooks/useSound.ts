@@ -29,8 +29,8 @@ export type SoundName = keyof typeof SOUND_ASSETS;
 export const useSound = (soundName: SoundName) => {
   const { isMuted, sfxVolume, isEmbeddedZoneActive } = useAppSelector((state) => state.audio);
   const { pathname } = useLocation();
-  const isGamePlayPath = pathname.startsWith('/game/play/') || pathname.startsWith('/admin');
-  const shouldPlaySound = isGamePlayPath || isEmbeddedZoneActive;
+  const isGamePath = pathname.startsWith('/game/');
+  const shouldPlaySound = isGamePath || isEmbeddedZoneActive;
 
   const [play] = useSoundLib(SOUND_ASSETS[soundName], {
     volume: (isMuted || !shouldPlaySound) ? 0 : sfxVolume,
