@@ -27,6 +27,7 @@ interface AudioState {
   isBgmAutoMuted: boolean;
   userInteracted: boolean;
   customBgmTracks: CustomBgmTrack[];
+  isEmbeddedZoneActive: boolean;
 }
 
 const initialState: AudioState = {
@@ -37,6 +38,7 @@ const initialState: AudioState = {
   isBgmAutoMuted: false,
   userInteracted: false,
   customBgmTracks: loadCustomTracks(),
+  isEmbeddedZoneActive: false,
 };
 
 const audioSlice = createSlice({
@@ -90,6 +92,9 @@ const audioSlice = createSlice({
         localStorage.removeItem('selectedBgmKey');
       }
     },
+    setEmbeddedZoneActive: (state, action: PayloadAction<boolean>) => {
+      state.isEmbeddedZoneActive = action.payload;
+    },
   },
 });
 
@@ -103,6 +108,7 @@ export const {
   setUserInteracted,
   addCustomBgmTrack,
   removeCustomBgmTrack,
+  setEmbeddedZoneActive,
 } = audioSlice.actions;
 
 export default audioSlice.reducer;

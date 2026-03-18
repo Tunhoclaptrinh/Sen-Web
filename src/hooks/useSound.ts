@@ -27,13 +27,15 @@ export const SOUND_ASSETS = {
 export type SoundName = keyof typeof SOUND_ASSETS;
 
 export const useSound = (soundName: SoundName) => {
-  const { isMuted, sfxVolume } = useAppSelector((state) => state.audio);
+  const { isMuted, sfxVolume, isEmbeddedZoneActive } = useAppSelector((state) => state.audio);
   const { pathname } = useLocation();
-  const isGamePath = pathname.startsWith('/game') || pathname.startsWith('/admin');
+  const isGamePlayPath = pathname.startsWith('/game/play/') || pathname.startsWith('/admin');
+  const shouldPlaySound = isGamePlayPath || isEmbeddedZoneActive;
 
   const [play] = useSoundLib(SOUND_ASSETS[soundName], {
-    volume: (isMuted || !isGamePath) ? 0 : sfxVolume,
+    volume: (isMuted || !shouldPlaySound) ? 0 : sfxVolume,
   });
+
 
   return { play };
 };
@@ -42,11 +44,13 @@ export const useSound = (soundName: SoundName) => {
  * A more flexible hook that allows playing multiple sounds
  */
 export const useGameSounds = () => {
-  const { isMuted, sfxVolume } = useAppSelector((state) => state.audio);
+  const { isMuted, sfxVolume, isEmbeddedZoneActive } = useAppSelector((state) => state.audio);
   const { pathname } = useLocation();
-  const isGamePath = pathname.startsWith('/game') || pathname.startsWith('/admin');
+  const isGamePlayPath = pathname.startsWith('/game/play/') || pathname.startsWith('/admin');
+  const shouldPlaySound = isGamePlayPath || isEmbeddedZoneActive;
 
-  const volume = (isMuted || !isGamePath) ? 0 : sfxVolume;
+  const volume = (isMuted || !shouldPlaySound) ? 0 : sfxVolume;
+
 
   const [playClick] = useSoundLib(SOUND_ASSETS.CLICK, { volume });
   const [playSuccess] = useSoundLib(SOUND_ASSETS.SUCCESS, { volume });

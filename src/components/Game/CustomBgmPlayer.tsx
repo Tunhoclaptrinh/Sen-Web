@@ -19,7 +19,7 @@ const MAX_SIZE = { width: 800, height: 600 };
 
 const CustomBgmPlayer: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { selectedBgmKey, customBgmTracks, isMuted, bgmVolume, userInteracted, isBgmAutoMuted } = useAppSelector((s) => s.audio);
+  const { selectedBgmKey, customBgmTracks, isMuted, bgmVolume, userInteracted, isBgmAutoMuted, isEmbeddedZoneActive } = useAppSelector((s) => s.audio);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [minimized, setMinimized] = useState(false);
 
@@ -94,8 +94,11 @@ const CustomBgmPlayer: React.FC = () => {
   // Sync audio element volume/mute for direct audio tracks
   useEffect(() => {
     if (!audioRef.current || !activeTrack || activeTrack.isIframe) return;
-    const effectiveMuted = isMuted || isBgmAutoMuted;
+    const isGamePlayPath = window.location.pathname.startsWith('/game/play/') || window.location.pathname.startsWith('/admin');
+    const shouldPlay = isGamePlayPath || isEmbeddedZoneActive;
+    const effectiveMuted = isMuted || isBgmAutoMuted || !shouldPlay;
     audioRef.current.volume = effectiveMuted ? 0 : bgmVolume;
+
     if (effectiveMuted) audioRef.current.pause();
     else if (userInteracted) {
       audioRef.current.play().catch(() => { });
@@ -106,7 +109,10 @@ const CustomBgmPlayer: React.FC = () => {
   const finalEmbedUrl = React.useMemo(() => {
     if (!activeTrack?.url) return "";
     let url = activeTrack.url;
-    if (isBgmAutoMuted || isMuted) {
+    const isGamePlayPath = window.location.pathname.startsWith('/game/play/') || window.location.pathname.startsWith('/admin');
+    const shouldPlay = isGamePlayPath || isEmbeddedZoneActive;
+    
+    if (isBgmAutoMuted || isMuted || !shouldPlay) {
       // Try to force mute via URL params for common platforms
       if (url.includes("youtube.com")) {
         url += (url.includes("?") ? "&" : "?") + "mute=1";
@@ -115,7 +121,8 @@ const CustomBgmPlayer: React.FC = () => {
       }
     }
     return url;
-  }, [activeTrack?.url, isBgmAutoMuted, isMuted]);
+  }, [activeTrack?.url, isBgmAutoMuted, isMuted, isEmbeddedZoneActive]);
+
 
   if (!activeTrack) return null;
 

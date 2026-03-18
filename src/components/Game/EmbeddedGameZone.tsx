@@ -21,9 +21,9 @@ import gameService from "@/services/game.service";
 import { SCREEN_TYPES } from "@/types/game.types";
 import type { Screen, Level } from "@/types/game.types";
 import { getImageUrl } from "@/utils/image.helper";
-import { setBgmVolume, toggleMute } from "@/store/slices/audioSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchChapters, fetchProgress, syncProgressTotals } from "@/store/slices/gameSlice";
+import { setBgmVolume, toggleMute, setEmbeddedZoneActive } from "@/store/slices/audioSlice";
 
 // Screens
 import DialogueScreen from "@/components/Game/Screens/DialogueScreen";
@@ -148,6 +148,14 @@ const EmbeddedGameZone: React.FC<EmbeddedGameZoneProps> = ({
       globalChar?.setIsVisible(true);
     };
   }, [globalChar]);
+
+  // Track global active status
+  useEffect(() => {
+    dispatch(setEmbeddedZoneActive(true));
+    return () => {
+      dispatch(setEmbeddedZoneActive(false));
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (levelId) {
