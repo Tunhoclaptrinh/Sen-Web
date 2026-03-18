@@ -46,8 +46,8 @@ export const useSound = (soundName: SoundName) => {
 export const useGameSounds = () => {
   const { isMuted, sfxVolume, isEmbeddedZoneActive } = useAppSelector((state) => state.audio);
   const { pathname } = useLocation();
-  const isGamePlayPath = pathname.startsWith('/game/play/') || pathname.startsWith('/admin');
-  const shouldPlaySound = isGamePlayPath || isEmbeddedZoneActive;
+  const isGamePath = pathname.startsWith('/game/');
+  const shouldPlaySound = isGamePath || isEmbeddedZoneActive;
 
   const volume = (isMuted || !shouldPlaySound) ? 0 : sfxVolume;
 
