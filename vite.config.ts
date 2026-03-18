@@ -47,8 +47,13 @@ export default defineConfig(({ command, mode }) => {
     const isVercel = !!env.VERCEL || !!process.env.VERCEL || !!env.CI || !!process.env.CI;
     const isForced = requirePrerender || env.VITE_FORCE_PRERENDER === "true";
     
-    // DECISION: On Vercel, we skip Puppeteer by default to avoid environment crashes.
-    const runPrerender = !isVercel || isForced;
+    // DECISION: Only run Prerender if strictly forced via env vars.
+    // Locally (Linux), Puppeteer often hangs without a proper display server or config.
+    const runPrerender = isForced;
+
+    if (!runPrerender) {
+      console.log("[seo] Skipping Puppeteer prererendering locally (Run with VITE_FORCE_PRERENDER=true to enable).");
+    }
 
     if (isVercel) {
       console.log(`[seo] Vercel environment detected (VERCEL=${isVercel}, CI=${!!(env.CI || process.env.CI)}).`);
@@ -86,11 +91,9 @@ export default defineConfig(({ command, mode }) => {
               injectProperty: "__PRERENDER_INJECTED",
               inject: { prerender: true },
               headless: true,
-              // For security, only disable sandbox on Vercel/CI or if explicitly requested.
-              // Real servers should try to run with the sandbox active.
-              args: (isVercel || process.env.VITE_PUPPETEER_NO_SANDBOX === 'true')
-                ? ['--no-sandbox', '--disable-setuid-sandbox']
-                : [],
+              // For Linux environments, it is often required to disable sandbox, 
+              // otherwise Chromium might hang indefinitely.
+              args: ['--no-sandbox', '--disable-setuid-sandbox'],
             }),
           })
         );
