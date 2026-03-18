@@ -23,8 +23,9 @@ import VideoScreen from "@/components/Game/Screens/VideoScreen";
 // Styles (reuse game styles)
 import "@/pages/Game/GamePlayPage/styles.less";
 
-import { useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { useGameSounds, SOUND_ASSETS } from "@/hooks/useSound";
+import { setEmbeddedZoneActive } from "@/store/slices/audioSlice";
 
 interface GameSimulatorProps {
     visible: boolean;
@@ -48,6 +49,7 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     const [replayKey, setReplayKey] = useState(0);
 
     // Global Audio State
+    const dispatch = useAppDispatch();
     const { isMuted, bgmVolume, selectedBgmKey } = useAppSelector(state => state.audio);
     const { playClick, playSuccess, playError, playCollect } = useGameSounds();
 
@@ -104,10 +106,17 @@ const GameSimulator: React.FC<GameSimulatorProps> = ({
     // Reset when opening
     useEffect(() => {
         if (visible) {
+            dispatch(setEmbeddedZoneActive(true));
             setCurrentIndex(initialScreenIndex);
             setScore(0);
+        } else {
+            dispatch(setEmbeddedZoneActive(false));
         }
-    }, [visible, initialScreenIndex]);
+        return () => {
+            dispatch(setEmbeddedZoneActive(false));
+        };
+    }, [visible, initialScreenIndex, dispatch]);
+
 
     const currentScreen = screens[currentIndex];
 

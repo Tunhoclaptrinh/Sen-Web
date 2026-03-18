@@ -91,7 +91,7 @@ const CustomerLayout: React.FC = () => {
 
     const bgmUrl = getImageUrl(musicPath);
     const fullUrl = new URL(bgmUrl, window.location.origin).href;
-    const isGamePlayPath = location.pathname.startsWith('/game/play/') || location.pathname.startsWith('/admin');
+    const isGamePlayPath = location.pathname.startsWith('/game/play/');
     const targetVolume = (isMuted || !isGamePlayPath || (hasLevelMusic ? false : isBgmAutoMuted)) ? 0 : bgmVolume;
 
 
