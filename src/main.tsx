@@ -12,6 +12,8 @@ import "./styles/global.less";
 import "./styles/antd-custom.less";
 import "./styles/premium-ui.less";
 import "./assets/styles/antd-override.css";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 // Inject store vào axios config để tránh circular dependency
 injectStore(store);
 
@@ -20,14 +22,20 @@ import "./i18n";
 
 const rootElement = document.getElementById("root");
 
+// Giả định Client ID, người dùng sẽ tự điền vào .env sau
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID || "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE";
+
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <Provider store={store}>
       <HelmetProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </GoogleOAuthProvider>
       </HelmetProvider>
-    </Provider>
+    </Provider>,
   );
 }

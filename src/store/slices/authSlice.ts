@@ -83,6 +83,25 @@ export const login = createAsyncThunk<
   }
 });
 
+export const googleLogin = createAsyncThunk<
+  { user: User; token: string },
+  string | { idToken?: string; accessToken?: string },
+  { rejectValue: string }
+>("auth/googleLogin", async (tokenData, { rejectWithValue }) => {
+  try {
+    const response = await authService.googleLogin(tokenData);
+    if (!response.success) {
+      return rejectWithValue(response.message || "Đăng nhập Google thất bại");
+    }
+
+    const { user, token } = response.data;
+    saveAuthToStorage(token, user);
+    return { user, token };
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Đăng nhập Google thất bại");
+  }
+});
+
 export const register = createAsyncThunk<
   { message: string },
   RegisterData,
@@ -216,6 +235,22 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.error = action.payload || "Đăng nhập thất bại";
+      })
+      // Google Login
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.error = action.payload || "Đăng nhập Google thất bại";
       })
       // Register
       .addCase(register.pending, (state) => {
