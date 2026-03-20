@@ -48,9 +48,7 @@ export const fetchHeritageSiteById = createAsyncThunk(
   async (id: number | string, { rejectWithValue }) => {
     try {
       const response = await heritageService.getById(id);
-      // Backend returns { success, data: { success, data: {...} } } - need to unwrap twice
-      const data: any = response.data;
-      return data?.data || data;
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
