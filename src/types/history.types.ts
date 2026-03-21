@@ -21,6 +21,7 @@ export interface HistoryArticle extends BaseEntity {
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
   relatedLevelIds?: number[];
+  relatedExhibitionIds?: number[];
 
   // Populated Data (for Detail View)
   shortDescription?: string;
@@ -28,6 +29,7 @@ export interface HistoryArticle extends BaseEntity {
   relatedHeritage?: any[];
   relatedArtifacts?: any[];
   relatedLevels?: any[];
+  relatedExhibitions?: any[];
   relatedProducts?: any[];
   references?: string;
 }
@@ -45,6 +47,7 @@ export interface HistoryArticleDTO {
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
   relatedLevelIds?: number[];
+  relatedExhibitionIds?: number[];
   references?: string;
 }
 

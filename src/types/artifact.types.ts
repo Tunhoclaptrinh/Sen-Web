@@ -88,6 +88,7 @@ export interface Artifact extends BaseEntity, TimestampEntity {
   relatedHistoryIds?: number[];
   relatedArtifactIds?: number[];
   relatedLevelIds?: number[];
+  relatedExhibitionIds?: number[];
   relatedLevels?: any[];
   references?: string;
   bookingLink?: string;
@@ -123,6 +124,7 @@ export interface ArtifactDTO {
   relatedHistoryIds?: number[];
   relatedArtifactIds?: number[];
   relatedLevelIds?: number[];
+  relatedExhibitionIds?: number[];
   references?: string;
   bookingLink?: string;
 }

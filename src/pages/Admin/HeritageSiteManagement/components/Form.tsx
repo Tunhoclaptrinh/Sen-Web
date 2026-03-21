@@ -26,6 +26,7 @@ import artifactService from "@/services/artifact.service";
 import heritageService from "@/services/heritage.service";
 import historyService from "@/services/history.service";
 import adminLevelService from "@/services/admin-level.service";
+import exhibitionService from "@/services/exhibition.service";
 import categoryService, { Category } from "@/services/category.service";
 
 interface HeritageSiteFormValues extends Partial<HeritageSite> {
@@ -89,7 +90,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
           const heritageId = initialValues.id as number;
           if (!heritageId) return;
 
-          const [timelineRes, artifactsRes, relHeritageRes, relArtifactsRes, relHistoryRes, relLevelsRes] = await Promise.all([
+          const [timelineRes, artifactsRes, relHeritageRes, relArtifactsRes, relHistoryRes, relLevelsRes, relExhibitionsRes] = await Promise.all([
             heritageService.getTimeline(heritageId),
             heritageService.getArtifacts(heritageId),
             (initialValues.relatedHeritageIds?.length ?? 0) > 0
@@ -108,6 +109,11 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             (initialValues.relatedLevelIds?.length ?? 0) > 0
               ? adminLevelService.getAll({
                 ids: initialValues.relatedLevelIds!.join(","),
+              })
+              : Promise.resolve({ success: true, data: [] }),
+            (initialValues.relatedExhibitionIds?.length ?? 0) > 0
+              ? exhibitionService.getAll({
+                ids: initialValues.relatedExhibitionIds!.join(","),
               })
               : Promise.resolve({ success: true, data: [] }),
           ]);
@@ -176,6 +182,20 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             },
           );
 
+          // Map related exhibitions to {label, value}
+          const relatedExhibitions = (initialValues.relatedExhibitionIds || []).map(
+            (id: number | { label: string; value: number }) => {
+              const exh = relExhibitionsRes.success
+                ? relExhibitionsRes.data?.find((e: any) => e.id === (typeof id === "object" ? id.value : id))
+                : null;
+              return exh
+                ? { label: exh.name, value: exh.id }
+                : typeof id === "object"
+                  ? id
+                  : { label: `ID: ${id}`, value: id };
+            },
+          );
+
           const formattedValues: any = {
             ...initialValues,
             publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : undefined,
@@ -184,6 +204,7 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
             relatedHistoryIds: relatedHistory,
             relatedHeritageIds: relatedHeritage,
             relatedLevelIds: relatedLevels,
+            relatedExhibitionIds: relatedExhibitions,
           };
 
           // Set available provinces based on region
@@ -363,6 +384,10 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
         values.relatedLevelIds?.map((item: number | { value: number }) =>
           typeof item === "object" ? item.value : item,
         ) || [],
+      relatedExhibitionIds:
+        values.relatedExhibitionIds?.map((item: number | { value: number }) =>
+          typeof item === "object" ? item.value : item,
+        ) || [],
       culturalPeriod: values.culturalPeriod,
       visitHours: values.visitHours,
       entranceFee: values.entranceFee,
@@ -437,6 +462,23 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
       return [];
     } catch (error) {
       console.error("Fetch levels failed", error);
+      return [];
+    }
+  };
+
+  // Fetch function for Exhibition Search
+  const fetchExhibitionList = async (search: string) => {
+    try {
+      const response = await exhibitionService.getAll({ q: search, limit: 10 });
+      if (response.success && response.data) {
+        return response.data.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Fetch exhibitions failed", error);
       return [];
     }
   };
@@ -785,6 +827,15 @@ const HeritageForm: React.FC<HeritageFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm và chọn màn chơi..."
                     fetchOptions={fetchLevelList}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+
+                <Form.Item label="Triển lãm liên quan" name="relatedExhibitionIds">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm và chọn triển lãm..."
+                    fetchOptions={fetchExhibitionList}
                     style={{ width: "100%" }}
                   />
                 </Form.Item>
