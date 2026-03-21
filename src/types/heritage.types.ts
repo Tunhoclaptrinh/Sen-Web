@@ -390,7 +390,7 @@ export interface HeritageSearchParams extends HeritageFilters {
   page?: number;
   limit?: number;
   sort?: string;
-  order?: "asc" | "desc";
+  order?: "asc" | "desc" | string;
 }
 
 // Heritage State (Redux)

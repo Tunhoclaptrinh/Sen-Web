@@ -57,8 +57,8 @@ const Home: React.FC = () => {
 
     const loadInitialData = async () => {
       await Promise.allSettled([
-        dispatch(fetchHeritageSites({ _limit: 4 })),
-        dispatch(fetchArtifacts({ _limit: 4 })),
+        dispatch(fetchHeritageSites({ _limit: 4, _sort: 'views,rating', _order: 'desc,desc' })),
+        dispatch(fetchArtifacts({ _limit: 4, _sort: 'views,rating', _order: 'desc,desc' })),
       ]);
 
       if (isMounted) {

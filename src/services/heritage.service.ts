@@ -137,8 +137,8 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
    */
   async getFeatured(limit: number = 10): Promise<BaseApiResponse<HeritageSite[]>> {
     return this.getAll({
-      _sort: "rating",
-      _order: "desc",
+      _sort: "views,rating",
+      _order: "desc,desc",
       _limit: limit,
     });
   }
