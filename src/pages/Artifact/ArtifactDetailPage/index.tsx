@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown } from "antd";
+import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown, Badge } from "antd";
 import { useTranslation } from "react-i18next";
 import {
   EnvironmentOutlined,
@@ -25,6 +25,7 @@ import {
   MoreOutlined,
   CompassOutlined,
   GoogleOutlined,
+  BoxPlotOutlined,
 } from "@ant-design/icons";
 import { Image } from "antd";
 import { fetchArtifactById } from "@store/slices/artifactSlice";
@@ -687,9 +688,20 @@ const ArtifactDetailPage = () => {
                           </span>
                           <span className="promo-text">{t('artifact.detail.messages.promoText')}</span>
                         </div>
-                        <div className="action-buttons">
-                          <Dropdown
-                            trigger={['click']}
+                          <div className="action-buttons">
+                            <Badge count={t('common.badge.comingSoon') || "Sắp có"} color="gold" offset={[-20, 0]}>
+                              <Button
+                                size="large"
+                                className="direction-btn"
+                                icon={<BoxPlotOutlined />}
+                                style={{ marginRight: 8 }}
+                                disabled
+                              >
+                                {t('artifact.detail.actions.view3D') || "Xem 3D"}
+                              </Button>
+                            </Badge>
+                            <Dropdown
+                              trigger={['click']}
                             menu={{
                               items: [
                                 {
