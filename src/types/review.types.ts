@@ -8,6 +8,12 @@ export interface Review extends BaseEntity, TimestampEntity {
   referenceId: number;
   rating: number;
   comment: string;
+  user?: {
+    id: number;
+    name: string;
+    fullName: string;
+    avatar?: string;
+  };
   authorName?: string;
 }
 

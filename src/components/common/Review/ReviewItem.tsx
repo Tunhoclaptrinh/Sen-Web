@@ -17,7 +17,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({review}) => {
         <Avatar src={review.userAvatar} icon={<UserOutlined />} size="large" />
         <div className="review-content">
           <div className="review-header">
-            <Text className="user-name">{review.userName || review.authorName || "Người dùng Sen"}</Text>
+            <Text className="user-name">{review.userName || review.user?.name || review.authorName || "Người dùng Sen"}</Text>
             <Text className="review-date">{dayjs(review.createdAt).format("DD/MM/YYYY")}</Text>
           </div>
           <div style={{margin: "4px 0"}}>
