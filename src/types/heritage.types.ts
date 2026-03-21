@@ -352,6 +352,9 @@ export interface Exhibition extends BaseEntity, TimestampEntity {
   relatedHeritageIds?: number[];
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
+  views?: number;
+  rating?: number;
+  totalReviews?: number;
   isActive: boolean;
 }
 

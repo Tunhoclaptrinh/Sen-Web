@@ -29,13 +29,13 @@ export const useViewTracker = (type: ViewType, id: number | string | undefined) 
         // Increment view count via service
         switch (type) {
           case 'artifact':
-            await artifactService.incrementViewCount(id);
+            await artifactService.incrementViews(id);
             break;
           case 'heritage':
-            await heritageService.incrementViewCount(id);
+            await heritageService.incrementViews(id);
             break;
           case 'history':
-            await historyService.incrementViewCount(id);
+            await historyService.incrementViews(id);
             break;
         }
 

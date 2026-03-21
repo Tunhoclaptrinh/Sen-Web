@@ -421,6 +421,9 @@ const ArtifactDetailPage = () => {
               <span>
                 <HistoryOutlined /> {t('artifact.detail.meta.views', { count: artifact.views || 0 })}
               </span>
+              <span>
+                <StarFilled style={{ color: "#fadb14" }} /> {artifact.rating || 0}/5
+              </span>
             </div>
           </div>
 
@@ -472,6 +475,7 @@ const ArtifactDetailPage = () => {
                       <SpaceItem icon={<CalendarOutlined />} text={String(artifact.yearCreated || "N/A")} />
                       <SpaceItem icon={<UserOutlined />} text={authorName} />
                       <SpaceItem icon={<HistoryOutlined />} text={`${artifact.views || 0} views`} />
+                      <SpaceItem icon={<StarFilled style={{ color: "#fadb14" }} />} text={`${artifact.rating || 0}/5`} />
                     </div>
                     <div className="action-row" style={{ display: "flex", gap: 8 }}>
                       <Button
@@ -610,7 +614,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">{t('artifact.detail.labels.rating')}</span>
                                 <span className="value">
-                                  {artifact.rating ? `${artifact.rating}/5` : t('artifact.detail.messages.noReview')}{" "}
+                                  {artifact.rating ? `${artifact.rating}/5` : `${artifact.rating || 0}/5`}{" "}
                                   <span className="sub">({artifact.totalReviews || 0} {t('common.details').toLowerCase()})</span>
                                 </span>
                               </div>

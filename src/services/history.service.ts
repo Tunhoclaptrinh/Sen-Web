@@ -62,11 +62,11 @@ class HistoryService extends ReviewableBaseService<HistoryArticle, HistoryArticl
   /**
    * Increment view count
    */
-  async incrementViewCount(id: number | string): Promise<void> {
+  async incrementViews(id: number | string): Promise<void> {
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      logger.warn("[History] incrementViewCount failed:", error);
+      logger.warn("[History] incrementViews failed:", error);
     }
   }
 

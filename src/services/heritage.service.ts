@@ -190,11 +190,11 @@ class HeritageService extends ReviewableBaseService<HeritageSite, HeritageSiteDT
   /**
    * Increment view count
    */
-  async incrementViewCount(id: number | string): Promise<void> {
+  async incrementViews(id: number | string): Promise<void> {
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      logger.warn("[Heritage] incrementViewCount failed:", error);
+      logger.warn("[Heritage] incrementViews failed:", error);
     }
   }
 

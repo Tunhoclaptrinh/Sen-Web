@@ -7,6 +7,7 @@ import {
   HeartOutlined,
   HeartFilled,
   CalendarOutlined,
+  StarFilled,
   UserOutlined,
   ShareAltOutlined,
   ReadOutlined,
@@ -284,6 +285,9 @@ const HistoryDetailPage = () => {
               </span>
               <span>
                 <EyeOutlined /> {t('history.detail.hero.views', { count: article.views || 0 })}
+              </span>
+              <span>
+                <StarFilled style={{ color: "#fadb14" }} /> {article.rating || 0}/5
               </span>
             </div>
           </div>

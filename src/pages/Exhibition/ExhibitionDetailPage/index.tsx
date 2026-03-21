@@ -9,6 +9,7 @@ import {
   PictureOutlined,
   TagOutlined,
   EyeOutlined,
+  StarFilled,
   ShareAltOutlined,
   RocketOutlined,
   FolderAddOutlined,
@@ -219,7 +220,10 @@ const ExhibitionDetailPage: React.FC = () => {
                 <UserOutlined /> {exhibition.curator || t('exhibition.detail.sidebar.organizer.default')}
               </span>
               <span>
-                <EyeOutlined /> {t('exhibition.detail.hero.visitors', { count: exhibition.visitorCount || 0 })}
+                <EyeOutlined /> {t('exhibition.detail.hero.visitors', { count: exhibition.views || 0 })}
+              </span>
+              <span>
+                <StarFilled style={{ color: "#fadb14" }} /> {exhibition.rating || 0}/5
               </span>
             </div>
           </div>
@@ -330,6 +334,27 @@ const ExhibitionDetailPage: React.FC = () => {
                     <div className="info-text">
                       <span className="label">{t('exhibition.detail.sidebar.artifactCount.label')}</span>
                       <span className="value">{t('exhibition.detail.sidebar.artifactCount.value', { count: artifacts.length })}</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="icon-wrapper">
+                      <StarFilled style={{ color: "#fadb14" }} />
+                    </div>
+                    <div className="info-text">
+                      <span className="label">Đánh giá</span>
+                      <span className="value">
+                        {exhibition.rating ? `${exhibition.rating}/5` : "0/5"}{" "}
+                        <span style={{ fontSize: 12, color: "#888", fontWeight: 400 }}>({exhibition.totalReviews || 0} đánh giá)</span>
+                      </span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="icon-wrapper">
+                      <EyeOutlined />
+                    </div>
+                    <div className="info-text">
+                      <span className="label">Lượt xem</span>
+                      <span className="value">{exhibition.views || 0}</span>
                     </div>
                   </li>
                 </ul>

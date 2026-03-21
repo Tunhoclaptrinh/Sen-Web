@@ -192,11 +192,11 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
   /**
    * Increment view count
    */
-  async incrementViewCount(id: number | string): Promise<void> {
+  async incrementViews(id: number | string): Promise<void> {
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      logger.warn('[Artifact] incrementViewCount failed:', error);
+      logger.warn('[Artifact] incrementViews failed:', error);
     }
   }
 
