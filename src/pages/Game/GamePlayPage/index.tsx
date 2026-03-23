@@ -30,7 +30,7 @@ import {
   setCurrentLevel,
   syncProgressTotals,
 } from "@/store/slices/gameSlice";
-import { setOverlayOpen, setActiveContext } from "@/store/slices/aiSlice";
+import { setOverlayOpen, setActiveContext, clearGameChatHistory } from "@/store/slices/aiSlice";
 import { setBgmAutoMuted } from "@/store/slices/audioSlice";
 import { useGameSounds } from "@/hooks/useSound";
 import AudioSettingsPopover from "@/components/Game/AudioSettingsPopover";
@@ -73,7 +73,10 @@ const GamePlayPage: React.FC = () => {
       initGame(parseInt(levelId));
     }
     return () => {
+      // ⭐ Always clean up when leaving the game page (back button, navigate, etc.)
       dispatch(setCurrentLevel(null));
+      dispatch(setActiveContext(null));    // Clears levelId/chatSessionId from AI context
+      dispatch(clearGameChatHistory());   // Clears in-memory game chat from Redux
     };
   }, [levelId, dispatch]);
 
@@ -84,6 +87,17 @@ const GamePlayPage: React.FC = () => {
     }
     // We don't set it to false here because CustomerLayout handles level-BGM priority
   }, [currentScreen?.type, dispatch]);
+
+  // ⭐ Sync AI Context with current screen (includes chatSessionId for per-play isolation)
+  useEffect(() => {
+    if (levelInfo?.id && currentScreen?.id && sessionId) {
+      dispatch(setActiveContext({
+        levelId: levelInfo.id,
+        screenId: currentScreen.id,
+        chatSessionId: sessionId  // ⭐ Ties AI chat to this exact play session
+      }));
+    }
+  }, [currentScreen?.id, levelInfo?.id, sessionId, dispatch]);
 
   const triggerScoreAnimation = (points: number) => {
     if (points > 0) {
@@ -120,6 +134,9 @@ const GamePlayPage: React.FC = () => {
     setProgress({ completed: 0, total: levelInfo?.totalScreens || 10 });
     setGameCompleted(false);
     setCompletionData(null);
+    // Clear game chat and reset context - new chatSessionId will be set by initGame
+    dispatch(clearGameChatHistory());
+    dispatch(setActiveContext(null));
     initGame(parseInt(levelId));
   };
 
@@ -250,6 +267,9 @@ const GamePlayPage: React.FC = () => {
       setCompletionData(result);
       setGameCompleted(true);
       dispatch(setBgmAutoMuted(false));
+      // 🧹 Clear AI game context + game chat when level ends
+      dispatch(clearGameChatHistory());
+      dispatch(setActiveContext(null));
     } catch (error: any) {
       if (error?.response?.status !== 409) {
         console.error(error);
@@ -536,9 +556,12 @@ const GamePlayPage: React.FC = () => {
               style={{ marginLeft: 8 }}
               icon={<CommentOutlined />}
               title={t('gamePlay.header.chat')}
-              onClick={() => {
+                onClick={() => {
                 playClick();
-                dispatch(setActiveContext({ levelId: levelInfo?.id }));
+                dispatch(setActiveContext({ 
+                  levelId: levelInfo?.id,
+                  screenId: currentScreen?.id 
+                }));
                 dispatch(setOverlayOpen({ open: true, mode: "absolute" }));
               }}
             />
