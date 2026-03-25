@@ -111,8 +111,8 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
    */
   async getFeatured(limit: number = 10): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      _sort: 'rating',
-      _order: 'desc',
+      _sort: 'views,rating',
+      _order: 'desc,desc',
       _limit: limit,
     });
   }
@@ -122,8 +122,8 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
    */
   async getTrending(limit: number = 10): Promise<BaseApiResponse<Artifact[]>> {
     return this.getAll({
-      _sort: 'views',
-      _order: 'desc',
+      _sort: 'views,rating',
+      _order: 'desc,desc',
       _limit: limit,
     });
   }
@@ -192,11 +192,11 @@ class ArtifactService extends ReviewableBaseService<Artifact, ArtifactDTO, Artif
   /**
    * Increment view count
    */
-  async incrementViewCount(id: number | string): Promise<void> {
+  async incrementViews(id: number | string): Promise<void> {
     try {
       await apiClient.post(`${this.endpoint}/${id}/view`);
     } catch (error) {
-      logger.warn('[Artifact] incrementViewCount failed:', error);
+      logger.warn('[Artifact] incrementViews failed:', error);
     }
   }
 

@@ -3,7 +3,6 @@ import heritageService from "@/services/heritage.service";
 import { message } from "antd";
 
 // Import local images for reliability
-import bronzeDrumImg from "@/assets/images/background/bronze-drum.png";
 import lotusImg from "@/assets/images/background/lotus-1.png";
 import senHoaCumImg from "@/assets/images/background/senhoacum.png";
 import backgroundFullImg from "@/assets/images/background/background-full.png";
@@ -18,14 +17,7 @@ const demoArtifacts = [
     culturalSignificance: "Biểu tượng của quyền lực và tâm linh, phản ánh đời sống sinh hoạt phong phú của người Việt cổ.",
     material: "Đồng thau",
     dimensions: "Đường kính 90cm, cao 60cm",
-    condition: "Tốt",
-    yearCreated: "700 TCN",
-    dynasty: "Văn Lang",
-    images: [bronzeDrumImg],
-    mainImage: bronzeDrumImg,
-    rating: 5,
-    totalReviews: 120,
-    viewCount: 5000,
+    views: 5000,
     isOnDisplay: true
   },
   {
@@ -44,7 +36,7 @@ const demoArtifacts = [
     mainImage: lotusImg,
     rating: 4.8,
     totalReviews: 85,
-    viewCount: 3200,
+    views: 3200,
     isOnDisplay: true
   },
    {
@@ -63,7 +55,7 @@ const demoArtifacts = [
     mainImage: senHoaCumImg,
     rating: 4.9,
     totalReviews: 200,
-    viewCount: 4500,
+    views: 4500,
     isOnDisplay: true
   }
 ];
@@ -72,8 +64,8 @@ const demoHeritageSites = [
   {
     name: "Hoàng Thành Thăng Long",
     type: "monument",
-     description: `
-        <p><strong>Hoàng thành Thăng Long</strong> là quần thể di tích gắn liền với lịch sử kinh thành Thăng Long - Đông Kinh và tỉnh thành Hà Nội bắt đầu từ thời kì tiền Thăng Long (An Nam đô hộ phủ thế kỷ VII) qua thời Đinh - Tiền Lê, phát triển mạnh dưới thời Lý, Trần, Lê và thành Hà Nội dưới triều Nguyễn.</p>
+    description: `
+        <p><strong>Hoàng thành Thăng Long</strong> là quần thể di tích gắn liền with lịch sử kinh thành Thăng Long - Đông Kinh và tỉnh thành Hà Nội bắt đầu từ thời kì tiền Thăng Long (An Nam đô hộ phủ thế kỷ VII) qua thời Đinh - Tiền Lê, phát triển mạnh dưới thời Lý, Trần, Lê và thành Hà Nội dưới triều Nguyễn.</p>
         
         <h3>Giá trị lịch sử đặc biệt</h3>
         <p>Đây là công trình kiến trúc đồ sộ, được các triều vua xây dựng trong nhiều giai đoạn lịch sử và trở thành di tích quan trọng bậc nhất trong hệ thống các di tích Việt Nam.</p>
@@ -91,7 +83,7 @@ const demoHeritageSites = [
     mainImage: backgroundFullImg,
     rating: 4.7,
     totalReviews: 1500,
-    viewCount: 12000
+    views: 12000
   },
    {
     name: "Phố Cổ Hội An",
@@ -115,7 +107,7 @@ const demoHeritageSites = [
     mainImage: senHoaCumImg,
     rating: 4.9,
     totalReviews: 3000,
-    viewCount: 25000
+    views: 25000
   },
   {
       name: "Cố Đô Huế",
@@ -124,7 +116,7 @@ const demoHeritageSites = [
         <p><strong>Quần thể di tích Cố đô Huế</strong> là những di tích lịch sử - văn hóa do triều Nguyễn chủ trương xây dựng trong khoảng thời gian từ đầu thế kỷ 19 đến nửa đầu thế kỷ 20 trên địa bàn kinh đô Huế xưa.</p>
         
         <h3>Vẻ đẹp cung đình trầm mặc</h3>
-        <p>Nổi bật nhất là Kinh thành Huế với ba vòng thành: Kinh thành, Hoàng thành và Tử cấm thành. Bên cạnh đó là hệ thống lăng tẩm các vua Nguyễn với kiến trúc phong thủy độc đáo, hòa quyện với thiên nhiên.</p>
+        <p>Nổi bật nhất là Kinh thành Huế với ba vòng thành: Kinh thành, Hoàng thành và Tử cấm thành. Bên cạnh đó là hệ thống lăng tẩm các vua Nguyễn với kiến trúc phong thủy độc đáo, hòa quyện with thiên nhiên.</p>
         
         <p>Nhã nhạc cung đình Huế cũng là một di sản văn hóa phi vật thể được UNESCO công nhận, góp phần làm nên bản sắc văn hóa đặc biệt của vùng đất Cố đô.</p>
       `,
@@ -139,7 +131,7 @@ const demoHeritageSites = [
        mainImage: lotusImg,
      rating: 4.8,
     totalReviews: 2200,
-     viewCount: 18000
+     views: 18000
   }
 ];
 

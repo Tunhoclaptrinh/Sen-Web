@@ -60,7 +60,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ type, referenceId, onSuccess })
   return (
     <div className="review-form-container">
       <Title level={4}>{t('common.reviews.writeBtn')}</Title>
-      <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ rating: 5 }}>
+      <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ rating: 0 }}>
         <Form.Item
           name="rating"
           label={t('common.reviews.satisfaction')}

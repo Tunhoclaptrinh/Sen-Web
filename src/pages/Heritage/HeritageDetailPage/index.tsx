@@ -445,6 +445,7 @@ const HeritageDetailPage = () => {
                       <SpaceItem icon={<UserOutlined />} text={authorName} />
                       <SpaceItem icon={<CommentOutlined />} text={`${site.commentCount || 0} comments`} />
                       <SpaceItem icon={<HistoryOutlined />} text={`${site.views || 0} views`} />
+                      <SpaceItem icon={<StarFilled style={{ color: "#fadb14" }} />} text={`${site.rating || 0}/5`} />
                     </div>
                     <div className="action-row" style={{ display: "flex", gap: 8 }}>
                       <Button
@@ -561,7 +562,7 @@ const HeritageDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">{t('heritage.detail.visitorRating')}</span>
                                 <span className="value">
-                                  {site.rating ? `${site.rating}/5` : t('common.noRating', { defaultValue: 'Chưa có đánh giá' })}{" "}
+                                  {site.rating ? `${site.rating}/5` : `${site.rating || 0}/5`}{" "}
                                   <span className="sub">({site.totalReviews || 0} {t('common.reviews_count', { defaultValue: 'đánh giá' })})</span>
                                 </span>
                               </div>

@@ -188,9 +188,9 @@ const ExhibitionDetailPage: React.FC = () => {
                                 <Descriptions.Item label={<><EditOutlined /> Tác giả</>}>
                                     <Tag color="orange">{exhibition.authorName || 'Hệ thống'}</Tag>
                                 </Descriptions.Item>
-                                {exhibition.visitorCount !== undefined && (
+                                {exhibition.views !== undefined && (
                                     <Descriptions.Item label={<><EyeOutlined /> Lượt xem</>}>
-                                        <Text strong>{exhibition.visitorCount.toLocaleString()}</Text>
+                                        <Text strong>{exhibition.views.toLocaleString()}</Text>
                                     </Descriptions.Item>
                                 )}
                             </Descriptions>

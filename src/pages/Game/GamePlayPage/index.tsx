@@ -117,8 +117,6 @@ const GamePlayPage: React.FC = () => {
       dispatch(setCurrentLevel(data.level));
       setProgress({ completed: 0, total: data.level.totalScreens || 10 });
       setStartTime(Date.now());
-      setProgress({ completed: 0, total: data.level.totalScreens || 10 });
-      setStartTime(Date.now());
     } catch (error) {
       message.error(t('gamePlay.errors.initGame'));
       navigate("/game/chapters");

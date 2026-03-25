@@ -272,6 +272,7 @@ export interface HeritageSite extends BaseEntity, TimestampEntity {
   relatedHistoryIds?: number[];
   relatedHeritageIds?: number[];
   relatedLevelIds?: number[];
+  relatedExhibitionIds?: number[];
   relatedArtifacts?: any[]; // Full objects if needed
   relatedLevels?: any[];
   relatedProducts?: any[];
@@ -306,6 +307,7 @@ export interface HeritageSiteDTO {
   relatedHistoryIds?: number[];
   relatedHeritageIds?: number[];
   relatedLevelIds?: number[];
+  relatedExhibitionIds?: number[];
   references?: string;
   bookingLink?: string;
 }
@@ -352,6 +354,9 @@ export interface Exhibition extends BaseEntity, TimestampEntity {
   relatedHeritageIds?: number[];
   relatedArtifactIds?: number[];
   relatedHistoryIds?: number[];
+  views?: number;
+  rating?: number;
+  totalReviews?: number;
   isActive: boolean;
 }
 
@@ -385,7 +390,7 @@ export interface HeritageSearchParams extends HeritageFilters {
   page?: number;
   limit?: number;
   sort?: string;
-  order?: "asc" | "desc";
+  order?: "asc" | "desc" | string;
 }
 
 // Heritage State (Redux)

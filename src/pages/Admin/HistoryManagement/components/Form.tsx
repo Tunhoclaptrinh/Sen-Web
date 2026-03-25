@@ -8,6 +8,7 @@ import heritageService from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import historyService from "@/services/history.service";
 import adminLevelService from "@/services/admin-level.service";
+import exhibitionService from "@/services/exhibition.service";
 import categoryService, { Category } from "@/services/category.service";
 
 interface HistoryFormProps {
@@ -71,7 +72,7 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
       if (open && isEditMode) {
         try {
           // Fetch labels for related IDs
-          const [relHeritageRes, relArtifactRes, relHistoryRes, relLevelsRes] = await Promise.all([
+          const results = await Promise.all([
             initialValues.relatedHeritageIds?.length > 0
               ? heritageService.getAll({ ids: initialValues.relatedHeritageIds.join(",") })
               : Promise.resolve({ success: true, data: [] }),
@@ -84,7 +85,12 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
             initialValues.relatedLevelIds?.length > 0
               ? adminLevelService.getAll({ ids: initialValues.relatedLevelIds.join(",") })
               : Promise.resolve({ success: true, data: [] }),
+            initialValues.relatedExhibitionIds?.length > 0
+              ? exhibitionService.getAll({ ids: initialValues.relatedExhibitionIds.join(",") })
+              : Promise.resolve({ success: true, data: [] }),
           ]);
+
+          const [relHeritageRes, relArtifactRes, relHistoryRes, relLevelsRes, relExhibitionsRes] = results as any[];
 
           // Map related heritage to {label, value}
           const relatedHeri = (initialValues.relatedHeritageIds || []).map((id: any) => {
@@ -138,12 +144,26 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                 : { label: `ID: ${id}`, value: id };
           });
 
+          // Map related exhibitions to {label, value}
+          const relatedExhs = (initialValues.relatedExhibitionIds || []).map((id: any) => {
+            const exh =
+              relExhibitionsRes.success && relExhibitionsRes.data
+                ? relExhibitionsRes.data.find((e: any) => e.id === (typeof id === "object" ? id.value : id))
+                : null;
+            return exh
+              ? { label: exh.name, value: exh.id }
+              : typeof id === "object"
+                ? id
+                : { label: `ID: ${id}`, value: id };
+          });
+
           const formattedValues = {
             ...memoizedInitialValues,
             relatedHeritageIds: relatedHeri,
             relatedArtifactIds: relatedArtifacts,
             relatedHistoryIds: relatedHistoryArr,
             relatedLevelIds: relatedLevels,
+            relatedExhibitionIds: relatedExhs,
           };
           form.setFieldsValue(formattedValues);
         } catch (error) {
@@ -184,6 +204,8 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
         values.relatedHistoryIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
       relatedLevelIds:
         values.relatedLevelIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
+      relatedExhibitionIds:
+        values.relatedExhibitionIds?.map((item: any) => (typeof item === "object" ? item.value : item)) || [],
     };
     const success = await onSubmit(submitData);
     if (success) {
@@ -273,6 +295,20 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
   const fetchLevelList = async (search: string) => {
     try {
       const response = await adminLevelService.getAll({ q: search, _limit: 10 });
+      return response.success && response.data
+        ? response.data.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }))
+        : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const fetchExhibitionList = async (search: string) => {
+    try {
+      const response = await exhibitionService.getAll({ q: search, _limit: 10 });
       return response.success && response.data
         ? response.data.map((item: any) => ({
           label: item.name,
@@ -457,6 +493,14 @@ const HistoryForm: React.FC<HistoryFormProps> = ({
                     mode="multiple"
                     placeholder="Tìm kiếm màn chơi..."
                     fetchOptions={fetchLevelList}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+                <Form.Item label="Triển lãm liên quan" name="relatedExhibitionIds">
+                  <DebounceSelect
+                    mode="multiple"
+                    placeholder="Tìm kiếm triển lãm..."
+                    fetchOptions={fetchExhibitionList}
                     style={{ width: "100%" }}
                   />
                 </Form.Item>

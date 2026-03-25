@@ -188,7 +188,7 @@ class GameService extends BaseService {
       image: string;
       acquiredAt: string;
     }[];
-    visitorCount: number;
+    views: number;
     canCollect: boolean;
     nextCollectionIn: string;
   }> {

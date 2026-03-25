@@ -24,13 +24,13 @@ export interface Exhibition {
   images?: string[];
   isActive: boolean;
   isPermanent: boolean;
-  visitorCount?: number;
+  views?: number;
   rating?: number;
   totalReviews?: number;
   status: "draft" | "pending" | "published" | "rejected";
   createdBy?: number;
   authorName?: string;
-  review_comment?: string;
+  reviewComment?: string;
 }
 
 class ExhibitionService extends ReviewableBaseService<Exhibition> {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown } from "antd";
+import { Spin, message, Row, Col, Typography, Empty, Button, Divider, Tag, Tabs, Dropdown, Badge } from "antd";
 import { useTranslation } from "react-i18next";
 import {
   EnvironmentOutlined,
@@ -25,6 +25,7 @@ import {
   MoreOutlined,
   CompassOutlined,
   GoogleOutlined,
+  BoxPlotOutlined,
 } from "@ant-design/icons";
 import { Image } from "antd";
 import { fetchArtifactById } from "@store/slices/artifactSlice";
@@ -421,6 +422,9 @@ const ArtifactDetailPage = () => {
               <span>
                 <HistoryOutlined /> {t('artifact.detail.meta.views', { count: artifact.views || 0 })}
               </span>
+              <span>
+                <StarFilled style={{ color: "#fadb14" }} /> {artifact.rating || 0}/5
+              </span>
             </div>
           </div>
 
@@ -472,6 +476,7 @@ const ArtifactDetailPage = () => {
                       <SpaceItem icon={<CalendarOutlined />} text={String(artifact.yearCreated || "N/A")} />
                       <SpaceItem icon={<UserOutlined />} text={authorName} />
                       <SpaceItem icon={<HistoryOutlined />} text={`${artifact.views || 0} views`} />
+                      <SpaceItem icon={<StarFilled style={{ color: "#fadb14" }} />} text={`${artifact.rating || 0}/5`} />
                     </div>
                     <div className="action-row" style={{ display: "flex", gap: 8 }}>
                       <Button
@@ -610,7 +615,7 @@ const ArtifactDetailPage = () => {
                               <div className="info-text">
                                 <span className="label">{t('artifact.detail.labels.rating')}</span>
                                 <span className="value">
-                                  {artifact.rating ? `${artifact.rating}/5` : t('artifact.detail.messages.noReview')}{" "}
+                                  {artifact.rating ? `${artifact.rating}/5` : `${artifact.rating || 0}/5`}{" "}
                                   <span className="sub">({artifact.totalReviews || 0} {t('common.details').toLowerCase()})</span>
                                 </span>
                               </div>
@@ -683,9 +688,20 @@ const ArtifactDetailPage = () => {
                           </span>
                           <span className="promo-text">{t('artifact.detail.messages.promoText')}</span>
                         </div>
-                        <div className="action-buttons">
-                          <Dropdown
-                            trigger={['click']}
+                          <div className="action-buttons">
+                            <Badge count={t('common.badge.comingSoon') || "Sắp có"} color="gold" offset={[-20, 0]}>
+                              <Button
+                                size="large"
+                                className="direction-btn"
+                                icon={<BoxPlotOutlined />}
+                                style={{ marginRight: 8 }}
+                                disabled
+                              >
+                                {t('artifact.detail.actions.view3D') || "Xem 3D"}
+                              </Button>
+                            </Badge>
+                            <Dropdown
+                              trigger={['click']}
                             menu={{
                               items: [
                                 {
