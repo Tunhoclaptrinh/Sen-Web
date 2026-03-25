@@ -27,6 +27,7 @@ interface AIState {
 
     // Chat
     chatHistory: ChatMessage[];
+    gameChatHistory: ChatMessage[]; // Separate history for in-game
     chatLoading: boolean;
     isTyping: boolean;
 
@@ -40,11 +41,12 @@ interface AIState {
     senSettings: SenSettings;
 
     // Active Context for Global Overlay
-    // Active Context for Global Overlay
     activeContext: {
         levelId?: number;
+        screenId?: string; // Currently active screen (Quiz/HiddenObject)
         artifactId?: number;
         heritageSiteId?: number;
+        chatSessionId?: number; // ⭐ Game session ID for per-play chat isolation
     } | null;
 }
 
@@ -53,6 +55,7 @@ const initialState: AIState = {
     currentCharacter: null,
     charactersLoading: false,
     chatHistory: [],
+    gameChatHistory: [],
     chatLoading: false,
     isTyping: false,
     isOverlayOpen: false,
@@ -94,10 +97,10 @@ export const fetchCharacters = createAsyncThunk(
 // Fetch chat history
 export const fetchChatHistory = createAsyncThunk(
     'ai/fetchChatHistory',
-    async (params: { characterId?: number; limit?: number }, { rejectWithValue }) => {
+    async (params: { characterId?: number; limit?: number; levelId?: number }, { rejectWithValue }) => {
         try {
-            const data = await aiService.getChatHistory(params.characterId, params.limit);
-            return data;
+            const data = await aiService.getChatHistory(params.characterId, params.limit, params.levelId);
+            return { messages: data, levelId: params.levelId };
         } catch (error: unknown) {
             return rejectWithValue((error as Error).message || 'Failed to fetch chat history');
         }
@@ -113,8 +116,10 @@ export const sendChatMessage = createAsyncThunk(
             message: string;
             context?: {
                 levelId?: number;
+                screenId?: string;
                 artifactId?: number;
                 heritageSiteId?: number;
+                chatSessionId?: number; // ⭐ Per-play session for isolated AI context
             };
         },
         { rejectWithValue }
@@ -167,6 +172,19 @@ export const clearChatHistory = createAsyncThunk(
     }
 );
 
+// Clear level-specific history (DB and AI context)
+export const clearLevelHistory = createAsyncThunk(
+    'ai/clearLevelHistory',
+    async (params: { characterId?: number; levelId: number }, { rejectWithValue }) => {
+        try {
+            await aiService.clearHistory(params.characterId, params.levelId);
+            return params.levelId;
+        } catch (error: unknown) {
+            return rejectWithValue((error as Error).message || 'Failed to clear level history');
+        }
+    }
+);
+
 // Transcribe Audio
 export const transcribeAudio = createAsyncThunk(
     'ai/transcribeAudio',
@@ -189,8 +207,11 @@ const aiSlice = createSlice({
             state.error = null;
         },
         setCurrentCharacter: (state, action: PayloadAction<AICharacter | null>) => {
-            state.currentCharacter = action.payload;
-            state.chatHistory = []; // Clear history when switching characters
+            // ONLY clear history if the character actually CHANGES
+            if (state.currentCharacter?.id !== action.payload?.id) {
+                state.currentCharacter = action.payload;
+                state.chatHistory = []; // Clear history when switching characters
+            }
         },
         addUserMessage: (state, action: PayloadAction<string>) => {
             const userMessage: ChatMessage = {
@@ -200,8 +221,14 @@ const aiSlice = createSlice({
                 role: 'user',
                 content: action.payload,
                 timestamp: new Date().toISOString(),
+                context: state.activeContext || undefined
             };
-            state.chatHistory.push(userMessage);
+            
+            if (state.activeContext?.levelId) {
+                state.gameChatHistory.push(userMessage);
+            } else {
+                state.chatHistory.push(userMessage);
+            }
             state.isTyping = true;
         },
         setTyping: (state, action: PayloadAction<boolean>) => {
@@ -230,7 +257,16 @@ const aiSlice = createSlice({
             state.senSettings.accessories[action.payload] = !state.senSettings.accessories[action.payload];
         },
         setActiveContext: (state, action: PayloadAction<AIState['activeContext']>) => {
+            const prevLevelId = state.activeContext?.levelId;
+            const nextLevelId = action.payload?.levelId;
             state.activeContext = action.payload;
+            // If we are LEAVING a level (had a levelId, now don't), wipe game chat immediately
+            if (prevLevelId && !nextLevelId) {
+                state.gameChatHistory = [];
+            }
+        },
+        clearGameChatHistory: (state) => {
+            state.gameChatHistory = [];
         },
     },
     extraReducers: (builder) => {
@@ -257,13 +293,18 @@ const aiSlice = createSlice({
             })
             .addCase(fetchChatHistory.fulfilled, (state, action) => {
                 state.chatLoading = false;
-                // Sắp xếp tin nhắn theo thời gian tăng dần (cũ trước, mới sau)
-                state.chatHistory = [...action.payload].sort((a, b) => {
+                const sortedMessages = [...action.payload.messages].sort((a, b) => {
                     const timeA = new Date(a.timestamp || 0).getTime();
                     const timeB = new Date(b.timestamp || 0).getTime();
                     if (timeA !== timeB) return timeA - timeB;
                     return (a.id as number) - (b.id as number);
                 });
+
+                if (action.payload.levelId) {
+                    state.gameChatHistory = sortedMessages;
+                } else {
+                    state.chatHistory = sortedMessages;
+                }
             })
             .addCase(fetchChatHistory.rejected, (state, action) => {
                 state.chatLoading = false;
@@ -280,7 +321,12 @@ const aiSlice = createSlice({
             .addCase(sendChatMessage.fulfilled, (state, action: PayloadAction<ChatResponse>) => {
                 state.chatLoading = false;
                 state.isTyping = false;
-                state.chatHistory.push(action.payload.message);
+                
+                if (state.activeContext?.levelId) {
+                    state.gameChatHistory.push(action.payload.message);
+                } else {
+                    state.chatHistory.push(action.payload.message);
+                }
             })
             .addCase(sendChatMessage.rejected, (state, action) => {
                 state.chatLoading = false;
@@ -306,7 +352,11 @@ const aiSlice = createSlice({
                     content: action.payload.hint,
                     timestamp: new Date().toISOString(),
                 };
-                state.chatHistory.push(hintMessage);
+                if (state.activeContext?.levelId) {
+                    state.gameChatHistory.push(hintMessage);
+                } else {
+                    state.chatHistory.push(hintMessage);
+                }
             })
             .addCase(getHint.rejected, (state, action) => {
                 state.chatLoading = false;
@@ -332,7 +382,11 @@ const aiSlice = createSlice({
                     content: action.payload.explanation,
                     timestamp: new Date().toISOString(),
                 };
-                state.chatHistory.push(explanationMessage);
+                if (state.activeContext?.levelId) {
+                    state.gameChatHistory.push(explanationMessage);
+                } else {
+                    state.chatHistory.push(explanationMessage);
+                }
             })
             .addCase(getExplanation.rejected, (state, action) => {
                 state.chatLoading = false;
@@ -346,6 +400,18 @@ const aiSlice = createSlice({
                 state.chatHistory = [];
             })
             .addCase(clearChatHistory.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            // Clear Level History
+            .addCase(clearLevelHistory.pending, (state) => {
+                state.chatLoading = true;
+            })
+            .addCase(clearLevelHistory.fulfilled, (state) => {
+                state.chatLoading = false;
+                state.gameChatHistory = [];
+            })
+            .addCase(clearLevelHistory.rejected, (state, action) => {
+                state.chatLoading = false;
                 state.error = action.payload as string;
             });
 
@@ -361,6 +427,13 @@ const aiSlice = createSlice({
             .addCase(transcribeAudio.rejected, (state, action) => {
                 state.chatLoading = false;
                 state.error = action.payload as string;
+            })
+            // Listen to level transitions to clear game history
+            .addCase("game/startLevel/fulfilled", (state) => {
+                state.gameChatHistory = [];
+            })
+            .addCase("game/completeLevel/fulfilled", (state) => {
+                state.gameChatHistory = [];
             });
     },
 });
@@ -375,6 +448,7 @@ export const {
     updateSenSettings,
     toggleSenAccessory,
     setActiveContext,
+    clearGameChatHistory,
 } = aiSlice.actions;
 
 export default aiSlice.reducer;

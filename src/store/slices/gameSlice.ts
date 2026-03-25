@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import {gameService} from "@/services";
+import {clearLevelHistory} from "./aiSlice";
 import type {GameProgress, Chapter, Level, GameSession, LeaderboardEntry, Badge, Museum} from "@/types";
 
 // State interface
@@ -144,9 +145,13 @@ export const fetchLevelDetail = createAsyncThunk(
 );
 
 // Start level
-export const startLevel = createAsyncThunk("game/startLevel", async (levelId: number, {rejectWithValue}) => {
+export const startLevel = createAsyncThunk("game/startLevel", async (levelId: number, {rejectWithValue, dispatch}) => {
   try {
     const data = await gameService.startLevel(levelId);
+    // Clear AI History for this level to ensure a "mới tinh" start
+    if (levelId) {
+      dispatch(clearLevelHistory({ levelId }));
+    }
     return data;
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to start level");
@@ -159,6 +164,10 @@ export const completeLevel = createAsyncThunk(
   async (payload: {levelId: number; score: number; timeSpent: number}, {rejectWithValue, dispatch}) => {
     try {
       const result = await gameService.completeLevel(payload.levelId, payload.score, payload.timeSpent);
+      // Clear AI History for this level to ensure a "mới tinh" start next time
+      if (payload.levelId) {
+        dispatch(clearLevelHistory({ levelId: payload.levelId }));
+      }
       // Refresh progress and chapters after completing level
       dispatch(fetchProgress());
       dispatch(fetchChapters());
