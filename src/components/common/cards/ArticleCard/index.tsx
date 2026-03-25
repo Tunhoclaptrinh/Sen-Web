@@ -57,7 +57,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     data.thumbnail;
   const imageUrl = getImageUrl(
     rawImage,
-    type === "collection" ? "/images/collection-placeholder.jpg" : "https://via.placeholder.com/800x600",
+    type === "collection" ? "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355940/sen_web/static/public/images/Game.png" : "https://via.placeholder.com/800x600",
   );
 
   const normalizedTitle = normalizeVietnamese(data.name || data.title);

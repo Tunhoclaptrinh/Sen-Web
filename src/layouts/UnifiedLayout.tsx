@@ -3,7 +3,7 @@ import {ProLayout, ProLayoutProps} from "@ant-design/pro-components";
 import {Dropdown, Avatar, theme, Tag} from "antd";
 import {UserOutlined, LogoutOutlined} from "@ant-design/icons";
 import {useLocation, useNavigate} from "react-router-dom";
-import logo from "@/assets/images/logo.png";
+const logo = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 
 export interface UnifiedLayoutProps extends ProLayoutProps {
   user?: {

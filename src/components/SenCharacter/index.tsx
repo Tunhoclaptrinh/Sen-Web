@@ -1,13 +1,16 @@
 // @ts-nocheck
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Sprite, useTick } from "@pixi/react";
+import { IMAGE_MAPPING } from "@/config/imageMapping";
 
 const getCharacterAsset = (name) => {
-  return new URL(`../../assets/images/character/${name}`, import.meta.url).href;
+  const localPath = `src/assets/images/character/${name}`;
+  return IMAGE_MAPPING[localPath] || new URL(`../../assets/images/character/${name}`, import.meta.url).href;
 };
 
 const getChibiAsset = (name) => {
-  return new URL(`../../assets/images/SenChibi/${name}`, import.meta.url).href;
+  const localPath = `src/assets/images/SenChibi/${name}`;
+  return IMAGE_MAPPING[localPath] || new URL(`../../assets/images/SenChibi/${name}`, import.meta.url).href;
 };
 
 const SenCharacter = ({

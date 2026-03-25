@@ -1,17 +1,17 @@
 import React from "react";
 import "./styles.less";
 
-import background_full from "@/assets/images/background/background-full.png";
-// import background_nothing from "@/assets/images/background/background-nothing.png";
-import background_nothing from "@/assets/images/background/background-red.png";
-import bronze_drum from "@/assets/images/background/bronze-drum.png";
-import lotus_1 from "@/assets/images/background/lotus-1.png";
-import lotus_2 from "@/assets/images/background/lotus-2.png";
-import lotus_3 from "@/assets/images/background/lotus-3.png";
-import smoke_left from "@/assets/images/background/smoke-left.png";
-import smoke_right from "@/assets/images/background/smoke-right.png";
-import leaf from "@/assets/images/background/leaf.png";
-import bird from "@/assets/images/background/bird.png";
+const background_full = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355993/sen_web/static/src/assets/images/background/background-full.jpg";
+// const background_nothing = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356010/sen_web/static/src/assets/images/background/background-nothing.jpg";
+const background_nothing = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356021/sen_web/static/src/assets/images/background/background-red.jpg";
+const bronze_drum = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356033/sen_web/static/src/assets/images/background/bronze-drum.png";
+const lotus_1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
+const lotus_2 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356043/sen_web/static/src/assets/images/background/lotus-2.png";
+const lotus_3 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356045/sen_web/static/src/assets/images/background/lotus-3.png";
+const smoke_left = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356055/sen_web/static/src/assets/images/background/smoke-left.png";
+const smoke_right = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
+const leaf = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356037/sen_web/static/src/assets/images/background/leaf.png";
+const bird = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356024/sen_web/static/src/assets/images/background/bird.png";
 import { BackgroundProps } from "./types";
 
 const Background: React.FC<BackgroundProps> = ({

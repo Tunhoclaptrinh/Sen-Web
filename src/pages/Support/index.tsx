@@ -54,7 +54,7 @@ const SupportPage: React.FC = () => {
 
       <div className="support-content-container">
         {/* Decoration - moved inside content */}
-        <img src="/images/hoatiettrongdong.png" className="bg-drum" alt="Decoration Drum Pattern" />
+        <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" className="bg-drum" alt="Decoration Drum Pattern" />
         {/* FAQ Section */}
         <div className="section-header">
           <Title level={2}>{t('support.faq.title')}</Title>

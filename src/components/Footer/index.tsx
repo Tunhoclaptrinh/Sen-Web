@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./styles.less";
 
-import logo from "@/assets/images/logo2.png";
-import lotus_1 from "@/assets/images/background/senhoacum.png";
-import lotus_2 from "@/assets/images/background/lotus-2.png";
-import lotus_3 from "@/assets/images/background/lotus-3.png";
-import smoke_right from "@/assets/images/background/smoke-right.png";
+const logo = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo2.png";
+const lotus_1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356048/sen_web/static/src/assets/images/background/senhoacum.png";
+const lotus_2 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356043/sen_web/static/src/assets/images/background/lotus-2.png";
+const lotus_3 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356045/sen_web/static/src/assets/images/background/lotus-3.png";
+const smoke_right = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
 
 const { Title, Text, Paragraph } = Typography;
 

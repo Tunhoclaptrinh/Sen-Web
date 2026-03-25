@@ -121,7 +121,7 @@ const ExhibitionDetailPage: React.FC = () => {
           title={t("exhibition.browse.title")}
           description={t("exhibition.browse.subtitle")}
           path={id ? `/exhibitions/${id}` : "/exhibitions"}
-          image="/images/Zero_home.png"
+          image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         />
         <div className="exhibition-detail-page">
           <div className="loading-container">
@@ -137,14 +137,14 @@ const ExhibitionDetailPage: React.FC = () => {
           title={t("exhibition.browse.title")}
           description={t("exhibition.browse.subtitle")}
           path="/exhibitions"
-          image="/images/Zero_home.png"
+          image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         />
         <Empty description={t('exhibition.detail.messages.notFound')} />
       </>
     );
 
   const rawImage = resolveImage(exhibition.image);
-  const heroImage = getImageUrl(rawImage, "/images/Zero_home.png"); // Fallback to generic if empty
+  const heroImage = getImageUrl(rawImage, "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"); // Fallback to generic if empty
   const detailPath = id ? `/exhibitions/${id}` : "/exhibitions";
   const seoDescription = toMetaDescription(
     exhibition.description || `${exhibition.name} - trien lam van hoa`

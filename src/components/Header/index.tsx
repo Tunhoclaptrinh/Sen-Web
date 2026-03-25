@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { logout } from '@/store/slices/authSlice';
 import { RootState } from '@/store';
-import logo from '@/assets/images/logo.png';
+const logo = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 import NotificationPopover from '@/components/common/NotificationPopover';
 import { setOverlayOpen } from '@/store/slices/aiSlice';
 import { getImageUrl } from "@/utils/image.helper";

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Input, InputNumber, Select, Row, Col, Form, Typography, Divider, Radio, Space, DatePicker } from "antd";
+import { Input, InputNumber, Select, Row, Col, Form, Typography, Divider, Radio, Space, DatePicker, Upload, Button, message } from "antd";
 import {
   SettingOutlined,
   CustomerServiceOutlined,
@@ -182,6 +182,17 @@ const LevelForm: React.FC<LevelFormProps> = ({
     };
     if (open && selectedChapterId) fetchLevels();
   }, [open, selectedChapterId, initialValues?.id]);
+
+  const handleMdUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      form.setFieldsValue({ gameLore: content });
+      message.success(`Đã đọc nội dung file ${file.name}`);
+    };
+    reader.readAsText(file);
+    return false; // Prevent upload to server
+  };
 
   const handleOk = async (values: any) => {
     // Transform related IDs back to numbers
@@ -423,14 +434,34 @@ const LevelForm: React.FC<LevelFormProps> = ({
           <Col span={24}>
             <Form.Item
               name="knowledgeBase"
-              label="Dữ liệu kiến thức dạy cho AI"
-              tooltip="Văn bản này sẽ được dùng để 'dạy' AI về bối cảnh của màn chơi này, giúp AI trả lời các câu hỏi của người chơi chính xác hơn."
+              label="Tóm tắt kiến thức (Prompt Context)"
+              tooltip="Văn bản ngắn gọn (khoảng 100-500 từ) để AI nắm bắt bối cảnh nhanh. Sẽ được đưa trực tiếp vào System Prompt."
             >
               <Input.TextArea
-                rows={6}
-                placeholder="Nhập kiến thức lịch sử, văn hóa hoặc bối cảnh cho màn chơi này (Plain text hoặc Markdown)..."
+                rows={3}
+                placeholder="Nhập tóm tắt bối cảnh màn chơi..."
                 showCount
                 maxLength={2000}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name="gameLore"
+              label="Kiến thức chuyên sâu (Game Lore MD)"
+              tooltip="Dữ liệu chi tiết dạng Markdown. Sẽ được AI 'nhúng' (embedding) để tìm kiếm khi cần. Bạn có thể tải file .md lên để điền nhanh nội dung."
+              extra={
+                <Upload beforeUpload={handleMdUpload} showUploadList={false} accept=".md">
+                  <Button icon={<CloudUploadOutlined />} size="small" style={{ marginTop: 8 }}>
+                    Tải file Markdown (.md)
+                  </Button>
+                </Upload>
+              }
+            >
+              <Input.TextArea
+                rows={10}
+                placeholder="Nội dung chi tiết cho RAG (Dùng Markdown để AI tra cứu tốt hơn)..."
+                showCount
               />
             </Form.Item>
           </Col>

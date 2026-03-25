@@ -273,7 +273,7 @@ const HeritageDetailPage = () => {
           title={t("heritage.browse.heroTitle")}
           description={t("heritage.browse.heroSubtitle")}
           path={id ? `/heritage-sites/${id}` : "/heritage-sites"}
-          image="/images/Zero_home.png"
+          image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         />
         <div className="loading-container">
           <Spin size="large" tip={t('common.loading')} />
@@ -287,7 +287,7 @@ const HeritageDetailPage = () => {
           title={t("heritage.browse.heroTitle")}
           description={t("heritage.browse.heroSubtitle")}
           path="/heritage-sites"
-          image="/images/Zero_home.png"
+          image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         />
         <Empty description={t('heritage.browse.empty')} />
       </>
