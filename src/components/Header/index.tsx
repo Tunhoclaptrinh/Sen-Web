@@ -11,7 +11,7 @@ import {
   FacebookOutlined,
   MessageOutlined,
 } from '@ant-design/icons';
-import { Layout, Typography, Menu, Input, Dropdown, Button, Drawer, Space, Avatar } from 'antd';
+import { Layout, Typography, Menu, Input, Dropdown, Button, Drawer, Space, Avatar, ConfigProvider } from 'antd';
 import type { MenuProps } from 'antd';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -86,7 +86,7 @@ const Header: React.FC = () => {
     if (location.pathname.startsWith('/artifacts')) return 'artifacts';
     if (location.pathname.startsWith('/history')) return 'history';
     if (location.pathname.startsWith('/exhibitions')) return 'exhibitions';
-    if (location.pathname.startsWith('/learn')) return 'learn';
+    if (location.pathname.startsWith('/game')) return 'game';
     if (location.pathname.startsWith('/map')) return 'map';
     if (location.pathname.startsWith('/support')) return 'support';
     if (location.pathname.startsWith('/poster')) return 'poster';
@@ -127,40 +127,57 @@ const Header: React.FC = () => {
       label: <Link to="/">{t('nav.home')}</Link>,
     },
     {
-      key: 'heritage',
-      label: <Link to="/heritage-sites">{t('nav.heritage')}</Link>,
+      key: 'exploration',
+      label: t('nav.exploration'),
+      popupClassName: "heritage-submenu-popup",
+      children: [
+        {
+          key: 'heritage',
+          label: <Link to="/heritage-sites">{t('nav.heritage')}</Link>,
+        },
+        {
+          key: 'artifacts',
+          label: <Link to="/artifacts">{t('nav.artifacts')}</Link>,
+        },
+        {
+          key: 'history',
+          label: <Link to="/history">{t('nav.history')}</Link>,
+        },
+      ],
     },
     {
-      key: 'artifacts',
-      label: <Link to="/artifacts">{t('nav.artifacts')}</Link>,
+      key: 'experience',
+      label: t('nav.experience'),
+      popupClassName: "heritage-submenu-popup",
+      children: [
+        {
+          key: 'game',
+          label: <Link to="/game/chapters">{t('nav.learn_game')}</Link>,
+        },
+        {
+          key: 'map',
+          label: <Link to="/map">{t('nav.map')}</Link>,
+        },
+        {
+          key: 'exhibitions',
+          label: <Link to="/exhibitions">{t('nav.exhibitions')}</Link>,
+        },
+      ],
     },
     {
-      key: 'map',
-      label: <Link to="/map">{t('nav.map')}</Link>,
-    },
-    {
-      key: 'history',
-      label: <Link to="/history">{t('nav.history')}</Link>,
-    },
-    {
-      key: 'exhibitions',
-      label: <Link to="/exhibitions">{t('nav.exhibitions')}</Link>,
-    },
-    {
-      key: 'learn',
-      label: <Link to="/game/learning">{t('nav.learn')}</Link>,
-    },
-    {
-      key: 'game',
-      label: <Link to="/game/chapters">{t('nav.game')}</Link>,
-    },
-    {
-      key: 'support',
-      label: <Link to="/support">{t('nav.support')}</Link>,
-    },
-    {
-      key: 'poster',
-      label: <Link to="/poster">{t('nav.poster')}</Link>,
+      key: 'other',
+      label: t('nav.other'),
+      popupClassName: "heritage-submenu-popup",
+      children: [
+        {
+          key: 'support',
+          label: <Link to="/support">{t('nav.support')}</Link>,
+        },
+        {
+          key: 'poster',
+          label: <Link to="/poster">{t('nav.poster')}</Link>,
+        },
+      ],
     },
   ];
 
@@ -215,12 +232,28 @@ const Header: React.FC = () => {
         {/* Desktop Menu */}
         {!isMobile && (
           <div className="header-center">
-            <Menu
-              mode="horizontal"
-              selectedKeys={[getActiveKey()]}
-              items={navMenuItems}
-              className="desktopMenu"
-            />
+            <ConfigProvider
+              theme={{
+                components: {
+                  Menu: {
+                    itemColor: "rgba(255, 255, 255, 0.95)", // Default to white for Heritage style
+                    itemSelectedColor: "#d4a574",
+                    itemHoverColor: "#d4a574",
+                    itemBg: "transparent",
+                    colorBgElevated: "rgba(110, 10, 10, 0.98)", // Dropdown background
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: 16,
+                  },
+                },
+              }}
+            >
+              <Menu
+                mode="horizontal"
+                selectedKeys={[getActiveKey()]}
+                items={navMenuItems}
+                className="desktopMenu"
+              />
+            </ConfigProvider>
           </div>
         )}
 
@@ -298,13 +331,28 @@ const Header: React.FC = () => {
           />
 
           {/* Mobile Menu */}
-          <Menu
-            mode="vertical"
-            selectedKeys={[getActiveKey()]}
-            items={navMenuItems}
-            className="mobile-nav-menu"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          <ConfigProvider
+            theme={{
+              components: {
+                Menu: {
+                  itemColor: "var(--text-color-secondary)",
+                  itemSelectedColor: "#d4a574",
+                  itemHoverColor: "#d4a574",
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: 16,
+                  itemBg: "transparent",
+                },
+              },
+            }}
+          >
+            <Menu
+              mode="vertical"
+              selectedKeys={[getActiveKey()]}
+              items={navMenuItems}
+              className="mobile-nav-menu"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          </ConfigProvider>
 
           {/* Mobile Auth Buttons */}
           {!isAuthenticated && (
