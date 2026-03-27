@@ -1,0 +1,20 @@
+{
+  "name": "SEN",
+  "short_name": "SEN",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d4a574",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355915/sen_web/static/public/images/Game.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355915/sen_web/static/public/images/Game.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
