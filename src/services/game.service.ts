@@ -366,6 +366,23 @@ class GameService extends BaseService {
     const response = await this.get("/scan-history");
     return response.data;
   }
+
+  /**
+   * Use a hint charge to get a spoiler/hint
+   * @param levelId - Current level ID
+   */
+  async useHintCharge(levelId: number): Promise<{
+    success: boolean;
+    hint: string;
+    remainingCharges: number;
+    newTotals?: {
+      coins: number;
+      petals: number;
+    };
+  }> {
+    const response = await this.post(`/levels/${levelId}/use-hint`);
+    return response.data;
+  }
 }
 
 export const gameService = new GameService();
