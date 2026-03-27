@@ -99,7 +99,7 @@ const ExhibitionBrowsePage: React.FC = () => {
                 title={t('exhibition.browse.title')}
                 description={t('exhibition.browse.subtitle')}
                 path="/exhibitions"
-                image="/images/Zero_home.png"
+                image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
                 keywords={["trien lam", "bao tang ao", "van hoa", "nghe thuat", "exhibition"]}
             />
 
@@ -212,7 +212,7 @@ const ExhibitionBrowsePage: React.FC = () => {
                     <section className="undiscovered-section">
                         <div className="bg-drum-container">
                             <img
-                                src="/images/hoatiettrongdong.png"
+                                src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png"
                                 alt="drum"
                                 className="bg-drum"
                             />

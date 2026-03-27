@@ -106,7 +106,7 @@ const LessonContent: React.FC<LessonContentProps> = ({ module, onContinue }) => 
           <div className="interactive-wrapper" style={{ textAlign: "center", margin: "32px 0", position: "relative" }}>
             <div
               style={{
-                background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${module.thumbnail || "/images/hoatiettrongdong.png"}) center/cover`,
+                background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${module.thumbnail || "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png"}) center/cover`,
                 borderRadius: 16,
                 padding: "60px 20px",
                 border: "2px solid var(--gold-border)",

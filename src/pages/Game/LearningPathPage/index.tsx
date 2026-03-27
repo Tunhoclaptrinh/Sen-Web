@@ -34,7 +34,7 @@ import learningService, { LearningModule } from "@/services/learning.service";
 import { useAuth } from "@/hooks/useAuth";
 import { StatisticsCard } from "@/components/common";
 import { motion, AnimatePresence } from "framer-motion";
-import defaultThumbnail from "@/assets/images/background/senhoacum.png";
+const defaultThumbnail = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356048/sen_web/static/src/assets/images/background/senhoacum.png";
 import "./styles.less";
 
 const LearningDetail = lazy(() => import("./LearningDetail"));

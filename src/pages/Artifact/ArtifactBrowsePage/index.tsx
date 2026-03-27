@@ -88,7 +88,7 @@ const ArtifactBrowsePage: React.FC = () => {
         title={t("artifact.browse.heroTitle")}
         description={t("artifact.browse.heroSubtitle")}
         path="/artifacts"
-        image="/images/Zero_home.png"
+        image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         keywords={["hien vat", "co vat", "lich su", "bao tang", "artifact"]}
       />
 
@@ -207,7 +207,7 @@ const ArtifactBrowsePage: React.FC = () => {
           {/* 4. Undiscovered Section (Grid) */}
           <section className="undiscovered-section">
             <div className="bg-drum-container">
-              <img src="/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
+              <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
             </div>
             <div className="section-content">
               <Title level={2} className="header-title">

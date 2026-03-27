@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAppDispatch } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
 import { login, register, googleLogin } from "../../store/slices/authSlice";
-import logo from "@/assets/images/logo2.png";
+const logo = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo2.png";
 import { motion, AnimatePresence } from "framer-motion";
 import Background from "@/components/Background";
 import {

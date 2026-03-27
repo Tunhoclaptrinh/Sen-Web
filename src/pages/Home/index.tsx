@@ -15,8 +15,8 @@ import SeoHead from "@/components/common/SeoHead";
 import { buildAbsoluteUrl } from "@/utils/seo.utils";
 import { usePrerenderReady } from "@/hooks/usePrerenderReady";
 import "./styles.less";
-import brandTitle from "../../assets/images/logo2.png";
-import headerLogo from "../../assets/images/logo.png";
+const brandTitle = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo2.png";
+const headerLogo = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 import Background from "@/components/Background";
 
 const { Title, Paragraph } = Typography;
@@ -81,7 +81,7 @@ const Home: React.FC = () => {
       "@type": "Organization",
       name: "SEN",
       url: buildAbsoluteUrl("/"),
-      logo: buildAbsoluteUrl("/images/logo.png"),
+      logo: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png",
     },
     {
       "@context": "https://schema.org",
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
         title="SEN - Kham pha di san van hoa Viet Nam"
         description={t("home.heroSubtitle")}
         path="/"
-        image="/images/Zero_home.png"
+        image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         keywords={[
           "di san van hoa",
           "lich su viet nam",
@@ -127,14 +127,14 @@ const Home: React.FC = () => {
 
       {/* 2. Mission Section (Sứ mệnh của Sen) */}
       <section className="mission-section">
-        <img src="/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
+        <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
         <div className="mission-bg-container">
-          <img src="/images/hoatiettrongdong.png" alt="" className={`mission-drum-img ${isShaking ? "shaking" : ""}`} />
+          <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" alt="" className={`mission-drum-img ${isShaking ? "shaking" : ""}`} />
         </div>
         <div className="mission-container">
           <div className="mission-image-col">
             <img
-              src="/images/Image.png" // Using one of the provided assets
+              src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355923/sen_web/static/public/images/Image.png" // Using one of the provided assets
               alt="Temple"
               className="mission-main-img"
             />
@@ -210,7 +210,7 @@ const Home: React.FC = () => {
         </div>
         <div className="artifacts-bg-container">
           <img
-            src="/images/hoatiettrongdong.png"
+            src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png"
             alt=""
             className={`artifacts-drum-img ${isShaking ? "shaking" : ""}`}
           />
@@ -248,7 +248,7 @@ const Home: React.FC = () => {
           <Row gutter={[48, 0]} align="stretch" className="game-container">
             <Col xs={24} lg={14}>
               <div className="game-image-wrapper">
-                <img src="/images/MapGame.png" alt="Game World" />
+                <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355929/sen_web/static/public/images/MapGame.jpg" alt="Game World" />
                 <div className="image-overlay-glow" />
               </div>
             </Col>
@@ -285,22 +285,22 @@ const Home: React.FC = () => {
 
       {/* 5. Bottom CTA Layout */}
       <section className="bottom-cta-section">
-        <img src="/images/hoatiettrongdong.png" alt="drum" className={`bg-drum-bottom ${isShaking ? "shaking" : ""}`} />
+        <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" alt="drum" className={`bg-drum-bottom ${isShaking ? "shaking" : ""}`} />
         <div className="bg-circle-images">
           {/* Using dummy images or reusing specific heritage/artifact images for the circle collage */}
           {sites?.[0] && (
             <div className="circle-img-wrapper side">
-              <img src={"/images/Ellipse_3.png"} alt="Deco" />
+              <img src={"https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355894/sen_web/static/public/images/Ellipse_3.png"} alt="Deco" />
             </div>
           )}
           {sites?.[1] && (
             <div className="circle-img-wrapper center">
-              <img src={"/images/Ellipse_4.png"} alt="Deco Main" />
+              <img src={"https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355899/sen_web/static/public/images/Ellipse_4.png"} alt="Deco Main" />
             </div>
           )}
           {sites?.[2] && (
             <div className="circle-img-wrapper side">
-              <img src={"/images/Ellipse_5.png"} alt="Deco" />
+              <img src={"https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355906/sen_web/static/public/images/Ellipse_5.png"} alt="Deco" />
             </div>
           )}
         </div>

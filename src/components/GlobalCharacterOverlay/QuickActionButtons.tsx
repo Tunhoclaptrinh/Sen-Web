@@ -11,7 +11,7 @@ import {
   ExperimentOutlined,
   CommentOutlined,
 } from "@ant-design/icons";
-import senHead from "@/assets/images/SenChibi/face.png";
+const senHead = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356213/sen_web/static/src/assets/images/SenChibi/face.png";
 import { setOverlayOpen } from "@/store/slices/aiSlice";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";

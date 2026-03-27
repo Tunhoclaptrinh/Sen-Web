@@ -83,7 +83,7 @@ const HistoryListPage: React.FC = () => {
         title={t("history.list.title")}
         description={t("history.list.subtitle")}
         path="/history"
-        image="/images/Zero_home.png"
+        image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         keywords={["bai viet lich su", "lich su viet nam", "van hoa", "history"]}
       />
 
@@ -176,7 +176,7 @@ const HistoryListPage: React.FC = () => {
           {/* 4. Undiscovered Section (Grid) */}
           <section className="undiscovered-section">
             <div className="bg-drum-container">
-              <img src="/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
+              <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
             </div>
             <div className="section-content">
               <Title level={2} className="header-title">

@@ -91,7 +91,8 @@ const renderMessageWithLinks = (text: string) => {
 const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) => {
   const { t } = useTranslation("translation", { keyPrefix: "chat" });
   const dispatch = useAppDispatch();
-  const { chatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings, activeContext } = useAppSelector((state) => state.ai);
+  const { chatHistory, gameChatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings, activeContext } = useAppSelector((state) => state.ai);
+  const activeHistory = activeContext?.levelId ? gameChatHistory : chatHistory;
   const { user } = useAppSelector((state) => state.auth);
 
   const [input, setInput] = useState("");
@@ -330,10 +331,15 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
   // Fetch history when opening
   useEffect(() => {
-    if (open && user && currentCharacter) {
-      dispatch(fetchChatHistory({ characterId: currentCharacter.id, limit: 50 }));
+    // Only fetch main chat history for the global context (no levelId)
+    // For levels, we start with a clean state and don't load old messages from DB
+    if (open && user && currentCharacter && !activeContext?.levelId) {
+      dispatch(fetchChatHistory({ 
+        characterId: currentCharacter.id, 
+        limit: 50 
+      }));
     }
-  }, [open, user, currentCharacter, dispatch]);
+  }, [open, user, currentCharacter, activeContext?.levelId, dispatch]);
 
   // Set default character if not present or force Sen on open
   useEffect(() => {
@@ -553,7 +559,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     if (open) {
       scrollToBottom();
     }
-  }, [chatHistory, streamingText, open]);
+  }, [activeHistory, streamingText, open]);
 
   // Cleanup on unmount or close
   useEffect(() => {
@@ -586,7 +592,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     if (!audioBase64) return;
 
     // 🎭 Restore emotion từ message khi replay
-    const message = chatHistory.find(m => m.id === messageId);
+    const message = activeHistory.find(m => m.id === messageId);
     if (message?.emotion) {
       dispatch(updateSenSettings({
         gesture: (message.emotion.gesture || 'normal') as 'normal' | 'hello' | 'point' | 'like' | 'flag' | 'hand_back',
@@ -858,7 +864,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                   if (currentCharacter) dispatch(clearChatHistory(currentCharacter.id));
                 }}
                 type="text"
-                disabled={chatHistory.length === 0}
+                disabled={activeHistory.length === 0}
               />
               <Button
                 className="control-button setting-button"
@@ -932,7 +938,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
               <div className="messages-overlay">
                 <div className="messages-container">
-                  {chatHistory.length === 0 && !loading && !streamingText && (
+                  {activeHistory.length === 0 && !loading && !streamingText && (
                     <div className="message assistant">
                       <div className="message-content">
                         <div className="message-bubble">
@@ -941,12 +947,12 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                       </div>
                     </div>
                   )}
-                  {chatHistory
+                  {activeHistory
                     .slice()
                     .map((message: ChatMessage, index: number) => {
                       // Tránh hiển thị trùng lặp khi đang stream tin nhắn mới nhất
                       const isLastAssistantMessage =
-                        index === chatHistory.length - 1 &&
+                        index === activeHistory.length - 1 &&
                         message.role === "assistant" &&
                         streamingText;
 
