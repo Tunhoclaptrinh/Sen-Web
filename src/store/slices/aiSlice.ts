@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { aiService } from '@/services';
 import type { AICharacter, ChatMessage, ChatResponse } from '@/types';
+import { applyHint as applyGameHint } from "@/store/slices/gameSlice";
 
 // Sen Character Settings interface
 export interface SenSettings {
@@ -43,7 +44,8 @@ interface AIState {
     // Active Context for Global Overlay
     activeContext: {
         levelId?: number;
-        screenId?: string; // Currently active screen (Quiz/HiddenObject)
+        screenId?: string; 
+        screenType?: string; // ⭐ Type of screen (DIALOGUE, QUIZ, etc.)
         artifactId?: number;
         heritageSiteId?: number;
         chatSessionId?: number; // ⭐ Game session ID for per-play chat isolation
@@ -133,7 +135,7 @@ export const sendChatMessage = createAsyncThunk(
     }
 );
 
-// Get hint
+// Get hint (Standard/Legacy)
 export const getHint = createAsyncThunk(
     'ai/getHint',
     async (params: { levelId: number; screenId?: number }, { rejectWithValue }) => {
@@ -434,6 +436,22 @@ const aiSlice = createSlice({
             })
             .addCase("game/completeLevel/fulfilled", (state) => {
                 state.gameChatHistory = [];
+            })
+            // Listen to game/applyHint/fulfilled to add the hint to chat history
+            .addCase(applyGameHint.fulfilled, (state, action) => {
+                const hintMessage: ChatMessage = {
+                    id: Date.now(),
+                    characterId: state.currentCharacter?.id || 0,
+                    userId: 0,
+                    role: 'assistant',
+                    content: action.payload.hint,
+                    timestamp: new Date().toISOString(),
+                };
+                if (state.activeContext?.levelId) {
+                    state.gameChatHistory.push(hintMessage);
+                } else {
+                    state.chatHistory.push(hintMessage);
+                }
             });
     },
 });

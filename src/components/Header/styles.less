@@ -150,13 +150,17 @@
     left: 0;
     border-bottom: none !important;
     
-    .ant-menu-item {
-      color: rgba(255, 255, 255, 0.8) !important;
+    .ant-menu-item, .ant-menu-submenu {
+      // Logic handled in condition-specific blocks below
       
-      &:hover, &.ant-menu-item-selected {
+      &:hover, &.ant-menu-item-selected, &.ant-menu-submenu-selected, &.ant-menu-submenu-active {
         color: var(--gold-color) !important;
         background: transparent !important;
         font-weight: 700 !important;
+      }
+      
+      .ant-menu-submenu-title {
+        color: inherit !important;
       }
     }
 
@@ -220,20 +224,98 @@
   width: 100%;
   font-family: @font-serif;
 
-  .ant-menu-item {
+  .ant-menu-item, .ant-menu-submenu {
     font-size: 16px;
     font-weight: 600; // Medium weight
     padding: 0 24px !important;
     transition: all 0.2s !important;
     top: 0; // Fix alignment
+    font-family: @font-serif;
 
     &::after {
       content: none !important; // Remove default underline if desired, or keep generic
     }
 
-    &-selected {
-      color: @secondary-color !important;
+    // Colors now managed by global header state blocks below
+
+    &-selected, &-active {
+      color: @gold !important;
       background: transparent !important;
+    }
+
+    .ant-menu-submenu-title {
+      padding: 0 !important;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: inherit !important;
+    }
+  }
+}
+
+// 2b. CONDITION-SPECIFIC COLORS (Critical for visibility)
+.main-header {
+  // Scenario: Home page at the top (Transparent Header)
+  &.is-transparent {
+    .ant-menu-item:not(.ant-menu-item-selected),
+    .ant-menu-submenu:not(.ant-menu-submenu-selected) .ant-menu-submenu-title {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+  }
+
+  // Scenario: Inner pages or Scrolled Home page (White Header)
+  &:not(.is-transparent) {
+    .ant-menu-item:not(.ant-menu-item-selected),
+    .ant-menu-submenu:not(.ant-menu-submenu-selected) .ant-menu-submenu-title {
+      color: #374151 !important;
+    }
+  }
+}
+
+// 3. PREMIUM HERITAGE DROPDOWN (Specific fix for custom popupClassName)
+:global {
+  .heritage-submenu-popup {
+    z-index: 2000 !important;
+
+    .ant-menu {
+      background: rgba(110, 10, 10, 0.98) !important; // Deep heritage red
+      border: 1px solid rgba(212, 165, 116, 0.5) !important; // Gold border
+      border-radius: 4px !important;
+      padding: 6px 0 !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+
+      // UNIVERSAL TEXT COLOR OVERRIDE (Nuclear Option)
+      &, *, span, a, .ant-menu-title-content, .ant-menu-item {
+         color: rgba(255, 255, 255, 0.95) !important;
+         font-family: @font-serif !important;
+      }
+
+      .ant-menu-item {
+        background: transparent !important;
+        font-family: @font-serif !important;
+        font-size: 16px !important; 
+        height: 48px !important;
+        line-height: 48px !important;
+        margin: 0 !important;
+        padding: 0 24px !important;
+        border-radius: 0 !important;
+        transition: all 0.3s !important;
+
+        // Hover states for all children
+        &:hover, &-selected, &-active {
+          background: rgba(255, 255, 255, 0.08) !important;
+          padding-left: 28px !important; // Subtle slide-in effect
+          
+          &, span, a, .ant-menu-title-content {
+            color: #d4a574 !important; // Gold branding
+          }
+        }
+      }
+    }
+
+    // Arrow fix if any
+    .ant-menu-submenu-arrow {
+      color: #d4a574 !important;
     }
   }
 }
@@ -307,10 +389,26 @@
       color: var(--text-color-secondary) !important;
 
       &:hover,
-      &.ant-menu-item-selected {
-        color: @secondary-color !important;
-        background: rgba(244, 63, 94, 0.05) !important;
+      &.ant-menu-item-selected,
+      &.ant-menu-submenu-selected {
+        color: @gold !important;
+        background: rgba(255, 255, 255, 0.05) !important;
       }
+    }
+
+    :global(.ant-menu-submenu-title) {
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      height: 50px !important;
+      line-height: 50px !important;
+      margin-bottom: 8px !important;
+      font-family: @font-serif !important;
+    }
+
+    // Direct fix for mobile nested items
+    :global(.ant-menu-sub) {
+      background: rgba(0, 0, 0, 0.1) !important;
+      border-radius: 8px;
     }
   }
 

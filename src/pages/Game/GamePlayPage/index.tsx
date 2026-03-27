@@ -94,10 +94,11 @@ const GamePlayPage: React.FC = () => {
       dispatch(setActiveContext({
         levelId: levelInfo.id,
         screenId: currentScreen.id,
+        screenType: currentScreen.type, // ⭐ Pass screen type
         chatSessionId: sessionId  // ⭐ Ties AI chat to this exact play session
       }));
     }
-  }, [currentScreen?.id, levelInfo?.id, sessionId, dispatch]);
+  }, [currentScreen?.id, currentScreen?.type, levelInfo?.id, sessionId, dispatch]);
 
   const triggerScoreAnimation = (points: number) => {
     if (points > 0) {
@@ -558,7 +559,8 @@ const GamePlayPage: React.FC = () => {
                 playClick();
                 dispatch(setActiveContext({ 
                   levelId: levelInfo?.id,
-                  screenId: currentScreen?.id 
+                  screenId: currentScreen?.id,
+                  screenType: currentScreen?.type 
                 }));
                 dispatch(setOverlayOpen({ open: true, mode: "absolute" }));
               }}

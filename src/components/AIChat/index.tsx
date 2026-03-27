@@ -94,9 +94,11 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
   const { chatHistory, gameChatHistory, currentCharacter, characters, chatLoading, isMuted, senSettings, activeContext } = useAppSelector((state) => state.ai);
   const activeHistory = activeContext?.levelId ? gameChatHistory : chatHistory;
   const { user } = useAppSelector((state) => state.auth);
+  const { progress } = useAppSelector((state) => state.game);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(0); // Track 3 hints per level
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [shouldHideCoat, setShouldHideCoat] = useState(false); // 👔 Control coat visibility
   const [isListening, setIsListening] = useState(false);
@@ -251,7 +253,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
 
       dataHistoryRef.current = [];
     }
-  }, [isListening]);
+  }, [isListening, t]);
 
   // Handle Cancel Recording
   const handleCancelRecording = () => {
@@ -551,6 +553,14 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     return () => observer.disconnect();
   }, [open]);
 
+    const prevLevelId = useRef<number | null>(null);
+    useEffect(() => {
+        if (activeContext?.levelId !== prevLevelId.current) {
+            setHintsUsed(0);
+            prevLevelId.current = activeContext?.levelId || null;
+        }
+    }, [activeContext?.levelId]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -776,24 +786,18 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
     }
   };
 
-  const handleSend = async () => {
-    if ((!input.trim() && !selectedFile) || loading || !currentCharacter) return;
+  const handleSend = async (forcedText?: string, extraContext?: { isSolvingState?: boolean }) => {
+    const userText = (forcedText || input).trim();
+    if ((!userText && !selectedFile) || loading || !currentCharacter) return;
 
     if (selectedFile) {
       // Implement upload logic here later
     }
 
-    if (!input.trim() && !selectedFile) return; // If only file was sent, and input is empty, we might want to return here if file upload is handled separately.
-    // However, based on the structure, it seems we proceed if either input or file exists.
-    // The previous guard `((!input.trim() && !selectedFile) || loading || !currentCharacter)` already handles the "nothing to send" case.
-    // This line might be redundant or intended for a different flow. I will keep it as per instruction.
-
     setLoading(true);
     setStreamingText("");
 
-    const userText = input.trim();
-    setInput("");
-    // setLoading(true); // This was already set above, removing redundancy based on instruction's placement.
+    if (!forcedText) setInput("");
 
     // Add user message to Redux
     dispatch(addUserMessage(userText));
@@ -802,7 +806,10 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       const response = await dispatch(sendChatMessage({
         characterId: currentCharacter.id,
         message: userText,
-        context: activeContext || undefined,
+        context: {
+          ...(activeContext || {}),
+          ...(extraContext || {})
+        },
       })).unwrap();
 
       // Extract from ChatResponse - message is a ChatMessage object
@@ -836,6 +843,15 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
       console.error("AI Chat Error Detail:", error);
       setLoading(false);
     }
+  };
+
+  const handleUseHint = async () => {
+    if (!activeContext?.levelId || !activeContext?.screenId || loading) return;
+    
+    // ⭐ One-stop hint: gửi tin nhắn kèm flag isSolvingState
+    // Backend sẽ tự động trừ 1 charge và cung cấp câu trả lời có spoiler
+    const hintPrompt = t("suggestions.superHint.prompt");
+    handleSend(hintPrompt, { isSolvingState: true });
   };
 
   return (
@@ -1038,12 +1054,49 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
               {/* Suggestions Overlay */}
               <div className="suggestions-overlay">
                 <div className="suggestions-container">
-                  {position === 'absolute' && activeContext?.levelId && (
-                    <div className="suggestion-chip" onClick={() => { setInput(t("suggestions.lessonHint.prompt")); handleSend(); }}>
-                      <BulbOutlined /> {t("suggestions.lessonHint.label")}
-                    </div>
+                  {activeContext?.levelId && (
+                    ["QUIZ", "HIDDEN_OBJECT", "TIMELINE"].includes(activeContext?.screenType || "") ? (
+                      <Tooltip 
+                        title={
+                          <div style={{ padding: '4px' }}>
+                            <div style={{ fontWeight: 600, marginBottom: 4 }}>Gợi ý cách giải thử thách</div>
+                            <div style={{ opacity: 0.9 }}>Số lần được dùng/màn: {3 - hintsUsed}/3</div>
+                            <div style={{ opacity: 0.9 }}>Hiện có: {progress?.hintCharges || 0}</div>
+                          </div>
+                        }
+                        placement="top"
+                      >
+                        <div 
+                          className={`suggestion-chip hint-plus-chip ${((progress?.hintCharges || 0) <= 0 || hintsUsed >= 3) ? 'disabled' : ''}`} 
+                          onClick={() => {
+                            if (hintsUsed >= 3) {
+                              message.error("Bác đã hết số lần gợi ý tối đa cho màn chơi này rồi (3/3)!");
+                              return;
+                            }
+                            if ((progress?.hintCharges || 0) > 0) {
+                              handleUseHint();
+                              setHintsUsed(prev => prev + 1);
+                            } else {
+                              message.warning("Bác đã hết lượt Gợi ý rồi!");
+                            }
+                          }}
+                          style={{ 
+                             borderColor: '#faad14', 
+                             color: '#faad14', 
+                             fontWeight: 'bold',
+                             opacity: (progress?.hintCharges || 0) <= 0 || hintsUsed >= 3 ? 0.5 : 1
+                          }}
+                        >
+                          <BulbOutlined /> Gợi ý đáp án
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <div className="suggestion-chip" onClick={() => { setInput(t("suggestions.lessonHint.prompt")); handleSend(); }}>
+                        <BulbOutlined /> {t("suggestions.lessonHint.label")}
+                      </div>
+                    )
                   )}
-                  {(activeContext?.artifactId || activeContext?.heritageSiteId) && (
+                   {(activeContext?.artifactId || activeContext?.heritageSiteId) && (
                     <div className="suggestion-chip" onClick={() => { setInput(t("suggestions.explainMore.prompt")); handleSend(); }}>
                       <InfoCircleOutlined /> {t("suggestions.explainMore.label")}
                     </div>
@@ -1138,7 +1191,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                       placeholder={user ? t("input.placeholderAuth") : t("input.placeholderGuest")}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      onPressEnter={handleSend}
+                      onPressEnter={() => handleSend()}
                       onPaste={handlePaste}
                       disabled={loading || chatLoading || !user}
                       style={{ fontSize: '18px' }}
@@ -1152,7 +1205,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                             arrow={false}
                             overlayStyle={{ zIndex: 20000 }}
                           >
-                            <Button
+                           <Button
                               type="text"
                               icon={<PlusOutlined />}
                               className="input-prefix-btn"
@@ -1162,7 +1215,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                         </Tooltip>
                       }
                       suffix={
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div className="input-suffix-group" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <Button
                             type="text"
                             icon={<AudioOutlined style={{ fontSize: '22px' }} />}
@@ -1176,7 +1229,7 @@ const AIChat: React.FC<AIChatProps> = ({ open, onClose, position = 'fixed' }) =>
                             <Button
                               type="text"
                               icon={<SendOutlined />}
-                              onClick={handleSend}
+                              onClick={() => handleSend()}
                               disabled={loading || chatLoading || (!input.trim() && !selectedFile)}
                               className="input-suffix-btn send-btn"
                               style={{ color: "#d24040" }} // Sen Red
