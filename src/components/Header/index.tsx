@@ -146,23 +146,16 @@ const Header: React.FC = () => {
       ],
     },
     {
-      key: 'experience',
-      label: t('nav.experience'),
-      popupClassName: "heritage-submenu-popup",
-      children: [
-        {
-          key: 'game',
-          label: <Link to="/game/chapters">{t('nav.learn_game')}</Link>,
-        },
-        {
-          key: 'map',
-          label: <Link to="/map">{t('nav.map')}</Link>,
-        },
-        {
-          key: 'exhibitions',
-          label: <Link to="/exhibitions">{t('nav.exhibitions')}</Link>,
-        },
-      ],
+      key: 'game',
+      label: <Link to="/game/chapters">{t('nav.learn_game')}</Link>,
+    },
+    {
+      key: 'map',
+      label: <Link to="/map">{t('nav.map')}</Link>,
+    },
+    {
+      key: 'exhibitions',
+      label: <Link to="/exhibitions">{t('nav.exhibitions')}</Link>,
     },
     {
       key: 'other',

@@ -95,7 +95,7 @@ const Home: React.FC = () => {
   return (
     <div className="home-page">
       <SeoHead
-        title="SEN - Kham pha di san van hoa Viet Nam"
+        title="SEN - Khám phá di sản văn hoá Việt Nam qua trải nghiệm tương tác"
         description={t("home.heroSubtitle")}
         path="/"
         image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
@@ -151,8 +151,8 @@ const Home: React.FC = () => {
               {t('home.mission.desc2')}
             </Paragraph>
             <div className="mission-actions">
-              <button className="action-btn green-btn" onClick={() => navigate("/game/chapters")}>
-                {t('home.actions.explore')}
+              <button className="action-btn green-btn" onClick={() => navigate("/history")}>
+                Bài viết
               </button>
               <button className="action-btn light-green-btn" onClick={() => navigate("/heritage-sites")}>
                 {t('home.actions.heritage')}
@@ -160,7 +160,7 @@ const Home: React.FC = () => {
               <button className="action-btn light-green-btn" onClick={() => navigate("/artifacts")}>
                 {t('home.actions.artifacts')}
               </button>
-              <button className="action-btn light-green-btn" onClick={() => navigate("/game/learning")}>
+              <button className="action-btn green-btn" onClick={() => navigate("/game/learning")}>
                 {t('home.actions.learn')}
               </button>
             </div>
