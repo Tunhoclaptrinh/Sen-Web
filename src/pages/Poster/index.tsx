@@ -4,6 +4,13 @@ import { Image, Modal, Select } from "antd";
 import { QRCodeSVG } from "qrcode.react";
 import { useTranslation } from "react-i18next";
 import "./styles.less";
+import {
+  AimOutlined,
+  CommentOutlined,
+  AppstoreAddOutlined,
+  RocketOutlined,
+  GlobalOutlined,
+} from "@ant-design/icons";
 import SenChibi from "@/components/SenChibi";
 
 // Import brand assets
@@ -34,6 +41,8 @@ interface RoadmapStage {
   id: number;
   phase: string;
   milestone: string;
+  icon?: string;
+  details?: string[];
 }
 
 interface ValuePropositionItem {
@@ -193,11 +202,70 @@ const problemItems: ProblemItem[] = [
 ];
 
 const roadmapStages: RoadmapStage[] = [
-  { id: 1, phase: "GĐ 1 (6 tháng)", milestone: "Chạy thử nghiệm tại PTIT" },
-  { id: 2, phase: "GĐ 2 (6 tháng)", milestone: "Thí điểm THCS (khối 6)" },
-  { id: 3, phase: "GĐ 3 (2 năm)", milestone: "Mở rộng B2B trường học" },
-  { id: 4, phase: "GĐ 4 (2 năm)", milestone: "B2C & Du lịch văn hóa" },
+  {
+    id: 1,
+    phase: "Q1/2026",
+    milestone: "MVP & Thử nghiệm (PTIT)",
+    icon: "target",
+    details: [
+      "Phát triển Minimum Viable Product với các tính năng cốt lõi.",
+      "Tích hợp hệ sinh thái P-Coin tại PTIT (~1.000 người dùng).",
+      "Đánh giá tính ổn định hệ thống và cơ chế game hóa ban đầu.",
+    ],
+  },
+  {
+    id: 2,
+    phase: "Q2-Q3/2026",
+    milestone: "Thí điểm & Phản hồi",
+    icon: "feedback",
+    details: [
+      "Triển khai thí điểm tại THCS Lê Lợi và nhóm thanh niên.",
+      "Quy mô thử nghiệm ~250 học sinh khối 6.",
+      "Tối ưu hóa học liệu số dựa trên phản hồi thực tế.",
+    ],
+  },
+  {
+    id: 3,
+    phase: "Q4/2026",
+    milestone: "Mở rộng tính năng",
+    icon: "expansion",
+    details: [
+      "Tích hợp xem hiện vật 3D tương tác.",
+      "Hệ thống AI Q&A phản hồi theo ngữ cảnh lịch sử.",
+      "Tính năng dịch đa ngôn ngữ và hệ thống thưởng P-Coin mở rộng.",
+    ],
+  },
+  {
+    id: 4,
+    phase: "2027",
+    milestone: "Ra mắt chính thức",
+    icon: "launch",
+    details: [
+      "Phát hành ứng dụng chính thức trên đa nền tảng.",
+      "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
+      "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học.",
+    ],
+  },
+  {
+    id: 5,
+    phase: "2028+",
+    milestone: "Quy mô B2C & Di sản",
+    icon: "scaling",
+    details: [
+      "Mở rộng thị trường B2C cho người dùng tự do.",
+      "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
+      "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt.",
+    ],
+  },
 ];
+
+const roadmapIconMap: Record<string, React.ReactNode> = {
+  target: <AimOutlined />,
+  feedback: <CommentOutlined />,
+  expansion: <AppstoreAddOutlined />,
+  launch: <RocketOutlined />,
+  scaling: <GlobalOutlined />,
+};
 
 const valuePropositionItems: ValuePropositionItem[] = [
   {
@@ -395,6 +463,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
+  const [selectedRoadmap, setSelectedRoadmap] = React.useState<RoadmapStage | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
   const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("sv-startup");
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
@@ -579,6 +648,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
     });
   };
 
+  const openRoadmapDetail = (item: RoadmapStage) => {
+    setSelectedRoadmap(item);
+  };
+
   const openSolutionOverviewDetail = () => {
     setMockupPreviewIndex(mockupDefaultIndex);
     setIsMockupPreviewOpen(true);
@@ -595,6 +668,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const closeInsightModal = () => {
     setSelectedInsight(null);
+  };
+
+  const closeRoadmapModal = () => {
+    setSelectedRoadmap(null);
   };
 
   const handleInsightKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, openDetail: () => void) => {
@@ -805,13 +882,64 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             <div className={roadmapContainerClassName} style={roadmapContainerStyle}>
               <div className="poster-roadmap-line"></div>
               <div className="poster-roadmap-steps">
-                {localizedRoadmapStages.map((stage) => (
-                  <div key={stage.id} className="roadmap-step">
-                    <div className="step-node"></div>
-                    <h5>{stage.phase}</h5>
-                    <p>{stage.milestone}</p>
-                  </div>
-                ))}
+                {localizedRoadmapStages.map((stage, index) => {
+                  const isBottom = index % 2 !== 0; // Odd index means Phase+Icon is on the bottom
+                  return (
+                    <div
+                      key={stage.id}
+                      className={`roadmap-step roadmap-step--interactive ${isBottom ? "roadmap-step--bottom" : "roadmap-step--top"}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Xem chi tiet lo trinh ${stage.phase}`}
+                      onClick={() => openRoadmapDetail(stage)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          openRoadmapDetail(stage);
+                        }
+                      }}
+                    >
+                      {/* TOP TIER */}
+                      <div className="step-content-above">
+                        {!isBottom ? (
+                          <div className="step-content-inner">
+                            <div className="roadmap-icon-box">{stage.icon ? roadmapIconMap[stage.icon] : null}</div>
+                            <div className="step-phase-text">{stage.phase}</div>
+                          </div>
+                        ) : (
+                          <div className="step-content-inner step-text-container">
+                            <h5 className="step-milestone-title">{stage.milestone}</h5>
+                            {stage.details && stage.details.length > 0 && (
+                              <p className="step-milestone-desc">{stage.details[0]}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* MIDDLE TIER */}
+                      <div className="step-node-wrapper">
+                        <div className="step-node"></div>
+                      </div>
+
+                      {/* BOTTOM TIER */}
+                      <div className="step-content-below">
+                        {!isBottom ? (
+                          <div className="step-content-inner step-text-container">
+                            <h5 className="step-milestone-title">{stage.milestone}</h5>
+                            {stage.details && stage.details.length > 0 && (
+                              <p className="step-milestone-desc">{stage.details[0]}</p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="step-content-inner">
+                            <div className="step-phase-text">{stage.phase}</div>
+                            <div className="roadmap-icon-box">{stage.icon ? roadmapIconMap[stage.icon] : null}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -1098,6 +1226,42 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                 <strong>{t("poster.modal.contactLabel", { defaultValue: "Liên hệ" })}:</strong> {selectedMember.contact}
               </div>
             </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        title={`${t("poster.sections.roadmap", { defaultValue: "Traction / Roadmap" })} - ${t("poster.modal.detailTitle", {
+          defaultValue: "Chi tiết",
+        })}`}
+        open={Boolean(selectedRoadmap)}
+        onCancel={closeRoadmapModal}
+        footer={null}
+        centered
+        width={620}
+      >
+        {selectedRoadmap && (
+          <div style={{ display: "grid", rowGap: 12 }}>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#3f1e1e", marginBottom: 6 }}>
+                {selectedRoadmap.milestone}
+              </div>
+              <div style={{ fontSize: 14, color: "#8b1d1d", fontWeight: 700, textTransform: "uppercase" }}>
+                {selectedRoadmap.phase}
+              </div>
+            </div>
+            {selectedRoadmap.details && selectedRoadmap.details.length > 0 && (
+              <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
+                  {t("poster.modal.detailInfoTitle", { defaultValue: "Thông tin chi tiết" })}
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 8, color: "#4b3a2a", fontSize: 14 }}>
+                  {selectedRoadmap.details.map((detail, index) => (
+                    <li key={index}>{detail}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
       </Modal>

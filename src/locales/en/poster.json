@@ -90,23 +90,60 @@
   "roadmapStages": [
     {
       "id": 1,
-      "phase": "Phase 1 (6 months)",
-      "milestone": "Pilot implementation at PTIT"
+      "phase": "Q1/2026",
+      "milestone": "MVP & Internal Testing",
+      "icon": "target",
+      "details": [
+        "Develop the Minimum Viable Product with core features.",
+        "Integrate the P-Coin ecosystem at partner university (~1,000 users).",
+        "Evaluate system stability and initial gamification mechanics."
+      ]
     },
     {
       "id": 2,
-      "phase": "Phase 2 (6 months)",
-      "milestone": "Middle-school pilot (Grade 6)"
+      "phase": "Q2-Q3/2026",
+      "milestone": "Real-world Pilot Feedback",
+      "icon": "feedback",
+      "details": [
+        "Deploy pilot at partner middle schools and youth groups.",
+        "Pilot scale of ~250 6th-grade students.",
+        "Optimize digital learning materials based on feedback."
+      ]
     },
     {
       "id": 3,
-      "phase": "Phase 3 (2 years)",
-      "milestone": "Expand B2B deployment in schools"
+      "phase": "Q4/2026",
+      "milestone": "Feature Expansion",
+      "icon": "expansion",
+      "details": [
+        "Integrate 3D Digital Museum and Augmented Reality (AR) technology.",
+        "Interactive multidimensional viewing: 360-degree rotation, material zoom-in, and structural layer breakdown of artifacts.",
+        "AR Camera feature: 'Summon' full-scale virtual artifacts into real-world environments for interactive photos.",
+        "AI Tour Guide System: Role-playing as historical figures to autonomously narrate the hidden stories behind scanned objects.",
+        "Expand P-Coin ecosystem: Redeem reward points for licensed virtual tour tickets or physical souvenirs."
+      ]
     },
     {
       "id": 4,
-      "phase": "Phase 4 (2 years)",
-      "milestone": "B2C rollout and cultural tourism expansion"
+      "phase": "2027",
+      "milestone": "Official Launch & Expansion",
+      "icon": "launch",
+      "details": [
+        "Release the official multi-platform application.",
+        "Implement large-scale marketing and media campaigns.",
+        "Establish strategic B2B partnerships with school networks."
+      ]
+    },
+    {
+      "id": 5,
+      "phase": "2028+",
+      "milestone": "B2C Scaling & Heritage Ecosystem",
+      "icon": "scaling",
+      "details": [
+        "Expand into the B2C market for independent users.",
+        "Deeply integrate digital experiences at museums and historical sites.",
+        "Allow users to co-create moderated content."
+      ]
     }
   ],
   "valuePropositionItems": [
