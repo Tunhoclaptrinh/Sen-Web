@@ -908,10 +908,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                           </div>
                         ) : (
                           <div className="step-content-inner step-text-container">
-                            <h5 className="step-milestone-title">{stage.milestone}</h5>
                             {stage.details && stage.details.length > 0 && (
                               <p className="step-milestone-desc">{stage.details[0]}</p>
                             )}
+                            <h5 className="step-milestone-title">{stage.milestone}</h5>
                           </div>
                         )}
                       </div>
