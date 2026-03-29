@@ -1,18 +1,18 @@
 {
   "tagline": "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ",
   "sections": {
-    "problem": "Problem",
-    "valueProposition": "Value Proposition",
-    "solution": "Solution",
-    "businessModel": "Business Model",
-    "roadmap": "Traction / Roadmap",
-    "team": "Team"
+    "problem": "Vấn đề",
+    "valueProposition": "Giải pháp giá trị",
+    "solution": "Giải pháp",
+    "businessModel": "Mô hình kinh doanh",
+    "roadmap": "Lộ trình phát triển",
+    "team": "Đội ngũ"
   },
   "labels": {
-    "sectionProblem": "Problem",
-    "sectionValueProposition": "Value Proposition",
-    "sectionBusinessModel": "Business Model",
-    "sectionSolution": "Solution"
+    "sectionProblem": "Vấn đề",
+    "sectionValueProposition": "Giải pháp giá trị",
+    "sectionBusinessModel": "Mô hình kinh doanh",
+    "sectionSolution": "Giải pháp"
   },
   "solutionOverview": {
     "title": "Nền tảng kiến tạo trải nghiệm",
