@@ -90,23 +90,60 @@
   "roadmapStages": [
     {
       "id": 1,
-      "phase": "GĐ 1 (6 tháng)",
-      "milestone": "Chạy thử nghiệm tại PTIT"
+      "phase": "Q1/2026",
+      "milestone": "MVP & Thử nghiệm nội bộ",
+      "icon": "target",
+      "details": [
+        "Phát triển Minimum Viable Product với các tính năng cốt lõi.",
+        "Tích hợp hệ sinh thái P-Coin tại trường Đại học đối tác (~1.000 người dùng).",
+        "Đánh giá tính ổn định hệ thống và cơ chế game hóa ban đầu."
+      ]
     },
     {
       "id": 2,
-      "phase": "GĐ 2 (6 tháng)",
-      "milestone": "Thí điểm THCS (khối 6)"
+      "phase": "Q2-Q3/2026",
+      "milestone": "Thí điểm thực tế",
+      "icon": "feedback",
+      "details": [
+        "Triển khai thí điểm tại các trường THCS đối tác và nhóm thanh niên.",
+        "Quy mô thử nghiệm ~250 học sinh khối 6.",
+        "Tối ưu hóa học liệu số dựa trên phản hồi thực tế."
+      ]
     },
     {
       "id": 3,
-      "phase": "GĐ 3 (2 năm)",
-      "milestone": "Mở rộng B2B trường học"
+      "phase": "Q4/2026",
+      "milestone": "Mở rộng tính năng",
+      "icon": "expansion",
+      "details": [
+        "Tích hợp hệ thống Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
+        "Trải nghiệm tương tác đa chiều: Xoay 360 độ, phóng to soi cấu trúc vật liệu và bóc tách từng lớp cấu tạo của hiện vật.",
+        "AR Camera: 'Triệu hồi' và ghép các hiện vật ảo có kích thước chuẩn vào không gian thực để chụp ảnh lưu niệm.",
+        "Hệ thống AI Tour Guide hóa thân thành các vĩ nhân lịch sử, tự động kể câu chuyện ẩn sau mỗi hiện vật được quét.",
+        "Mở rộng hệ sinh thái P-Coin: Đổi điểm thưởng lấy vé tham quan ảo có bản quyền hoặc quà lưu niệm thực tế."
+      ]
     },
     {
       "id": 4,
-      "phase": "GĐ 4 (2 năm)",
-      "milestone": "B2C và Du lịch văn hóa"
+      "phase": "2027",
+      "milestone": "Ra mắt chính thức",
+      "icon": "launch",
+      "details": [
+        "Phát hành ứng dụng chính thức trên đa nền tảng.",
+        "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
+        "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học."
+      ]
+    },
+    {
+      "id": 5,
+      "phase": "2028+",
+      "milestone": "Quy mô B2C & Di sản",
+      "icon": "scaling",
+      "details": [
+        "Mở rộng thị trường B2C cho người dùng tự do.",
+        "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
+        "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt."
+      ]
     }
   ],
   "valuePropositionItems": [

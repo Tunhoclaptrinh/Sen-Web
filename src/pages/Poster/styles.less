@@ -791,23 +791,40 @@
 
       .roadmap-section {
         .poster-roadmap-container {
-          --roadmap-columns: 4;
+          --roadmap-columns: 5;
           position: relative;
-          margin-top: 4px;
+          margin-top: 10px;
+          margin-bottom: 10px;
           flex: 1;
-          min-height: 0;
+          min-height: 140px;
           display: flex;
           align-items: center;
-          padding: 2px 0;
+          padding: 8px 0;
 
           .poster-roadmap-line {
             position: absolute;
-            top: 12px;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: #f0e0c0;
-            border-radius: 2px;
+            top: 50%;
+            left: 2%;
+            width: 96%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #8b1d1d 10%, #c5a065 50%, #ffd700 90%, transparent 100%);
+            border-radius: 1.5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-50%);
+            z-index: 1;
+
+            &::after {
+              content: "";
+              position: absolute;
+              top: 50%;
+              right: -4px;
+              width: 0;
+              height: 0;
+              border-top: 4px solid transparent;
+              border-bottom: 4px solid transparent;
+              border-left: 8px solid #ffd700;
+              transform: translateY(-50%);
+            }
           }
 
           .poster-roadmap-steps {
@@ -818,37 +835,149 @@
             gap: 4px;
             position: relative;
             text-align: center;
-            align-items: start;
+            align-items: stretch;
 
             .roadmap-step {
               min-width: 0;
               padding: 0 2px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              position: relative;
+              z-index: 2;
+              height: 100%;
+
+              &.roadmap-step--interactive {
+                cursor: pointer;
+                transition: transform 0.2s ease;
+
+                &:hover {
+                  .roadmap-icon-box {
+                    border-color: #8b1d1d;
+                    box-shadow: 0 4px 12px rgba(139, 29, 29, 0.2);
+                    transform: scale(1.05);
+                  }
+
+                  .step-node {
+                    transform: scale(1.3);
+                    background: #ffd700;
+                  }
+
+                  h5 {
+                    color: #8b1d1d;
+                  }
+                }
+              }
+
+              /* 3-tier DOM structure (ABSOLUTE Mathematically Centered) */
+              .step-content-above {
+                position: absolute;
+                bottom: 50%;
+                left: 0;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
+                padding-bottom: 12px; /* Clearance over the axis */
+              }
+
+              .step-node-wrapper {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                height: 0; 
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2;
+                transform: translateY(-50%);
+              }
+
+              .step-content-below {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding-top: 12px; /* Clearance under the axis */
+              }
+
+              .step-content-inner {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+              }
+
+              .step-text-container {
+                padding: 2px 4px; /* Shrunk padding */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+              }
+
+              .roadmap-icon-box {
+                width: 24px; /* Shrunk from 28 */
+                height: 24px;
+                background: #fff;
+                border: 1px solid #d4af37; /* Thinner border */
+                border-radius: 5px; 
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px; /* Smaller icon */
+                color: #8b1d1d; 
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+                transition: all 0.3s ease;
+                margin-bottom: 1px;
+              }
+
+              .step-phase-text {
+                font-family: @font-serif;
+                font-size: 8.5px; /* Shrunk from 10 */
+                color: #8b1d1d; 
+                margin: 2px 0; 
+                font-weight: 800;
+                line-height: 1.1;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                text-align: center;
+              }
 
               .step-node {
-                width: 12px;
+                width: 12px; /* Shrunk back from 14 so it fits tighter */
                 height: 12px;
-                background: #8b1d1d;
-                border: 3px solid #ffd700;
+                background: #ffd700; 
+                border: 2px solid #8b1d1d; 
                 border-radius: 50%;
-                margin: 0 auto 10px;
-                box-shadow: 0 0 0 2px #8b1d1d;
-              }
-
-              h5 {
-                font-family: @font-serif;
-                font-size: 11px;
-                color: #3f1e1e;
-                margin: 0 0 4px 0;
-                font-weight: 700;
-                line-height: 1.2;
-              }
-
-              p {
-                font-size: 9px;
-                color: #888;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                transition: all 0.25s ease;
                 margin: 0;
-                line-height: 1.25;
-                overflow-wrap: anywhere;
+              }
+
+              .step-milestone-title {
+                font-family: @font-serif;
+                font-size: 8.5px; /* Shrunk from 10.5 */
+                color: #d4af37; 
+                margin: 2px 0;
+                font-weight: 800;
+                line-height: 1.15;
+                text-align: center;
+              }
+
+              .step-milestone-desc {
+                font-size: 7.5px; /* Shrunk from 9.5 */
+                color: #5d4037; 
+                margin: 0;
+                font-weight: 600;
+                line-height: 1.3;
+                text-align: center;
+                max-width: 160%; /* Let text spread wider to reduce lines */
               }
             }
           }
