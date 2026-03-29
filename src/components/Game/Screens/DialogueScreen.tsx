@@ -69,7 +69,7 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
           typingTimerRef.current = null; // Clear ref after interval is done
           setIsTyping(false);
         }
-      }, 30); // Speed: 30ms
+      }, 15); // Speed: 15ms
 
       return () => {
         if (typingTimerRef.current) clearInterval(typingTimerRef.current);
@@ -81,10 +81,11 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
     }
   }, [currentIndex, currentDialogue]);
 
-  // Auto-scroll to bottom whenever text updates
+  // Auto-scroll logic - Throttle or only on index change to avoid layout thrashing
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [displayedText, currentIndex]);
+  }, [currentIndex]); // Only scroll when dialogue changes, not every character
+
 
   const handleNextDialogue = () => {
     if (isTyping) {
@@ -133,7 +134,11 @@ const DialogueScreen: React.FC<Props> = ({ data, onNext, loading }) => {
               <Stage
                 width={280}
                 height={400}
-                options={{ backgroundAlpha: 0 }}
+                options={{ 
+                  backgroundAlpha: 0, 
+                  antialias: true, 
+                  resolution: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1 
+                }}
                 style={{
                   position: "absolute",
                   bottom: -100,

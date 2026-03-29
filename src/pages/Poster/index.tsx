@@ -14,14 +14,14 @@ import {
 import SenChibi from "@/components/SenChibi";
 
 // Import brand assets
-import logoPng from "../../assets/images/logo.png";
+const logoPng = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 import PINNOVATION_LOGO from "./PITCHING_DAY.png";
-import smokeLeft from "../../assets/images/background/smoke-left.png";
-import smokeRight from "../../assets/images/background/smoke-right.png";
-import lotus1 from "../../assets/images/background/lotus-1.png";
-import lotus2 from "../../assets/images/background/lotus-2.png";
-import lotus3 from "../../assets/images/background/lotus-3.png";
-import bronzeDrum from "../../assets/images/background/bronze-drum.png";
+const smokeLeft = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356055/sen_web/static/src/assets/images/background/smoke-left.png";
+const smokeRight = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
+const lotus1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
+const lotus2 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356043/sen_web/static/src/assets/images/background/lotus-2.png";
+const lotus3 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356045/sen_web/static/src/assets/images/background/lotus-3.png";
+const bronzeDrum = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356033/sen_web/static/src/assets/images/background/bronze-drum.png";
 
 interface PosterPageProps {
   standalone?: boolean;
@@ -105,14 +105,14 @@ const imageProdModules = import.meta.glob("./ImageProd/**/*.{png,jpg,jpeg,webp,a
   eager: true,
   import: "default",
 }) as Record<string, string>;
-const defaultMockupImage = new URL("./ImageProd/Mockup.png", import.meta.url).href;
+const defaultMockupImage = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774359072/sen_web/static/src/pages/Poster/ImageProd/Mockup.jpg";
 
 const teamMembers: TeamMember[] = [
   {
     id: 1,
     name: "Nguyễn Văn Hiếu",
     role: "AI Engineer",
-    avatar: new URL("./Photo/Hieu.JPG", import.meta.url).href,
+    avatar: new URL("https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357030/sen_web/static/src/pages/Poster/Photo/Hieu.jpg", import.meta.url).href,
     department: "Công nghệ",
     specialization: "AI, tích hợp mô hình và tối ưu hội thoại",
     contact: "0917579522 | nguyenhieu32005@gmail.com",
@@ -121,7 +121,7 @@ const teamMembers: TeamMember[] = [
     id: 2,
     name: "Nguyễn Tiến Tuấn",
     role: "Lead/Tech/Product",
-    avatar: new URL("./Photo/Tuan.jpg", import.meta.url).href,
+    avatar: new URL("https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357064/sen_web/static/src/pages/Poster/Photo/Tuan.jpg", import.meta.url).href,
     department: "Sản phẩm",
     specialization: "Dẫn dắt đội nhóm, định hướng sản phẩm, phát giao diện, kiến trúc hệ thống,...",
     contact: "0945650883 | tuannguyentien16@gmail.com",
@@ -130,7 +130,7 @@ const teamMembers: TeamMember[] = [
     id: 3,
     name: "Trần Thành Duy",
     role: "Developer/Presenter",
-    avatar: new URL("./Photo/Duy.JPG", import.meta.url).href,
+    avatar: new URL("https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356936/sen_web/static/src/pages/Poster/Photo/Duy.jpg", import.meta.url).href,
     department: "Phát triển",
     specialization: "Vận hành, giao diện, demo sản phẩm và trình bày",
     contact: "0866028877 | dandythenubit@gmail.com",
@@ -139,7 +139,7 @@ const teamMembers: TeamMember[] = [
     id: 4,
     name: "Phan Thị Thu Nguyệt",
     role: "Designer/Communications",
-    avatar: new URL("./Photo/Nguyet.jpg", import.meta.url).href,
+    avatar: new URL("https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357034/sen_web/static/src/pages/Poster/Photo/Nguyet.jpg", import.meta.url).href,
     department: "Thiết kế",
     specialization: "UI/UX và truyền thông nội dung",
     contact: "0389829196 | phanthithunguyet628@gmail.com",
@@ -151,7 +151,7 @@ const teamMembers: TeamMember[] = [
     department: "Kinh doanh",
     specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
     contact: "0389829196 | buiyen2004yen@gmail.com",
-    avatar: new URL("./Photo/Yen.jpg", import.meta.url).href,
+    avatar: new URL("https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357068/sen_web/static/src/pages/Poster/Photo/Yen.jpg", import.meta.url).href,
   },
 ];
 
@@ -537,14 +537,14 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
     const sortedEntries = Object.entries(imageProdModules).sort(([pathA], [pathB]) => pathA.localeCompare(pathB));
 
     if (sortedEntries.length === 0) {
-      return [{ path: "./ImageProd/Mockup.png", url: defaultMockupImage }];
+      return [{ path: "./ImageProd/Mockup.webp", url: defaultMockupImage }];
     }
 
     return sortedEntries.map(([path, url]) => ({ path, url }));
   }, []);
 
   const mockupDefaultIndex = React.useMemo(() => {
-    const exactRootMockupIndex = mockupGalleryEntries.findIndex(({ path }) => path === "./ImageProd/Mockup.png");
+    const exactRootMockupIndex = mockupGalleryEntries.findIndex(({ path }) => path === "./ImageProd/Mockup.webp");
     if (exactRootMockupIndex >= 0) {
       return exactRootMockupIndex;
     }

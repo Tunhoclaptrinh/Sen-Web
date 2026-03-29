@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import {gameService} from "@/services";
+import {clearLevelHistory} from "./aiSlice";
 import type {GameProgress, Chapter, Level, GameSession, LeaderboardEntry, Badge, Museum} from "@/types";
 
 // State interface
@@ -144,9 +145,13 @@ export const fetchLevelDetail = createAsyncThunk(
 );
 
 // Start level
-export const startLevel = createAsyncThunk("game/startLevel", async (levelId: number, {rejectWithValue}) => {
+export const startLevel = createAsyncThunk("game/startLevel", async (levelId: number, {rejectWithValue, dispatch}) => {
   try {
     const data = await gameService.startLevel(levelId);
+    // Clear AI History for this level to ensure a "mới tinh" start
+    if (levelId) {
+      dispatch(clearLevelHistory({ levelId }));
+    }
     return data;
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to start level");
@@ -159,6 +164,10 @@ export const completeLevel = createAsyncThunk(
   async (payload: {levelId: number; score: number; timeSpent: number}, {rejectWithValue, dispatch}) => {
     try {
       const result = await gameService.completeLevel(payload.levelId, payload.score, payload.timeSpent);
+      // Clear AI History for this level to ensure a "mới tinh" start next time
+      if (payload.levelId) {
+        dispatch(clearLevelHistory({ levelId: payload.levelId }));
+      }
       // Refresh progress and chapters after completing level
       dispatch(fetchProgress());
       dispatch(fetchChapters());
@@ -243,6 +252,21 @@ export const useItem = createAsyncThunk(
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to use item");
+    }
+  },
+);
+
+// Use hint charge
+export const applyHint = createAsyncThunk(
+  "game/applyHint",
+  async (levelId: number, {rejectWithValue, dispatch}) => {
+    try {
+      const data = await gameService.useHintCharge(levelId);
+      // Refresh progress to update hintCharges and totals if present
+      dispatch(fetchProgress());
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to use hint");
     }
   },
 );
@@ -500,6 +524,35 @@ const gameSlice = createSlice({
         state.successMessage = `Sử dụng ${action.payload.item.name} thành công!`;
       })
       .addCase(useItem.rejected, (state, action) => {
+        state.error = action.payload as string;
+      });
+
+    // Sync Hint Charges from AI Chat (One-stop hint flow)
+    builder.addCase("ai/sendChatMessage/fulfilled", (state, action: any) => {
+      const remainingCharges = action.payload?.data?.remainingCharges;
+      if (state.progress && remainingCharges !== undefined) {
+        state.progress.hintCharges = remainingCharges;
+      }
+    });
+
+    // Use Hint (Legacy or specific endpoint)
+    builder
+      .addCase(applyHint.pending, (state) => {
+        state.sessionLoading = true;
+      })
+      .addCase(applyHint.fulfilled, (state, action) => {
+        state.sessionLoading = false;
+        state.successMessage = "Đã sử dụng 1 gợi ý!";
+        if (state.progress && action.payload.newTotals) {
+           state.progress.coins = action.payload.newTotals.coins;
+           state.progress.totalSenPetals = action.payload.newTotals.petals;
+        }
+        if (state.progress) {
+          state.progress.hintCharges = action.payload.remainingCharges;
+        }
+      })
+      .addCase(applyHint.rejected, (state, action) => {
+        state.sessionLoading = false;
         state.error = action.payload as string;
       });
   },

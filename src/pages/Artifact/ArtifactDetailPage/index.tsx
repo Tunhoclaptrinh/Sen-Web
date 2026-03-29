@@ -300,7 +300,7 @@ const ArtifactDetailPage = () => {
           title={t("artifact.browse.heroTitle")}
           description={t("artifact.browse.heroSubtitle")}
           path={id ? `/artifacts/${id}` : "/artifacts"}
-          image="/images/Zero_home.png"
+          image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         />
         <div className="loading-container">
           <Spin size="large" />
@@ -315,7 +315,7 @@ const ArtifactDetailPage = () => {
           title={t("artifact.browse.heroTitle")}
           description={t("artifact.browse.heroSubtitle")}
           path="/artifacts"
-          image="/images/Zero_home.png"
+          image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         />
         <Empty description={t('artifact.detail.messages.unknownArtifact')} />
       </>

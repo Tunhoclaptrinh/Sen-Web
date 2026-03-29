@@ -372,7 +372,7 @@ const MapPage: React.FC = () => {
               lng: lng,
               type: h.type || t("common.heritage"),
               province: h.province,
-              thumbnail: getFullImageUrl(h.mainImage || h.image || h.thumbnail) || "/images/placeholder-heritage.jpg",
+              thumbnail: getFullImageUrl(h.mainImage || h.image || h.thumbnail) || "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355948/sen_web/static/public/images/MapGame.png",
               itemType: ITEM_TYPES.HERITAGE,
             });
           }
@@ -408,7 +408,7 @@ const MapPage: React.FC = () => {
                     lng: lng,
                     type: a.artifactType || t("common.artifact"),
                     province: a.province || heritage.province || t("common.noInfo"),
-                    thumbnail: a.mainImage || a.image || "/images/placeholder-artifact.jpg",
+                    thumbnail: a.mainImage || a.image || "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355973/sen_web/static/public/images/Image.png",
                     itemType: ITEM_TYPES.ARTIFACT,
                     relatedLevelIds: a.relatedLevelIds,
                   });
@@ -424,7 +424,7 @@ const MapPage: React.FC = () => {
                     lng: lng,
                     type: a.artifactType || t("common.artifact"),
                     province: a.province || t("common.noInfo"),
-                    thumbnail: getFullImageUrl(a.mainImage || a.image || a.thumbnail) || "/images/placeholder-artifact.jpg",
+                    thumbnail: getFullImageUrl(a.mainImage || a.image || a.thumbnail) || "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355973/sen_web/static/public/images/Image.png",
                     itemType: ITEM_TYPES.ARTIFACT,
                     relatedLevelIds: a.relatedLevelIds,
                   });

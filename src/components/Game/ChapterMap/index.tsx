@@ -2,7 +2,7 @@ import React, {useMemo} from "react";
 import {Popover} from "antd";
 import {CheckOutlined, LockFilled, StarFilled} from "@ant-design/icons";
 import {Level} from "@/types";
-import bronze_drum from "@/assets/images/background/bronze-drum.png";
+const bronze_drum = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356033/sen_web/static/src/assets/images/background/bronze-drum.png";
 import LevelDetailCard from "./LevelDetailCard";
 
 const MAP_CONFIG = {

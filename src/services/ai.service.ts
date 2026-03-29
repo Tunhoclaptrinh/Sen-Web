@@ -39,6 +39,7 @@ export interface ChatMessage {
     }; // 🎭 Add emotion field
     context?: {
         levelId?: number;
+        screenId?: string;
         artifactId?: number;
         heritageSiteId?: number;
         recommendation?: {
@@ -66,6 +67,7 @@ class AIService extends BaseService {
         message: string;
         context?: {
             levelId?: number;
+            screenId?: string;
             artifactId?: number;
             heritageSiteId?: number;
         };
@@ -75,6 +77,7 @@ class AIService extends BaseService {
             context: {
                 characterId: data.characterId,
                 levelId: data.context?.levelId,
+                screenId: data.context?.screenId,
                 artifactId: data.context?.artifactId,
                 heritageSiteId: data.context?.heritageSiteId,
             }
@@ -99,9 +102,10 @@ class AIService extends BaseService {
     }
 
     // Get chat history
-    async getChatHistory(characterId?: number, limit: number = 50): Promise<ChatMessage[]> {
+    async getChatHistory(characterId?: number, limit: number = 50, levelId?: number): Promise<ChatMessage[]> {
         const params: any = { limit };
         if (characterId) params.characterId = characterId;
+        if (levelId) params.levelId = levelId;
         
         const response = await this.get('/history', params);
         // Backend now returns properly formatted ChatMessage[] with role user/assistant
@@ -141,9 +145,14 @@ class AIService extends BaseService {
     }
 
     // Clear chat history
-    async clearHistory(characterId?: number): Promise<{ success: boolean }> {
-        // Append characterId to query params if present
-        const path = characterId ? `/history?characterId=${characterId}` : '/history';
+    async clearHistory(characterId?: number, levelId?: number): Promise<{ success: boolean }> {
+        // Build query params
+        const params = new URLSearchParams();
+        if (characterId) params.append('characterId', characterId.toString());
+        if (levelId) params.append('levelId', levelId.toString());
+        
+        const queryString = params.toString();
+        const path = queryString ? `/history?${queryString}` : '/history';
         const response = await this.deleteRequest(path);
         return response.data || { success: true };
     }

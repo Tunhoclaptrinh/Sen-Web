@@ -13,6 +13,7 @@ export interface GameProgress {
   totalPoints: number;
   coins: number;
   totalSenPetals: number;
+  hintCharges: number;
   unlockedChapters: number[];
   completedLevels: number[];
   collectedCharacters: string[];

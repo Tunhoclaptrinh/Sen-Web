@@ -1,6 +1,5 @@
 # ============================================
-# SEN Frontend - Docker Compose (Production)
-# ============================================
+name: sen-frontend-prod
 
 services:
   sen-frontend:
@@ -8,8 +7,11 @@ services:
       context: ../..
       dockerfile: Docker/Production/Dockerfile
       args:
-        - VITE_API_BASE_URL=/api
-        - VITE_API_TIMEOUT=30000
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
+        - VITE_API_TIMEOUT=${VITE_API_TIMEOUT:-30000}
+        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+        - VITE_TOKEN_KEY=${VITE_TOKEN_KEY:-sen_token}
+        - VITE_USER_KEY=${VITE_USER_KEY:-sen_user}
     image: production-sen-frontend
     container_name: sen-frontend
     restart: always

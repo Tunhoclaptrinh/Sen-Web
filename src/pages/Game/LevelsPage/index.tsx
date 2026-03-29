@@ -15,8 +15,8 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import type { Level } from "@/types";
 import "./styles.less";
 
-import lotus_1 from "@/assets/images/background/lotus-1.png";
-import lotus_2 from "@/assets/images/background/lotus-2.png";
+const lotus_1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
+const lotus_2 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356043/sen_web/static/src/assets/images/background/lotus-2.png";
 
 const { Title } = Typography;
 import ChapterMap from "@/components/Game/ChapterMap";

@@ -172,13 +172,13 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
           if (p.isLabel || p.series.type === "map" || p.series.name === "World" || p.series.name === "Vietnam") return false;
 
           const image = p.image || p.thumbnail || p.mainImage || "";
-          const fullImageUrl = getImageUrl(image, "/images/placeholder-heritage.jpg");
+          const fullImageUrl = getImageUrl(image, "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355948/sen_web/static/public/images/MapGame.png");
           const hasImage = fullImageUrl && !fullImageUrl.includes("placeholder");
           const pointName = p.name || p.title || "Chưa có tên";
 
           const imgHtml = hasImage
             ? `<div style="height: 160px; width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background: #f0f0f0;">
-                  <img src="${fullImageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/images/placeholder-heritage.jpg'; this.onerror=null;"/>
+                  <img src="${fullImageUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355948/sen_web/static/public/images/MapGame.png'; this.onerror=null;"/>
                  </div>`
             : "";
 
@@ -262,7 +262,7 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
             province: loc.province,
             id: loc.id,
             type: loc.type || ITEM_TYPES.HERITAGE,
-            image: loc.image || loc.thumbnail || loc.mainImage || (loc.images && loc.images[0]) || "/images/placeholder-heritage.jpg",
+            image: loc.image || loc.thumbnail || loc.mainImage || (loc.images && loc.images[0]) || "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355948/sen_web/static/public/images/MapGame.png",
           })),
           marker: {
             symbol: "diamond",
@@ -289,7 +289,7 @@ const SimpleMap: React.FC<SimpleMapProps> = ({
             siteName: art.siteName,
             id: art.id,
             type: ITEM_TYPES.ARTIFACT,
-            image: art.image || art.mainImage || art.thumbnail || (art.images && art.images[0]) || "/images/placeholder-artifact.jpg",
+            image: art.image || art.mainImage || art.thumbnail || (art.images && art.images[0]) || "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355973/sen_web/static/public/images/Image.png",
           })),
           marker: {
             symbol: "diamond",

@@ -1,3 +1,5 @@
+name: sen-frontend-tunnel
+
 services:
   sen-tunnel-prod:
     image: cloudflare/cloudflared:latest

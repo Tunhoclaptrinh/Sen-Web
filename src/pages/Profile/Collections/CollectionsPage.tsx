@@ -122,7 +122,7 @@ const CollectionsPage = () => {
                                         shortDescription: col.description,
                                         createdAt: col.createdAt,
                                         totalItems: col.totalItems,
-                                        thumbnail: "/images/collection-placeholder.jpg"
+                                        thumbnail: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355940/sen_web/static/public/images/Game.png"
                                     }}
                                     actions={
                                         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', width: '100%' }}>

@@ -145,6 +145,21 @@
                     @media (max-width: 768px) {
                         font-size: 18px;
                     }
+
+                    .typing-cursor {
+                        display: inline-block;
+                        width: 10px;
+                        height: 24px;
+                        background-color: @seal-red;
+                        margin-left: 4px;
+                        vertical-align: middle;
+                        animation: blink 0.8s infinite;
+
+                        @media (max-width: 768px) {
+                            height: 20px;
+                            width: 8px;
+                        }
+                    }
                 }
 
                 .next-indicator {
@@ -517,6 +532,11 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 @keyframes bounce {

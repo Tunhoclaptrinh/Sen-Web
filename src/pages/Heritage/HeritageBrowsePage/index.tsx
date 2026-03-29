@@ -89,7 +89,7 @@ const HeritageBrowsePage: React.FC = () => {
         title={t("heritage.browse.heroTitle")}
         description={t("heritage.browse.heroSubtitle")}
         path="/heritage-sites"
-        image="/images/Zero_home.png"
+        image="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355946/sen_web/static/public/images/Zero_home.jpg"
         keywords={["di tich", "di san", "van hoa viet nam", "du lich", "heritage"]}
       />
 
@@ -216,7 +216,7 @@ const HeritageBrowsePage: React.FC = () => {
           {/* 4. Undiscovered Section (Grid) */}
           <section className="undiscovered-section">
             <div className="bg-drum-container">
-              <img src="/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
+              <img src="https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355964/sen_web/static/public/images/hoatiettrongdong.png" alt="drum" className="bg-drum" />
             </div>
             <div className="section-content">
               <Title level={2} className="header-title">

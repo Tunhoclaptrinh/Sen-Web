@@ -1,10 +1,12 @@
-// @ts-nocheck
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import * as PIXI from "pixi.js";
 import { Container, Sprite, useTick } from "@pixi/react";
+import { IMAGE_MAPPING } from "@/config/imageMapping";
 import { SenChibiProps } from "./types";
 
 const getAsset = (name: string) => {
-  return new URL(`../../assets/images/SenChibi/${name}`, import.meta.url).href;
+  const localPath = `src/assets/images/SenChibi/${name}`;
+  return IMAGE_MAPPING[localPath] || new URL(`../../assets/images/SenChibi/${name}`, import.meta.url).href;
 };
 
 const SenChibi: React.FC<SenChibiProps> = ({
@@ -26,24 +28,43 @@ const SenChibi: React.FC<SenChibiProps> = ({
   onClick,
 }) => {
   // Animation States
-  const [breathingScale, setBreathingScale] = useState(1);
-  const [breathingY, setBreathingY] = useState(0);
-  const [swayRotation, setSwayRotation] = useState(0);
+  const containerRef = useRef<PIXI.Container>(null);
   const [blinkState, setBlinkState] = useState(false);
   const [talkFrame, setTalkFrame] = useState(0);
 
-  // Tick for animations
+  // Tick for animations - DIRECT PIXI PROPERTY UPDATES (No React re-renders)
   useTick(() => {
+    const container = containerRef.current;
+    if (!container) return;
     const tick = Date.now() / 1000;
 
-    // 1. Breathing
-    setBreathingScale(1 + Math.sin(tick * 2) * 0.005);
-    setBreathingY(Math.sin(tick * 2) * 2);
+    // 1. Breathing (Directly update Container properties)
+    container.y = y + Math.sin(tick * 2) * 2;
+    container.scale.y = scale * (1 + Math.sin(tick * 2) * 0.005);
 
-    // 2. Swaying (Hair/Clothes)
-    setSwayRotation(Math.sin(tick * 1.5) * 0.02);
+    // 2. Swaying / Talking (Directly update Children properties)
+    const sway = Math.sin(tick * 1.5) * 0.02;
+    
+    // Efficiently update children based on their name
+    container.children.forEach((child: any) => {
+      if (!child.name) return;
 
-    // 3. Talking Animation
+      if (child.name === 'hair_back.png') child.rotation = sway * 0.5;
+      if (child.name === 'arm_right.png') child.rotation = -sway;
+      if (child.name === 'arm_left.png') child.rotation = sway;
+      if (child.name === 'hand_back.png') child.rotation = sway;
+      if (child.name === 'hand_point.png') child.rotation = sway;
+      if (child.name === 'hand_like.png') child.rotation = sway;
+      if (child.name === 'hair_font.png') child.rotation = sway * 0.2;
+      if (child.name === 'hair_top.png') child.rotation = sway * 0.4;
+      
+      // Dynamic hand/flag rotation
+      if (child.name === 'arm_hello.png') child.rotation = -Math.sin(tick * 5) * 0.05;
+      if (child.name === 'hand_flag.png') child.rotation = -Math.sin(tick * 3.3) * 0.05;
+    });
+
+    // 3. Talking Animation - We still use state here because it's only 10fps 
+    // and triggers a texture change (which React handles well).
     if (isTalking) {
       setTalkFrame(Math.floor(tick * 10) % 3); // 0, 1, 2
     }
@@ -72,9 +93,6 @@ const SenChibi: React.FC<SenChibiProps> = ({
 
   // Determine current textures
   const eyeTexture = useMemo(() => {
-    // Automatic blink uses "sleep" texture (closed eyes) or "close" (happy eyes).
-    // Usually a neutral blink is "sleep" or just closed.
-    // User requested "chớp mắt là chớp cả 2 mắt" (blink = both eyes).
     if (blinkState) return "eye_sleep.png";
 
     switch (eyeState) {
@@ -116,7 +134,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
     }
   }, [mouthState, isTalking, talkFrame]);
 
-  // Helper Part Component
+  // Helper Part Component - NOW PASSES NAME TO SPRITE
   const Part = ({
     name,
     xOfs = 0,
@@ -126,11 +144,12 @@ const SenChibi: React.FC<SenChibiProps> = ({
     vis = true,
     anchor = 0.5,
     scale = 1,
-    pivot = 0, // Added pivot
+    pivot = 0,
   }: any) => {
     if (!vis) return null;
     return (
       <Sprite
+        {...({ name } as any)}
         image={getAsset(name)}
         x={xOfs}
         y={yOfs}
@@ -146,10 +165,10 @@ const SenChibi: React.FC<SenChibiProps> = ({
   // Calculate pivot based on requested origin
   const pivotY = useMemo(() => {
     switch (origin) {
-      case 'head': return -1450; // Balanced top (no clipping)
-      case 'feet': return 500;   // Feet/Shoes
+      case 'head': return -1450;
+      case 'feet': return 500;
       case 'torso':
-      default: return -300;    // Visual center (stable for dragging)
+      default: return -300;
     }
   }, [origin]);
 
@@ -157,12 +176,13 @@ const SenChibi: React.FC<SenChibiProps> = ({
 
   return (
     <Container
+      ref={containerRef}
       x={x}
-      y={y + breathingY}
+      y={y}
       pivot={{ x: 0, y: pivotY }}
-      scale={{ x: scale, y: scale * breathingScale }}
+      scale={{ x: scale, y: scale }}
       sortableChildren={true}
-      interactive={interactive}
+      eventMode={interactive ? "static" : "none"}
       pointertap={onClick}
       cursor={interactive ? "pointer" : "default"}
     >
@@ -172,7 +192,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
         yOfs={-760}
         z={6}
         xOfs={-25}
-        rot={swayRotation * 0.5}
+        rot={0}
         scale={1}
       />
 
@@ -198,42 +218,35 @@ const SenChibi: React.FC<SenChibiProps> = ({
         vis={showCoat && gesture === "normal"}
       />
 
-      {/* 5. Arms & Gestures */}
-
-      {/* Right Arm (Always Static) */}
+      {/* 5. Arms \u0026 Gestures */}
       <Part
         name="arm_right.png"
         xOfs={270}
         yOfs={60}
         z={4}
-        rot={-swayRotation}
+        rot={0}
       />
 
-      {/* Left Side Logic */}
-
-      {/* 1. Normal Arm */}
       {gesture === "normal" && (
         <Part
           name="arm_left.png"
           xOfs={-300}
           yOfs={50}
           z={4}
-          rot={swayRotation}
+          rot={0}
         />
       )}
 
-      {/* 2. Base for Gestures (hand_back) - Visible for point, like, flag */}
       {["point", "like", "flag", "hello"].includes(gesture) && (
         <Part
           name="hand_back.png"
           yOfs={60}
           xOfs={-240}
           z={4}
-          rot={swayRotation}
+          rot={0}
         />
       )}
 
-      {/* 3. Specific Hand Parts */}
       {gesture === "hello" && (
         <Part
           name="arm_hello.png"
@@ -242,7 +255,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
           scale={0.7}
           z={6}
           pivot={{ x: 30, y: 120 }}
-          rot={-Math.sin(Date.now() / 200) * 0.05}
+          rot={0}
         />
       )}
       {gesture === "point" && (
@@ -252,7 +265,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
           yOfs={-60}
           z={6}
           scale={0.7}
-          rot={swayRotation}
+          rot={0}
         />
       )}
       {gesture === "like" && (
@@ -261,16 +274,16 @@ const SenChibi: React.FC<SenChibiProps> = ({
           xOfs={-400}
           yOfs={10}
           z={6}
-          rot={swayRotation}
+          rot={0}
         />
       )}
       {gesture === "flag" && (
         <Part
           name="hand_flag.png"
           xOfs={-380}
-          yOfs={-68} // Flag usually high
+          yOfs={-68}
           z={6}
-          rot={-Math.sin(Date.now() / 300) * 0.05}
+          rot={0}
         />
       )}
 
@@ -280,13 +293,14 @@ const SenChibi: React.FC<SenChibiProps> = ({
       {/* 7. Facial Features */}
       <Part name={eyeTexture} yOfs={-620} z={6} xOfs={-30} scale={1.02} />
       <Part name={mouthTexture} yOfs={-376} z={6} xOfs={-36} />
+
       {/* 8. Front Hair */}
       <Part
         name="hair_font.png"
         yOfs={-770}
         z={7}
         xOfs={-16}
-        rot={swayRotation * 0.2}
+        rot={0}
         scale={1}
       />
       <Part
@@ -294,7 +308,7 @@ const SenChibi: React.FC<SenChibiProps> = ({
         yOfs={-1200}
         z={8}
         xOfs={-20}
-        rot={swayRotation * 0.4}
+        rot={0}
       />
 
       {/* 9. Accessories */}

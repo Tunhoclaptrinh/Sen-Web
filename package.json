@@ -16,12 +16,12 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
     "test": "vitest",
     "type-check": "tsc --noEmit",
-    "prod:build": "docker compose -f Docker/Production/docker-compose.yml build",
-    "prod:start": "docker compose -f Docker/Production/docker-compose.yml up",
-    "prod:stop": "docker compose -f Docker/Production/docker-compose.yml down",
-    "tunnel:start": "docker compose -f Docker/Tunnel/docker-compose.yml up",
-    "tunnel:stop": "docker compose -f Docker/Tunnel/docker-compose.yml down",
-    "tunnel:logs": "docker compose -f Docker/Tunnel/docker-compose.yml logs -f"
+    "prod:build": "docker compose --env-file .env -f Docker/Production/docker-compose.yml build",
+    "prod:start": "docker compose --env-file .env -f Docker/Production/docker-compose.yml up",
+    "prod:stop": "docker compose --env-file .env -f Docker/Production/docker-compose.yml down",
+    "tunnel:start": "docker compose --env-file .env -f Docker/Tunnel/docker-compose.yml up",
+    "tunnel:stop": "docker compose --env-file .env -f Docker/Tunnel/docker-compose.yml down",
+    "tunnel:logs": "docker compose --env-file .env -f Docker/Tunnel/docker-compose.yml logs -f"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",

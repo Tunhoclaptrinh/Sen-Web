@@ -3,9 +3,9 @@ import heritageService from "@/services/heritage.service";
 import { message } from "antd";
 
 // Import local images for reliability
-import lotusImg from "@/assets/images/background/lotus-1.png";
-import senHoaCumImg from "@/assets/images/background/senhoacum.png";
-import backgroundFullImg from "@/assets/images/background/background-full.png";
+const lotusImg = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
+const senHoaCumImg = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356048/sen_web/static/src/assets/images/background/senhoacum.png";
+const backgroundFullImg = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774355993/sen_web/static/src/assets/images/background/background-full.jpg";
 
 const demoArtifacts = [
   {
