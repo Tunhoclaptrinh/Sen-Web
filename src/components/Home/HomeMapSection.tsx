@@ -7,6 +7,7 @@ import { ITEM_TYPES } from "@/config/constants";
 import heritageServiceReal from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
 import ExploreMap from "@/components/Map/ExploreMap";
+//import SimpleMap from "@/components/Map/SimpleMap";
 import "./HomeGame.less";
 import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
 
