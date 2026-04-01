@@ -10,6 +10,8 @@ import {
   AppstoreAddOutlined,
   RocketOutlined,
   GlobalOutlined,
+  FireOutlined,
+  TrophyOutlined,
 } from "@ant-design/icons";
 import SenChibi from "@/components/SenChibi";
 
@@ -205,56 +207,71 @@ const roadmapStages: RoadmapStage[] = [
   {
     id: 1,
     phase: "Q1/2026",
-    milestone: "MVP & Thử nghiệm (PTIT)",
+    milestone: "MVP & Internal Testing",
     icon: "target",
     details: [
-      "Phát triển Minimum Viable Product với các tính năng cốt lõi.",
-      "Tích hợp hệ sinh thái P-Coin tại PTIT (~1.000 người dùng).",
-      "Đánh giá tính ổn định hệ thống và cơ chế game hóa ban đầu.",
+      "Develop core features and conduct internal testing directly at PTIT.",
     ],
   },
   {
     id: 2,
     phase: "Q2-Q3/2026",
-    milestone: "Thí điểm & Phản hồi",
+    milestone: "Pilot Implementation",
     icon: "feedback",
     details: [
-      "Triển khai thí điểm tại THCS Lê Lợi và nhóm thanh niên.",
-      "Quy mô thử nghiệm ~250 học sinh khối 6.",
-      "Tối ưu hóa học liệu số dựa trên phản hồi thực tế.",
+      "Deploy pilot versions to early adopters (Private schools & Youth groups).",
+      "Gather feedback to optimize the platform.",
     ],
   },
   {
     id: 3,
     phase: "Q4/2026",
-    milestone: "Mở rộng tính năng",
+    milestone: "Tech Expansion",
     icon: "expansion",
     details: [
-      "Tích hợp xem hiện vật 3D tương tác.",
-      "Hệ thống AI Q&A phản hồi theo ngữ cảnh lịch sử.",
-      "Tính năng dịch đa ngôn ngữ và hệ thống thưởng P-Coin mở rộng.",
+      "Integrate Advanced AI Q&A and 3D artifacts.",
+      "Expand the P-Coin reward system.",
     ],
   },
   {
     id: 4,
-    phase: "2027",
-    milestone: "Ra mắt chính thức",
+    phase: "Q1-Q2/2027",
+    milestone: "Official B2B Launch",
     icon: "launch",
     details: [
-      "Phát hành ứng dụng chính thức trên đa nền tảng.",
-      "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
-      "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học.",
+      "Roll out the official platform to public schools.",
+      "Secure strategic institutional partnerships.",
     ],
   },
   {
     id: 5,
-    phase: "2028+",
-    milestone: "Quy mô B2C & Di sản",
+    phase: "Q3-Q4/2027",
+    milestone: "B2C & Heritage Expansion",
     icon: "scaling",
     details: [
-      "Mở rộng thị trường B2C cho người dùng tự do.",
-      "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
-      "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt.",
+      "Scale directly to Gen Z end-users.",
+      "Expand partnerships with national museums and heritage sites.",
+    ],
+  },
+  {
+    id: 6,
+    phase: "2028 (Year 3)",
+    milestone: "Break-even Point",
+    icon: "fire",
+    details: [
+      "Cross the break-even milestone.",
+      "Optimized tech infrastructure and steady B2B SaaS subscriptions.",
+    ],
+  },
+  {
+    id: 7,
+    phase: "2030 (Year 5)",
+    milestone: "7 Billion VND Revenue",
+    icon: "trophy",
+    details: [
+      "Achieve strong market penetration.",
+      "Accumulated revenue of over 15 Billion VND.",
+      "7 Billion VND Revenue in Year 5 alone.",
     ],
   },
 ];
@@ -265,6 +282,8 @@ const roadmapIconMap: Record<string, React.ReactNode> = {
   expansion: <AppstoreAddOutlined />,
   launch: <RocketOutlined />,
   scaling: <GlobalOutlined />,
+  fire: <FireOutlined />,
+  trophy: <TrophyOutlined />,
 };
 
 const valuePropositionItems: ValuePropositionItem[] = [
@@ -883,11 +902,12 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               <div className="poster-roadmap-line"></div>
               <div className="poster-roadmap-steps">
                 {localizedRoadmapStages.map((stage, index) => {
-                  const isBottom = index % 2 !== 0; // Odd index means Phase+Icon is on the bottom
+                  const isBottom = index % 2 !== 0;
+                  const iconClass = stage.icon ? ` roadmap-step--${stage.icon}` : "";
                   return (
                     <div
                       key={stage.id}
-                      className={`roadmap-step roadmap-step--interactive ${isBottom ? "roadmap-step--bottom" : "roadmap-step--top"}`}
+                      className={`roadmap-step roadmap-step--interactive${iconClass} ${isBottom ? "roadmap-step--bottom" : "roadmap-step--top"}`}
                       role="button"
                       tabIndex={0}
                       aria-label={`Xem chi tiet lo trinh ${stage.phase}`}

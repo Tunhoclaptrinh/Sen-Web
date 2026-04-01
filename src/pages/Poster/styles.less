@@ -791,7 +791,7 @@
 
       .roadmap-section {
         .poster-roadmap-container {
-          --roadmap-columns: 5;
+          --roadmap-columns: 7;
           position: relative;
           margin-top: 10px;
           margin-bottom: 10px;
@@ -950,10 +950,10 @@
               }
 
               .step-node {
-                width: 12px; /* Shrunk back from 14 so it fits tighter */
+                width: 12px;
                 height: 12px;
-                background: #ffd700; 
-                border: 2px solid #8b1d1d; 
+                background: #ffd700;
+                border: 2px solid #8b1d1d;
                 border-radius: 50%;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
                 transition: all 0.25s ease;
@@ -962,12 +962,63 @@
 
               .step-milestone-title {
                 font-family: @font-serif;
-                font-size: 8.5px; /* Shrunk from 10.5 */
-                color: #d4af37; 
+                font-size: 8px;
+                color: #d4af37;
                 margin: 2px 0;
                 font-weight: 800;
                 line-height: 1.15;
                 text-align: center;
+              }
+
+              // 🔥 Financial milestone fire styles
+              &.roadmap-step--fire {
+                .step-node {
+                  width: 14px;
+                  height: 14px;
+                  background: linear-gradient(135deg, #ff6a00, #ee0979);
+                  border-color: #ff6a00;
+                  box-shadow: 0 0 8px rgba(255, 106, 0, 0.7), 0 0 16px rgba(238, 9, 121, 0.4);
+                }
+                .roadmap-icon-box {
+                  background: linear-gradient(135deg, #fff3cd, #ffe066);
+                  border-color: #ff6a00;
+                  color: #ee0979;
+                  box-shadow: 0 0 6px rgba(255, 106, 0, 0.5);
+                  animation: fireGlow 1.8s ease-in-out infinite alternate;
+                }
+                .step-milestone-title { color: #ee0979; font-size: 8.5px; }
+                .step-phase-text { color: #ff6a00; }
+              }
+
+              // 🏆 Revenue trophy milestone styles
+              &.roadmap-step--trophy {
+                .step-node {
+                  width: 16px;
+                  height: 16px;
+                  background: linear-gradient(135deg, #ffd700, #ff8c00);
+                  border-color: #ffd700;
+                  box-shadow: 0 0 10px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 140, 0, 0.6);
+                }
+                .roadmap-icon-box {
+                  width: 28px;
+                  height: 28px;
+                  background: linear-gradient(135deg, #ffd700, #ff8c00);
+                  border-color: #ffd700;
+                  color: #fff;
+                  font-size: 15px;
+                  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 140, 0, 0.5);
+                  animation: trophyPulse 2s ease-in-out infinite alternate;
+                }
+                .step-milestone-title {
+                  color: #ff8c00;
+                  font-size: 9px;
+                  text-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+                }
+                .step-phase-text {
+                  color: #ff8c00;
+                  font-size: 9px;
+                  text-shadow: 0 0 3px rgba(255, 140, 0, 0.5);
+                }
               }
 
               .step-milestone-desc {
@@ -990,18 +1041,38 @@
 
           &.poster-roadmap-container--many {
             .poster-roadmap-steps {
-              gap: 2px;
+              gap: 1px;
             }
 
             .roadmap-step {
-              h5 {
+              .roadmap-icon-box {
+                width: 20px;
+                height: 20px;
                 font-size: 10px;
               }
 
-              p {
-                font-size: 8px;
+              .step-phase-text {
+                font-size: 7px;
+              }
+
+              .step-milestone-title {
+                font-size: 7px;
+              }
+
+              .step-milestone-desc {
+                font-size: 6.5px;
               }
             }
+          }
+
+          @keyframes fireGlow {
+            0% { box-shadow: 0 0 4px rgba(255, 106, 0, 0.5); }
+            100% { box-shadow: 0 0 12px rgba(238, 9, 121, 0.8), 0 0 20px rgba(255, 106, 0, 0.6); }
+          }
+
+          @keyframes trophyPulse {
+            0% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.7), 0 0 16px rgba(255, 140, 0, 0.4); transform: scale(1); }
+            100% { box-shadow: 0 0 16px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 140, 0, 0.8); transform: scale(1.08); }
           }
         }
       }

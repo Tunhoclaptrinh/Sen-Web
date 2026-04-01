@@ -125,24 +125,44 @@
     },
     {
       "id": 4,
-      "phase": "2027",
-      "milestone": "Ra mắt chính thức",
+      "phase": "Q1-Q2/2027",
+      "milestone": "Ra mắt B2B chính thức",
       "icon": "launch",
       "details": [
-        "Phát hành ứng dụng chính thức trên đa nền tảng.",
+        "Phát hành nền tảng chính thức đến trường công lập.",
         "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
         "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học."
       ]
     },
     {
       "id": 5,
-      "phase": "2028+",
-      "milestone": "Quy mô B2C & Di sản",
+      "phase": "Q3-Q4/2027",
+      "milestone": "Mở rộng B2C & Di sản",
       "icon": "scaling",
       "details": [
-        "Mở rộng thị trường B2C cho người dùng tự do.",
-        "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
-        "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt."
+        "Mở rộng trực tiếp đến người dùng Gen Z.",
+        "Thiết lập quan hệ đối tác với bảo tàng và khu di tích quốc gia."
+      ]
+    },
+    {
+      "id": 6,
+      "phase": "2028 (Năm 3)",
+      "milestone": "Điểm Hòa Vốn 🔥",
+      "icon": "fire",
+      "details": [
+        "Đạt điểm hòa vốn nhờ hạ tầng công nghệ tối ưu.",
+        "Doanh thu từ thuê bao B2B SaaS ổn định và tăng trưởng."
+      ]
+    },
+    {
+      "id": 7,
+      "phase": "2030 (Năm 5)",
+      "milestone": "Doanh thu 7 Tỷ VNĐ 🏆",
+      "icon": "trophy",
+      "details": [
+        "Đạt thị phần vững chắc trên thị trường Edtech văn hóa.",
+        "Doanh thu tích lũy vượt 15 Tỷ VNĐ.",
+        "Doanh thu năm thứ 5 đạt 7 Tỷ VNĐ."
       ]
     }
   ],

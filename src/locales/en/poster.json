@@ -125,24 +125,44 @@
     },
     {
       "id": 4,
-      "phase": "2027",
-      "milestone": "Official Launch & Expansion",
+      "phase": "Q1-Q2/2027",
+      "milestone": "Official B2B Launch",
       "icon": "launch",
       "details": [
-        "Release the official multi-platform application.",
+        "Roll out the official platform to public schools.",
         "Implement large-scale marketing and media campaigns.",
-        "Establish strategic B2B partnerships with school networks."
+        "Secure strategic B2B institutional partnerships."
       ]
     },
     {
       "id": 5,
-      "phase": "2028+",
-      "milestone": "B2C Scaling & Heritage Ecosystem",
+      "phase": "Q3-Q4/2027",
+      "milestone": "B2C & Heritage Expansion",
       "icon": "scaling",
       "details": [
-        "Expand into the B2C market for independent users.",
-        "Deeply integrate digital experiences at museums and historical sites.",
-        "Allow users to co-create moderated content."
+        "Scale directly to Gen Z end-users.",
+        "Expand partnerships with national museums and heritage sites."
+      ]
+    },
+    {
+      "id": 6,
+      "phase": "2028 (Year 3)",
+      "milestone": "Break-even Point 🔥",
+      "icon": "fire",
+      "details": [
+        "Cross the break-even milestone.",
+        "Optimized tech infrastructure and growing B2B SaaS subscriptions."
+      ]
+    },
+    {
+      "id": 7,
+      "phase": "2030 (Year 5)",
+      "milestone": "7 Billion VND Revenue 🏆",
+      "icon": "trophy",
+      "details": [
+        "Achieve strong market penetration in cultural Edtech.",
+        "Accumulated revenue of over 15 Billion VND.",
+        "7 Billion VND Revenue in Year 5 alone."
       ]
     }
   ],
