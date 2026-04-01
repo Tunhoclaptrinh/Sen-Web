@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import heritageService from "@/services/heritage.service";
 import { artifactService } from "@/services";
-import SimpleMap from "@/components/Map/SimpleMap";
+import ExploreMap from "@/components/Map/ExploreMap";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import gameService from "@/services/game.service";
@@ -540,7 +540,7 @@ const MapPage: React.FC = () => {
   const heritageCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.HERITAGE).length;
   const artifactCount = filteredLocations.filter((loc) => loc.itemType === ITEM_TYPES.ARTIFACT).length;
 
-  // Memoize filtered arrays for SimpleMap to avoid reference changes
+  // Memoize filtered arrays for fallback map to avoid reference changes
   const simpleMapLocations = useMemo(
     () => filteredLocations.filter((l) => l.itemType === ITEM_TYPES.HERITAGE),
     [filteredLocations]
@@ -573,7 +573,7 @@ const MapPage: React.FC = () => {
       }
       return (
         <div className="simple-map-container" style={{ height: "100%", background: "#fff" }}>
-          <SimpleMap
+          <ExploreMap
             mapData={mapData}
             worldData={worldData}
             locations={simpleMapLocations}
@@ -584,6 +584,7 @@ const MapPage: React.FC = () => {
             onHunt={handleHunt}
             autoSelectId={searchParams.get("id") ? Number(searchParams.get("id")) : null}
             autoSelectType={searchParams.get("type")}
+            showProvinceLabels={true}
           />
         </div>
       );

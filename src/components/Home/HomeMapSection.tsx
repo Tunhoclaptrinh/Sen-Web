@@ -6,7 +6,7 @@ import { EnvironmentOutlined, BankOutlined, SketchOutlined } from "@ant-design/i
 import { ITEM_TYPES } from "@/config/constants";
 import heritageServiceReal from "@/services/heritage.service";
 import artifactService from "@/services/artifact.service";
-import SimpleMap from "@/components/Map/SimpleMap";
+import ExploreMap from "@/components/Map/ExploreMap";
 import "./HomeGame.less";
 import vnMapDataUrl from "/mapdata/vn-all.geo.json?url";
 
@@ -163,7 +163,7 @@ const HomeMapSection: React.FC = () => {
       `}</style>
 
       {/* Full width container for "To hẳn ra" effect */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "100px 80px 80px" }}>
+      <div style={{ maxWidth: 1640, margin: "0 auto", padding: "80px 32px 60px" }}>
         <div style={{ marginBottom: 80, textAlign: "center" }}>
           <span
             className="home-game-sub-header"
@@ -202,7 +202,7 @@ const HomeMapSection: React.FC = () => {
         <div
           ref={containerRef}
           style={{
-            height: isFullscreen ? "100vh" : 800,
+            height: isFullscreen ? "100vh" : 920,
             width: isFullscreen ? "100vw" : "100%",
             position: isFullscreen ? "fixed" : "relative",
             top: isFullscreen ? 0 : "auto",
@@ -284,15 +284,17 @@ const HomeMapSection: React.FC = () => {
               <Spin size="large" tip={t('home.mapSection.loading')} />
             </div>
           ) : (
-            <SimpleMap
+            <ExploreMap
               mapData={mapData}
               worldData={worldData}
               locations={locations}
               artifacts={artifacts}
               isFullscreen={isFullscreen}
               allowZoom={isFullscreen}
-              height={isFullscreen ? "100vh" : 800}
+              height={isFullscreen ? "100vh" : 920}
               onMapClick={handleMapClick}
+              showProvinceLabels={isFullscreen}
+              softBackground={isFullscreen}
             />
           )}
 
