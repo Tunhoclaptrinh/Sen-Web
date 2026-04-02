@@ -51,7 +51,8 @@
     "actions": {
       "getDirections": "Get Directions",
       "bookNow": "Book Now",
-      "viewArtifact": "View Artifact"
+      "viewArtifact": "View Artifact",
+      "view3d": "View 3D"
     },
     "messages": {
       "noInfo": "No information",

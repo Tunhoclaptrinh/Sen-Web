@@ -51,7 +51,8 @@
     "actions": {
       "getDirections": "Chỉ đường",
       "bookNow": "Đặt vé tham quan",
-      "viewArtifact": "Đến xem hiện vật"
+      "viewArtifact": "Đến xem hiện vật",
+      "view3d": "Xem 3D"
     },
     "messages": {
       "noInfo": "Chưa có thông tin",

@@ -4,6 +4,15 @@
   "details": "Details",
   "loading": "Initializing...",
   "noInfo": "No information provided",
+  "artifactConditions": {
+    "excellent": "Excellent",
+    "good": "Good",
+    "fair": "Fair",
+    "poor": "Poor"
+  },
+  "badge": {
+    "comingSoon": "Coming Soon"
+  },
   "actions": {
     "favorite": "Favorite",
     "favorited": "Favorited",
