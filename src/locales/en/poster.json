@@ -113,14 +113,12 @@
     {
       "id": 3,
       "phase": "Q4/2026",
-      "milestone": "Feature Expansion",
+      "milestone": "Game Mechanics Improvement",
       "icon": "expansion",
       "details": [
         "Integrate 3D Digital Museum and Augmented Reality (AR) technology.",
-        "Interactive multidimensional viewing: 360-degree rotation, material zoom-in, and structural layer breakdown of artifacts.",
-        "AR Camera feature: 'Summon' full-scale virtual artifacts into real-world environments for interactive photos.",
-        "AI Tour Guide System: Role-playing as historical figures to autonomously narrate the hidden stories behind scanned objects.",
-        "Expand P-Coin ecosystem: Redeem reward points for licensed virtual tour tickets or physical souvenirs."
+        "Optimize game mechanics: reward systems, challenges, and missions.",
+        "Upgrade feedback systems and personalized learning progression."
       ]
     },
     {
@@ -136,13 +134,35 @@
     },
     {
       "id": 5,
-      "phase": "2028+",
-      "milestone": "B2C Scaling & Heritage Ecosystem",
+      "phase": "Q3-Q4/2027",
+      "milestone": "B2C & Heritage Expansion",
       "icon": "scaling",
       "details": [
         "Expand into the B2C market for independent users.",
         "Deeply integrate digital experiences at museums and historical sites.",
         "Allow users to co-create moderated content."
+      ]
+    },
+    {
+      "id": 6,
+      "phase": "2028",
+      "milestone": "Break-even Point",
+      "icon": "breakeven",
+      "details": [
+        "Reach break-even milestone through optimized tech infrastructure.",
+        "Stable revenue from B2B SaaS model and content licensing.",
+        "Expand strategic partnerships with school systems and museums."
+      ]
+    },
+    {
+      "id": 7,
+      "phase": "2030",
+      "milestone": "7 Billion VND Revenue",
+      "icon": "revenue",
+      "details": [
+        "Achieve strong market penetration in cultural-history EdTech.",
+        "Accumulated revenue exceeding 7 billion VND.",
+        "Expand ecosystem with international partners and multilingual content."
       ]
     }
   ],

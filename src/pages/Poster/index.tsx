@@ -10,6 +10,10 @@ import {
   AppstoreAddOutlined,
   RocketOutlined,
   GlobalOutlined,
+  TrophyOutlined,
+  DollarOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import SenChibi from "@/components/SenChibi";
 
@@ -230,9 +234,10 @@ const roadmapStages: RoadmapStage[] = [
     milestone: "Mở rộng tính năng",
     icon: "expansion",
     details: [
-      "Tích hợp xem hiện vật 3D tương tác.",
+      "Tích hợp Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
       "Hệ thống AI Q&A phản hồi theo ngữ cảnh lịch sử.",
-      "Tính năng dịch đa ngôn ngữ và hệ thống thưởng P-Coin mở rộng.",
+      "Tối ưu hóa cơ chế game: hệ thống thưởng, thử thách và nhiệm vụ.",
+      "Nâng cấp hệ thống phản hồi và tiến trình học tập cá nhân hóa.",
     ],
   },
   {
@@ -248,13 +253,35 @@ const roadmapStages: RoadmapStage[] = [
   },
   {
     id: 5,
-    phase: "2028+",
+    phase: "Q3-Q4/2027",
     milestone: "Quy mô B2C & Di sản",
     icon: "scaling",
     details: [
       "Mở rộng thị trường B2C cho người dùng tự do.",
       "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
       "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt.",
+    ],
+  },
+  {
+    id: 6,
+    phase: "2028",
+    milestone: "Điểm hòa vốn",
+    icon: "breakeven",
+    details: [
+      "Đạt điểm hòa vốn nhờ hạ tầng công nghệ tối ưu.",
+      "Doanh thu ổn định từ mô hình SaaS B2B và bản quyền nội dung.",
+      "Mở rộng đối tác chiến lược với hệ thống trường học và bảo tàng.",
+    ],
+  },
+  {
+    id: 7,
+    phase: "2030",
+    milestone: "Doanh thu 7 tỷ VND",
+    icon: "revenue",
+    details: [
+      "Đạt thị phần vững chắc trên thị trường EdTech văn hóa - lịch sử.",
+      "Doanh thu tích lũy đạt trên 7 tỷ VND.",
+      "Mở rộng hệ sinh thái với đối tác quốc tế và nội dung đa ngôn ngữ.",
     ],
   },
 ];
@@ -265,6 +292,8 @@ const roadmapIconMap: Record<string, React.ReactNode> = {
   expansion: <AppstoreAddOutlined />,
   launch: <RocketOutlined />,
   scaling: <GlobalOutlined />,
+  breakeven: <TrophyOutlined />,
+  revenue: <DollarOutlined />,
 };
 
 const valuePropositionItems: ValuePropositionItem[] = [
@@ -466,6 +495,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedRoadmap, setSelectedRoadmap] = React.useState<RoadmapStage | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
   const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("sv-startup");
+  const [roadmapSlideIndex, setRoadmapSlideIndex] = React.useState(0);
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
   const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
@@ -563,13 +593,30 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const mockupCoverImage = mockupGalleryEntries[mockupDefaultIndex]?.url || defaultMockupImage;
 
+  const ROADMAP_VISIBLE_COUNT = 5;
   const roadmapStageCount = Math.max(localizedRoadmapStages.length, 1);
+  const roadmapNeedsSlider = roadmapStageCount > ROADMAP_VISIBLE_COUNT;
+  const roadmapMaxSlide = roadmapNeedsSlider ? roadmapStageCount - ROADMAP_VISIBLE_COUNT : 0;
+  const visibleRoadmapStages = roadmapNeedsSlider
+    ? localizedRoadmapStages.slice(roadmapSlideIndex, roadmapSlideIndex + ROADMAP_VISIBLE_COUNT)
+    : localizedRoadmapStages;
+  const visibleCount = visibleRoadmapStages.length;
   const roadmapContainerClassName = `poster-roadmap-container${
-    roadmapStageCount <= 3 ? " poster-roadmap-container--few" : ""
-  }${roadmapStageCount >= 6 ? " poster-roadmap-container--many" : ""}`;
+    visibleCount <= 3 ? " poster-roadmap-container--few" : ""
+  }${visibleCount >= 6 ? " poster-roadmap-container--many" : ""}`;
   const roadmapContainerStyle = {
-    ["--roadmap-columns" as string]: roadmapStageCount,
+    ["--roadmap-columns" as string]: visibleCount,
   } as React.CSSProperties;
+
+  const handleRoadmapPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRoadmapSlideIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleRoadmapNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRoadmapSlideIndex((prev) => Math.min(roadmapMaxSlide, prev + 1));
+  };
 
   React.useEffect(() => {
     if (!selectedQr) {
@@ -880,10 +927,21 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               <h2>{t("poster.sections.roadmap", { defaultValue: "Traction / Roadmap" })}</h2>
             </div>
             <div className={roadmapContainerClassName} style={roadmapContainerStyle}>
+              {roadmapNeedsSlider && (
+                <button
+                  className={`roadmap-slider-btn roadmap-slider-btn--prev${roadmapSlideIndex <= 0 ? " roadmap-slider-btn--disabled" : ""}`}
+                  onClick={handleRoadmapPrev}
+                  disabled={roadmapSlideIndex <= 0}
+                  aria-label="Xem mốc trước"
+                >
+                  <LeftOutlined />
+                </button>
+              )}
               <div className="poster-roadmap-line"></div>
               <div className="poster-roadmap-steps">
-                {localizedRoadmapStages.map((stage, index) => {
-                  const isBottom = index % 2 !== 0; // Odd index means Phase+Icon is on the bottom
+                {visibleRoadmapStages.map((stage, index) => {
+                  const globalIndex = roadmapSlideIndex + index;
+                  const isBottom = globalIndex % 2 !== 0;
                   return (
                     <div
                       key={stage.id}
@@ -941,6 +999,27 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   );
                 })}
               </div>
+              {roadmapNeedsSlider && (
+                <button
+                  className={`roadmap-slider-btn roadmap-slider-btn--next${roadmapSlideIndex >= roadmapMaxSlide ? " roadmap-slider-btn--disabled" : ""}`}
+                  onClick={handleRoadmapNext}
+                  disabled={roadmapSlideIndex >= roadmapMaxSlide}
+                  aria-label="Xem mốc tiếp theo"
+                >
+                  <RightOutlined />
+                </button>
+              )}
+              {roadmapNeedsSlider && (
+                <div className="roadmap-slider-dots">
+                  {Array.from({ length: roadmapMaxSlide + 1 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className={`roadmap-dot${i === roadmapSlideIndex ? " roadmap-dot--active" : ""}`}
+                      onClick={(e) => { e.stopPropagation(); setRoadmapSlideIndex(i); }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 

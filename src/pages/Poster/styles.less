@@ -385,6 +385,16 @@
         flex-direction: column;
         min-height: 0;
 
+        // Alternating section backgrounds for visual rhythm
+        &:nth-child(odd) {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 248, 232, 0.65) 100%);
+        }
+
+        &:nth-child(even) {
+          background: linear-gradient(135deg, rgba(255, 243, 214, 0.45) 0%, rgba(255, 236, 196, 0.35) 50%, rgba(255, 248, 232, 0.5) 100%);
+          border-color: #d4ad6a;
+        }
+
         &::before {
           content: "";
           position: absolute;
@@ -709,6 +719,26 @@
       }
 
       .business-model {
+        // Red background theme for this section
+        background: linear-gradient(135deg, #8b1d1d 0%, #a52222 45%, #7a1313 100%) !important;
+        border-color: #6b1010 !important;
+        box-shadow: 4px 4px 0 rgba(107, 16, 16, 0.25) !important;
+
+        .poster-section-header {
+          border-left-color: #ffd700;
+
+          h2 {
+            color: #fff3cc !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        // Override lotus decoration to be lighter on dark bg
+        &::before {
+          opacity: 0.08 !important;
+          filter: brightness(3);
+        }
+
         .poster-biz-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -716,12 +746,12 @@
           height: 100%;
 
           .poster-biz-box {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.12);
             padding: 4px;
             padding-bottom: 0px;
             border-radius: 4px;
-            border: 1px solid #f0e0c0;
-            box-shadow: 2px 2px 0 rgba(197, 160, 101, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
             transition: all 0.3s ease;
 
             &.poster-biz-box--interactive {
@@ -729,25 +759,28 @@
             }
 
             &:hover {
-              background: #fff;
-              border-color: #c5a065;
+              background: rgba(255, 255, 255, 0.18);
+              border-color: rgba(255, 215, 0, 0.45);
               transform: scale(1.02);
             }
 
             &:focus-visible {
-              background: #fff;
-              border-color: #c5a065;
+              background: rgba(255, 255, 255, 0.2);
+              border-color: rgba(255, 215, 0, 0.5);
               transform: scale(1.02);
-              box-shadow: 3px 3px 0 rgba(197, 160, 101, 0.2);
-              outline: 2px solid rgba(139, 29, 29, 0.45);
+              box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+              outline: 2px solid rgba(255, 215, 0, 0.6);
               outline-offset: 1px;
             }
 
             h4 {
               font-family: @font-serif;
               font-size: 11px;
-              color: #8b1d1d;
+              color: #ffd700;
               font-weight: 800;
+              text-decoration: underline;
+              text-underline-offset: 2px;
+              text-decoration-color: rgba(255, 215, 0, 0.4);
             }
 
             ul {
@@ -761,11 +794,11 @@
                 display: flex;
                 align-items: start;
                 gap: 6px;
-                color: #5d4037;
+                color: rgba(255, 248, 232, 0.9);
 
                 &::before {
                   content: "✿";
-                  color: #c5a065;
+                  color: #ffd700;
                   font-size: 8px;
                   margin-top: 2px;
                 }
@@ -782,9 +815,9 @@
           font-weight: 800;
           color: #8b1d1d;
           background: #ffd700;
-          padding: 0 6px 0 6px ;
+          padding: 0 6px 0 6px;
           border-radius: 4px;
-          box-shadow: 3px 3px 0 #8b1d1d;
+          box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
           transform: rotate(0.5deg);
         }
       }
@@ -1001,6 +1034,80 @@
               p {
                 font-size: 8px;
               }
+            }
+          }
+        }
+
+        // Slider arrow buttons
+        .roadmap-slider-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: 1.5px solid #c5a065;
+          background: rgba(255, 252, 245, 0.95);
+          color: #8b1d1d;
+          font-size: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+          padding: 0;
+
+          &:hover:not(:disabled) {
+            background: #8b1d1d;
+            color: #ffd700;
+            border-color: #8b1d1d;
+            box-shadow: 0 3px 10px rgba(139, 29, 29, 0.3);
+            transform: translateY(-50%) scale(1.1);
+          }
+
+          &--prev {
+            left: -6px;
+          }
+
+          &--next {
+            right: -6px;
+          }
+
+          &--disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+          }
+        }
+
+        // Slider dots
+        .roadmap-slider-dots {
+          position: absolute;
+          bottom: -2px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 5px;
+          z-index: 10;
+
+          .roadmap-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #d4c4a8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background: #c5a065;
+              transform: scale(1.3);
+            }
+
+            &--active {
+              background: #8b1d1d;
+              transform: scale(1.2);
+              box-shadow: 0 0 4px rgba(139, 29, 29, 0.4);
             }
           }
         }

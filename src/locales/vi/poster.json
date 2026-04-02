@@ -113,14 +113,12 @@
     {
       "id": 3,
       "phase": "Q4/2026",
-      "milestone": "Mở rộng tính năng",
+      "milestone": "Cải thiện cơ chế game",
       "icon": "expansion",
       "details": [
-        "Tích hợp hệ thống Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
-        "Trải nghiệm tương tác đa chiều: Xoay 360 độ, phóng to soi cấu trúc vật liệu và bóc tách từng lớp cấu tạo của hiện vật.",
-        "AR Camera: 'Triệu hồi' và ghép các hiện vật ảo có kích thước chuẩn vào không gian thực để chụp ảnh lưu niệm.",
-        "Hệ thống AI Tour Guide hóa thân thành các vĩ nhân lịch sử, tự động kể câu chuyện ẩn sau mỗi hiện vật được quét.",
-        "Mở rộng hệ sinh thái P-Coin: Đổi điểm thưởng lấy vé tham quan ảo có bản quyền hoặc quà lưu niệm thực tế."
+        "Tích hợp Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
+        "Tối ưu hóa cơ chế game: hệ thống thưởng, thử thách và nhiệm vụ.",
+        "Nâng cấp hệ thống phản hồi và tiến trình học tập cá nhân hóa."
       ]
     },
     {
@@ -136,13 +134,35 @@
     },
     {
       "id": 5,
-      "phase": "2028+",
+      "phase": "Q3-Q4/2027",
       "milestone": "Quy mô B2C & Di sản",
       "icon": "scaling",
       "details": [
         "Mở rộng thị trường B2C cho người dùng tự do.",
         "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
         "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt."
+      ]
+    },
+    {
+      "id": 6,
+      "phase": "2028",
+      "milestone": "Điểm hòa vốn",
+      "icon": "breakeven",
+      "details": [
+        "Đạt điểm hòa vốn nhờ hạ tầng công nghệ tối ưu.",
+        "Doanh thu ổn định từ mô hình SaaS B2B và bản quyền nội dung.",
+        "Mở rộng đối tác chiến lược với hệ thống trường học và bảo tàng."
+      ]
+    },
+    {
+      "id": 7,
+      "phase": "2030",
+      "milestone": "Doanh thu 7 tỷ VND",
+      "icon": "revenue",
+      "details": [
+        "Đạt thị phần vững chắc trên thị trường EdTech văn hóa - lịch sử.",
+        "Doanh thu tích lũy đạt trên 7 tỷ VND.",
+        "Mở rộng hệ sinh thái với đối tác quốc tế và nội dung đa ngôn ngữ."
       ]
     }
   ],
