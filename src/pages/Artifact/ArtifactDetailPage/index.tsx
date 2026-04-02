@@ -408,10 +408,26 @@ const ArtifactDetailPage = () => {
         <div className="hero-bg" style={{ backgroundImage: `url('${mainImage}')` }} />
         <div className="hero-overlay">
           <div className="hero-content">
-            <Tag color="var(--primary-color)" style={{ border: "none", marginBottom: 16 }}>
+            <Tag color="var(--primary-color)" style={{ border: "none", marginBottom: 12 }}>
               {artifactTypeLabel.toUpperCase()}
             </Tag>
-            <h1>{artifact.name}</h1>
+            <h1 style={{ marginBottom: 12 }}>{artifact.name}</h1>
+            
+            {/* TAGS BAR like original BTVH */}
+            <div style={{ marginBottom: 20, display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+              {Array.isArray(artifact.tags) && artifact.tags.map((tag: string) => (
+                <Tag key={tag} style={{ 
+                  background: "rgba(255,255,255,0.15)", 
+                  color: "#fff", 
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  borderRadius: 4,
+                  fontSize: "13px"
+                }}>
+                  {tag}
+                </Tag>
+              ))}
+            </div>
+
             <div className="hero-meta">
               <span>
                 <CalendarOutlined /> {artifact.yearCreated || t('artifact.detail.meta.unknownDate')}
@@ -506,6 +522,22 @@ const ArtifactDetailPage = () => {
                   </div>
 
                   <h2 className="article-main-title">{artifact.name}</h2>
+                  
+                  {/* QUOTE STYLE for short description */}
+                  {artifact.shortDescription && (
+                    <div className="article-short-quote" style={{
+                      borderLeft: "5px solid var(--primary-color)",
+                      padding: "10px 20px",
+                      margin: "0 0 32px 0",
+                      background: "rgba(24, 144, 255, 0.03)",
+                      fontStyle: "italic",
+                      fontSize: "18px",
+                      color: "#444"
+                    }}>
+                      {artifact.shortDescription}
+                    </div>
+                  )}
+
                   <div className="article-body-content">
                     <h3 className="content-section-title">{t('artifact.detail.sections.details')}</h3>
                     <div dangerouslySetInnerHTML={{ __html: enhancedDescription || "" }} />

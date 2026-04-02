@@ -94,6 +94,7 @@ export interface Artifact extends BaseEntity, TimestampEntity {
   bookingLink?: string;
   latitude?: number;
   longitude?: number;
+  tags?: string[];
 }
 
 // Artifact DTO
@@ -127,6 +128,7 @@ export interface ArtifactDTO {
   relatedExhibitionIds?: number[];
   references?: string;
   bookingLink?: string;
+  tags?: string[];
 }
 
 // Category

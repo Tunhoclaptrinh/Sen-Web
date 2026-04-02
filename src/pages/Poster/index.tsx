@@ -1,6 +1,6 @@
 import React from "react";
 import { Stage } from "@pixi/react";
-import { Image, Modal, Select } from "antd";
+import { Image, Modal, Select, Switch } from "antd";
 import { QRCodeSVG } from "qrcode.react";
 import { useTranslation } from "react-i18next";
 import "./styles.less";
@@ -14,6 +14,7 @@ import {
   DollarOutlined,
   LeftOutlined,
   RightOutlined,
+  PrinterOutlined,
 } from "@ant-design/icons";
 import SenChibi from "@/components/SenChibi";
 
@@ -246,7 +247,7 @@ const roadmapStages: RoadmapStage[] = [
     milestone: "Ra mắt chính thức",
     icon: "launch",
     details: [
-      "Phát hành ứng dụng chính thức trên đa nền tảng.",
+      "Phát hành ứng dụng chính thức với đầy đủ tính năng.",
       "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
       "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học.",
     ],
@@ -496,6 +497,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
   const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("sv-startup");
   const [roadmapSlideIndex, setRoadmapSlideIndex] = React.useState(0);
+  const [roadmapPrintMode, setRoadmapPrintMode] = React.useState(false);
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
   const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
@@ -593,13 +595,53 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const mockupCoverImage = mockupGalleryEntries[mockupDefaultIndex]?.url || defaultMockupImage;
 
+  // Print mode: condense 7 milestones into 5 for poster printing
+  // Keep 1 as-is, merge 2+3 (summarize), keep 4+5 prominent, merge 6+7
+  const printRoadmapStages = React.useMemo<RoadmapStage[]>(() => {
+    if (localizedRoadmapStages.length <= 5) return localizedRoadmapStages;
+    const s1 = localizedRoadmapStages[0];
+    const s2 = localizedRoadmapStages[1];
+    const s3 = localizedRoadmapStages[2];
+    const s4 = localizedRoadmapStages[3]; // Ra mắt chính thức — keep prominent
+    const s5 = localizedRoadmapStages[4]; // B2C & Di sản — keep prominent
+    const s6 = localizedRoadmapStages[5];
+    const s7 = localizedRoadmapStages[6];
+
+    // Merge stages 2+3: Thí điểm & Mở rộng tính năng
+    const merged23: RoadmapStage = {
+      id: s2?.id ?? 2,
+      phase: "Q2-Q4/2026",
+      milestone: t("poster.printMergedMilestones.pilotExpansion", { defaultValue: "Thí điểm & Mở rộng" }),
+      icon: s2?.icon ?? "feedback",
+      details: [
+        ...(s2?.details?.slice(0, 1) ?? []),
+        ...(s3?.details?.slice(0, 1) ?? []),
+      ],
+    };
+
+    // Merge stages 6+7: Hòa vốn & Doanh thu 7 tỷ
+    const merged67: RoadmapStage = {
+      id: s6?.id ?? 6,
+      phase: s6 && s7 ? `${s7?.phase ?? "2030"}` : (s6?.phase ?? ""),
+      milestone: t("poster.printMergedMilestones.breakevenRevenue", { defaultValue: "Hòa vốn & Doanh thu 7 tỷ" }),
+      icon: s7?.icon ?? "revenue",
+      details: [
+        ...(s6?.details?.slice(0, 1) ?? []),
+        ...(s7?.details?.slice(0, 1) ?? []),
+      ],
+    };
+
+    return [s1, merged23, s4, s5, merged67];
+  }, [localizedRoadmapStages, t]);
+
+  const activeRoadmapStages = roadmapPrintMode ? printRoadmapStages : localizedRoadmapStages;
   const ROADMAP_VISIBLE_COUNT = 5;
-  const roadmapStageCount = Math.max(localizedRoadmapStages.length, 1);
-  const roadmapNeedsSlider = roadmapStageCount > ROADMAP_VISIBLE_COUNT;
+  const roadmapStageCount = Math.max(activeRoadmapStages.length, 1);
+  const roadmapNeedsSlider = !roadmapPrintMode && roadmapStageCount > ROADMAP_VISIBLE_COUNT;
   const roadmapMaxSlide = roadmapNeedsSlider ? roadmapStageCount - ROADMAP_VISIBLE_COUNT : 0;
   const visibleRoadmapStages = roadmapNeedsSlider
-    ? localizedRoadmapStages.slice(roadmapSlideIndex, roadmapSlideIndex + ROADMAP_VISIBLE_COUNT)
-    : localizedRoadmapStages;
+    ? activeRoadmapStages.slice(roadmapSlideIndex, roadmapSlideIndex + ROADMAP_VISIBLE_COUNT)
+    : activeRoadmapStages;
   const visibleCount = visibleRoadmapStages.length;
   const roadmapContainerClassName = `poster-roadmap-container${
     visibleCount <= 3 ? " poster-roadmap-container--few" : ""
@@ -923,8 +965,16 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
           {/* ROADMAP */}
           <section className="poster-section roadmap-section">
-            <div className="poster-section-header">
+            <div className="poster-section-header poster-section-header--roadmap">
               <h2>{t("poster.sections.roadmap", { defaultValue: "Traction / Roadmap" })}</h2>
+              <Switch
+                size="small"
+                checked={roadmapPrintMode}
+                onChange={(checked) => { setRoadmapPrintMode(checked); setRoadmapSlideIndex(0); }}
+                checkedChildren={<PrinterOutlined />}
+                unCheckedChildren={<PrinterOutlined />}
+                className="roadmap-print-toggle"
+              />
             </div>
             <div className={roadmapContainerClassName} style={roadmapContainerStyle}>
               {roadmapNeedsSlider && (

@@ -24,6 +24,10 @@
     ]
   },
   "revenueTarget": "Break even Y3, VND 7B revenue by Y5",
+  "printMergedMilestones": {
+    "pilotExpansion": "Pilot & Expansion",
+    "breakevenRevenue": "Break-even & 7B Revenue"
+  },
   "footer": {
     "qrGroupLabel": "PITCH DECK / DEMO",
     "impactText": "A place where history is not only remembered, but relived!"
@@ -113,11 +117,11 @@
     {
       "id": 3,
       "phase": "Q4/2026",
-      "milestone": "Game Mechanics Improvement",
+      "milestone": "Feature Expansion",
       "icon": "expansion",
       "details": [
         "Integrate 3D Digital Museum and Augmented Reality (AR) technology.",
-        "Optimize game mechanics: reward systems, challenges, and missions.",
+        "Improve game mechanics: reward systems, challenges, and missions.",
         "Upgrade feedback systems and personalized learning progression."
       ]
     },
@@ -127,7 +131,7 @@
       "milestone": "Official Launch & Expansion",
       "icon": "launch",
       "details": [
-        "Release the official multi-platform application.",
+        "Launch the official application with full feature set.",
         "Implement large-scale marketing and media campaigns.",
         "Establish strategic B2B partnerships with school networks."
       ]

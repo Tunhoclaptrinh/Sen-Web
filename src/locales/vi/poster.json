@@ -24,6 +24,10 @@
     ]
   },
   "revenueTarget": "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5.",
+  "printMergedMilestones": {
+    "pilotExpansion": "Thí điểm & Mở rộng",
+    "breakevenRevenue": "Hòa vốn & Doanh thu 7 tỷ"
+  },
   "footer": {
     "qrGroupLabel": "PITCH DECK / DEMO",
     "impactText": "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!"
@@ -113,11 +117,11 @@
     {
       "id": 3,
       "phase": "Q4/2026",
-      "milestone": "Cải thiện cơ chế game",
+      "milestone": "Mở rộng tính năng",
       "icon": "expansion",
       "details": [
         "Tích hợp Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
-        "Tối ưu hóa cơ chế game: hệ thống thưởng, thử thách và nhiệm vụ.",
+        "Cải thiện cơ chế game: hệ thống thưởng, thử thách và nhiệm vụ.",
         "Nâng cấp hệ thống phản hồi và tiến trình học tập cá nhân hóa."
       ]
     },
@@ -127,7 +131,7 @@
       "milestone": "Ra mắt chính thức",
       "icon": "launch",
       "details": [
-        "Phát hành ứng dụng chính thức trên đa nền tảng.",
+        "Phát hành ứng dụng chính thức với đầy đủ tính năng.",
         "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
         "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học."
       ]

@@ -823,6 +823,30 @@
       }
 
       .roadmap-section {
+        .poster-section-header--roadmap {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 6px;
+
+          .roadmap-print-toggle {
+            &.ant-switch {
+              min-width: 36px;
+              height: 18px;
+              line-height: 18px;
+              background: #d4c4a8;
+
+              .ant-switch-inner {
+                font-size: 10px;
+              }
+
+              &.ant-switch-checked {
+                background: #8b1d1d;
+              }
+            }
+          }
+        }
+
         .poster-roadmap-container {
           --roadmap-columns: 5;
           position: relative;
@@ -1084,7 +1108,7 @@
         // Slider dots
         .roadmap-slider-dots {
           position: absolute;
-          bottom: -2px;
+          bottom: -10px;
           left: 50%;
           transform: translateX(-50%);
           display: flex;

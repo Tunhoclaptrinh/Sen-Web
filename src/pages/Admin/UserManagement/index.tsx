@@ -106,7 +106,7 @@ const UserManagement = () => {
         if (role === "editor") color = "green"; // Leaving existing logic, though 'editor' isn't in filter
         return (
           <Tag color={color} key={role}>
-            {role ? role.toUpperCase() : "UNKNOWN"}
+            {role?.toUpperCase() || "UNKNOWN"}
           </Tag>
         );
       },

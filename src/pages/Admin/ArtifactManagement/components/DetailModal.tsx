@@ -100,11 +100,13 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
                 else if (condLower === ArtifactCondition.FAIR) color = "orange";
                 else if (condLower === ArtifactCondition.POOR) color = "red";
 
+                const label = ArtifactConditionLabels[cond] || 
+                             ArtifactConditionLabels[condLower as ArtifactCondition] || 
+                             cond || "N/A";
+
                 return (
                   <Tag color={color}>
-                    {ArtifactConditionLabels[cond].toUpperCase() ||
-                      ArtifactConditionLabels[condLower as ArtifactCondition].toUpperCase() ||
-                      cond.toUpperCase()}
+                    {label.toUpperCase()}
                   </Tag>
                 );
               })()}
@@ -118,16 +120,23 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
                 {record.locationInSite || "Chưa rõ"}
               </Space>
             </Descriptions.Item>
-            {record.yearCreated && <Descriptions.Item label="Năm sáng tạo">{record.yearCreated}</Descriptions.Item>}
+            {record.yearCreated ? <Descriptions.Item label="Năm sáng tạo">{record.yearCreated}</Descriptions.Item> : null}
             <Descriptions.Item label="Đánh giá">
               <Space>
                 <StarOutlined style={{color: "#faad14"}} /> {record.rating || 0}
               </Space>
             </Descriptions.Item>
             <Descriptions.Item label="Mô tả ngắn" span={2}>
-              <Typography.Paragraph className="card-desc" ellipsis={{rows: 3}}>
+              <div className="short-description-quote" style={{
+                borderLeft: "4px solid var(--primary-color)",
+                paddingLeft: "16px",
+                fontStyle: "italic",
+                color: "#555",
+                fontSize: "15px",
+                margin: "8px 0"
+              }}>
                 {record.shortDescription || "Chưa có mô tả ngắn."}
-              </Typography.Paragraph>
+              </div>
             </Descriptions.Item>
           </Descriptions>
 
@@ -196,6 +205,56 @@ const DetailModal: React.FC<DetailModalProps> = ({open, onCancel, record}) => {
               </Space>
             </div>
           )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane tab="Mô tả chi tiết" key="description">
+          <div style={{padding: "16px", maxHeight: "60vh", overflowY: "auto", background: "#fff", borderRadius: 8, border: "1px solid #f0f0f0"}}>
+            {record.description ? (
+              <div style={{marginBottom: 32}}>
+                <Typography.Title level={4}>Mô tả</Typography.Title>
+                <div 
+                  className="rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: record.description }} 
+                />
+              </div>
+            ) : null}
+
+            {record.historicalContext ? (
+              <div style={{marginBottom: 32}}>
+                <Typography.Title level={4}>Bối cảnh lịch sử</Typography.Title>
+                <div 
+                  className="rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: record.historicalContext }} 
+                />
+              </div>
+            ) : null}
+
+            {record.culturalSignificance ? (
+              <div style={{marginBottom: 32}}>
+                <Typography.Title level={4}>Ý nghĩa văn hóa</Typography.Title>
+                <div 
+                  className="rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: record.culturalSignificance }} 
+                />
+              </div>
+            ) : null}
+
+            {record.references ? (
+              <div>
+                <Typography.Title level={4}>Nguồn tham khảo</Typography.Title>
+                <div 
+                  className="rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: record.references }} 
+                />
+              </div>
+            ) : null}
+
+            {!record.description && !record.historicalContext && !record.culturalSignificance && (
+              <div style={{textAlign: "center", padding: "40px 0", color: "#999"}}>
+                Chưa có nội dung mô tả chi tiết.
+              </div>
+            )}
+          </div>
         </Tabs.TabPane>
 
         <Tabs.TabPane tab={`Lịch sử liên quan (${relatedHistory.length})`} key="history">

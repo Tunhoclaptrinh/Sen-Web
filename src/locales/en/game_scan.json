@@ -14,7 +14,9 @@
     "viewMap": "View Heritage Map",
     "continueSearching": "Continue treasure hunting",
     "continueFinding": "Continue searching",
-    "goToLibrary": "Enter the Library"
+    "goToLibrary": "Enter the Library",
+    "viewHeritageInfo": "View heritage information",
+    "viewArtifactInfo": "View artifact details"
   },
   "checkin": {
     "success": "Check-in Successful!",
