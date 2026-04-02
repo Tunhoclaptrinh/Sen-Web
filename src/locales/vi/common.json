@@ -4,6 +4,15 @@
   "details": "Chi tiết",
   "loading": "Đang khởi tạo...",
   "noInfo": "Chưa có thông tin",
+  "artifactConditions": {
+    "excellent": "Rất tốt",
+    "good": "Tốt",
+    "fair": "Trung bình",
+    "poor": "Kém"
+  },
+  "badge": {
+    "comingSoon": "Sắp ra mắt"
+  },
   "actions": {
     "favorite": "Yêu thích",
     "favorited": "Đã thích",
