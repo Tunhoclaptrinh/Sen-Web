@@ -172,10 +172,10 @@ const teamMembers: TeamMember[] = [
   {
     id: 7,
     name: "Hoàng Thị Linh Thảo",
-    role: "Thành viên",
+    role: "Marketing",
     avatar: LINH_THAO_PHOTO,
     department: "Học viện Công nghệ Bưu chính Viễn thông",
-    specialization: "D23",
+    specialization: "Marketing, đảm bảo chất lượng học thuật và thiết kế trải nghiệm học tập",
     contact: "0399493958 | hoangthithao488@gmail.com",
   },
 ];
