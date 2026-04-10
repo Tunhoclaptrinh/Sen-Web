@@ -1147,7 +1147,30 @@
           .poster-team-row {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 12px;
+            width: 100%;
+          }
+
+          .poster-team-row--count-4 {
+            gap: 4px;
+
+            .poster-member {
+              flex-basis: 24%;
+
+              .member-avatar-placeholder {
+                width: 46px;
+                height: 46px;
+              }
+
+              h6 {
+                font-size: 8.5px;
+                white-space: normal !important;
+              }
+
+              p {
+                font-size: 8px;
+              }
+            }
           }
 
           .poster-team-row--spread-two {
@@ -1167,8 +1190,9 @@
           }
 
           .poster-member {
-            flex: 0 1 31%;
+            flex: 0 1 auto;
             min-width: 0;
+            padding: 2px;
             text-align: center;
             cursor: pointer;
             border-radius: 8px;
@@ -1244,11 +1268,13 @@
               margin: 0;
               color: #3f1e1e;
               font-weight: 700;
-              line-height: 1.2;
+              line-height: 1.1;
               display: block;
               width: 100%;
-              white-space: nowrap;
+              white-space: normal;
               transition: text-shadow 0.18s ease;
+              word-break: break-word;
+              text-align: center;
 
               &.member-name {
                 font-size: 10px;

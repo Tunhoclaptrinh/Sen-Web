@@ -21,6 +21,8 @@ import SenChibi from "@/components/SenChibi";
 // Import brand assets
 const logoPng = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 import PINNOVATION_LOGO from "./PITCHING_DAY.png";
+import PHUONG_ANH_PHOTO from "./Photo/PhuongAnh.jpg";
+import LINH_THAO_PHOTO from "./Photo/LinhThao.jpg";
 const smokeLeft = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356055/sen_web/static/src/assets/images/background/smoke-left.png";
 const smokeRight = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
 const lotus1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
@@ -97,7 +99,7 @@ interface InsightDetail {
   details: string[];
 }
 
-type TeamDisplayMode = "sv-startup" | "p-innovation";
+type TeamDisplayMode = "all" | "sv-startup" | "p-innovation" | "i-startup";
 
 const toTranslatedArray = <T,>(value: unknown, fallback: T[]): T[] => {
   return Array.isArray(value) ? (value as T[]) : fallback;
@@ -157,6 +159,24 @@ const teamMembers: TeamMember[] = [
     specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
     contact: "0389829196 | buiyen2004yen@gmail.com",
     avatar: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357068/sen_web/static/src/pages/Poster/Photo/Yen.jpg",
+  },
+  {
+    id: 6,
+    name: "Trần Lê Phương Anh",
+    role: "Thành viên",
+    avatar: PHUONG_ANH_PHOTO,
+    department: "Trường Đại học Thăng Long",
+    specialization: "Khóa 35",
+    contact: "0922866072 | phgah266@gmail.com",
+  },
+  {
+    id: 7,
+    name: "Hoàng Thị Linh Thảo",
+    role: "Thành viên",
+    avatar: LINH_THAO_PHOTO,
+    department: "Học viện Công nghệ Bưu chính Viễn thông",
+    specialization: "D23",
+    contact: "0399493958 | hoangthithao488@gmail.com",
   },
 ];
 
@@ -495,7 +515,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
   const [selectedRoadmap, setSelectedRoadmap] = React.useState<RoadmapStage | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
-  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("sv-startup");
+  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("all");
   const [roadmapSlideIndex, setRoadmapSlideIndex] = React.useState(0);
   const [roadmapPrintMode, setRoadmapPrintMode] = React.useState(false);
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
@@ -553,10 +573,24 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
     [translatedQrItems]
   );
 
-  const visibleTeamMembers = React.useMemo(
-    () => (teamDisplayMode === "p-innovation" ? teamMembers.filter((member) => member.id !== 5) : teamMembers),
-    [teamDisplayMode]
-  );
+  const visibleTeamMembers = React.useMemo(() => {
+    if (teamDisplayMode === "all") {
+      return teamMembers.sort((a, b) => {
+        const order = [4, 2, 6, 1, 3, 5, 7];
+        return order.indexOf(a.id) - order.indexOf(b.id);
+      });
+    }
+    if (teamDisplayMode === "p-innovation") {
+      return teamMembers.filter((member) => member.id <= 4);
+    }
+    if (teamDisplayMode === "i-startup") {
+      return teamMembers.filter((m) => [3, 2, 5, 6, 7].includes(m.id)).sort((a, b) => {
+        const order = [3, 2, 5, 6, 7];
+        return order.indexOf(a.id) - order.indexOf(b.id);
+      });
+    }
+    return teamMembers.filter((m) => m.id <= 5);
+  }, [teamDisplayMode]);
 
   const topRowCount = visibleTeamMembers.length > 4 ? 3 : Math.ceil(visibleTeamMembers.length / 2);
   const topRowTeamMembers = visibleTeamMembers.slice(0, topRowCount);
@@ -1083,15 +1117,17 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                 value={teamDisplayMode}
                 onChange={(value: TeamDisplayMode) => setTeamDisplayMode(value)}
                 options={[
+                  { value: "all", label: "ALL" },
                   { value: "sv-startup", label: "SV Startup" },
                   { value: "p-innovation", label: "P-Innovation" },
+                  { value: "i-startup", label: "I-Startup" },
                 ]}
                 style={{ width: 93 }}
               />
             </div>
             <div className="poster-team-grid">
               <div
-                className={`poster-team-row${isTopRowThreeMembers ? " poster-team-row--raise-middle" : ""}${
+                className={`poster-team-row poster-team-row--count-${topRowTeamMembers.length}${isTopRowThreeMembers ? " poster-team-row--raise-middle" : ""}${
                   isTopRowTwoMembers ? " poster-team-row--spread-two" : ""
                 }`}
               >
@@ -1113,13 +1149,13 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       )}
                     </div>
                     <h6 className={getMemberNameClass(member.name)}>{member.name}</h6>
-                    <p>{member.role}</p>
+                    {teamDisplayMode !== "all" && <p>{member.role}</p>}
                   </div>
                 ))}
               </div>
 
               {bottomRowTeamMembers.length > 0 && (
-                <div className="poster-team-row poster-team-row--bottom">
+                <div className={`poster-team-row poster-team-row--bottom poster-team-row--count-${bottomRowTeamMembers.length}`}>
                   {bottomRowTeamMembers.map((member) => (
                     <div
                       key={member.id}
@@ -1138,7 +1174,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                         )}
                       </div>
                       <h6 className={getMemberNameClass(member.name)}>{member.name}</h6>
-                      <p>{member.role}</p>
+                      {teamDisplayMode !== "all" && <p>{member.role}</p>}
                     </div>
                   ))}
                 </div>
