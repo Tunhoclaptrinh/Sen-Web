@@ -12,8 +12,79 @@
     "sectionProblem": "Problem",
     "sectionValueProposition": "Value Proposition",
     "sectionBusinessModel": "Business Model",
-    "sectionSolution": "Solution"
+    "sectionSolution": "Solution",
+    "all": "ALL"
   },
+  "accessibility": {
+    "viewProblemDetail": "View problem detail: {{title}}",
+    "viewValueDetail": "View detail: {{title}}",
+    "viewSolutionMockup": "View solution mockup gallery",
+    "viewSolutionDetail": "View solution detail: {{title}}",
+    "viewBusinessDetail": "View business model detail: {{title}}",
+    "viewRoadmapDetail": "View roadmap detail: {{phase}}",
+    "viewTeamMemberDetail": "View team member info: {{name}}",
+    "viewQrDetail": "View QR code detail: {{label}}",
+    "prevMilestone": "Previous milestone",
+    "nextMilestone": "Next milestone"
+  },
+  "teamMembers": [
+    {
+      "id": 1,
+      "name": "Nguyen Van Hieu",
+      "role": "AI Engineer",
+      "department": "Technology",
+      "specialization": "AI, model integration, and conversation optimization",
+      "contact": "0917579522 | nguyenhieu32005@gmail.com"
+    },
+    {
+      "id": 2,
+      "name": "Nguyen Tien Tuan",
+      "role": "Lead/Tech/Product",
+      "department": "Product",
+      "specialization": "Team leading, product direction, UI development, system architecture, etc.",
+      "contact": "0945650883 | tuannguyentien16@gmail.com"
+    },
+    {
+      "id": 3,
+      "name": "Tran Thanh Duy",
+      "role": "Developer/Presenter",
+      "department": "Development",
+      "specialization": "Operations, UI, product demo, and presentation",
+      "contact": "0866028877 | dandythenubit@gmail.com"
+    },
+    {
+      "id": 4,
+      "name": "Phan Thi Thu Nguyet",
+      "role": "Designer/Communications",
+      "department": "Design",
+      "specialization": "UI/UX and content communications",
+      "contact": "0389829196 | phanthithunguyet628@gmail.com"
+    },
+    {
+      "id": 5,
+      "name": "Bui Thi Yen",
+      "role": "Business/Marketing",
+      "department": "Business",
+      "specialization": "Enterprise operations, partner development, and marketing",
+      "contact": "0389829196 | buiyen2004yen@gmail.com"
+    },
+    {
+      "id": 6,
+      "name": "Tran Le Phuong Anh",
+      "role": "Storytelling & Strategy",
+      "department": "Thang Long University",
+      "specialization": "Insight building, product concept-shaping, bridging tech-marketing-finance, and pitching/presentation.",
+      "contact": "0922866072 | phgah266@gmail.com"
+    },
+    {
+      "id": 7,
+      "name": "Hoang Thi Linh Thao",
+      "role": "Marketing",
+      "department": "PTIT",
+      "specialization": "Marketing, academic quality assurance, and learning experience design",
+      "contact": "0399493958 | hoangthithao488@gmail.com"
+    }
+  ],
   "solutionOverview": {
     "title": "Experience-driven learning platform",
     "summary": "SEN combines gamification, AI, and curated data to bridge classroom history learning with real-world heritage experiences.",

@@ -163,10 +163,10 @@ const teamMembers: TeamMember[] = [
   {
     id: 6,
     name: "Trần Lê Phương Anh",
-    role: "Thành viên",
+    role: "Storytelling & Strategy",
     avatar: PHUONG_ANH_PHOTO,
     department: "Trường Đại học Thăng Long",
-    specialization: "Khóa 35",
+    specialization: "Xây dựng insight, định hình concept sản phẩm, kết nối các phần (tech – marketing – tài chính) và chịu trách nhiệm pitching/thuyết trình để làm rõ giá trị và tính thuyết phục của giải pháp.",
     contact: "0922866072 | phgah266@gmail.com",
   },
   {
@@ -521,6 +521,20 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
   const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
+  const translatedTeamMembers = React.useMemo(
+    () => toTranslatedArray<Partial<TeamMember>>(t("poster.teamMembers", { returnObjects: true }), []),
+    [t]
+  );
+
+  const localizedTeamMembers = React.useMemo(
+    () =>
+      teamMembers.map((member, index) => ({
+        ...member,
+        ...(translatedTeamMembers[index] || {}),
+      })),
+    [translatedTeamMembers]
+  );
+
   const localizedProblemItems = React.useMemo(
     () => toTranslatedArray<ProblemItem>(t("poster.problemItems", { returnObjects: true }), problemItems),
     [t]
@@ -575,22 +589,22 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const visibleTeamMembers = React.useMemo(() => {
     if (teamDisplayMode === "all") {
-      return teamMembers.sort((a, b) => {
+      return [...localizedTeamMembers].sort((a, b) => {
         const order = [4, 2, 6, 1, 3, 5, 7];
         return order.indexOf(a.id) - order.indexOf(b.id);
       });
     }
     if (teamDisplayMode === "p-innovation") {
-      return teamMembers.filter((member) => member.id <= 4);
+      return localizedTeamMembers.filter((member) => member.id <= 4);
     }
     if (teamDisplayMode === "i-startup") {
-      return teamMembers.filter((m) => [3, 2, 5, 6, 7].includes(m.id)).sort((a, b) => {
+      return localizedTeamMembers.filter((m) => [3, 2, 5, 6, 7].includes(m.id)).sort((a, b) => {
         const order = [3, 2, 5, 6, 7];
         return order.indexOf(a.id) - order.indexOf(b.id);
       });
     }
-    return teamMembers.filter((m) => m.id <= 5);
-  }, [teamDisplayMode]);
+    return localizedTeamMembers.filter((m) => m.id <= 5);
+  }, [teamDisplayMode, localizedTeamMembers]);
 
   const topRowCount = visibleTeamMembers.length > 4 ? 3 : Math.ceil(visibleTeamMembers.length / 2);
   const topRowTeamMembers = visibleTeamMembers.slice(0, topRowCount);
@@ -893,7 +907,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-problem-item poster-problem-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Xem chi tiet van de ${item.title}`}
+                  aria-label={t("poster.accessibility.viewProblemDetail", { title: item.title, defaultValue: `Xem chi tiết vấn đề: ${item.title}` })}
                   onClick={() => openProblemDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openProblemDetail(item))}
                 >
@@ -919,7 +933,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-value-card poster-value-card--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Xem chi tiet ${item.title}`}
+                  aria-label={t("poster.accessibility.viewValueDetail", { title: item.title, defaultValue: `Xem chi tiết: ${item.title}` })}
                   onClick={() => openValueDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openValueDetail(item))}
                 >
@@ -939,7 +953,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               className="poster-mockup-placeholder poster-mockup-placeholder--interactive"
               role="button"
               tabIndex={0}
-              aria-label="Xem bo anh mockup"
+              aria-label={t("poster.accessibility.viewSolutionMockup", { defaultValue: "Xem bộ ảnh mockup giải pháp" })}
               onClick={openSolutionOverviewDetail}
               onKeyDown={(event) => handleInsightKeyDown(event, openSolutionOverviewDetail)}
             >
@@ -953,7 +967,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-feature-item poster-feature-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Xem chi tiet ${item.title}`}
+                  aria-label={t("poster.accessibility.viewSolutionDetail", { title: item.title, defaultValue: `Xem chi tiết giải pháp: ${item.title}` })}
                   onClick={() => openSolutionFeatureDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openSolutionFeatureDetail(item))}
                 >
@@ -979,7 +993,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-biz-box poster-biz-box--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Xem chi tiet ${item.title}`}
+                  aria-label={t("poster.accessibility.viewBusinessDetail", { title: item.title, defaultValue: `Xem chi tiết mô hình: ${item.title}` })}
                   onClick={() => openBusinessDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openBusinessDetail(item))}
                 >
@@ -1016,7 +1030,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className={`roadmap-slider-btn roadmap-slider-btn--prev${roadmapSlideIndex <= 0 ? " roadmap-slider-btn--disabled" : ""}`}
                   onClick={handleRoadmapPrev}
                   disabled={roadmapSlideIndex <= 0}
-                  aria-label="Xem mốc trước"
+                  aria-label={t("poster.accessibility.prevMilestone", { defaultValue: "Xem mốc trước" })}
                 >
                   <LeftOutlined />
                 </button>
@@ -1032,7 +1046,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className={`roadmap-step roadmap-step--interactive ${isBottom ? "roadmap-step--bottom" : "roadmap-step--top"}`}
                       role="button"
                       tabIndex={0}
-                      aria-label={`Xem chi tiet lo trinh ${stage.phase}`}
+                      aria-label={t("poster.accessibility.viewRoadmapDetail", { phase: stage.phase, defaultValue: `Xem chi tiết lộ trình ${stage.phase}` })}
                       onClick={() => openRoadmapDetail(stage)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
@@ -1088,7 +1102,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className={`roadmap-slider-btn roadmap-slider-btn--next${roadmapSlideIndex >= roadmapMaxSlide ? " roadmap-slider-btn--disabled" : ""}`}
                   onClick={handleRoadmapNext}
                   disabled={roadmapSlideIndex >= roadmapMaxSlide}
-                  aria-label="Xem mốc tiếp theo"
+                  aria-label={t("poster.accessibility.nextMilestone", { defaultValue: "Xem mốc tiếp theo" })}
                 >
                   <RightOutlined />
                 </button>
@@ -1117,7 +1131,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                 value={teamDisplayMode}
                 onChange={(value: TeamDisplayMode) => setTeamDisplayMode(value)}
                 options={[
-                  { value: "all", label: "ALL" },
+                  { value: "all", label: t("poster.labels.all", { defaultValue: "ALL" }) },
                   { value: "sv-startup", label: "SV Startup" },
                   { value: "p-innovation", label: "P-Innovation" },
                   { value: "i-startup", label: "I-Startup" },
@@ -1137,7 +1151,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                     className="poster-member"
                     role="button"
                     tabIndex={0}
-                    aria-label={`Xem thong tin thanh vien ${member.name}`}
+                    aria-label={t("poster.accessibility.viewTeamMemberDetail", { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                     onClick={() => handleMemberClick(member)}
                     onKeyDown={(event) => handleMemberKeyDown(event, member)}
                   >
@@ -1162,7 +1176,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className="poster-member"
                       role="button"
                       tabIndex={0}
-                      aria-label={`Xem thong tin thanh vien ${member.name}`}
+                      aria-label={t("poster.accessibility.viewTeamMemberDetail", { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                       onClick={() => handleMemberClick(member)}
                       onKeyDown={(event) => handleMemberKeyDown(event, member)}
                     >
@@ -1194,7 +1208,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="qr-item qr-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Xem chi tiet ma QR ${item.label}`}
+                  aria-label={t("poster.accessibility.viewQrDetail", { label: item.label, defaultValue: `Xem chi tiết mã QR ${item.label}` })}
                   onClick={() => openQrDetail(item)}
                   onKeyDown={(event) => handleQrKeyDown(event, item)}
                 >

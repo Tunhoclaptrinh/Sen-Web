@@ -12,8 +12,79 @@
     "sectionProblem": "Vấn đề",
     "sectionValueProposition": "Giải pháp giá trị",
     "sectionBusinessModel": "Mô hình kinh doanh",
-    "sectionSolution": "Giải pháp"
+    "sectionSolution": "Giải pháp",
+    "all": "Tất cả"
   },
+  "accessibility": {
+    "viewProblemDetail": "Xem chi tiết vấn đề: {{title}}",
+    "viewValueDetail": "Xem chi tiết: {{title}}",
+    "viewSolutionMockup": "Xem bộ ảnh mockup giải pháp",
+    "viewSolutionDetail": "Xem chi tiết giải pháp: {{title}}",
+    "viewBusinessDetail": "Xem chi tiết mô hình: {{title}}",
+    "viewRoadmapDetail": "Xem chi tiết lộ trình: {{phase}}",
+    "viewTeamMemberDetail": "Xem thông tin thành viên: {{name}}",
+    "viewQrDetail": "Xem chi tiết mã QR: {{label}}",
+    "prevMilestone": "Xem mốc trước",
+    "nextMilestone": "Xem mốc tiếp theo"
+  },
+  "teamMembers": [
+    {
+      "id": 1,
+      "name": "Nguyễn Văn Hiếu",
+      "role": "AI Engineer",
+      "department": "Công nghệ",
+      "specialization": "AI, tích hợp mô hình và tối ưu hội thoại",
+      "contact": "0917579522 | nguyenhieu32005@gmail.com"
+    },
+    {
+      "id": 2,
+      "name": "Nguyễn Tiến Tuấn",
+      "role": "Lead/Tech/Product",
+      "department": "Sản phẩm",
+      "specialization": "Dẫn dắt đội nhóm, định hướng sản phẩm, phát giao diện, kiến trúc hệ thống,...",
+      "contact": "0945650883 | tuannguyentien16@gmail.com"
+    },
+    {
+      "id": 3,
+      "name": "Trần Thành Duy",
+      "role": "Developer/Presenter",
+      "department": "Phát triển",
+      "specialization": "Vận hành, giao diện, demo sản phẩm và trình bày",
+      "contact": "0866028877 | dandythenubit@gmail.com"
+    },
+    {
+      "id": 4,
+      "name": "Phan Thị Thu Nguyệt",
+      "role": "Designer/Communications",
+      "department": "Thiết kế",
+      "specialization": "UI/UX và truyền thông nội dung",
+      "contact": "0389829196 | phanthithunguyet628@gmail.com"
+    },
+    {
+      "id": 5,
+      "name": "Bùi Thị Yến",
+      "role": "Business/Marketing",
+      "department": "Kinh doanh",
+      "specialization": "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
+      "contact": "0389829196 | buiyen2004yen@gmail.com"
+    },
+    {
+      "id": 6,
+      "name": "Trần Lê Phương Anh",
+      "role": "Storytelling & Strategy",
+      "department": "Trường Đại học Thăng Long",
+      "specialization": "Xây dựng insight, định hình concept sản phẩm, kết nối các phần (tech – marketing – tài chính) và chịu trách nhiệm pitching/thuyết trình để làm rõ giá trị và tính thuyết phục của giải pháp.",
+      "contact": "0922866072 | phgah266@gmail.com"
+    },
+    {
+      "id": 7,
+      "name": "Hoàng Thị Linh Thảo",
+      "role": "Marketing",
+      "department": "Học viện Công nghệ Bưu chính Viễn thông",
+      "specialization": "Marketing, đảm bảo chất lượng học thuật và thiết kế trải nghiệm học tập",
+      "contact": "0399493958 | hoangthithao488@gmail.com"
+    }
+  ],
   "solutionOverview": {
     "title": "Nền tảng kiến tạo trải nghiệm",
     "summary": "SEN kết hợp game hóa, AI và dữ liệu kiểm duyệt để giải quyết khoảng cách giữa học lịch sử trên lớp và trải nghiệm ngoài thực tế.",
