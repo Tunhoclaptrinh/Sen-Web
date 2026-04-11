@@ -515,7 +515,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
   const [selectedRoadmap, setSelectedRoadmap] = React.useState<RoadmapStage | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
-  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("all");
+  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("i-startup");
   const [roadmapSlideIndex, setRoadmapSlideIndex] = React.useState(0);
   const [roadmapPrintMode, setRoadmapPrintMode] = React.useState(false);
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
