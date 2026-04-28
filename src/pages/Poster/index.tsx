@@ -20,13 +20,13 @@ import SenChibi from "@/components/SenChibi";
 
 // Import brand assets
 const logoPng = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
-import PINNOVATION_LOGO from "./PITCHING_DAY.png";
-import PHUONG_ANH_PHOTO from "./Photo/PhuongAnh.jpg";
-import LINH_THAO_PHOTO from "./Photo/LinhThao.jpg";
-import KIM_PHOTO from "./Photo/Kim.jpg";
-import NGUYEN_PHOTO from "./Photo/Nguyen.jpg";
-import DUY_PHOTO from "./Photo/Duy.jpg";
-import TUAN_PHOTO from "./Photo/Tuan.jpg";
+const PINNOVATION_LOGO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/PITCHING_DAY.png";
+const PHUONG_ANH_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/PhuongAnh.jpg";
+const LINH_THAO_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/LinhThao.jpg";
+const KIM_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/Kim.jpg";
+const NGUYEN_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/Nguyen.jpg";
+const DUY_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356936/sen_web/static/src/pages/Poster/Photo/Duy.jpg";
+const TUAN_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357064/sen_web/static/src/pages/Poster/Photo/Tuan.jpg";
 const smokeLeft = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356055/sen_web/static/src/assets/images/background/smoke-left.png";
 const smokeRight = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
 const lotus1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";

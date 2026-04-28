@@ -159,6 +159,14 @@ export default defineConfig(({ command, mode }) => {
       },
       allowedHosts: true,
     },
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true,
+          relativeUrls: false,
+        },
+      },
+    },
     optimizeDeps: {
       include: ["pixi.js", "@pixi/react"],
     },
