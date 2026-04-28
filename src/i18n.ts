@@ -28,6 +28,7 @@ import viProfile from './locales/vi/profile.json';
 import viNotifications from './locales/vi/notifications.json';
 import viChat from './locales/vi/chat.json';
 import viPoster from './locales/vi/poster.json';
+import viPosterEduSentia from './locales/vi/poster_edusentia.json';
 
 import enNav from './locales/en/nav.json';
 import enHome from './locales/en/home.json';
@@ -55,6 +56,7 @@ import enProfile from './locales/en/profile.json';
 import enNotifications from './locales/en/notifications.json';
 import enChat from './locales/en/chat.json';
 import enPoster from './locales/en/poster.json';
+import enPosterEduSentia from './locales/en/poster_edusentia.json';
 
 i18n
   .use(LanguageDetector)
@@ -89,6 +91,7 @@ i18n
           notifications: viNotifications,
           chat: viChat,
           poster: viPoster,
+          posterEduSentia: viPosterEduSentia,
         },
       },
       en: {
@@ -119,6 +122,7 @@ i18n
           notifications: enNotifications,
           chat: enChat,
           poster: enPoster,
+          posterEduSentia: enPosterEduSentia,
         },
       },
     },

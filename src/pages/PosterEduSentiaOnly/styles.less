@@ -1,0 +1,38 @@
+.poster-only-page {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.poster-only-page .poster-only-stage-shell {
+  flex: 0 0 auto;
+}
+
+.poster-only-page .poster-only-stage {
+  transform-origin: top left;
+}
+
+.poster-only-page .poster-only-stage .poster-page-wrapper {
+  --poster-safe-width: 841px;
+  --poster-width: 841px;
+  min-height: auto;
+  width: 841px;
+  height: 1189px;
+  padding: 0;
+  background: #fff;
+  background-image: none;
+  overflow: hidden;
+}
+
+.poster-only-page .poster-only-stage .poster-page-wrapper .poster-container-inner {
+  width: 841px;
+  height: 1189px;
+}

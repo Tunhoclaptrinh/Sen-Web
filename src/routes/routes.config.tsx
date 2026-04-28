@@ -41,6 +41,8 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const Support = lazy(() => import("@/pages/Support"));
 const Poster = lazy(() => import("@/pages/Poster"));
 const PosterOnlyPage = lazy(() => import("@/pages/PosterOnly"));
+const PosterEduSentia = lazy(() => import("@/pages/PosterEduSentia"));
+const PosterEduSentiaOnlyPage = lazy(() => import("@/pages/PosterEduSentiaOnly"));
 
 // Admin/Manager Pages (DataTables)
 const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
@@ -111,6 +113,14 @@ const routes: RouteObject[] = [
     element: (
       <LazyLoadWrapper>
         <PosterOnlyPage />
+      </LazyLoadWrapper>
+    ),
+  },
+  {
+    path: "/poster-edusentia-only",
+    element: (
+      <LazyLoadWrapper>
+        <PosterEduSentiaOnlyPage />
       </LazyLoadWrapper>
     ),
   },
@@ -191,6 +201,10 @@ const routes: RouteObject[] = [
       {
         path: "poster",
         element: <Poster />,
+      },
+      {
+        path: "poster-edusentia",
+        element: <PosterEduSentia />,
       },
       {
         path: "map",

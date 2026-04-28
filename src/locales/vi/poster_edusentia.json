@@ -1,0 +1,404 @@
+{
+  "tagline": "Hệ sinh thái EdTech kiến tạo trải nghiệm giáo dục tiểu học",
+  "sections": {
+    "problem": "Vấn đề",
+    "valueProposition": "Giải pháp giá trị",
+    "solution": "Giải pháp",
+    "businessModel": "Mô hình kinh doanh",
+    "roadmap": "Lộ trình phát triển",
+    "team": "Đội ngũ"
+  },
+  "labels": {
+    "sectionProblem": "Vấn đề",
+    "sectionValueProposition": "Giải pháp giá trị",
+    "sectionBusinessModel": "Mô hình kinh doanh",
+    "sectionSolution": "Giải pháp",
+    "all": "Tất cả"
+  },
+  "accessibility": {
+    "viewProblemDetail": "Xem chi tiết vấn đề: {{title}}",
+    "viewValueDetail": "Xem chi tiết: {{title}}",
+    "viewSolutionMockup": "Xem bộ ảnh mockup giải pháp",
+    "viewSolutionDetail": "Xem chi tiết giải pháp: {{title}}",
+    "viewBusinessDetail": "Xem chi tiết mô hình: {{title}}",
+    "viewRoadmapDetail": "Xem chi tiết lộ trình: {{phase}}",
+    "viewTeamMemberDetail": "Xem thông tin thành viên: {{name}}",
+    "viewQrDetail": "Xem chi tiết mã QR: {{label}}",
+    "prevMilestone": "Xem mốc trước",
+    "nextMilestone": "Xem mốc tiếp theo"
+  },
+  "teamMembers": [
+    {
+      "id": 1,
+      "name": "Trần Thành Duy",
+      "role": "Developer/Presenter",
+      "department": "Kỹ thuật",
+      "specialization": "Phát triển giao diện, demo sản phẩm và trình bày giải pháp công nghệ",
+      "contact": "0866028877 | dandythenubit@gmail.com"
+    },
+    {
+      "id": 2,
+      "name": "Nguyễn Tiến Tuấn",
+      "role": "Lead/Tech/Product",
+      "department": "Quản trị sản phẩm",
+      "specialization": "Dẫn dắt đội nhóm, định hướng sản phẩm, phát triển kiến trúc hệ thống",
+      "contact": "0945650883 | tuannguyentien16@gmail.com"
+    },
+    {
+      "id": 3,
+      "name": "Hoàng Thị Linh Thảo",
+      "role": "Marketing Strategist",
+      "department": "Chuyên môn",
+      "specialization": "Xây dựng chiến lược truyền thông, phát triển thị trường và thiết kế trải nghiệm người dùng",
+      "contact": "0399493958 | hoangthithao488@gmail.com"
+    },
+    {
+      "id": 4,
+      "name": "Nguyễn Thị Kim",
+      "role": "Business Strategist",
+      "department": "Kinh doanh",
+      "specialization": "Phát triển mô hình kinh doanh, quản trị chiến lược và quan hệ đối tác",
+      "contact": "0842032481 | nguyenthikimthcstt@gmail.com"
+    },
+    {
+      "id": 5,
+      "name": "Mai Thảo Nguyên",
+      "role": "Content Operations",
+      "department": "Vận hành",
+      "specialization": "Quản lý nội dung số, thiết kế trải nghiệm học tập và vận hành cộng đồng",
+      "contact": "0396947806 | meadowmai10@gmail.com"
+    }
+  ],
+  "solutionOverview": {
+    "title": "Nền tảng giáo dục tiểu học sáng tạo",
+    "summary": "EduSentia kết hợp game hóa và AI để hỗ trợ giáo viên tiểu học xây dựng bài giảng sinh động, cá nhân hóa theo chương trình GDPT 2018.",
+    "details": [
+      "Hỗ trợ giáo viên thiết kế bài giảng tương tác nhanh chóng và hiệu quả.",
+      "Tăng hứng thú học tập qua các nhiệm vụ, thử thách và trò chơi giáo dục.",
+      "Đảm bảo học liệu số chính xác, bám sát mục tiêu giáo dục tiểu học mới."
+    ]
+  },
+  "revenueTarget": "Hòa vốn sau 24 tháng, mục tiêu 3.000 giáo viên năm thứ nhất.",
+  "printMergedMilestones": {
+    "pilotExpansion": "Thí điểm & Mở rộng",
+    "breakevenRevenue": "Hòa vốn & Doanh thu ổn định"
+  },
+  "footer": {
+    "qrGroupLabel": "PITCH DECK / DEMO",
+    "impactText": "Dạy vui hơn, học sâu hơn - Cùng EduSentia kiến tạo tương lai!"
+  },
+  "modal": {
+    "qrTitle": "QR Chi tiết",
+    "qrTitlePrefix": "QR Chi tiết",
+    "destinationLabel": "Đích đến",
+    "pasteLinkLabel": "Dán link để tạo QR tự động",
+    "pasteLinkPlaceholder": "https://your-link-here",
+    "usageTitle": "Thông tin sử dụng",
+    "detailTitle": "Chi tiết",
+    "detailInfoTitle": "Thông tin chi tiết",
+    "memberTitle": "Thông tin thành viên",
+    "memberFallbackRole": "Thành viên dự án",
+    "departmentLabel": "Bộ phận",
+    "specializationLabel": "Chuyên môn",
+    "contactLabel": "Liên hệ",
+    "avatarPreviewMask": "Xem ảnh lớn"
+  },
+  "problemItems": [
+    {
+      "id": 1,
+      "title": "Áp lực đổi mới phương pháp dạy học tiểu học",
+      "summary": "Giáo viên gặp khó khăn khi chuyển đổi sang phương pháp dạy học phát triển năng lực theo chương trình GDPT 2018.",
+      "details": [
+        "Thiếu công cụ hỗ trợ thiết kế hoạt động trải nghiệm trong lớp học.",
+        "Áp lực soạn giáo án điện tử sinh động tiêu tốn nhiều thời gian.",
+        "Khó khăn trong việc cá nhân hóa lộ trình học tập cho từng học sinh."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Học sinh dễ mất tập trung, thiếu hứng thú",
+      "summary": "Phương pháp đọc - chép truyền thống không còn phù hợp với tâm lý tiếp nhận thông tin của học sinh tiểu học hiện nay.",
+      "details": [
+        "Nội dung sách giáo khoa khô khan, thiếu tính tương tác và trực quan.",
+        "Học sinh ít cơ hội tham gia trực tiếp vào quá trình kiến tạo kiến thức.",
+        "Mức độ ghi nhớ và hiểu sâu giảm khi thiếu các yếu tố kích thích tư duy."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Thiếu công cụ hỗ trợ giáo viên sáng tạo",
+      "summary": "Nhiều nền tảng hiện nay chỉ cung cấp học liệu tĩnh, chưa có cơ chế giúp giáo viên tự xây dựng nội dung game hóa.",
+      "details": [
+        "Công cụ hiện có đòi hỏi kỹ năng công nghệ cao, khó tiếp cận đại trà.",
+        "Học liệu số rời rạc, chưa liên kết chặt chẽ với hoạt động tại lớp.",
+        "Thiếu hệ thống đánh giá tiến trình học tập theo thời gian thực."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Khoảng cách giữa lý thuyết và ứng dụng",
+      "summary": "Học sinh tiểu học cần những ví dụ thực tiễn sinh động để hiểu và ghi nhớ kiến thức thay vì chỉ lý thuyết suông.",
+      "details": [
+        "Thiếu các tình huống giả định thực tế để học sinh thực hành kỹ năng.",
+        "Khó khăn trong việc kết nối bài học với các giá trị văn hóa, đời sống.",
+        "Trải nghiệm học tập bị giới hạn trong không gian lớp học truyền thống."
+      ]
+    }
+  ],
+  "roadmapStages": [
+    {
+      "id": 1,
+      "phase": "Q1/2026",
+      "milestone": "Hoàn thiện MVP & Thử nghiệm",
+      "icon": "target",
+      "details": [
+        "Hoàn thiện Minimum Viable Product với các tính năng cốt lõi cho tiểu học.",
+        "Thử nghiệm nội bộ với nhóm giáo viên nòng cốt (~50 người dùng).",
+        "Đánh giá tính ổn định của hệ thống và cơ chế game hóa bài giảng."
+      ]
+    },
+    {
+      "id": 2,
+      "phase": "Q2-Q3/2026",
+      "milestone": "Triển khai thí điểm thực tế",
+      "icon": "feedback",
+      "details": [
+        "Triển khai thí điểm tại 5 trường tiểu học đối tác tại Hà Nội.",
+        "Quy mô thử nghiệm ~600 học sinh và 100 giáo viên.",
+        "Tối ưu hóa kho học liệu số dựa trên phản hồi từ lớp học thực tế."
+      ]
+    },
+    {
+      "id": 3,
+      "phase": "Q4/2026",
+      "milestone": "Mở rộng tính năng AI & AR",
+      "icon": "expansion",
+      "details": [
+        "Tích hợp trợ lý AI hỗ trợ giáo viên soạn bài và giải đáp cho học sinh.",
+        "Thử nghiệm công nghệ Thực tế tăng cường (AR) trong các bài giảng khoa học.",
+        "Nâng cấp hệ thống báo cáo tiến trình học tập cá nhân hóa."
+      ]
+    },
+    {
+      "id": 4,
+      "phase": "2027",
+      "milestone": "Ra mắt chính thức & Marketing",
+      "icon": "launch",
+      "details": [
+        "Phát hành phiên bản EduSentia chính thức trên các nền tảng.",
+        "Triển khai chiến dịch truyền thông diện rộng tới cộng đồng giáo viên tiểu học.",
+        "Thiết lập quan hệ đối tác B2B với các hệ thống giáo dục tiểu học lớn."
+      ]
+    },
+    {
+      "id": 5,
+      "phase": "Q3-Q4/2027",
+      "milestone": "Quy mô B2C & Cộng đồng",
+      "icon": "scaling",
+      "details": [
+        "Mở rộng gói dịch vụ dành cho phụ huynh và học sinh tự học tại nhà.",
+        "Xây dựng cộng đồng giáo viên sáng tạo chia sẻ học liệu trên nền tảng.",
+        "Tổ chức các cuộc thi thiết kế bài giảng số trên toàn quốc."
+      ]
+    },
+    {
+      "id": 6,
+      "phase": "2028",
+      "milestone": "Đạt điểm hòa vốn",
+      "icon": "breakeven",
+      "details": [
+        "Đạt mốc hòa vốn nhờ tối ưu hóa chi phí vận hành và hạ tầng.",
+        "Doanh thu ổn định từ mô hình Freemium và các gói bản quyền trường học.",
+        "Mở rộng đối tác chiến lược tại các tỉnh thành trọng điểm."
+      ]
+    },
+    {
+      "id": 7,
+      "phase": "2030",
+      "milestone": "Dẫn đầu thị trường EdTech",
+      "icon": "revenue",
+      "details": [
+        "Trở thành nền tảng hỗ trợ giảng dạy tiểu học phổ biến nhất Việt Nam.",
+        "Đạt mục tiêu doanh thu tích lũy vượt ngưỡng kỳ vọng.",
+        "Khởi động dự án EduSentia quốc tế với nội dung đa ngôn ngữ."
+      ]
+    }
+  ],
+  "valuePropositionItems": [
+    {
+      "id": 1,
+      "title": "Hệ sinh thái dạy học sáng tạo",
+      "summary": "Cung cấp bộ công cụ toàn diện giúp giáo viên dễ dàng thiết kế các bài giảng hình ảnh, video sinh động và trò chơi giáo dục hấp dẫn.",
+      "details": [
+        "Tích hợp AI hỗ trợ tạo hình ảnh và video minh họa bài học tự động theo nội dung.",
+        "Thiết kế trò chơi giáo dục và câu đố tương tác chuyên nghiệp mà không cần kỹ năng lập trình.",
+        "Kho tài nguyên học liệu số khổng lồ, đa dạng và bám sát chương trình giáo dục phổ thông mới."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Quản lý & Giao bài thông minh",
+      "summary": "Tối ưu hóa toàn bộ quy trình giao nhiệm vụ, tự động theo dõi tiến độ và chấm điểm bài tập, giúp giáo viên tiết kiệm tối đa thời gian chuẩn bị.",
+      "details": [
+        "Hệ thống quản lý lớp học thông minh, tự động hóa việc theo dõi lộ trình học tập của từng học sinh.",
+        "Giao bài tập dưới dạng các nhiệm vụ gamification giúp tăng cường động lực và sự hứng thú của trẻ.",
+        "Tự động hóa hoàn toàn việc chấm điểm và phân tích lỗ hổng kiến thức để giáo viên có giải pháp kịp thời."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Trợ lý AI đa năng cho GV & HS",
+      "summary": "Hệ thống AI đồng hành toàn diện giúp tối ưu hiệu suất giảng dạy và tạo ra hành trình học tập tương tác, trả lời thông minh theo đúng ngữ cảnh bài học.",
+      "details": [
+        "Đối với giáo viên: Hỗ trợ soạn giáo án thông minh, tự động hóa tạo học liệu số và phân tích tiến độ học tập theo từng chủ đề bài dạy.",
+        "Đối với học sinh: Giải đáp thắc mắc tức thời theo đúng ngữ cảnh màn chơi/bài học qua nhân vật ảo, hướng dẫn thực hiện nhiệm vụ khám phá.",
+        "Công nghệ AI hiểu sâu nội dung bài giảng để đưa ra gợi ý chính xác, khơi gợi niềm đam mê và tinh thần chủ động tìm tòi kiến thức."
+      ]
+    }
+  ],
+  "businessModelItems": [
+    {
+      "id": 1,
+      "title": "Khách hàng mục tiêu",
+      "points": [
+        "Giáo viên Tiểu học cá nhân.",
+        " Nhóm/Tổ chuyên môn giáo viên Tiểu học",
+        "Học sinh Tiểu học (người dùng cuối)"
+      ],
+      "details": [
+        "Sản phẩm tập trung giải quyết nỗi đau của giáo viên trong việc đổi mới dạy học.",
+        "Mở rộng sang hỗ trợ phụ huynh đồng hành cùng con trong quá trình tự học.",
+        "Cung cấp giải pháp cho các tổ chức giáo dục muốn số hóa chương trình dạy."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Nguồn doanh thu",
+      "points": [
+        "Gói thuê bao Pro / Team Pack",
+        "Bản quyền kho học liệu số",
+        "Dịch vụ đào tạo và triển khai"
+      ],
+      "details": [
+        "Thu phí theo mô hình Freemium với các tính năng nâng cao cho GV/Trường.",
+        "Khai thác doanh thu từ việc cung cấp các bộ học liệu chuyên sâu theo chủ đề.",
+        "Phí hỗ trợ triển khai và tập huấn chuyên môn cho các đơn vị giáo dục."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Cấu trúc chi phí",
+      "points": [
+        "Phát triển và bảo trì công nghệ",
+        "Sản xuất nội dung học liệu số",
+        "Marketing và hỗ trợ cộng đồng"
+      ],
+      "details": [
+        "Ưu tiên đầu tư vào công nghệ AI và trải nghiệm người dùng mượt mà.",
+        "Ngân sách xây dựng kho học liệu phong phú và quy trình kiểm duyệt chuyên môn.",
+        "Chi phí xây dựng cộng đồng giáo viên và hỗ trợ người dùng cuối."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Đối tác then chốt",
+      "points": [
+        "Sở/Phòng GD&ĐT, Nhà xuất bản & Chuyên gia",
+        "Cộng đồng giáo viên tiểu học",
+        "Các đơn vị cung cấp thiết bị số"
+      ],
+      "details": [
+        "Hợp tác với cơ quan quản lý để đảm bảo tính pháp lý và chuyên môn.",
+        "Kết nối với chuyên gia để liên tục cập nhật xu hướng giáo dục mới.",
+        "Xây dựng mạng lưới giáo viên nòng cốt để lan tỏa sản phẩm tự nhiên."
+      ]
+    }
+  ],
+  "solutionFeatureItems": [
+    {
+      "id": 1,
+      "icon": "✨",
+      "title": "Gamified Lesson",
+      "summary": "Biến mỗi tiết học thành một trò chơi khám phá đầy thú vị và thử thách.",
+      "details": [
+        "Hệ thống điểm thưởng và huy hiệu khích lệ tinh thần học tập.",
+        "Các nhiệm vụ đa phương tiện giúp học sinh không cảm thấy nhàm chán.",
+        "Cơ chế tương tác trực tiếp giúp giáo viên nắm bắt mức độ hiểu bài của lớp."
+      ]
+    },
+    {
+      "id": 2,
+      "icon": "🤖",
+      "title": "AI Pedagogical ",
+      "summary": "AI hỗ trợ giáo viên giảng dạy hiệu quả và giúp học sinh học tập chủ động theo ngữ cảnh.",
+      "details": [
+        "Đối với giáo viên: Tự động hóa soạn giáo án và tạo học liệu số đa phương tiện chỉ trong vài giây.",
+        "Đối với học sinh: Giải đáp thắc mắc tức thời theo đúng ngữ cảnh bài học và màn chơi thông qua nhân vật ảo.",
+        "Hệ thống phân tích thông minh giúp theo dõi sát sao tiến độ và đưa ra gợi ý học tập phù hợp nhất."
+      ]
+    },
+    {
+      "id": 3,
+      "icon": "📝",
+      "title": "Kho học liệu số",
+      "summary": "Thư viện bài giảng, bài tập và dự án học tập bám sát chương trình mới.",
+      "details": [
+        "Tài nguyên đa dạng từ toán học, tiếng việt đến kỹ năng sống.",
+        "Học liệu được cập nhật liên tục theo chuẩn GDPT 2018.",
+        "Cho phép giáo viên tùy chỉnh nội dung để phù hợp với đặc thù từng lớp."
+      ]
+    },
+    {
+      "id": 4,
+      "icon": "⚙️",
+      "title": "Hệ sáng tạo bài giảng (CMS)",
+      "summary": "GV chia sẻ và cùng xây dựng bài giảng (mô hình, game, số hóa) xuất sắc.",
+      "details": [
+        "Tích hợp công cụ chỉnh sửa bài giảng dễ dùng như PowerPoint.",
+        "Cơ chế ghi nhận đóng góp và bảo vệ bản quyền cho giáo viên.",
+        "Mạng lưới hỗ trợ chuyên môn nhiệt tình từ các đồng nghiệp toàn quốc."
+      ]
+    }
+  ],
+  "qrItems": [
+    {
+      "id": 1,
+      "label": "APP(Android)",
+      "badge": "SCAN APP",
+      "title": "QR Ứng dụng Android",
+      "summary": "Quét mã để trải nghiệm ứng dụng EduSentia trên thiết bị Android.",
+      "destination": "Trang tải ứng dụng và demo tính năng",
+      "details": [
+        "Dùng camera điện thoại để mở liên kết tải ứng dụng.",
+        "Khuyến nghị quét bằng thiết bị Android để cài đặt trực tiếp.",
+        "Trải nghiệm các trò chơi giáo dục và trợ lý AI ngay trên điện thoại."
+      ]
+    },
+    {
+      "id": 2,
+      "label": "WEBSITE",
+      "badge": "SCAN WEB",
+      "title": "QR Website Trải nghiệm",
+      "summary": "Dẫn tới trang chủ EduSentia để khám phá các tính năng giảng dạy.",
+      "destination": "Landing page giới thiệu EduSentia",
+      "details": [
+        "Phù hợp để giáo viên tìm hiểu tổng quan về giải pháp.",
+        "Truy cập kho bài giảng mẫu và video hướng dẫn sử dụng.",
+        "Đăng ký dùng thử bản Pro miễn phí dành cho giáo viên."
+      ]
+    },
+    {
+      "id": 3,
+      "label": "FANPAGE",
+      "badge": "SCAN FB",
+      "title": "QR Fanpage SEN",
+      "summary": "QR này dẫn tới fanpage chính thức của SEN trên Facebook.",
+      "destination": "Fanpage SEN trên Facebook",
+      "details": [
+        "Quét QR để mở fanpage trực tiếp trên trình duyệt hoặc ứng dụng Facebook.",
+        "Phù hợp để người xem theo dõi thông tin cập nhật của dự án.",
+        "Có thể dùng trong poster, slide và tài liệu truyền thông."
+      ]
+    }
+  ]
+}

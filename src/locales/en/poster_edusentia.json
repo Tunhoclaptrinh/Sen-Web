@@ -1,0 +1,404 @@
+{
+  "tagline": "EdTech ecosystem reimagining primary education experiences",
+  "sections": {
+    "problem": "Problem",
+    "valueProposition": "Value Proposition",
+    "solution": "Solution",
+    "businessModel": "Business Model",
+    "roadmap": "Traction / Roadmap",
+    "team": "Team"
+  },
+  "labels": {
+    "sectionProblem": "Problem",
+    "sectionValueProposition": "Value Proposition",
+    "sectionBusinessModel": "Business Model",
+    "sectionSolution": "Solution",
+    "all": "ALL"
+  },
+  "accessibility": {
+    "viewProblemDetail": "View problem detail: {{title}}",
+    "viewValueDetail": "View detail: {{title}}",
+    "viewSolutionMockup": "View solution mockup gallery",
+    "viewSolutionDetail": "View solution detail: {{title}}",
+    "viewBusinessDetail": "View business model detail: {{title}}",
+    "viewRoadmapDetail": "View roadmap detail: {{phase}}",
+    "viewTeamMemberDetail": "View team member info: {{name}}",
+    "viewQrDetail": "View QR code detail: {{label}}",
+    "prevMilestone": "Previous milestone",
+    "nextMilestone": "Next milestone"
+  },
+  "teamMembers": [
+    {
+      "id": 1,
+      "name": "Tran Thanh Duy",
+      "role": "Developer/Presenter",
+      "department": "Engineering",
+      "specialization": "UI development, product demos, and technical presentations",
+      "contact": "0866028877 | dandythenubit@gmail.com"
+    },
+    {
+      "id": 2,
+      "name": "Nguyen Tien Tuan",
+      "role": "Lead/Tech/Product",
+      "department": "Product Management",
+      "specialization": "Team leadership, product vision, and system architecture development",
+      "contact": "0945650883 | tuannguyentien16@gmail.com"
+    },
+    {
+      "id": 3,
+      "name": "Hoang Thi Linh Thao",
+      "role": "Marketing Strategist",
+      "department": "Academic",
+      "specialization": "Academic quality assurance, marketing, and learning experience design",
+      "contact": "0399493958 | hoangthithao488@gmail.com"
+    },
+    {
+      "id": 4,
+      "name": "Nguyen Thi Kim",
+      "role": "Business Strategist",
+      "department": "Business",
+      "specialization": "Business model development, strategic management, and partnerships",
+      "contact": "0842032481 | nguyenthikimthcstt@gmail.com"
+    },
+    {
+      "id": 5,
+      "name": "Mai Thao Nguyen",
+      "role": "Content Operations",
+      "department": "Operations",
+      "specialization": "Learning content creation, asset management, and community operations",
+      "contact": "0396947806 | meadowmai10@gmail.com"
+    }
+  ],
+  "solutionOverview": {
+    "title": "Innovative Primary Education Platform",
+    "summary": "EduSentia combines gamification and AI to help primary teachers create engaging, personalized lessons aligned with the 2018 General Education Program.",
+    "details": [
+      "Support teachers in designing interactive lessons quickly and effectively.",
+      "Boost student engagement through missions, challenges, and educational games.",
+      "Ensure digital learning materials are accurate and aligned with primary goals."
+    ]
+  },
+  "revenueTarget": "Break-even after 24 months, target 3,000 teachers in year one.",
+  "printMergedMilestones": {
+    "pilotExpansion": "Pilot & Expansion",
+    "breakevenRevenue": "Break-even & Stable Revenue"
+  },
+  "footer": {
+    "qrGroupLabel": "PITCH DECK / DEMO",
+    "impactText": "Teach funnier, learn deeper - Building the future with EduSentia!"
+  },
+  "modal": {
+    "qrTitle": "QR Details",
+    "qrTitlePrefix": "QR Details",
+    "destinationLabel": "Destination",
+    "pasteLinkLabel": "Paste a link to generate QR automatically",
+    "pasteLinkPlaceholder": "https://your-link-here",
+    "usageTitle": "Usage notes",
+    "detailTitle": "Details",
+    "detailInfoTitle": "Detail information",
+    "memberTitle": "Member information",
+    "memberFallbackRole": "Project member",
+    "departmentLabel": "Department",
+    "specializationLabel": "Specialization",
+    "contactLabel": "Contact",
+    "avatarPreviewMask": "View large image"
+  },
+  "problemItems": [
+    {
+      "id": 1,
+      "title": "Pressure to innovate primary teaching methods",
+      "summary": "Teachers struggle to shift toward competency-based teaching required by the 2018 education program.",
+      "details": [
+        "Lack of tools to support designing experiential learning activities.",
+        "Time-consuming pressure to create engaging digital lesson plans.",
+        "Difficulty in personalizing learning paths for every student."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Students easily distracted, lack of engagement",
+      "summary": "Traditional lecture methods no longer suit the information processing style of modern primary students.",
+      "details": [
+        "Dry textbook content lacking interactivity and visual appeal.",
+        "Few opportunities for students to actively participate in knowledge creation.",
+        "Retention and deep understanding drop without cognitive stimuli."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Lack of creative tools for teachers",
+      "summary": "Many existing platforms only provide static materials without mechanisms for teachers to build gamified content.",
+      "details": [
+        "Existing tools require high tech skills, limiting widespread adoption.",
+        "Fragmented digital assets not well-linked to classroom activities.",
+        "Lack of real-time learning progress assessment systems."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Gap between theory and real-world application",
+      "summary": "Primary students need vivid real-world examples to understand and remember knowledge rather than pure theory.",
+      "details": [
+        "Lack of realistic simulation scenarios for skill practice.",
+        "Difficulty in linking lessons to cultural values and daily life.",
+        "Learning experiences limited within traditional classroom spaces."
+      ]
+    }
+  ],
+  "roadmapStages": [
+    {
+      "id": 1,
+      "phase": "Q1/2026",
+      "milestone": "MVP Completion & Internal Testing",
+      "icon": "target",
+      "details": [
+        "Finish Minimum Viable Product with core primary education features.",
+        "Internal testing with a core group of ~50 teachers.",
+        "Evaluate system stability and lesson gamification mechanics."
+      ]
+    },
+    {
+      "id": 2,
+      "phase": "Q2-Q3/2026",
+      "milestone": "Real-world Pilot Deployment",
+      "icon": "feedback",
+      "details": [
+        "Deploy pilot at 5 partner primary schools in Hanoi.",
+        "Scale of ~600 students and 100 teachers involved.",
+        "Optimize digital content based on real classroom feedback."
+      ]
+    },
+    {
+      "id": 3,
+      "phase": "Q4/2026",
+      "milestone": "AI & AR Feature Expansion",
+      "icon": "expansion",
+      "details": [
+        "Integrate AI assistant for lesson planning and student Q&A.",
+        "Test Augmented Reality (AR) in science-themed lessons.",
+        "Upgrade personalized learning progress reporting systems."
+      ]
+    },
+    {
+      "id": 4,
+      "phase": "2027",
+      "milestone": "Official Launch & Marketing",
+      "icon": "launch",
+      "details": [
+        "Launch the official EduSentia version across platforms.",
+        "Wide-scale media campaign reaching the primary teacher community.",
+        "Establish B2B partnerships with major primary education systems."
+      ]
+    },
+    {
+      "id": 5,
+      "phase": "Q3-Q4/2027",
+      "milestone": "B2C Scale & Community",
+      "icon": "scaling",
+      "details": [
+        "Expand services for parents and students for home self-learning.",
+        "Build a creative teacher community sharing materials on the platform.",
+        "Organize nationwide digital lesson design competitions."
+      ]
+    },
+    {
+      "id": 6,
+      "phase": "2028",
+      "milestone": "Break-even Milestone",
+      "icon": "breakeven",
+      "details": [
+        "Reach break-even through optimized operations and infrastructure.",
+        "Stable revenue from Freemium model and school licensing.",
+        "Expand strategic partnerships in key provinces and cities."
+      ]
+    },
+    {
+      "id": 7,
+      "phase": "2030",
+      "milestone": "EdTech Market Leadership",
+      "icon": "revenue",
+      "details": [
+        "Become the most popular primary teaching support platform in Vietnam.",
+        "Achieve accumulated revenue goals exceeding expectations.",
+        "Launch international EduSentia projects with multilingual content."
+      ]
+    }
+  ],
+  "valuePropositionItems": [
+    {
+      "id": 1,
+      "title": "Creative Teaching Ecosystem",
+      "summary": "Comprehensive toolset helping teachers easily design vivid image, video lessons and engaging educational games.",
+      "details": [
+        "Integrated AI supports automatic creation of lesson images and videos based on content.",
+        "Design professional educational games and interactive quizzes without coding skills.",
+        "Huge digital library of assets aligned with the latest general education curriculum."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Smart Management & Assignment",
+      "summary": "Optimize the entire assignment workflow, automatically track progress and grade exercises, saving maximum prep time.",
+      "details": [
+        "Smart classroom management system automating the tracking of each student's learning journey.",
+        "Assign tasks as gamified missions to boost student motivation and engagement.",
+        "Full automation of grading and gap analysis to provide timely pedagogical interventions."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Dual AI Assistant for T&S",
+      "summary": "Comprehensive AI companion optimizing teaching efficiency and creating interactive journeys with smart, context-aware responses based on the lesson.",
+      "details": [
+        "For Teachers: Smart lesson planning, automated digital asset creation, and progress analytics by lesson topic.",
+        "For Students: Instant Q&A via virtual characters based on game/lesson context, and guided discovery missions.",
+        "Deep AI understanding of lesson content provides accurate suggestions, sparking passion for proactive exploration."
+      ]
+    }
+  ],
+  "businessModelItems": [
+    {
+      "id": 1,
+      "title": "Target Customers",
+      "points": [
+        "Primary Teachers and Schools",
+        "Parents and Primary Students",
+        "Skill training centers"
+      ],
+      "details": [
+        "Focus on solving teacher pain points in innovating instruction.",
+        "Expand to support parents in accompanying children's self-learning.",
+        "Provide solutions for orgs looking to digitize teaching programs."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Revenue Streams",
+      "points": [
+        "Pro / Team Pack subscriptions",
+        "Digital content licensing",
+        "Training and deployment services"
+      ],
+      "details": [
+        "Freemium model with premium features for teachers/schools.",
+        "Monetize specialized deep-dive learning content by topic.",
+        "Deployment and professional training fees for educational units."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Cost Structure",
+      "points": [
+        "Tech development and maintenance",
+        "Digital content production",
+        "Marketing and community support"
+      ],
+      "details": [
+        "Prioritize investment in AI tech and smooth user experiences.",
+        "Content budget for rich assets and professional review.",
+        "Costs for building teacher communities and end-user support."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Key Partners",
+      "points": [
+        "Education Depts, Publishers & Experts",
+        "Primary Teacher Community",
+        "Digital device providers"
+      ],
+      "details": [
+        "Partner with authorities to ensure legality and expertise.",
+        "Connect with experts to update new educational trends.",
+        "Build a core teacher network for natural product expansion."
+      ]
+    }
+  ],
+  "solutionFeatureItems": [
+    {
+      "id": 1,
+      "icon": "✨",
+      "title": "Gamified Lesson",
+      "summary": "Turn every lesson into an exciting exploration game with challenges.",
+      "details": [
+        "Rewards and badges system to encourage learning spirit.",
+        "Multimedia missions keep students from getting bored.",
+        "Direct interaction helps teachers gauge class understanding."
+      ]
+    },
+    {
+      "id": 2,
+      "icon": "🤖",
+      "title": "AI Pedagogical ",
+      "summary": "Dual AI assistants helping teachers teach effectively and students learn proactively via context.",
+      "details": [
+        "For Teachers: Automate lesson planning and digital asset creation in seconds.",
+        "For Students: Instant Q&A based on lesson and game context via virtual characters.",
+        "Smart analytics system to track progress and provide tailored learning suggestions."
+      ]
+    },
+    {
+      "id": 3,
+      "icon": "📝",
+      "title": "Digital Content Library",
+      "summary": "Lessons, exercises, and projects aligned with the new program.",
+      "details": [
+        "Diverse resources from Math, Vietnamese to Life Skills.",
+        "Content constantly updated to 2018 program standards.",
+        "Allow teachers to customize content for specific class needs."
+      ]
+    },
+    {
+      "id": 4,
+      "icon": "⚙️",
+      "title": "Lesson Creation System (Game CMS)",
+      "summary": "Where teachers share and co-build excellent digital lessons.",
+      "details": [
+        "Integrated easy-to-use lesson editor (like PowerPoint).",
+        "Contribution recognition and copyright protection for teachers.",
+        "Professional support network from colleagues nationwide."
+      ]
+    }
+  ],
+  "qrItems": [
+    {
+      "id": 1,
+      "label": "APP(Android)",
+      "badge": "SCAN APP",
+      "title": "Android App QR",
+      "summary": "Scan to experience the EduSentia app on Android devices.",
+      "destination": "App download and feature demo page",
+      "details": [
+        "Use your camera to open the download link.",
+        "Recommended for Android devices for direct installation.",
+        "Experience educational games and AI assistant on mobile."
+      ]
+    },
+    {
+      "id": 2,
+      "label": "WEBSITE",
+      "badge": "SCAN WEB",
+      "title": "Website Experience QR",
+      "summary": "Links to the EduSentia homepage to explore teaching features.",
+      "destination": "EduSentia introduction landing page",
+      "details": [
+        "Perfect for teachers to get an overview of the solution.",
+        "Access sample lessons and tutorial videos.",
+        "Register for a free Pro trial for teachers."
+      ]
+    },
+    {
+      "id": 3,
+      "label": "FANPAGE",
+      "badge": "SCAN FB",
+      "title": "SEN Fanpage QR",
+      "summary": "This QR links to the official SEN fanpage on Facebook.",
+      "destination": "Official SEN Facebook Fanpage",
+      "details": [
+        "Scan to open the fanpage directly in browser or Facebook app.",
+        "Ideal for following the latest project updates.",
+        "Can be used in posters, slides, and marketing materials."
+      ]
+    }
+  ]
+}
