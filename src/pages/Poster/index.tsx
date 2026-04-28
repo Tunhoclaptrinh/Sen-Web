@@ -21,7 +21,7 @@ import SenChibi from "@/components/SenChibi";
 // Import brand assets
 const logoPng = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 const PINNOVATION_LOGO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/PITCHING_DAY.png";
-const PHUONG_ANH_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/PhuongAnh.jpg";
+import PHUONG_ANH_PHOTO from "./Photo/PhuongAnh.jpg";
 import LINH_THAO_PHOTO from "./Photo/LinhThao.jpg";
 import KIM_PHOTO from "./Photo/Kim.jpg";
 import NGUYEN_PHOTO from "./Photo/Nguyen.jpg";
