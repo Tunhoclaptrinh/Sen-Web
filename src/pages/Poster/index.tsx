@@ -650,7 +650,7 @@ const eduSentiaRoadmapStages: RoadmapStage[] = [
     milestone: "Ra mắt chính thức & Marketing",
     icon: "launch",
     details: [
-      "Phát hành phiên bản EduSentia chính thức trên các nền tảng.",
+      "Phát hành phiên bản SEN chính thức trên các nền tảng.",
       "Triển khai chiến dịch truyền thông diện rộng tới cộng đồng giáo viên tiểu học.",
       "Thiết lập quan hệ đối tác B2B với các hệ thống giáo dục tiểu học lớn.",
     ],
@@ -685,7 +685,7 @@ const eduSentiaRoadmapStages: RoadmapStage[] = [
     details: [
       "Trở thành nền tảng hỗ trợ giảng dạy tiểu học phổ biến nhất Việt Nam.",
       "Đạt mục tiêu doanh thu tích lũy vượt ngưỡng kỳ vọng.",
-      "Khởi động dự án EduSentia quốc tế với nội dung đa ngôn ngữ.",
+      "Khởi động dự án SEN quốc tế với nội dung đa ngôn ngữ.",
     ],
   },
 ];
@@ -827,7 +827,7 @@ const eduSentiaQrItems: QrItem[] = [
     label: "APP(Android)",
     badge: "SCAN APP",
     title: "QR Ứng dụng Android",
-    summary: "Quét mã để trải nghiệm ứng dụng EduSentia trên thiết bị Android.",
+    summary: "Quét mã để trải nghiệm ứng dụng SEN trên thiết bị Android.",
     destination: "Trang tải ứng dụng và demo tính năng",
     defaultUrl: defaultPosterAppUrl,
     details: [
@@ -841,8 +841,8 @@ const eduSentiaQrItems: QrItem[] = [
     label: "WEBSITE",
     badge: "SCAN WEB",
     title: "QR Website Trải nghiệm",
-    summary: "Dẫn tới trang chủ EduSentia để khám phá các tính năng giảng dạy.",
-    destination: "Landing page giới thiệu EduSentia",
+    summary: "Dẫn tới trang chủ SEN để khám phá các tính năng giảng dạy.",
+    destination: "Landing page giới thiệu SEN",
     defaultUrl: defaultPosterWebsiteUrl,
     details: [
       "Phù hợp để giáo viên tìm hiểu tổng quan về giải pháp.",
@@ -854,9 +854,9 @@ const eduSentiaQrItems: QrItem[] = [
     id: 3,
     label: "FANPAGE",
     badge: "SCAN FB",
-    title: "QR Fanpage EduSentia",
-    summary: "Quét mã để truy cập Fanpage chính thức của dự án.",
-    destination: "Fanpage EduSentia trên Facebook",
+    title: "QR Fanpage SEN",
+    summary: "QR này dẫn tới fanpage chính thức của SEN trên Facebook.",
+    destination: "Fanpage SEN trên Facebook",
     defaultUrl: "https://www.facebook.com/profile.php?id=61586454543352",
     details: [
       "Quét QR để mở fanpage trực tiếp trên trình duyệt hoặc ứng dụng Facebook.",

@@ -71,7 +71,7 @@
   ],
   "solutionOverview": {
     "title": "Nền tảng giáo dục tiểu học sáng tạo",
-    "summary": "EduSentia kết hợp game hóa và AI để hỗ trợ giáo viên tiểu học xây dựng bài giảng sinh động, cá nhân hóa theo chương trình GDPT 2018.",
+    "summary": "SEN kết hợp game hóa và AI để hỗ trợ giáo viên tiểu học xây dựng bài giảng sinh động, cá nhân hóa theo chương trình GDPT 2018.",
     "details": [
       "Hỗ trợ giáo viên thiết kế bài giảng tương tác nhanh chóng và hiệu quả.",
       "Tăng hứng thú học tập qua các nhiệm vụ, thử thách và trò chơi giáo dục.",
@@ -185,7 +185,7 @@
       "milestone": "Ra mắt chính thức & Marketing",
       "icon": "launch",
       "details": [
-        "Phát hành phiên bản EduSentia chính thức trên các nền tảng.",
+        "Phát hành phiên bản SEN chính thức trên các nền tảng.",
         "Triển khai chiến dịch truyền thông diện rộng tới cộng đồng giáo viên tiểu học.",
         "Thiết lập quan hệ đối tác B2B với các hệ thống giáo dục tiểu học lớn."
       ]
@@ -220,7 +220,7 @@
       "details": [
         "Trở thành nền tảng hỗ trợ giảng dạy tiểu học phổ biến nhất Việt Nam.",
         "Đạt mục tiêu doanh thu tích lũy vượt ngưỡng kỳ vọng.",
-        "Khởi động dự án EduSentia quốc tế với nội dung đa ngôn ngữ."
+        "Khởi động dự án SEN quốc tế với nội dung đa ngôn ngữ."
       ]
     }
   ],
@@ -366,7 +366,7 @@
       "label": "APP(Android)",
       "badge": "SCAN APP",
       "title": "QR Ứng dụng Android",
-      "summary": "Quét mã để trải nghiệm ứng dụng EduSentia trên thiết bị Android.",
+      "summary": "Quét mã để trải nghiệm ứng dụng SEN trên thiết bị Android.",
       "destination": "Trang tải ứng dụng và demo tính năng",
       "details": [
         "Dùng camera điện thoại để mở liên kết tải ứng dụng.",
@@ -379,8 +379,8 @@
       "label": "WEBSITE",
       "badge": "SCAN WEB",
       "title": "QR Website Trải nghiệm",
-      "summary": "Dẫn tới trang chủ EduSentia để khám phá các tính năng giảng dạy.",
-      "destination": "Landing page giới thiệu EduSentia",
+      "summary": "Dẫn tới trang chủ SEN để khám phá các tính năng giảng dạy.",
+      "destination": "Landing page giới thiệu SEN",
       "details": [
         "Phù hợp để giáo viên tìm hiểu tổng quan về giải pháp.",
         "Truy cập kho bài giảng mẫu và video hướng dẫn sử dụng.",
