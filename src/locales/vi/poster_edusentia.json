@@ -329,7 +329,7 @@
     {
       "id": 2,
       "icon": "🤖",
-      "title": "AI Pedagogical ",
+      "title": "AI Pedagogical",
       "summary": "AI hỗ trợ giáo viên giảng dạy hiệu quả và giúp học sinh học tập chủ động theo ngữ cảnh.",
       "details": [
         "Đối với giáo viên: Tự động hóa soạn giáo án và tạo học liệu số đa phương tiện chỉ trong vài giây.",
@@ -391,9 +391,9 @@
       "id": 3,
       "label": "FANPAGE",
       "badge": "SCAN FB",
-      "title": "QR Fanpage SEN",
-      "summary": "QR này dẫn tới fanpage chính thức của SEN trên Facebook.",
-      "destination": "Fanpage SEN trên Facebook",
+      "title": "QR Fanpage EduSentia",
+      "summary": "Quét mã để truy cập Fanpage chính thức của dự án.",
+      "destination": "Fanpage EduSentia trên Facebook",
       "details": [
         "Quét QR để mở fanpage trực tiếp trên trình duyệt hoặc ứng dụng Facebook.",
         "Phù hợp để người xem theo dõi thông tin cập nhật của dự án.",

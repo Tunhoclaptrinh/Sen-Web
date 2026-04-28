@@ -22,11 +22,14 @@ import SenChibi from "@/components/SenChibi";
 const logoPng = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774362654/sen_web/static/src/assets/images/logo.png";
 const PINNOVATION_LOGO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/PITCHING_DAY.png";
 const PHUONG_ANH_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/PhuongAnh.jpg";
-const LINH_THAO_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/LinhThao.jpg";
-const KIM_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/Kim.jpg";
-const NGUYEN_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357038/sen_web/static/src/pages/Poster/Photo/Nguyen.jpg";
+import LINH_THAO_PHOTO from "./Photo/LinhThao.jpg";
+import KIM_PHOTO from "./Photo/Kim.jpg";
+import NGUYEN_PHOTO from "./Photo/Nguyen.jpg";
 const DUY_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356936/sen_web/static/src/pages/Poster/Photo/Duy.jpg";
 const TUAN_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357064/sen_web/static/src/pages/Poster/Photo/Tuan.jpg";
+const HIEU_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357030/sen_web/static/src/pages/Poster/Photo/Hieu.jpg";
+const NGUYET_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357034/sen_web/static/src/pages/Poster/Photo/Nguyet.jpg";
+const YEN_PHOTO = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357068/sen_web/static/src/pages/Poster/Photo/Yen.jpg";
 const smokeLeft = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356055/sen_web/static/src/assets/images/background/smoke-left.png";
 const smokeRight = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
 const lotus1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
@@ -123,7 +126,7 @@ const teamMembers: TeamMember[] = [
     id: 1,
     name: "Nguyễn Văn Hiếu",
     role: "AI Engineer",
-    avatar: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357030/sen_web/static/src/pages/Poster/Photo/Hieu.jpg",
+    avatar: HIEU_PHOTO,
     department: "Công nghệ",
     specialization: "AI, tích hợp mô hình và tối ưu hội thoại",
     contact: "0917579522 | nguyenhieu32005@gmail.com",
@@ -132,7 +135,7 @@ const teamMembers: TeamMember[] = [
     id: 2,
     name: "Nguyễn Tiến Tuấn",
     role: "Lead/Tech/Product",
-    avatar: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357064/sen_web/static/src/pages/Poster/Photo/Tuan.jpg",
+    avatar: TUAN_PHOTO,
     department: "Sản phẩm",
     specialization: "Dẫn dắt đội nhóm, định hướng sản phẩm, phát giao diện, kiến trúc hệ thống,...",
     contact: "0945650883 | tuannguyentien16@gmail.com",
@@ -141,7 +144,7 @@ const teamMembers: TeamMember[] = [
     id: 3,
     name: "Trần Thành Duy",
     role: "Developer/Presenter",
-    avatar: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356936/sen_web/static/src/pages/Poster/Photo/Duy.jpg",
+    avatar: DUY_PHOTO,
     department: "Phát triển",
     specialization: "Vận hành, giao diện, demo sản phẩm và trình bày",
     contact: "0866028877 | dandythenubit@gmail.com",
@@ -150,7 +153,7 @@ const teamMembers: TeamMember[] = [
     id: 4,
     name: "Phan Thị Thu Nguyệt",
     role: "Designer/Communications",
-    avatar: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357034/sen_web/static/src/pages/Poster/Photo/Nguyet.jpg",
+    avatar: NGUYET_PHOTO,
     department: "Thiết kế",
     specialization: "UI/UX và truyền thông nội dung",
     contact: "0389829196 | phanthithunguyet628@gmail.com",
@@ -162,7 +165,7 @@ const teamMembers: TeamMember[] = [
     department: "Kinh doanh",
     specialization: "Nghiệp vụ doanh nghiệp, phát triển đối tác và marketing",
     contact: "0389829196 | buiyen2004yen@gmail.com",
-    avatar: "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774357068/sen_web/static/src/pages/Poster/Photo/Yen.jpg",
+    avatar: YEN_PHOTO,
   },
   {
     id: 6,
@@ -567,45 +570,42 @@ const eduSentiaTeamMembers: TeamMember[] = [
 const eduSentiaProblemItems: ProblemItem[] = [
   {
     id: 1,
-    title: "Việc tìm hiểu văn hóa, lịch sử thiếu tương tác, trải nghiệm",
-    summary:
-      "Nội dung lịch sử trong trường học chủ yếu được truyền đạt qua lý thuyết, khiến học sinh khó hứng thú và ít chủ động khám phá.",
+    title: "Áp lực đổi mới phương pháp dạy học tiểu học",
+    summary: "Giáo viên gặp khó khăn khi chuyển đổi sang phương pháp dạy học phát triển năng lực theo chương trình GDPT 2018.",
     details: [
-      "Phương pháp học còn thiên về ghi nhớ, thiếu hoạt động trải nghiệm thực tế.",
-      "Học sinh khó hình dung bối cảnh lịch sử khi chỉ tiếp cận qua sách và bài giảng.",
-      "Động lực tự học giảm khi thiếu cơ chế tương tác và phản hồi liên tục.",
+      "Thiếu công cụ hỗ trợ thiết kế hoạt động trải nghiệm trong lớp học.",
+      "Áp lực soạn giáo án điện tử sinh động tiêu tốn nhiều thời gian.",
+      "Khó khăn trong việc cá nhân hóa lộ trình học tập cho từng học sinh.",
     ],
   },
   {
     id: 2,
-    title: "Tiếp cận một chiều, hạn chế chủ động",
-    summary: "Nội dung chủ yếu đi theo hình thức đọc - chép, khó tạo hứng thú lâu dài, Mức độ ghi nhớ giảm khi thiếu hoạt động tương tác và phản hồi trực tiếp.",
+    title: "Học sinh dễ mất tập trung, thiếu hứng thú",
+    summary: "Phương pháp đọc - chép truyền thống không còn phù hợp với tâm lý tiếp nhận thông tin của học sinh tiểu học hiện nay.",
     details: [
-      "Nội dung chủ yếu đi theo hình thức đọc - chép, khó tạo hứng thú lâu dài.",
-      "Người học ít cơ hội gắn kiến thức với bối cảnh thực tế tại di tích, bảo tàng.",
-      "Mức độ ghi nhớ giảm khi thiếu hoạt động tương tác và phản hồi trực tiếp.",
+      "Nội dung sách giáo khoa khô khan, thiếu tính tương tác và trực quan.",
+      "Học sinh ít cơ hội tham gia trực tiếp vào quá trình kiến tạo kiến thức.",
+      "Mức độ ghi nhớ và hiểu sâu giảm khi thiếu các yếu tố kích thích tư duy.",
     ],
   },
   {
     id: 3,
-    title: "Khoảng cách lý thuyết & thực tế",
-    summary: "Học sinh ít có cơ hội kết nối kiến thức trong sách với các địa điểm lịch sử và văn hóa ngoài đời.",
+    title: "Thiếu công cụ hỗ trợ giáo viên sáng tạo",
+    summary: "Nhiều nền tảng hiện nay chỉ cung cấp học liệu tĩnh, chưa có cơ chế giúp giáo viên tự xây dựng nội dung game hóa.",
     details: [
-      "Hạn chế chủ động, Tìm hiểu di sản ngoài lớp học còn thấp, lịch sử trở thành môn học để thi hơn là để khám phá.",
-      "Hoạt động học tập gắn với di sản ngoài lớp học còn chưa thường xuyên.",
-      "Người học khó liên hệ bài học lịch sử với bối cảnh văn hóa tại địa phương.",
-      "Kiến thức dễ rời rạc nếu thiếu trải nghiệm theo ngữ cảnh thực tế.",
+      "Công cụ hiện có đòi hỏi kỹ năng công nghệ cao, khó tiếp cận đại trà.",
+      "Học liệu số rời rạc, chưa liên kết chặt chẽ với hoạt động tại lớp.",
+      "Thiếu hệ thống đánh giá tiến trình học tập theo thời gian thực.",
     ],
   },
   {
     id: 4,
-    title: "Chiêm ngưỡng thụ động tại bảo tàng, di tích",
-    summary:
-      "Nhiều bảo tàng và di tích vẫn chủ yếu trưng bày tĩnh, thiếu công nghệ tương tác để thu hút người trẻ.",
+    title: "Khoảng cách giữa lý thuyết và ứng dụng",
+    summary: "Học sinh tiểu học cần những ví dụ thực tiễn sinh động để hiểu và ghi nhớ kiến thức thay vì chỉ lý thuyết suông.",
     details: [
-      "Nhiều điểm tham quan chưa có cơ chế tương tác số để tăng mức độ nhập vai.",
-      "Thiếu nhiệm vụ học tập tại chỗ để dẫn dắt người học khám phá có mục tiêu.",
-      "Người trẻ khó duy trì hứng thú nếu trải nghiệm chỉ dừng ở quan sát thụ động.",
+      "Thiếu các tình huống giả định thực tế để học sinh thực hành kỹ năng.",
+      "Khó khăn trong việc kết nối bài học với các giá trị văn hóa, đời sống.",
+      "Trải nghiệm học tập bị giới hạn trong không gian lớp học truyền thống.",
     ],
   },
 ];
@@ -614,79 +614,78 @@ const eduSentiaRoadmapStages: RoadmapStage[] = [
   {
     id: 1,
     phase: "Q1/2026",
-    milestone: "MVP & Thử nghiệm (PTIT)",
+    milestone: "Hoàn thiện MVP & Thử nghiệm",
     icon: "target",
     details: [
-      "Phát triển Minimum Viable Product với các tính năng cốt lõi.",
-      "Tích hợp hệ sinh thái P-Coin tại PTIT (~1.000 người dùng).",
-      "Đánh giá tính ổn định hệ thống và cơ chế game hóa ban đầu.",
+      "Hoàn thiện Minimum Viable Product với các tính năng cốt lõi cho tiểu học.",
+      "Thử nghiệm nội bộ với nhóm giáo viên nòng cốt (~50 người dùng).",
+      "Đánh giá tính ổn định của hệ thống và cơ chế game hóa bài giảng.",
     ],
   },
   {
     id: 2,
     phase: "Q2-Q3/2026",
-    milestone: "Thí điểm & Phản hồi",
+    milestone: "Triển khai thí điểm thực tế",
     icon: "feedback",
     details: [
-      "Triển khai thí điểm tại THCS Lê Lợi và nhóm thanh niên.",
-      "Quy mô thử nghiệm ~250 học sinh khối 6.",
-      "Tối ưu hóa học liệu số dựa trên phản hồi thực tế.",
+      "Triển khai thí điểm tại 5 trường tiểu học đối tác tại Hà Nội.",
+      "Quy mô thử nghiệm ~600 học sinh và 100 giáo viên.",
+      "Tối ưu hóa kho học liệu số dựa trên phản hồi từ lớp học thực tế.",
     ],
   },
   {
     id: 3,
     phase: "Q4/2026",
-    milestone: "Mở rộng tính năng",
+    milestone: "Mở rộng tính năng AI & AR",
     icon: "expansion",
     details: [
-      "Tích hợp Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
-      "Hệ thống AI Q&A phản hồi theo ngữ cảnh lịch sử.",
-      "Tối ưu hóa cơ chế game: hệ thống thưởng, thử thách và nhiệm vụ.",
-      "Nâng cấp hệ thống phản hồi và tiến trình học tập cá nhân hóa.",
+      "Tích hợp trợ lý AI hỗ trợ giáo viên soạn bài và giải đáp cho học sinh.",
+      "Thử nghiệm công nghệ Thực tế tăng cường (AR) trong các bài giảng khoa học.",
+      "Nâng cấp hệ thống báo cáo tiến trình học tập cá nhân hóa.",
     ],
   },
   {
     id: 4,
     phase: "2027",
-    milestone: "Ra mắt chính thức",
+    milestone: "Ra mắt chính thức & Marketing",
     icon: "launch",
     details: [
-      "Phát hành ứng dụng chính thức với đầy đủ tính năng.",
-      "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
-      "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học.",
+      "Phát hành phiên bản EduSentia chính thức trên các nền tảng.",
+      "Triển khai chiến dịch truyền thông diện rộng tới cộng đồng giáo viên tiểu học.",
+      "Thiết lập quan hệ đối tác B2B với các hệ thống giáo dục tiểu học lớn.",
     ],
   },
   {
     id: 5,
     phase: "Q3-Q4/2027",
-    milestone: "Quy mô B2C & Di sản",
+    milestone: "Quy mô B2C & Cộng đồng",
     icon: "scaling",
     details: [
-      "Mở rộng thị trường B2C cho người dùng tự do.",
-      "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
-      "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt.",
+      "Mở rộng gói dịch vụ dành cho phụ huynh và học sinh tự học tại nhà.",
+      "Xây dựng cộng đồng giáo viên sáng tạo chia sẻ học liệu trên nền tảng.",
+      "Tổ chức các cuộc thi thiết kế bài giảng số trên toàn quốc.",
     ],
   },
   {
     id: 6,
     phase: "2028",
-    milestone: "Điểm hòa vốn",
+    milestone: "Đạt điểm hòa vốn",
     icon: "breakeven",
     details: [
-      "Đạt điểm hòa vốn nhờ hạ tầng công nghệ tối ưu.",
-      "Doanh thu ổn định từ mô hình SaaS B2B và bản quyền nội dung.",
-      "Mở rộng đối tác chiến lược với hệ thống trường học và bảo tàng.",
+      "Đạt mốc hòa vốn nhờ tối ưu hóa chi phí vận hành và hạ tầng.",
+      "Doanh thu ổn định từ mô hình Freemium và các gói bản quyền trường học.",
+      "Mở rộng đối tác chiến lược tại các tỉnh thành trọng điểm.",
     ],
   },
   {
     id: 7,
     phase: "2030",
-    milestone: "Doanh thu 7 tỷ VND",
+    milestone: "Dẫn đầu thị trường EdTech",
     icon: "revenue",
     details: [
-      "Đạt thị phần vững chắc trên thị trường EdTech văn hóa - lịch sử.",
-      "Doanh thu tích lũy đạt trên 7 tỷ VND.",
-      "Mở rộng hệ sinh thái với đối tác quốc tế và nội dung đa ngôn ngữ.",
+      "Trở thành nền tảng hỗ trợ giảng dạy tiểu học phổ biến nhất Việt Nam.",
+      "Đạt mục tiêu doanh thu tích lũy vượt ngưỡng kỳ vọng.",
+      "Khởi động dự án EduSentia quốc tế với nội dung đa ngôn ngữ.",
     ],
   },
 ];
@@ -790,7 +789,7 @@ const eduSentiaSolutionFeatureItems: SolutionFeatureItem[] = [
   {
     id: 2,
     icon: "🤖",
-    title: "AI Pedagogical ",
+    title: "AI Pedagogical",
     summary: "AI hỗ trợ giáo viên giảng dạy hiệu quả và giúp học sinh học tập chủ động theo ngữ cảnh.",
     details: [
       "Đối với giáo viên: Tự động hóa soạn giáo án và tạo học liệu số đa phương tiện chỉ trong vài giây.",
@@ -828,13 +827,13 @@ const eduSentiaQrItems: QrItem[] = [
     label: "APP(Android)",
     badge: "SCAN APP",
     title: "QR Ứng dụng Android",
-    summary: "QR này dẫn tới bản trải nghiệm ứng dụng SEN trên thiết bị Android.",
-    destination: "Trang tải và demo bản app Android",
+    summary: "Quét mã để trải nghiệm ứng dụng EduSentia trên thiết bị Android.",
+    destination: "Trang tải ứng dụng và demo tính năng",
     defaultUrl: defaultPosterAppUrl,
     details: [
-      "Dùng camera hoặc ứng dụng quét mã QR để mở liên kết.",
-      "Khuyến nghị quét bằng điện thoại Android để cài đặt nhanh.",
-      "Có thể dùng để demo trực tiếp các tính năng chính của SEN.",
+      "Dùng camera điện thoại để mở liên kết tải ứng dụng.",
+      "Khuyến nghị quét bằng thiết bị Android để cài đặt trực tiếp.",
+      "Trải nghiệm các trò chơi giáo dục và trợ lý AI ngay trên điện thoại.",
     ],
   },
   {
@@ -842,22 +841,22 @@ const eduSentiaQrItems: QrItem[] = [
     label: "WEBSITE",
     badge: "SCAN WEB",
     title: "QR Website Trải nghiệm",
-    summary: "QR này dẫn đến website trải nghiệm của dự án SEN.",
-    destination: "Landing page / website demo SEN",
+    summary: "Dẫn tới trang chủ EduSentia để khám phá các tính năng giảng dạy.",
+    destination: "Landing page giới thiệu EduSentia",
     defaultUrl: defaultPosterWebsiteUrl,
     details: [
-      "Phù hợp khi trình bày nhanh trên màn hình hoặc poster in.",
-      "Cho phép người xem truy cập ngay nội dung giới thiệu và demo.",
-      "Có thể chia sẻ rộng rãi trong sự kiện hoặc pitching day.",
+      "Phù hợp để giáo viên tìm hiểu tổng quan về giải pháp.",
+      "Truy cập kho bài giảng mẫu và video hướng dẫn sử dụng.",
+      "Đăng ký dùng thử bản Pro miễn phí dành cho giáo viên.",
     ],
   },
   {
     id: 3,
     label: "FANPAGE",
     badge: "SCAN FB",
-    title: "QR Fanpage SEN",
-    summary: "QR này dẫn tới fanpage chính thức của SEN trên Facebook.",
-    destination: "Fanpage SEN trên Facebook",
+    title: "QR Fanpage EduSentia",
+    summary: "Quét mã để truy cập Fanpage chính thức của dự án.",
+    destination: "Fanpage EduSentia trên Facebook",
     defaultUrl: "https://www.facebook.com/profile.php?id=61586454543352",
     details: [
       "Quét QR để mở fanpage trực tiếp trên trình duyệt hoặc ứng dụng Facebook.",
@@ -1283,7 +1282,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             {shouldShowPinovationLogo && <img src={PINNOVATION_LOGO} alt="P-INNOVATION" className="pitching-logo-img" />}
             <img src={logoPng} alt="SEN Logo" className="sen-logo-img" />
           </div>
-          <div className="poster-tagline">{t(`${posterNs}tagline`, { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
+          <div className="poster-tagline">{t(`${posterNs}tagline`, { defaultValue: teamDisplayMode === "ytkd-2026" ? "Hệ sinh thái EdTech kiến tạo trải nghiệm giáo dục tiểu học" : "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
         </header>
 
         <div className="poster-content-grid">
@@ -1399,7 +1398,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               ))}
             </div>
             <div className="poster-revenue-target">
-              {t(`${posterNs}revenueTarget`, { defaultValue: "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
+              {t(`${posterNs}revenueTarget`, { defaultValue: teamDisplayMode === "ytkd-2026" ? "Hòa vốn sau 24 tháng, mục tiêu 3.000 giáo viên năm thứ nhất." : "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
             </div>
           </section>
 
@@ -1651,7 +1650,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             </div>
           </div>
           <div className="poster-impact-text">
-            {t("poster:footer.impactText", { defaultValue: "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!" })}
+            {t(`${posterNs}footer.impactText`, { defaultValue: teamDisplayMode === "ytkd-2026" ? "Dạy vui hơn, học sâu hơn - Cùng EduSentia kiến tạo tương lai!" : "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!" })}
           </div>
         </footer>
 
