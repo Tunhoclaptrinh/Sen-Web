@@ -138,9 +138,8 @@ export default defineConfig(({ command, mode }) => {
         ignored: ["**/.git/**", "**/.env**"],
       },
       fs: {
-        // Restricted to project root for security
-        allow: [path.resolve(__dirname)],
-        // Explicitly deny sensitive files
+        // Allow Vite to handle path resolution automatically
+        // but explicitly deny sensitive files
         deny: [".env", ".env.*", ".git"],
       },
       hmr: {
