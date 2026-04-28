@@ -83,6 +83,22 @@
       "department": "PTIT",
       "specialization": "Marketing, academic quality assurance, and learning experience design",
       "contact": "0399493958 | hoangthithao488@gmail.com"
+    },
+    {
+      "id": 8,
+      "name": "Nguyen Thi Kim",
+      "role": "Business Strategist",
+      "department": "Business",
+      "specialization": "Business model development, strategic management, and partnership relations",
+      "contact": "0842032481 | nguyenthikimthcstt@gmail.com"
+    },
+    {
+      "id": 9,
+      "name": "Mai Thao Nguyen",
+      "role": "Content Operations",
+      "department": "Operations",
+      "specialization": "Digital content management, learning experience design, and community operations",
+      "contact": "0396947806 | meadowmai10@gmail.com"
     }
   ],
   "solutionOverview": {

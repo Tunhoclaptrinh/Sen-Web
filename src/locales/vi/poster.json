@@ -83,6 +83,22 @@
       "department": "Học viện Công nghệ Bưu chính Viễn thông",
       "specialization": "Marketing, đảm bảo chất lượng học thuật và thiết kế trải nghiệm học tập",
       "contact": "0399493958 | hoangthithao488@gmail.com"
+    },
+    {
+      "id": 8,
+      "name": "Nguyễn Thị Kim",
+      "role": "Business Strategist",
+      "department": "Kinh doanh",
+      "specialization": "Phát triển mô hình kinh doanh, quản trị chiến lược và quan hệ đối tác",
+      "contact": "0842032481 | nguyenthikimthcstt@gmail.com"
+    },
+    {
+      "id": 9,
+      "name": "Mai Thảo Nguyên",
+      "role": "Content Operations",
+      "department": "Vận hành",
+      "specialization": "Quản lý nội dung số, thiết kế trải nghiệm học tập và vận hành cộng đồng",
+      "contact": "0396947806 | meadowmai10@gmail.com"
     }
   ],
   "solutionOverview": {

@@ -23,6 +23,10 @@ const logoPng = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto
 import PINNOVATION_LOGO from "./PITCHING_DAY.png";
 import PHUONG_ANH_PHOTO from "./Photo/PhuongAnh.jpg";
 import LINH_THAO_PHOTO from "./Photo/LinhThao.jpg";
+import KIM_PHOTO from "./Photo/Kim.jpg";
+import NGUYEN_PHOTO from "./Photo/Nguyen.jpg";
+import DUY_PHOTO from "./Photo/Duy.jpg";
+import TUAN_PHOTO from "./Photo/Tuan.jpg";
 const smokeLeft = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356055/sen_web/static/src/assets/images/background/smoke-left.png";
 const smokeRight = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356059/sen_web/static/src/assets/images/background/smoke-right.png";
 const lotus1 = "https://res.cloudinary.com/dmqb5l6bw/image/upload/f_auto,q_auto/v1774356040/sen_web/static/src/assets/images/background/lotus-1.png";
@@ -99,7 +103,7 @@ interface InsightDetail {
   details: string[];
 }
 
-type TeamDisplayMode = "all" | "sv-startup" | "p-innovation" | "i-startup";
+type TeamDisplayMode = "all" | "sv-startup" | "p-innovation" | "i-startup" | "ytkd-2026";
 
 const toTranslatedArray = <T,>(value: unknown, fallback: T[]): T[] => {
   return Array.isArray(value) ? (value as T[]) : fallback;
@@ -177,6 +181,24 @@ const teamMembers: TeamMember[] = [
     department: "Học viện Công nghệ Bưu chính Viễn thông",
     specialization: "Marketing, đảm bảo chất lượng học thuật và thiết kế trải nghiệm học tập",
     contact: "0399493958 | hoangthithao488@gmail.com",
+  },
+  {
+    id: 8,
+    name: "Nguyễn Thị Kim",
+    role: "Business Strategist",
+    avatar: KIM_PHOTO,
+    department: "Kinh doanh",
+    specialization: "Phát triển mô hình kinh doanh, quản trị chiến lược và quan hệ đối tác",
+    contact: "0842032481 | nguyenthikimthcstt@gmail.com",
+  },
+  {
+    id: 9,
+    name: "Mai Thảo Nguyên",
+    role: "Content Operations",
+    avatar: NGUYEN_PHOTO,
+    department: "Vận hành",
+    specialization: "Quản lý nội dung số, thiết kế trải nghiệm học tập và vận hành cộng đồng",
+    contact: "0396947806 | meadowmai10@gmail.com",
   },
 ];
 
@@ -494,6 +516,357 @@ const qrItems: QrItem[] = [
   },
 ];
 
+const eduSentiaTeamMembers: TeamMember[] = [
+  {
+    id: 1,
+    name: "Trần Thành Duy",
+    role: "Developer/Presenter",
+    avatar: DUY_PHOTO,
+    department: "Kỹ thuật",
+    specialization: "Phát triển giao diện, demo sản phẩm và trình bày giải pháp công nghệ",
+    contact: "0866028877 | dandythenubit@gmail.com",
+  },
+  {
+    id: 2,
+    name: "Nguyễn Tiến Tuấn",
+    role: "Lead/Tech/Product",
+    avatar: TUAN_PHOTO,
+    department: "Quản trị sản phẩm",
+    specialization: "Dẫn dắt đội nhóm, định hướng sản phẩm, phát triển kiến trúc hệ thống",
+    contact: "0945650883 | tuannguyentien16@gmail.com",
+  },
+  {
+    id: 3,
+    name: "Hoàng Thị Linh Thảo",
+    role: "Marketing Strategist",
+    avatar: LINH_THAO_PHOTO,
+    department: "Chuyên môn",
+    specialization: "Xây dựng chiến lược truyền thông, phát triển thị trường và thiết kế trải nghiệm người dùng",
+    contact: "0399493958 | hoangthithao488@gmail.com",
+  },
+  {
+    id: 4,
+    name: "Nguyễn Thị Kim",
+    role: "Business Strategist",
+    avatar: KIM_PHOTO,
+    department: "Kinh doanh",
+    specialization: "Phát triển mô hình kinh doanh, quản trị chiến lược và quan hệ đối tác",
+    contact: "0842032481 | nguyenthikimthcstt@gmail.com",
+  },
+  {
+    id: 5,
+    name: "Mai Thảo Nguyên",
+    role: "Content Operations",
+    avatar: NGUYEN_PHOTO,
+    department: "Vận hành",
+    specialization: "Quản lý nội dung số, thiết kế trải nghiệm học tập và vận hành cộng đồng",
+    contact: "0396947806 | meadowmai10@gmail.com",
+  },
+];
+
+const eduSentiaProblemItems: ProblemItem[] = [
+  {
+    id: 1,
+    title: "Việc tìm hiểu văn hóa, lịch sử thiếu tương tác, trải nghiệm",
+    summary:
+      "Nội dung lịch sử trong trường học chủ yếu được truyền đạt qua lý thuyết, khiến học sinh khó hứng thú và ít chủ động khám phá.",
+    details: [
+      "Phương pháp học còn thiên về ghi nhớ, thiếu hoạt động trải nghiệm thực tế.",
+      "Học sinh khó hình dung bối cảnh lịch sử khi chỉ tiếp cận qua sách và bài giảng.",
+      "Động lực tự học giảm khi thiếu cơ chế tương tác và phản hồi liên tục.",
+    ],
+  },
+  {
+    id: 2,
+    title: "Tiếp cận một chiều, hạn chế chủ động",
+    summary: "Nội dung chủ yếu đi theo hình thức đọc - chép, khó tạo hứng thú lâu dài, Mức độ ghi nhớ giảm khi thiếu hoạt động tương tác và phản hồi trực tiếp.",
+    details: [
+      "Nội dung chủ yếu đi theo hình thức đọc - chép, khó tạo hứng thú lâu dài.",
+      "Người học ít cơ hội gắn kiến thức với bối cảnh thực tế tại di tích, bảo tàng.",
+      "Mức độ ghi nhớ giảm khi thiếu hoạt động tương tác và phản hồi trực tiếp.",
+    ],
+  },
+  {
+    id: 3,
+    title: "Khoảng cách lý thuyết & thực tế",
+    summary: "Học sinh ít có cơ hội kết nối kiến thức trong sách với các địa điểm lịch sử và văn hóa ngoài đời.",
+    details: [
+      "Hạn chế chủ động, Tìm hiểu di sản ngoài lớp học còn thấp, lịch sử trở thành môn học để thi hơn là để khám phá.",
+      "Hoạt động học tập gắn với di sản ngoài lớp học còn chưa thường xuyên.",
+      "Người học khó liên hệ bài học lịch sử với bối cảnh văn hóa tại địa phương.",
+      "Kiến thức dễ rời rạc nếu thiếu trải nghiệm theo ngữ cảnh thực tế.",
+    ],
+  },
+  {
+    id: 4,
+    title: "Chiêm ngưỡng thụ động tại bảo tàng, di tích",
+    summary:
+      "Nhiều bảo tàng và di tích vẫn chủ yếu trưng bày tĩnh, thiếu công nghệ tương tác để thu hút người trẻ.",
+    details: [
+      "Nhiều điểm tham quan chưa có cơ chế tương tác số để tăng mức độ nhập vai.",
+      "Thiếu nhiệm vụ học tập tại chỗ để dẫn dắt người học khám phá có mục tiêu.",
+      "Người trẻ khó duy trì hứng thú nếu trải nghiệm chỉ dừng ở quan sát thụ động.",
+    ],
+  },
+];
+
+const eduSentiaRoadmapStages: RoadmapStage[] = [
+  {
+    id: 1,
+    phase: "Q1/2026",
+    milestone: "MVP & Thử nghiệm (PTIT)",
+    icon: "target",
+    details: [
+      "Phát triển Minimum Viable Product với các tính năng cốt lõi.",
+      "Tích hợp hệ sinh thái P-Coin tại PTIT (~1.000 người dùng).",
+      "Đánh giá tính ổn định hệ thống và cơ chế game hóa ban đầu.",
+    ],
+  },
+  {
+    id: 2,
+    phase: "Q2-Q3/2026",
+    milestone: "Thí điểm & Phản hồi",
+    icon: "feedback",
+    details: [
+      "Triển khai thí điểm tại THCS Lê Lợi và nhóm thanh niên.",
+      "Quy mô thử nghiệm ~250 học sinh khối 6.",
+      "Tối ưu hóa học liệu số dựa trên phản hồi thực tế.",
+    ],
+  },
+  {
+    id: 3,
+    phase: "Q4/2026",
+    milestone: "Mở rộng tính năng",
+    icon: "expansion",
+    details: [
+      "Tích hợp Bảo tàng Số 3D và công nghệ Thực tế tăng cường (AR).",
+      "Hệ thống AI Q&A phản hồi theo ngữ cảnh lịch sử.",
+      "Tối ưu hóa cơ chế game: hệ thống thưởng, thử thách và nhiệm vụ.",
+      "Nâng cấp hệ thống phản hồi và tiến trình học tập cá nhân hóa.",
+    ],
+  },
+  {
+    id: 4,
+    phase: "2027",
+    milestone: "Ra mắt chính thức",
+    icon: "launch",
+    details: [
+      "Phát hành ứng dụng chính thức với đầy đủ tính năng.",
+      "Triển khai chiến dịch Marketing và truyền thông diện rộng.",
+      "Thiết lập quan hệ đối tác B2B chiến lược với hệ thống trường học.",
+    ],
+  },
+  {
+    id: 5,
+    phase: "Q3-Q4/2027",
+    milestone: "Quy mô B2C & Di sản",
+    icon: "scaling",
+    details: [
+      "Mở rộng thị trường B2C cho người dùng tự do.",
+      "Tích hợp sâu trải nghiệm số tại các bảo tàng và khu di tích.",
+      "Cho phép người dùng đồng sáng tạo nội dung có kiểm duyệt.",
+    ],
+  },
+  {
+    id: 6,
+    phase: "2028",
+    milestone: "Điểm hòa vốn",
+    icon: "breakeven",
+    details: [
+      "Đạt điểm hòa vốn nhờ hạ tầng công nghệ tối ưu.",
+      "Doanh thu ổn định từ mô hình SaaS B2B và bản quyền nội dung.",
+      "Mở rộng đối tác chiến lược với hệ thống trường học và bảo tàng.",
+    ],
+  },
+  {
+    id: 7,
+    phase: "2030",
+    milestone: "Doanh thu 7 tỷ VND",
+    icon: "revenue",
+    details: [
+      "Đạt thị phần vững chắc trên thị trường EdTech văn hóa - lịch sử.",
+      "Doanh thu tích lũy đạt trên 7 tỷ VND.",
+      "Mở rộng hệ sinh thái với đối tác quốc tế và nội dung đa ngôn ngữ.",
+    ],
+  },
+];
+
+const eduSentiaValuePropositionItems: ValuePropositionItem[] = [
+  {
+    id: 1,
+    title: "Hệ sinh thái dạy học sáng tạo",
+    summary: "Cung cấp bộ công cụ toàn diện giúp giáo viên dễ dàng thiết kế các bài giảng hình ảnh, video sinh động và trò chơi giáo dục hấp dẫn.",
+    details: [
+      "Tích hợp AI hỗ trợ tạo hình ảnh và video minh họa bài học tự động theo nội dung.",
+      "Thiết kế trò chơi giáo dục và câu đố tương tác chuyên nghiệp mà không cần kỹ năng lập trình.",
+      "Kho tài nguyên học liệu số khổng lồ, đa dạng và bám sát chương trình giáo dục phổ thông mới.",
+    ],
+  },
+  {
+    id: 2,
+    title: "Quản lý & Giao bài thông minh",
+    summary: "Tối ưu hóa toàn bộ quy trình giao nhiệm vụ, tự động theo dõi tiến độ và chấm điểm bài tập, giúp giáo viên tiết kiệm tối đa thời gian chuẩn bị.",
+    details: [
+      "Hệ hệ thống quản lý lớp học thông minh, tự động hóa việc theo dõi lộ trình học tập của từng học sinh.",
+      "Giao bài tập dưới dạng các nhiệm vụ gamification giúp tăng cường động lực và sự hứng thú của trẻ.",
+      "Tự động hóa hoàn toàn việc chấm điểm và phân tích lỗ hổng kiến thức để giáo viên có giải pháp kịp thời.",
+    ],
+  },
+  {
+    id: 3,
+    title: "Trợ lý AI đa năng cho GV & HS",
+    summary: "Hệ thống AI đồng hành toàn diện giúp tối ưu hiệu suất giảng dạy và tạo ra hành trình học tập tương tác, trả lời thông minh theo đúng ngữ cảnh bài học.",
+    details: [
+      "Đối với giáo viên: Hỗ trợ soạn giáo án thông minh, tự động hóa tạo học liệu số và phân tích tiến độ học tập theo từng chủ đề bài dạy.",
+      "Đối với học sinh: Giải đáp thắc mắc tức thời theo đúng ngữ cảnh màn chơi/bài học qua nhân vật ảo, hướng dẫn thực hiện nhiệm vụ khám phá.",
+      "Công nghệ AI hiểu sâu nội dung bài giảng để đưa ra gợi ý chính xác, khơi gợi niềm đam mê và tinh thần chủ động tìm tòi kiến thức.",
+    ],
+  },
+];
+
+const eduSentiaBusinessModelItems: BusinessModelItem[] = [
+  {
+    id: 1,
+    title: "Khách hàng mục tiêu",
+    points: ["Giáo viên Tiểu học cá nhân.", " Nhóm/Tổ chuyên môn giáo viên Tiểu học", "Học sinh Tiểu học (người dùng cuối)"],
+    details: [
+      "Sản phẩm tập trung giải quyết nỗi đau của giáo viên trong việc đổi mới dạy học.",
+      "Mở rộng sang hỗ trợ phụ huynh đồng hành cùng con trong quá trình tự học.",
+      "Cung cấp giải pháp cho các tổ chức giáo dục muốn số hóa chương trình dạy.",
+    ],
+  },
+  {
+    id: 2,
+    title: "Nguồn doanh thu",
+    points: ["Gói thuê bao Pro / Team Pack", "Bản quyền kho học liệu số", "Dịch vụ đào tạo và triển khai"],
+    details: [
+      "Thu phí theo mô hình Freemium với các tính năng nâng cao cho GV/Trường.",
+      "Khai thác doanh thu từ việc cung cấp các bộ học liệu chuyên sâu theo chủ đề.",
+      "Phí hỗ trợ triển khai và tập huấn chuyên môn cho các đơn vị giáo dục.",
+    ],
+  },
+  {
+    id: 3,
+    title: "Cấu trúc chi phí",
+    points: [
+      "Phát triển và bảo trì công nghệ",
+      "Sản xuất nội dung học liệu số",
+      "Marketing và hỗ trợ cộng đồng",
+    ],
+    details: [
+      "Ưu tiên đầu tư vào công nghệ AI và trải nghiệm người dùng mượt mà.",
+      "Ngân sách xây dựng kho học liệu phong phú và quy trình kiểm duyệt chuyên môn.",
+      "Chi phí xây dựng cộng đồng giáo viên và hỗ trợ người dùng cuối.",
+    ],
+  },
+  {
+    id: 4,
+    title: "Đối tác then chốt",
+    points: [
+      "Sở/Phòng GD&ĐT, Nhà xuất bản & Chuyên gia",
+      "Cộng đồng giáo viên tiểu học",
+      "Các đơn vị cung cấp thiết bị số",
+    ],
+    details: [
+      "Hợp tác với cơ quan quản lý để đảm bảo tính pháp lý và chuyên môn.",
+      "Kết nối với chuyên gia để liên tục cập nhật xu hướng giáo dục mới.",
+      "Xây dựng mạng lưới giáo viên nòng cốt để lan tỏa sản phẩm tự nhiên.",
+    ],
+  },
+];
+
+const eduSentiaSolutionFeatureItems: SolutionFeatureItem[] = [
+  {
+    id: 1,
+    icon: "✨",
+    title: "Gamified Lesson",
+    summary: "Biến mỗi tiết học thành một trò chơi khám phá đầy thú vị và thử thách.",
+    details: [
+      "Hệ thống điểm thưởng và huy hiệu khích lệ tinh thần học tập.",
+      "Các nhiệm vụ đa phương tiện giúp học sinh không cảm thấy nhàm chán.",
+      "Cơ chế tương tác trực tiếp giúp giáo viên nắm bắt mức độ hiểu bài của lớp.",
+    ],
+  },
+  {
+    id: 2,
+    icon: "🤖",
+    title: "AI Pedagogical ",
+    summary: "AI hỗ trợ giáo viên giảng dạy hiệu quả và giúp học sinh học tập chủ động theo ngữ cảnh.",
+    details: [
+      "Đối với giáo viên: Tự động hóa soạn giáo án và tạo học liệu số đa phương tiện chỉ trong vài giây.",
+      "Đối với học sinh: Giải đáp thắc mắc tức thời theo đúng ngữ cảnh bài học và màn chơi thông qua nhân vật ảo.",
+      "Hệ thống phân tích thông minh giúp theo dõi sát sao tiến độ và đưa ra gợi ý học tập phù hợp nhất.",
+    ],
+  },
+  {
+    id: 3,
+    icon: "📝",
+    title: "Kho học liệu số",
+    summary: "Thư viện bài giảng, bài tập và dự án học tập bám sát chương trình mới.",
+    details: [
+      "Tài nguyên đa dạng từ toán học, tiếng việt đến kỹ năng sống.",
+      "Học liệu được cập nhật liên tục theo chuẩn GDPT 2018.",
+      "Cho phép giáo viên tùy chỉnh nội dung để phù hợp với đặc thù từng lớp.",
+    ],
+  },
+  {
+    id: 4,
+    icon: "⚙️",
+    title: "Hệ sáng tạo bài giảng (CMS)",
+    summary: "GV chia sẻ và cùng xây dựng bài giảng (mô hình, game, số hóa) xuất sắc.",
+    details: [
+      "Tích hợp công cụ chỉnh sửa bài giảng dễ dùng như PowerPoint.",
+      "Cơ chế ghi nhận đóng góp và bảo vệ bản quyền cho giáo viên.",
+      "Mạng lưới hỗ trợ chuyên môn nhiệt tình từ các đồng nghiệp toàn quốc.",
+    ],
+  },
+];
+
+const eduSentiaQrItems: QrItem[] = [
+  {
+    id: 1,
+    label: "APP(Android)",
+    badge: "SCAN APP",
+    title: "QR Ứng dụng Android",
+    summary: "QR này dẫn tới bản trải nghiệm ứng dụng SEN trên thiết bị Android.",
+    destination: "Trang tải và demo bản app Android",
+    defaultUrl: defaultPosterAppUrl,
+    details: [
+      "Dùng camera hoặc ứng dụng quét mã QR để mở liên kết.",
+      "Khuyến nghị quét bằng điện thoại Android để cài đặt nhanh.",
+      "Có thể dùng để demo trực tiếp các tính năng chính của SEN.",
+    ],
+  },
+  {
+    id: 2,
+    label: "WEBSITE",
+    badge: "SCAN WEB",
+    title: "QR Website Trải nghiệm",
+    summary: "QR này dẫn đến website trải nghiệm của dự án SEN.",
+    destination: "Landing page / website demo SEN",
+    defaultUrl: defaultPosterWebsiteUrl,
+    details: [
+      "Phù hợp khi trình bày nhanh trên màn hình hoặc poster in.",
+      "Cho phép người xem truy cập ngay nội dung giới thiệu và demo.",
+      "Có thể chia sẻ rộng rãi trong sự kiện hoặc pitching day.",
+    ],
+  },
+  {
+    id: 3,
+    label: "FANPAGE",
+    badge: "SCAN FB",
+    title: "QR Fanpage SEN",
+    summary: "QR này dẫn tới fanpage chính thức của SEN trên Facebook.",
+    destination: "Fanpage SEN trên Facebook",
+    defaultUrl: "https://www.facebook.com/profile.php?id=61586454543352",
+    details: [
+      "Quét QR để mở fanpage trực tiếp trên trình duyệt hoặc ứng dụng Facebook.",
+      "Phù hợp để người xem theo dõi thông tin cập nhật của dự án.",
+      "Có thể dùng trong poster, slide và tài liệu truyền thông.",
+    ],
+  },
+];
+
 const getMemberNameClass = (name: string) => {
   const compactNameLength = name.replace(/\s+/g, "").length;
 
@@ -515,82 +888,95 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
   const [selectedRoadmap, setSelectedRoadmap] = React.useState<RoadmapStage | null>(null);
   const [selectedQr, setSelectedQr] = React.useState<QrItem | null>(null);
-  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("i-startup");
+  const [teamDisplayMode, setTeamDisplayMode] = React.useState<TeamDisplayMode>("ytkd-2026");
   const [roadmapSlideIndex, setRoadmapSlideIndex] = React.useState(0);
   const [roadmapPrintMode, setRoadmapPrintMode] = React.useState(false);
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
   const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
+  const posterNs = teamDisplayMode === "ytkd-2026" ? "posterEduSentia" : "poster";
+
   const translatedTeamMembers = React.useMemo(
-    () => toTranslatedArray<Partial<TeamMember>>(t("poster.teamMembers", { returnObjects: true }), []),
-    [t]
+    () => toTranslatedArray<Partial<TeamMember>>(t(`${posterNs}.teamMembers`, { returnObjects: true }), []),
+    [t, posterNs]
   );
 
   const localizedTeamMembers = React.useMemo(
-    () =>
-      teamMembers.map((member, index) => ({
+    () => {
+      const baseMembers = teamDisplayMode === "ytkd-2026" ? eduSentiaTeamMembers : teamMembers;
+      return baseMembers.map((member, index) => ({
         ...member,
         ...(translatedTeamMembers[index] || {}),
-      })),
-    [translatedTeamMembers]
+      }));
+    },
+    [translatedTeamMembers, teamDisplayMode]
   );
 
   const localizedProblemItems = React.useMemo(
-    () => toTranslatedArray<ProblemItem>(t("poster.problemItems", { returnObjects: true }), problemItems),
-    [t]
+    () => toTranslatedArray<ProblemItem>(t(`${posterNs}.problemItems`, { returnObjects: true }), teamDisplayMode === "ytkd-2026" ? eduSentiaProblemItems : problemItems),
+    [t, posterNs, teamDisplayMode]
   );
 
   const localizedRoadmapStages = React.useMemo(
-    () => toTranslatedArray<RoadmapStage>(t("poster.roadmapStages", { returnObjects: true }), roadmapStages),
-    [t]
+    () => toTranslatedArray<RoadmapStage>(t(`${posterNs}.roadmapStages`, { returnObjects: true }), teamDisplayMode === "ytkd-2026" ? eduSentiaRoadmapStages : roadmapStages),
+    [t, posterNs, teamDisplayMode]
   );
 
   const localizedValuePropositionItems = React.useMemo(
     () =>
       toTranslatedArray<ValuePropositionItem>(
-        t("poster.valuePropositionItems", { returnObjects: true }),
-        valuePropositionItems
+        t(`${posterNs}.valuePropositionItems`, { returnObjects: true }),
+        teamDisplayMode === "ytkd-2026" ? eduSentiaValuePropositionItems : valuePropositionItems
       ),
-    [t]
+    [t, posterNs, teamDisplayMode]
   );
 
   const localizedBusinessModelItems = React.useMemo(
     () =>
       toTranslatedArray<BusinessModelItem>(
-        t("poster.businessModelItems", { returnObjects: true }),
-        businessModelItems
+        t(`${posterNs}.businessModelItems`, { returnObjects: true }),
+        teamDisplayMode === "ytkd-2026" ? eduSentiaBusinessModelItems : businessModelItems
       ),
-    [t]
+    [t, posterNs, teamDisplayMode]
   );
 
   const localizedSolutionFeatureItems = React.useMemo(
     () =>
       toTranslatedArray<SolutionFeatureItem>(
-        t("poster.solutionFeatureItems", { returnObjects: true }),
-        solutionFeatureItems
+        t(`${posterNs}.solutionFeatureItems`, { returnObjects: true }),
+        teamDisplayMode === "ytkd-2026" ? eduSentiaSolutionFeatureItems : solutionFeatureItems
       ),
-    [t]
+    [t, posterNs, teamDisplayMode]
   );
 
   const translatedQrItems = React.useMemo(
-    () => toTranslatedArray<Partial<QrItem>>(t("poster.qrItems", { returnObjects: true }), []),
-    [t]
+    () => toTranslatedArray<Partial<QrItem>>(t(`${posterNs}.qrItems`, { returnObjects: true }), []),
+    [t, posterNs]
   );
 
   const localizedQrItems = React.useMemo(
-    () =>
-      qrItems.map((item, index) => ({
+    () => {
+      const baseQrItems = teamDisplayMode === "ytkd-2026" ? eduSentiaQrItems : qrItems;
+      return baseQrItems.map((item, index) => ({
         ...item,
         ...(translatedQrItems[index] || {}),
         defaultUrl: item.defaultUrl,
-      })),
-    [translatedQrItems]
+      }));
+    },
+    [translatedQrItems, teamDisplayMode]
   );
 
   const visibleTeamMembers = React.useMemo(() => {
+    if (teamDisplayMode === "ytkd-2026") {
+      return [...localizedTeamMembers].sort((a, b) => {
+        const order = [1, 2, 3, 4, 5];
+        return order.indexOf(a.id) - order.indexOf(b.id);
+      });
+    }
+
     if (teamDisplayMode === "all") {
       return [...localizedTeamMembers].sort((a, b) => {
-        const order = [4, 2, 6, 1, 3, 5, 7];
+        const order = [4, 2, 5, 8, 1, 3, 9, 7, 6];
         return order.indexOf(a.id) - order.indexOf(b.id);
       });
     }
@@ -606,9 +992,15 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
     return localizedTeamMembers.filter((m) => m.id <= 5);
   }, [teamDisplayMode, localizedTeamMembers]);
 
-  const topRowCount = visibleTeamMembers.length > 4 ? 3 : Math.ceil(visibleTeamMembers.length / 2);
+  const totalTeamCount = visibleTeamMembers.length;
+  const isNineMembers = totalTeamCount === 9;
+  const topRowCount = isNineMembers ? 3 : totalTeamCount > 4 ? 3 : Math.ceil(totalTeamCount / 2);
+  const middleRowCount = isNineMembers ? 3 : 0;
+
   const topRowTeamMembers = visibleTeamMembers.slice(0, topRowCount);
-  const bottomRowTeamMembers = visibleTeamMembers.slice(topRowCount);
+  const middleRowTeamMembers = visibleTeamMembers.slice(topRowCount, topRowCount + middleRowCount);
+  const bottomRowTeamMembers = visibleTeamMembers.slice(topRowCount + middleRowCount);
+
   const isTopRowThreeMembers = topRowTeamMembers.length === 3;
   const isTopRowTwoMembers = topRowTeamMembers.length === 2;
   const shouldShowPinovationLogo = teamDisplayMode === "p-innovation";
@@ -891,14 +1283,14 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             {shouldShowPinovationLogo && <img src={PINNOVATION_LOGO} alt="P-INNOVATION" className="pitching-logo-img" />}
             <img src={logoPng} alt="SEN Logo" className="sen-logo-img" />
           </div>
-          <div className="poster-tagline">{t("poster.tagline", { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
+          <div className="poster-tagline">{t(`${posterNs}.tagline`, { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
         </header>
 
         <div className="poster-content-grid">
           {/* PROBLEM */}
           <section className="poster-section problem-section">
             <div className="poster-section-header">
-              <h2>{t("poster.sections.problem", { defaultValue: "Problem" })}</h2>
+              <h2>{t(`${posterNs}.sections.problem`, { defaultValue: "Problem" })}</h2>
             </div>
             <div className="poster-problem-list">
               {localizedProblemItems.map((item, index) => (
@@ -907,7 +1299,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-problem-item poster-problem-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t("poster.accessibility.viewProblemDetail", { title: item.title, defaultValue: `Xem chi tiết vấn đề: ${item.title}` })}
+                  aria-label={t(`${posterNs}.accessibility.viewProblemDetail`, { title: item.title, defaultValue: `Xem chi tiết vấn đề: ${item.title}` })}
                   onClick={() => openProblemDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openProblemDetail(item))}
                 >
@@ -924,7 +1316,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* VALUE PROPOSITION */}
           <section className="poster-section value-proposition">
             <div className="poster-section-header">
-              <h2>{t("poster.sections.valueProposition", { defaultValue: "Value Proposition" })}</h2>
+              <h2>{t(`${posterNs}.sections.valueProposition`, { defaultValue: "Value Proposition" })}</h2>
             </div>
             <div className="poster-value-grid">
               {localizedValuePropositionItems.map((item) => (
@@ -933,7 +1325,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-value-card poster-value-card--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t("poster.accessibility.viewValueDetail", { title: item.title, defaultValue: `Xem chi tiết: ${item.title}` })}
+                  aria-label={t(`${posterNs}.accessibility.viewValueDetail`, { title: item.title, defaultValue: `Xem chi tiết: ${item.title}` })}
                   onClick={() => openValueDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openValueDetail(item))}
                 >
@@ -947,7 +1339,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* SOLUTION */}
           <section className="poster-section solution-section">
             <div className="poster-section-header">
-              <h2>{t("poster.sections.solution", { defaultValue: "Solution" })}</h2>
+              <h2>{t(`${posterNs}.sections.solution`, { defaultValue: "Solution" })}</h2>
             </div>
             <div
               className="poster-mockup-placeholder poster-mockup-placeholder--interactive"
@@ -967,7 +1359,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-feature-item poster-feature-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t("poster.accessibility.viewSolutionDetail", { title: item.title, defaultValue: `Xem chi tiết giải pháp: ${item.title}` })}
+                  aria-label={t(`${posterNs}.accessibility.viewSolutionDetail`, { title: item.title, defaultValue: `Xem chi tiết giải pháp: ${item.title}` })}
                   onClick={() => openSolutionFeatureDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openSolutionFeatureDetail(item))}
                 >
@@ -984,7 +1376,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* BUSINESS MODEL */}
           <section className="poster-section business-model">
             <div className="poster-section-header">
-              <h2>{t("poster.sections.businessModel", { defaultValue: "Business Model" })}</h2>
+              <h2>{t(`${posterNs}.sections.businessModel`, { defaultValue: "Business Model" })}</h2>
             </div>
             <div className="poster-biz-grid">
               {localizedBusinessModelItems.map((item) => (
@@ -993,7 +1385,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-biz-box poster-biz-box--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t("poster.accessibility.viewBusinessDetail", { title: item.title, defaultValue: `Xem chi tiết mô hình: ${item.title}` })}
+                  aria-label={t(`${posterNs}.accessibility.viewBusinessDetail`, { title: item.title, defaultValue: `Xem chi tiết mô hình: ${item.title}` })}
                   onClick={() => openBusinessDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openBusinessDetail(item))}
                 >
@@ -1007,14 +1399,14 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               ))}
             </div>
             <div className="poster-revenue-target">
-              {t("poster.revenueTarget", { defaultValue: "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
+              {t(`${posterNs}.revenueTarget`, { defaultValue: "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
             </div>
           </section>
 
           {/* ROADMAP */}
           <section className="poster-section roadmap-section">
             <div className="poster-section-header poster-section-header--roadmap">
-              <h2>{t("poster.sections.roadmap", { defaultValue: "Traction / Roadmap" })}</h2>
+              <h2>{t(`${posterNs}.sections.roadmap`, { defaultValue: "Traction / Roadmap" })}</h2>
               <Switch
                 size="small"
                 checked={roadmapPrintMode}
@@ -1030,7 +1422,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className={`roadmap-slider-btn roadmap-slider-btn--prev${roadmapSlideIndex <= 0 ? " roadmap-slider-btn--disabled" : ""}`}
                   onClick={handleRoadmapPrev}
                   disabled={roadmapSlideIndex <= 0}
-                  aria-label={t("poster.accessibility.prevMilestone", { defaultValue: "Xem mốc trước" })}
+                  aria-label={t(`${posterNs}.accessibility.prevMilestone`, { defaultValue: "Xem mốc trước" })}
                 >
                   <LeftOutlined />
                 </button>
@@ -1046,7 +1438,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className={`roadmap-step roadmap-step--interactive ${isBottom ? "roadmap-step--bottom" : "roadmap-step--top"}`}
                       role="button"
                       tabIndex={0}
-                      aria-label={t("poster.accessibility.viewRoadmapDetail", { phase: stage.phase, defaultValue: `Xem chi tiết lộ trình ${stage.phase}` })}
+                      aria-label={t(`${posterNs}.accessibility.viewRoadmapDetail`, { phase: stage.phase, defaultValue: `Xem chi tiết lộ trình ${stage.phase}` })}
                       onClick={() => openRoadmapDetail(stage)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
@@ -1102,7 +1494,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className={`roadmap-slider-btn roadmap-slider-btn--next${roadmapSlideIndex >= roadmapMaxSlide ? " roadmap-slider-btn--disabled" : ""}`}
                   onClick={handleRoadmapNext}
                   disabled={roadmapSlideIndex >= roadmapMaxSlide}
-                  aria-label={t("poster.accessibility.nextMilestone", { defaultValue: "Xem mốc tiếp theo" })}
+                  aria-label={t(`${posterNs}.accessibility.nextMilestone`, { defaultValue: "Xem mốc tiếp theo" })}
                 >
                   <RightOutlined />
                 </button>
@@ -1124,14 +1516,15 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* TEAM */}
           <section className="poster-section team-section">
             <div className="poster-section-header poster-section-header--team">
-              <h2>{t("poster.sections.team", { defaultValue: "Team" })}</h2>
+              <h2>{t(`${posterNs}.sections.team`, { defaultValue: "Team" })}</h2>
               <Select
                 size="small"
                 className="poster-team-mode-select"
                 value={teamDisplayMode}
                 onChange={(value: TeamDisplayMode) => setTeamDisplayMode(value)}
                 options={[
-                  { value: "all", label: t("poster.labels.all", { defaultValue: "ALL" }) },
+                  { value: "ytkd-2026", label: "YTKD 2026" },
+                  { value: "all", label: t(`${posterNs}.labels.all`, { defaultValue: "ALL" }) },
                   { value: "sv-startup", label: "SV Startup" },
                   { value: "p-innovation", label: "P-Innovation" },
                   { value: "i-startup", label: "I-Startup" },
@@ -1151,7 +1544,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                     className="poster-member"
                     role="button"
                     tabIndex={0}
-                    aria-label={t("poster.accessibility.viewTeamMemberDetail", { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
+                    aria-label={t(`${posterNs}.accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                     onClick={() => handleMemberClick(member)}
                     onKeyDown={(event) => handleMemberKeyDown(event, member)}
                   >
@@ -1168,6 +1561,32 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                 ))}
               </div>
 
+              {middleRowTeamMembers.length > 0 && (
+                <div className={`poster-team-row poster-team-row--middle poster-team-row--count-${middleRowTeamMembers.length}`}>
+                  {middleRowTeamMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="poster-member"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={t(`${posterNs}.accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
+                      onClick={() => handleMemberClick(member)}
+                      onKeyDown={(event) => handleMemberKeyDown(event, member)}
+                    >
+                      <div className="member-avatar-placeholder">
+                        {member.avatar ? (
+                          <img src={member.avatar} alt={member.name} className="member-avatar-img" />
+                        ) : (
+                          <span className="member-avatar-initial">{member.name.trim().charAt(0).toUpperCase()}</span>
+                        )}
+                      </div>
+                      <h6 className={getMemberNameClass(member.name)}>{member.name}</h6>
+                      {teamDisplayMode !== "all" && <p>{member.role}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {bottomRowTeamMembers.length > 0 && (
                 <div className={`poster-team-row poster-team-row--bottom poster-team-row--count-${bottomRowTeamMembers.length}`}>
                   {bottomRowTeamMembers.map((member) => (
@@ -1176,7 +1595,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className="poster-member"
                       role="button"
                       tabIndex={0}
-                      aria-label={t("poster.accessibility.viewTeamMemberDetail", { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
+                      aria-label={t(`${posterNs}.accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                       onClick={() => handleMemberClick(member)}
                       onKeyDown={(event) => handleMemberKeyDown(event, member)}
                     >
@@ -1208,7 +1627,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="qr-item qr-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t("poster.accessibility.viewQrDetail", { label: item.label, defaultValue: `Xem chi tiết mã QR ${item.label}` })}
+                  aria-label={t(`${posterNs}.accessibility.viewQrDetail`, { label: item.label, defaultValue: `Xem chi tiết mã QR ${item.label}` })}
                   onClick={() => openQrDetail(item)}
                   onKeyDown={(event) => handleQrKeyDown(event, item)}
                 >
@@ -1302,7 +1721,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             </div>
             <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
-                {t("poster.modal.usageTitle", { defaultValue: "Thông tin sử dụng" })}
+                {t(`${posterNs}.modal.usageTitle`, { defaultValue: "Thông tin sử dụng" })}
               </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 6, color: "#4b3a2a", fontSize: 14 }}>
                 {selectedQr.details.map((detail, index) => (
@@ -1317,8 +1736,8 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       <Modal
         title={
           selectedInsight
-            ? `${selectedInsight.sectionLabel} - ${t("poster.modal.detailTitle", { defaultValue: "Chi tiết" })}`
-            : t("poster.modal.detailTitle", { defaultValue: "Chi tiết" })
+            ? `${selectedInsight.sectionLabel} - ${t(`${posterNs}.modal.detailTitle`, { defaultValue: "Chi tiết" })}`
+            : t(`${posterNs}.modal.detailTitle`, { defaultValue: "Chi tiết" })
         }
         open={Boolean(selectedInsight)}
         onCancel={closeInsightModal}
