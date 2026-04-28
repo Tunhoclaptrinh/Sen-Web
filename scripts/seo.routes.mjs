@@ -20,6 +20,8 @@ export const STATIC_PUBLIC_ROUTES = [
   "/artifacts",
   "/history",
   "/exhibitions",
+  "/poster",
+  "/poster-only",
 ];
 
 const DEFAULT_SITE_URL = "https://sen.vn";

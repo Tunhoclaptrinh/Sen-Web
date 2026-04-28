@@ -882,7 +882,7 @@ const getMemberNameClass = (name: string) => {
 };
 
 const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["poster", "posterEduSentia"]);
 
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
   const [selectedInsight, setSelectedInsight] = React.useState<InsightDetail | null>(null);
@@ -894,10 +894,10 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const [isMockupPreviewOpen, setIsMockupPreviewOpen] = React.useState(false);
   const [mockupPreviewIndex, setMockupPreviewIndex] = React.useState(0);
 
-  const posterNs = teamDisplayMode === "ytkd-2026" ? "posterEduSentia" : "poster";
+  const posterNs = teamDisplayMode === "ytkd-2026" ? "posterEduSentia:" : "poster:";
 
   const translatedTeamMembers = React.useMemo(
-    () => toTranslatedArray<Partial<TeamMember>>(t(`${posterNs}.teamMembers`, { returnObjects: true }), []),
+    () => toTranslatedArray<Partial<TeamMember>>(t(`${posterNs}teamMembers`, { returnObjects: true }), []),
     [t, posterNs]
   );
 
@@ -913,19 +913,19 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   );
 
   const localizedProblemItems = React.useMemo(
-    () => toTranslatedArray<ProblemItem>(t(`${posterNs}.problemItems`, { returnObjects: true }), teamDisplayMode === "ytkd-2026" ? eduSentiaProblemItems : problemItems),
+    () => toTranslatedArray<ProblemItem>(t(`${posterNs}problemItems`, { returnObjects: true }), teamDisplayMode === "ytkd-2026" ? eduSentiaProblemItems : problemItems),
     [t, posterNs, teamDisplayMode]
   );
 
   const localizedRoadmapStages = React.useMemo(
-    () => toTranslatedArray<RoadmapStage>(t(`${posterNs}.roadmapStages`, { returnObjects: true }), teamDisplayMode === "ytkd-2026" ? eduSentiaRoadmapStages : roadmapStages),
+    () => toTranslatedArray<RoadmapStage>(t(`${posterNs}roadmapStages`, { returnObjects: true }), teamDisplayMode === "ytkd-2026" ? eduSentiaRoadmapStages : roadmapStages),
     [t, posterNs, teamDisplayMode]
   );
 
   const localizedValuePropositionItems = React.useMemo(
     () =>
       toTranslatedArray<ValuePropositionItem>(
-        t(`${posterNs}.valuePropositionItems`, { returnObjects: true }),
+        t(`${posterNs}valuePropositionItems`, { returnObjects: true }),
         teamDisplayMode === "ytkd-2026" ? eduSentiaValuePropositionItems : valuePropositionItems
       ),
     [t, posterNs, teamDisplayMode]
@@ -934,7 +934,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const localizedBusinessModelItems = React.useMemo(
     () =>
       toTranslatedArray<BusinessModelItem>(
-        t(`${posterNs}.businessModelItems`, { returnObjects: true }),
+        t(`${posterNs}businessModelItems`, { returnObjects: true }),
         teamDisplayMode === "ytkd-2026" ? eduSentiaBusinessModelItems : businessModelItems
       ),
     [t, posterNs, teamDisplayMode]
@@ -943,7 +943,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
   const localizedSolutionFeatureItems = React.useMemo(
     () =>
       toTranslatedArray<SolutionFeatureItem>(
-        t(`${posterNs}.solutionFeatureItems`, { returnObjects: true }),
+        t(`${posterNs}solutionFeatureItems`, { returnObjects: true }),
         teamDisplayMode === "ytkd-2026" ? eduSentiaSolutionFeatureItems : solutionFeatureItems
       ),
     [t, posterNs, teamDisplayMode]
@@ -1152,7 +1152,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openValueDetail = (item: ValuePropositionItem) => {
     setSelectedInsight({
-      sectionLabel: t("poster.labels.sectionValueProposition", { defaultValue: "Value Proposition" }),
+      sectionLabel: t(`${posterNs}labels.sectionValueProposition`, { defaultValue: "Value Proposition" }),
       title: item.title,
       summary: item.summary,
       details: item.details,
@@ -1161,7 +1161,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openProblemDetail = (item: ProblemItem) => {
     setSelectedInsight({
-      sectionLabel: t("poster.labels.sectionProblem", { defaultValue: "Problem" }),
+      sectionLabel: t(`${posterNs}labels.sectionProblem`, { defaultValue: "Problem" }),
       title: item.title,
       summary: item.summary,
       details: item.details,
@@ -1170,7 +1170,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openBusinessDetail = (item: BusinessModelItem) => {
     setSelectedInsight({
-      sectionLabel: t("poster.labels.sectionBusinessModel", { defaultValue: "Business Model" }),
+      sectionLabel: t(`${posterNs}labels.sectionBusinessModel`, { defaultValue: "Business Model" }),
       title: item.title,
       summary: item.points.join(" • "),
       details: item.details,
@@ -1188,7 +1188,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
   const openSolutionFeatureDetail = (item: SolutionFeatureItem) => {
     setSelectedInsight({
-      sectionLabel: t("poster.labels.sectionSolution", { defaultValue: "Solution" }),
+      sectionLabel: t(`${posterNs}labels.sectionSolution`, { defaultValue: "Solution" }),
       title: item.title,
       summary: item.summary,
       details: item.details,
@@ -1283,14 +1283,14 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             {shouldShowPinovationLogo && <img src={PINNOVATION_LOGO} alt="P-INNOVATION" className="pitching-logo-img" />}
             <img src={logoPng} alt="SEN Logo" className="sen-logo-img" />
           </div>
-          <div className="poster-tagline">{t(`${posterNs}.tagline`, { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
+          <div className="poster-tagline">{t(`${posterNs}tagline`, { defaultValue: "Kiến tạo trải nghiệm văn hóa, lịch sử bằng công nghệ" })}</div>
         </header>
 
         <div className="poster-content-grid">
           {/* PROBLEM */}
           <section className="poster-section problem-section">
             <div className="poster-section-header">
-              <h2>{t(`${posterNs}.sections.problem`, { defaultValue: "Problem" })}</h2>
+              <h2>{t(`${posterNs}sections.problem`, { defaultValue: "Problem" })}</h2>
             </div>
             <div className="poster-problem-list">
               {localizedProblemItems.map((item, index) => (
@@ -1299,7 +1299,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-problem-item poster-problem-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t(`${posterNs}.accessibility.viewProblemDetail`, { title: item.title, defaultValue: `Xem chi tiết vấn đề: ${item.title}` })}
+                  aria-label={t(`${posterNs}accessibility.viewProblemDetail`, { title: item.title, defaultValue: `Xem chi tiết vấn đề: ${item.title}` })}
                   onClick={() => openProblemDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openProblemDetail(item))}
                 >
@@ -1316,7 +1316,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* VALUE PROPOSITION */}
           <section className="poster-section value-proposition">
             <div className="poster-section-header">
-              <h2>{t(`${posterNs}.sections.valueProposition`, { defaultValue: "Value Proposition" })}</h2>
+              <h2>{t(`${posterNs}sections.valueProposition`, { defaultValue: "Value Proposition" })}</h2>
             </div>
             <div className="poster-value-grid">
               {localizedValuePropositionItems.map((item) => (
@@ -1325,7 +1325,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-value-card poster-value-card--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t(`${posterNs}.accessibility.viewValueDetail`, { title: item.title, defaultValue: `Xem chi tiết: ${item.title}` })}
+                  aria-label={t(`${posterNs}accessibility.viewValueDetail`, { title: item.title, defaultValue: `Xem chi tiết: ${item.title}` })}
                   onClick={() => openValueDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openValueDetail(item))}
                 >
@@ -1339,13 +1339,13 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* SOLUTION */}
           <section className="poster-section solution-section">
             <div className="poster-section-header">
-              <h2>{t(`${posterNs}.sections.solution`, { defaultValue: "Solution" })}</h2>
+              <h2>{t(`${posterNs}sections.solution`, { defaultValue: "Solution" })}</h2>
             </div>
             <div
               className="poster-mockup-placeholder poster-mockup-placeholder--interactive"
               role="button"
               tabIndex={0}
-              aria-label={t("poster.accessibility.viewSolutionMockup", { defaultValue: "Xem bộ ảnh mockup giải pháp" })}
+              aria-label={t("poster:accessibility.viewSolutionMockup", { defaultValue: "Xem bộ ảnh mockup giải pháp" })}
               onClick={openSolutionOverviewDetail}
               onKeyDown={(event) => handleInsightKeyDown(event, openSolutionOverviewDetail)}
             >
@@ -1359,7 +1359,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-feature-item poster-feature-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t(`${posterNs}.accessibility.viewSolutionDetail`, { title: item.title, defaultValue: `Xem chi tiết giải pháp: ${item.title}` })}
+                  aria-label={t(`${posterNs}accessibility.viewSolutionDetail`, { title: item.title, defaultValue: `Xem chi tiết giải pháp: ${item.title}` })}
                   onClick={() => openSolutionFeatureDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openSolutionFeatureDetail(item))}
                 >
@@ -1376,7 +1376,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* BUSINESS MODEL */}
           <section className="poster-section business-model">
             <div className="poster-section-header">
-              <h2>{t(`${posterNs}.sections.businessModel`, { defaultValue: "Business Model" })}</h2>
+              <h2>{t(`${posterNs}sections.businessModel`, { defaultValue: "Business Model" })}</h2>
             </div>
             <div className="poster-biz-grid">
               {localizedBusinessModelItems.map((item) => (
@@ -1385,7 +1385,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="poster-biz-box poster-biz-box--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t(`${posterNs}.accessibility.viewBusinessDetail`, { title: item.title, defaultValue: `Xem chi tiết mô hình: ${item.title}` })}
+                  aria-label={t(`${posterNs}accessibility.viewBusinessDetail`, { title: item.title, defaultValue: `Xem chi tiết mô hình: ${item.title}` })}
                   onClick={() => openBusinessDetail(item)}
                   onKeyDown={(event) => handleInsightKeyDown(event, () => openBusinessDetail(item))}
                 >
@@ -1399,14 +1399,14 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               ))}
             </div>
             <div className="poster-revenue-target">
-              {t(`${posterNs}.revenueTarget`, { defaultValue: "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
+              {t(`${posterNs}revenueTarget`, { defaultValue: "Hòa vốn năm thứ 3, doanh thu 7 tỷ đồng năm thứ 5." })}
             </div>
           </section>
 
           {/* ROADMAP */}
           <section className="poster-section roadmap-section">
             <div className="poster-section-header poster-section-header--roadmap">
-              <h2>{t(`${posterNs}.sections.roadmap`, { defaultValue: "Traction / Roadmap" })}</h2>
+              <h2>{t(`${posterNs}sections.roadmap`, { defaultValue: "Traction / Roadmap" })}</h2>
               <Switch
                 size="small"
                 checked={roadmapPrintMode}
@@ -1422,7 +1422,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className={`roadmap-slider-btn roadmap-slider-btn--prev${roadmapSlideIndex <= 0 ? " roadmap-slider-btn--disabled" : ""}`}
                   onClick={handleRoadmapPrev}
                   disabled={roadmapSlideIndex <= 0}
-                  aria-label={t(`${posterNs}.accessibility.prevMilestone`, { defaultValue: "Xem mốc trước" })}
+                  aria-label={t(`${posterNs}accessibility.prevMilestone`, { defaultValue: "Xem mốc trước" })}
                 >
                   <LeftOutlined />
                 </button>
@@ -1438,7 +1438,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className={`roadmap-step roadmap-step--interactive ${isBottom ? "roadmap-step--bottom" : "roadmap-step--top"}`}
                       role="button"
                       tabIndex={0}
-                      aria-label={t(`${posterNs}.accessibility.viewRoadmapDetail`, { phase: stage.phase, defaultValue: `Xem chi tiết lộ trình ${stage.phase}` })}
+                      aria-label={t(`${posterNs}accessibility.viewRoadmapDetail`, { phase: stage.phase, defaultValue: `Xem chi tiết lộ trình ${stage.phase}` })}
                       onClick={() => openRoadmapDetail(stage)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
@@ -1494,7 +1494,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className={`roadmap-slider-btn roadmap-slider-btn--next${roadmapSlideIndex >= roadmapMaxSlide ? " roadmap-slider-btn--disabled" : ""}`}
                   onClick={handleRoadmapNext}
                   disabled={roadmapSlideIndex >= roadmapMaxSlide}
-                  aria-label={t(`${posterNs}.accessibility.nextMilestone`, { defaultValue: "Xem mốc tiếp theo" })}
+                  aria-label={t(`${posterNs}accessibility.nextMilestone`, { defaultValue: "Xem mốc tiếp theo" })}
                 >
                   <RightOutlined />
                 </button>
@@ -1516,7 +1516,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
           {/* TEAM */}
           <section className="poster-section team-section">
             <div className="poster-section-header poster-section-header--team">
-              <h2>{t(`${posterNs}.sections.team`, { defaultValue: "Team" })}</h2>
+              <h2>{t(`${posterNs}sections.team`, { defaultValue: "Team" })}</h2>
               <Select
                 size="small"
                 className="poster-team-mode-select"
@@ -1524,7 +1524,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                 onChange={(value: TeamDisplayMode) => setTeamDisplayMode(value)}
                 options={[
                   { value: "ytkd-2026", label: "YTKD 2026" },
-                  { value: "all", label: t(`${posterNs}.labels.all`, { defaultValue: "ALL" }) },
+                  { value: "all", label: t(`${posterNs}labels.all`, { defaultValue: "ALL" }) },
                   { value: "sv-startup", label: "SV Startup" },
                   { value: "p-innovation", label: "P-Innovation" },
                   { value: "i-startup", label: "I-Startup" },
@@ -1544,7 +1544,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                     className="poster-member"
                     role="button"
                     tabIndex={0}
-                    aria-label={t(`${posterNs}.accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
+                    aria-label={t(`${posterNs}accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                     onClick={() => handleMemberClick(member)}
                     onKeyDown={(event) => handleMemberKeyDown(event, member)}
                   >
@@ -1569,7 +1569,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className="poster-member"
                       role="button"
                       tabIndex={0}
-                      aria-label={t(`${posterNs}.accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
+                      aria-label={t(`${posterNs}accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                       onClick={() => handleMemberClick(member)}
                       onKeyDown={(event) => handleMemberKeyDown(event, member)}
                     >
@@ -1595,7 +1595,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                       className="poster-member"
                       role="button"
                       tabIndex={0}
-                      aria-label={t(`${posterNs}.accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
+                      aria-label={t(`${posterNs}accessibility.viewTeamMemberDetail`, { name: member.name, defaultValue: `Xem thông tin thành viên ${member.name}` })}
                       onClick={() => handleMemberClick(member)}
                       onKeyDown={(event) => handleMemberKeyDown(event, member)}
                     >
@@ -1618,7 +1618,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
 
         <footer className="poster-footer">
           <div className="poster-qr-area">
-            <div className="qr-group-label">{t("poster.footer.qrGroupLabel", { defaultValue: "PITCH DECK / DEMO" })}</div>
+            <div className="qr-group-label">{t("poster:footer.qrGroupLabel", { defaultValue: "PITCH DECK / DEMO" })}</div>
 
             <div className="qr-grid">
               {localizedQrItems.map((item) => (
@@ -1627,7 +1627,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                   className="qr-item qr-item--interactive"
                   role="button"
                   tabIndex={0}
-                  aria-label={t(`${posterNs}.accessibility.viewQrDetail`, { label: item.label, defaultValue: `Xem chi tiết mã QR ${item.label}` })}
+                  aria-label={t(`${posterNs}accessibility.viewQrDetail`, { label: item.label, defaultValue: `Xem chi tiết mã QR ${item.label}` })}
                   onClick={() => openQrDetail(item)}
                   onKeyDown={(event) => handleQrKeyDown(event, item)}
                 >
@@ -1651,7 +1651,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             </div>
           </div>
           <div className="poster-impact-text">
-            {t("poster.footer.impactText", { defaultValue: "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!" })}
+            {t("poster:footer.impactText", { defaultValue: "Nơi lịch sử không chỉ được ghi nhớ, mà được sống lại!" })}
           </div>
         </footer>
 
@@ -1674,8 +1674,8 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       <Modal
         title={
           selectedQr
-            ? `${t("poster.modal.qrTitlePrefix", { defaultValue: "QR Chi tiết" })} - ${selectedQr.label}`
-            : t("poster.modal.qrTitle", { defaultValue: "QR Chi tiết" })
+            ? `${t("poster:modal.qrTitlePrefix", { defaultValue: "QR Chi tiết" })} - ${selectedQr.label}`
+            : t("poster:modal.qrTitle", { defaultValue: "QR Chi tiết" })
         }
         open={Boolean(selectedQr)}
         onCancel={closeQrModal}
@@ -1715,13 +1715,13 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                 <div style={{ fontSize: 18, fontWeight: 800, color: "#3f1e1e", marginBottom: 6 }}>{selectedQr.title}</div>
                 <div style={{ fontSize: 14, color: "#6b4b3b", lineHeight: 1.45 }}>{selectedQr.summary}</div>
                 <div style={{ marginTop: 8, fontSize: 13, color: "#4b3a2a" }}>
-                  <strong>{t("poster.modal.destinationLabel", { defaultValue: "Đích đến" })}:</strong> {getQrCodeValue(selectedQr)}
+                  <strong>{t("poster:modal.destinationLabel", { defaultValue: "Đích đến" })}:</strong> {getQrCodeValue(selectedQr)}
                 </div>
               </div>
             </div>
             <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
-                {t(`${posterNs}.modal.usageTitle`, { defaultValue: "Thông tin sử dụng" })}
+                {t(`${posterNs}modal.usageTitle`, { defaultValue: "Thông tin sử dụng" })}
               </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 6, color: "#4b3a2a", fontSize: 14 }}>
                 {selectedQr.details.map((detail, index) => (
@@ -1736,8 +1736,8 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       <Modal
         title={
           selectedInsight
-            ? `${selectedInsight.sectionLabel} - ${t(`${posterNs}.modal.detailTitle`, { defaultValue: "Chi tiết" })}`
-            : t(`${posterNs}.modal.detailTitle`, { defaultValue: "Chi tiết" })
+            ? `${selectedInsight.sectionLabel} - ${t(`${posterNs}modal.detailTitle`, { defaultValue: "Chi tiết" })}`
+            : t(`${posterNs}modal.detailTitle`, { defaultValue: "Chi tiết" })
         }
         open={Boolean(selectedInsight)}
         onCancel={closeInsightModal}
@@ -1755,7 +1755,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             </div>
             <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
-                {t("poster.modal.detailInfoTitle", { defaultValue: "Thông tin chi tiết" })}
+                {t("poster:modal.detailInfoTitle", { defaultValue: "Thông tin chi tiết" })}
               </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 6, color: "#4b3a2a", fontSize: 14 }}>
                 {selectedInsight.details.map((detail, index) => (
@@ -1768,7 +1768,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       </Modal>
 
       <Modal
-        title={t("poster.modal.memberTitle", { defaultValue: "Thông tin thành viên" })}
+        title={t("poster:modal.memberTitle", { defaultValue: "Thông tin thành viên" })}
         open={Boolean(selectedMember)}
         onCancel={closeMemberModal}
         footer={null}
@@ -1801,7 +1801,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
                     alt={selectedMember.name}
                     width={136}
                     height={136}
-                    preview={{ mask: t("poster.modal.avatarPreviewMask", { defaultValue: "Xem ảnh lớn" }) }}
+                    preview={{ mask: t("poster:modal.avatarPreviewMask", { defaultValue: "Xem ảnh lớn" }) }}
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
                 ) : (
@@ -1811,17 +1811,17 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#3f1e1e" }}>{selectedMember.name}</div>
                 <div style={{ fontSize: 15, color: "#8b1d1d", fontWeight: 600 }}>
-                  {selectedMember.role || t("poster.modal.memberFallbackRole", { defaultValue: "Thành viên dự án" })}
+                  {selectedMember.role || t("poster:modal.memberFallbackRole", { defaultValue: "Thành viên dự án" })}
                 </div>
               </div>
             </div>
 
             <div style={{ display: "grid", rowGap: 8, fontSize: 14, color: "#4b3a2a" }}>
               <div>
-                <strong>{t("poster.modal.specializationLabel", { defaultValue: "Chuyên môn" })}:</strong> {selectedMember.specialization}
+                <strong>{t("poster:modal.specializationLabel", { defaultValue: "Chuyên môn" })}:</strong> {selectedMember.specialization}
               </div>
               <div>
-                <strong>{t("poster.modal.contactLabel", { defaultValue: "Liên hệ" })}:</strong> {selectedMember.contact}
+                <strong>{t("poster:modal.contactLabel", { defaultValue: "Liên hệ" })}:</strong> {selectedMember.contact}
               </div>
             </div>
           </div>
@@ -1829,7 +1829,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
       </Modal>
 
       <Modal
-        title={`${t("poster.sections.roadmap", { defaultValue: "Traction / Roadmap" })} - ${t("poster.modal.detailTitle", {
+        title={`${t(`${posterNs}sections.roadmap`, { defaultValue: "Traction / Roadmap" })} - ${t(`${posterNs}modal.detailTitle`, {
           defaultValue: "Chi tiết",
         })}`}
         open={Boolean(selectedRoadmap)}
@@ -1851,7 +1851,7 @@ const PosterPage: React.FC<PosterPageProps> = ({ standalone = false }) => {
             {selectedRoadmap.details && selectedRoadmap.details.length > 0 && (
               <div style={{ borderTop: "1px solid #f0e0c0", paddingTop: 12 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#8b1d1d", marginBottom: 8 }}>
-                  {t("poster.modal.detailInfoTitle", { defaultValue: "Thông tin chi tiết" })}
+                  {t("poster:modal.detailInfoTitle", { defaultValue: "Thông tin chi tiết" })}
                 </div>
                 <ul style={{ margin: 0, paddingLeft: 18, display: "grid", rowGap: 8, color: "#4b3a2a", fontSize: 14 }}>
                   {selectedRoadmap.details.map((detail, index) => (
