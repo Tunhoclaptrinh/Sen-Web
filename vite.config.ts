@@ -135,6 +135,13 @@ export default defineConfig(({ command, mode }) => {
       watch: {
         usePolling: true, // Required for Docker on Windows/WSL
         interval: 1000, // Check for changes every second
+        ignored: ["**/.git/**", "**/.env**"],
+      },
+      fs: {
+        // Restricted to project root for security
+        allow: [path.resolve(__dirname)],
+        // Explicitly deny sensitive files
+        deny: [".env", ".env.*", ".git"],
       },
       hmr: {
         overlay: true,
@@ -155,7 +162,6 @@ export default defineConfig(({ command, mode }) => {
     },
     optimizeDeps: {
       include: ["pixi.js", "@pixi/react"],
-      force: true,
     },
     build: {
       outDir: "dist",
